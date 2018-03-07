@@ -11,7 +11,7 @@
             <v-icon>home</v-icon>
           </v-list-tile-action>
           <v-list-tile-content>
-            <v-list-tile-title>Home</v-list-tile-title>
+            <v-list-tile-title>Dashboard</v-list-tile-title>
           </v-list-tile-content>
         </v-list-tile>
         <v-list-tile to="/about">
@@ -19,7 +19,7 @@
             <v-icon>contact_mail</v-icon>
           </v-list-tile-action>
           <v-list-tile-content>
-            <v-list-tile-title>About</v-list-tile-title>
+            <v-list-tile-title>Profile</v-list-tile-title>
           </v-list-tile-content>
         </v-list-tile>
         <v-list-tile to="/orders">
@@ -27,7 +27,7 @@
             <v-icon>shopping_basket</v-icon>
           </v-list-tile-action>
           <v-list-tile-content>
-            <v-list-tile-title>Orders</v-list-tile-title>
+            <v-list-tile-title>Sales</v-list-tile-title>
           </v-list-tile-content>
         </v-list-tile>
         <v-list-tile to="/team">

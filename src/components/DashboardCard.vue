@@ -12,7 +12,7 @@
 
 <script>
 export default {
-  name: 'HelloWorld',
+  name: 'DashboardCard',
   props: {
     display: String,
     subheading: String,
