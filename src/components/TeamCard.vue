@@ -27,6 +27,9 @@
 <script>
 export default {
   name: 'TeamCard',
+  data: () => ({
+    show: false
+  }),
   props: {
     user: Object
   }
