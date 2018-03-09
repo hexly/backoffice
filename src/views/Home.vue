@@ -1,5 +1,6 @@
 <template>
   <div class="home">
+    <h1>Dashboard</h1>
     <v-subheader>Sales</v-subheader>
     <v-container fluid grid-list-xs>
       <v-layout row wrap>
@@ -28,18 +29,22 @@
         </v-flex>
       </v-layout>
     </v-container>
+    <h2>Daily Growth</h2>
+    <line-chart :data="chartData"></line-chart>
   </div>
 </template>
 
 <script>
-// @ is an alias to /src
 import DashCard from '@/components/DashboardCard.vue'
 
 export default {
   name: 'home',
   components: {
     DashCard
-  }
+  },
+  data: () => ({
+    chartData: [['Jan', 4], ['Feb', 2], ['Mar', 10], ['Apr', 5], ['May', 3]]
+  })
 }
 </script>
 

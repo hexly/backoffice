@@ -5,6 +5,11 @@
       v-model="drawer"
       app
     >
+      <div class="text-xs-center">
+        <img src=""/>
+        <h1>Hexly</h1>
+      </div>
+      <v-divider></v-divider>
       <v-list dense>
         <v-list-tile to="/home">
           <v-list-tile-action>
