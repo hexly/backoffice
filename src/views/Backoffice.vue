@@ -45,12 +45,12 @@
         </v-list-tile>
       </v-list>
     </v-navigation-drawer>
-    <v-toolbar color="indigo" dark fixed app>
+    <v-toolbar color="black" dark fixed app>
       <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
       <v-toolbar-title>Hexly Backoffice</v-toolbar-title>
     </v-toolbar>
     <v-content>
-      <v-container>
+      <v-container class="main">
         <router-view />
       </v-container>
     </v-content>
@@ -67,3 +67,13 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+  .main{
+    padding: 25px;
+    margin: 50px auto;
+    background-color: #fafafa;
+    border-radius: 10px;
+    box-shadow: 1px 2px 6px -2px #000;
+  }
+</style>
