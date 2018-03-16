@@ -7,7 +7,7 @@
           <div class="mx-auto">
             <h2>Your Information</h2>
           </div>
-          <v-form v-model="valid">
+          <v-form>
             <v-text-field
               label="Name"
               v-model="name"

@@ -4,7 +4,7 @@
       <v-layout align-center justify-center>
         <v-flex xs12 sm8 md4>
           <v-card class="elevation-12">
-            <v-toolbar dark color="primary">
+            <v-toolbar dark color="black">
               <v-toolbar-title>Login</v-toolbar-title>
             </v-toolbar>
             <v-card-text>
@@ -13,7 +13,7 @@
                 <v-text-field required v-model="form.password" prepend-icon="lock" name="password" label="Password" id="password" type="password"></v-text-field>
                 <v-card-actions>
                   <v-spacer></v-spacer>
-                  <v-btn type="submit" color="primary">Login</v-btn>
+                  <v-btn type="submit" color="deep-purple" dark>Login</v-btn>
                 </v-card-actions>
               </v-form>
             </v-card-text>
@@ -51,4 +51,5 @@ export default {
   width: 480px;
   margin: auto;
 }
+
 </style>

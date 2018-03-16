@@ -19,7 +19,7 @@
       </v-layout>
     </v-container>
     <v-card-actions>
-      <v-btn flat color="orange">View Team</v-btn>
+      <v-btn flat color="orange" @click="viewTeam">View Team</v-btn>
     </v-card-actions>
   </v-card>
 </template>
@@ -32,14 +32,19 @@ export default {
   }),
   props: {
     user: Object
+  },
+  methods: {
+    viewTeam() {
+      this.$emit('viewTeam', this.user)
+    }
   }
 }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-.team-card {
-  margin: 10px;
-  width: 250px;
-}
+  .team-card {
+    margin: 10px;
+    min-width: 350px;
+  }
 </style>

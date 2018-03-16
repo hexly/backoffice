@@ -4,6 +4,8 @@
       fixed
       v-model="drawer"
       app
+      temporary
+      clipped
     >
       <div class="text-xs-center">
         <img src=""/>
