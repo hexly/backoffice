@@ -26,6 +26,8 @@
 </template>
 
 <script>
+import AUTHENTICATE_MUTATION from '../graphql/Authenticate.gql'
+
 export default {
   data() {
     return {
@@ -38,7 +40,19 @@ export default {
   methods: {
     onSubmit() {
       if (this.$refs.login.validate()) {
-        console.log('submit!', this.form.email, this.form.password)
+        this.$apollo.mutate({
+          mutation: AUTHENTICATE_MUTATION,
+          variables: {
+            authInput: {
+              pTenantId: 1001,
+              pUsername: this.email,
+              pPassword: this.password
+            }
+          },
+          update: (store, { data }) => {
+            console.log('AUTH DONE', data, store)
+          }
+        })
       } else {
         console.log('Error in form')
       }

@@ -3,8 +3,6 @@ import { split } from 'apollo-link'
 import { HttpLink } from 'apollo-link-http'
 import { createUploadLink } from 'apollo-upload-client'
 import { InMemoryCache } from 'apollo-cache-inmemory'
-import { SubscriptionClient, MessageTypes } from 'subscriptions-transport-ws'
-import { WebSocketLink } from 'apollo-link-ws'
 import { getMainDefinition } from 'apollo-utilities'
 import { createPersistedQueryLink } from 'apollo-link-persisted-queries'
 import { setContext } from 'apollo-link-context'
@@ -16,30 +14,9 @@ function getAuth () {
   return token ? `Bearer ${token}` : ''
 }
 
-function restartWebsockets (wsClient) {
-  // Copy current operations
-  const operations = Object.assign({}, wsClient.operations)
-
-  // Close connection
-  wsClient.close(true)
-
-  // Open a new one
-  wsClient.connect()
-
-  // Push all current operations to the new connection
-  Object.keys(operations).forEach(id => {
-    wsClient.sendMessage(
-      id,
-      MessageTypes.GQL_START,
-      operations[id].options
-    )
-  })
-}
-
 // Create the apollo client
 export default function createApolloClient ({ ssr, base, endpoints, persisting }) {
   let link
-  let wsClient
 
   let httpLink = new HttpLink({
     // You should use an absolute URL here
@@ -74,18 +51,6 @@ export default function createApolloClient ({ ssr, base, endpoints, persisting }
       }
     }
 
-    // Web socket
-    wsClient = new SubscriptionClient(base.replace(/^https?/i, 'ws' + (process.env.NODE_ENV === 'production' ? 's' : '')) +
-    endpoints.subscription, {
-      reconnect: true,
-      connectionParams: () => ({
-        'Authorization': getAuth()
-      })
-    })
-
-    // Create the subscription websocket link
-    const wsLink = new WebSocketLink(wsClient)
-
     // File upload
     const uploadLink = authLink.concat(createUploadLink({
       uri: base + endpoints.graphql
@@ -106,7 +71,6 @@ export default function createApolloClient ({ ssr, base, endpoints, persisting }
         return kind === 'OperationDefinition' &&
           operation === 'subscription'
       },
-      wsLink,
       httpLink
     )
   } else {
@@ -130,13 +94,13 @@ export default function createApolloClient ({ ssr, base, endpoints, persisting }
   })
 
   apolloClient.$onLogin = token => {
+    console.log('ON LOGIN', token)
     localStorage.setItem('apollo-token', token)
-    if (wsClient) restartWebsockets(wsClient)
   }
 
   apolloClient.$onLogout = () => {
+    console.log('ON LOGOUT')
     localStorage.removeItem('apollo-token')
-    if (wsClient) restartWebsockets(wsClient)
     apolloClient.resetStore()
   }
 
