@@ -8,6 +8,7 @@ import VueChartkick from 'vue-chartkick'
 import 'chart.js'
 import './registerServiceWorker'
 import 'vuetify/dist/vuetify.min.css'
+import { apolloProvider } from './vue-apollo'
 
 Vue.use(VueChartkick, { Chartkick })
 
@@ -15,6 +16,7 @@ Vue.use(Vuetify)
 Vue.config.productionTip = false
 
 new Vue({
+  provide: apolloProvider.provide(),
   router,
   store,
   render: h => h(App)

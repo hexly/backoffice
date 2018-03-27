@@ -8,8 +8,7 @@
       clipped
     >
       <div class="text-xs-center">
-        <img src=""/>
-        <h1>Hexly</h1>
+        <img src="../assets/logo.png" class="logo" />
       </div>
       <v-divider></v-divider>
       <v-list dense>
@@ -50,6 +49,20 @@
     <v-toolbar color="black" dark fixed app>
       <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
       <v-toolbar-title>Hexly Backoffice</v-toolbar-title>
+      <v-spacer></v-spacer>
+      <v-toolbar-items class="hidden-sm-and-down">
+        <v-menu offset-y>
+          <v-btn flat slot="activator">Tobias Fünke</v-btn>
+          <v-list>
+            <v-list-tile>
+              <v-list-tile-title>Settings</v-list-tile-title>
+            </v-list-tile>
+            <v-list-tile>
+              <v-list-tile-title>Log Out</v-list-tile-title>
+            </v-list-tile>
+          </v-list>
+        </v-menu>
+      </v-toolbar-items>
     </v-toolbar>
     <v-content>
       <v-container class="main">
@@ -78,4 +91,10 @@ export default {
     border-radius: 10px;
     box-shadow: 1px 2px 6px -2px #000;
   }
+  .logo{
+  width: 100%;
+  max-width: 250px;
+  margin: auto;
+  display: block;
+}
 </style>

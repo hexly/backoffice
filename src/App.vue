@@ -14,7 +14,7 @@
 }
 
 #backoffice{
-  background-image: linear-gradient(to left, #fb915e, #ff4a9d);
+  background-image: linear-gradient(to right top, #33ccbb, #3b2f93);
 }
 
 #nav {

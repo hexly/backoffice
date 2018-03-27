@@ -8,6 +8,7 @@
               <v-toolbar-title>Login</v-toolbar-title>
             </v-toolbar>
             <v-card-text>
+              <img class="logo" src="../assets/logo.png"/>
               <v-form ref="login" @submit.prevent="onSubmit()">
                 <v-text-field required v-model="form.email" prepend-icon="person" name="login" label="Login" type="email"></v-text-field>
                 <v-text-field required v-model="form.password" prepend-icon="lock" name="password" label="Password" id="password" type="password"></v-text-field>
@@ -50,6 +51,13 @@ export default {
 .box-card {
   width: 480px;
   margin: auto;
+}
+
+.logo{
+  width: 100%;
+  max-width: 250px;
+  margin: auto;
+  display: block;
 }
 
 </style>
