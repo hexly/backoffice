@@ -45,8 +45,8 @@ export default {
           variables: {
             authInput: {
               pTenantId: 1001,
-              pUsername: this.email,
-              pPassword: this.password
+              pUsername: this.form.email,
+              pPassword: this.form.password
             }
           },
           update: (store, { data }) => {
