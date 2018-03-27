@@ -50,7 +50,7 @@
     "node-sass": "^4.7.2",
     "sass-loader": "^6.0.6",
     "vue-cli-plugin-apollo": "^0.6.1",
-    "vue-template-compiler": "^2.5.13"
+    "vue-template-compiler": "^2.5.16"
   },
   "browserslist": [
     "> 1%",
