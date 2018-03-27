@@ -13,6 +13,10 @@
   color: #2c3e50;
 }
 
+#backoffice{
+  background-image: linear-gradient(to right top, #33ccbb, #3b2f93);
+}
+
 #nav {
   padding: 30px;
 }

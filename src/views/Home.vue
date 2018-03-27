@@ -5,13 +5,13 @@
     <v-container fluid grid-list-xs>
       <v-layout row wrap>
         <v-flex sm4 pa-3>
-          <DashCard color="blue-grey" darken="1" display="$100" subheading="Personal" icon="person" />
+          <DashCard color="light-blue" darken="1" display="$100" subheading="Personal" icon="person" />
         </v-flex>
         <v-flex sm4 pa-3>
-          <DashCard color="cyan" darken="1" display="$450" subheading="Team" icon="people" />
+          <DashCard color="indigo" darken="1" display="$450" subheading="Team" icon="people" />
         </v-flex>
         <v-flex sm4 pa-3>
-          <DashCard color="purple" darken="1" display="4" subheading="Orders" icon="star" />
+          <DashCard color="pink" darken="1" display="4" subheading="Orders" icon="star" />
         </v-flex>
       </v-layout>
     </v-container>
@@ -19,13 +19,13 @@
     <v-container fluid grid-list-xs>
       <v-layout row wrap>
         <v-flex sm4 pa-3>
-          <DashCard color="blue-grey" darken="2" display="23" subheading="Size" icon="person_outline" />
+          <DashCard color="light-blue" darken="2" display="23" subheading="Size" icon="person_outline" />
         </v-flex>
         <v-flex sm4 pa-3>
-          <DashCard color="cyan" darken="2" display="8" subheading="First Level" icon="people_outline" />
+          <DashCard color="indigo" darken="2" display="8" subheading="First Level" icon="people_outline" />
         </v-flex>
         <v-flex sm4 pa-3>
-          <DashCard color="purple" darken="2" display="3" subheading="Joined this Month" icon="perm_contact_calendar" />
+          <DashCard color="pink" darken="2" display="3" subheading="Joined this Month" icon="perm_contact_calendar" />
         </v-flex>
       </v-layout>
     </v-container>

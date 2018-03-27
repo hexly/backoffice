@@ -4,16 +4,17 @@
       <v-layout align-center justify-center>
         <v-flex xs12 sm8 md4>
           <v-card class="elevation-12">
-            <v-toolbar dark color="primary">
+            <v-toolbar dark color="black">
               <v-toolbar-title>Login</v-toolbar-title>
             </v-toolbar>
             <v-card-text>
+              <img class="logo" src="../assets/logo.png"/>
               <v-form ref="login" @submit.prevent="onSubmit()">
                 <v-text-field required v-model="form.email" prepend-icon="person" name="login" label="Login" type="email"></v-text-field>
                 <v-text-field required v-model="form.password" prepend-icon="lock" name="password" label="Password" id="password" type="password"></v-text-field>
                 <v-card-actions>
                   <v-spacer></v-spacer>
-                  <v-btn type="submit" color="primary">Login</v-btn>
+                  <v-btn type="submit" color="deep-purple" dark>Login</v-btn>
                 </v-card-actions>
               </v-form>
             </v-card-text>
@@ -25,6 +26,8 @@
 </template>
 
 <script>
+import AUTHENTICATE_MUTATION from '../graphql/Authenticate.gql'
+
 export default {
   data() {
     return {
@@ -37,7 +40,19 @@ export default {
   methods: {
     onSubmit() {
       if (this.$refs.login.validate()) {
-        console.log('submit!', this.form.email, this.form.password)
+        this.$apollo.mutate({
+          mutation: AUTHENTICATE_MUTATION,
+          variables: {
+            authInput: {
+              pTenantId: 1001,
+              pUsername: this.email,
+              pPassword: this.password
+            }
+          },
+          update: (store, { data }) => {
+            console.log('AUTH DONE', data, store)
+          }
+        })
       } else {
         console.log('Error in form')
       }
@@ -51,4 +66,12 @@ export default {
   width: 480px;
   margin: auto;
 }
+
+.logo{
+  width: 100%;
+  max-width: 250px;
+  margin: auto;
+  display: block;
+}
+
 </style>
