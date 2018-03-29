@@ -1,0 +1,12 @@
+query IdentityById($condition:IdentityCondition!) {
+  allIdentities(condition: $condition) {
+    nodes{
+      id,
+      tenantId,
+      name,
+      displayName,
+      mrn,
+      slug
+    }
+  }
+}

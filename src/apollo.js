@@ -3,7 +3,7 @@ import { HttpLink } from 'apollo-link-http'
 import { InMemoryCache } from 'apollo-cache-inmemory'
 import { setContext } from 'apollo-link-context'
 
-function getAuth () {
+function getAuth() {
   // get the authentication token from local storage if it exists
   const token = localStorage.getItem('apollo-token')
   // return the headers to the context so httpLink can read them
@@ -11,7 +11,12 @@ function getAuth () {
 }
 
 // Create the apollo client
-export default function createApolloClient ({ ssr, base, endpoints, persisting }) {
+export default function createApolloClient({
+  ssr,
+  base,
+  endpoints,
+  persisting
+}) {
   let httpLink = new HttpLink({
     // You should use an absolute URL here
     uri: base + endpoints.graphql
@@ -21,7 +26,7 @@ export default function createApolloClient ({ ssr, base, endpoints, persisting }
   const authLink = setContext((_, { headers }) => ({
     headers: {
       ...headers,
-      authorization: getAuth()
+      Authorization: getAuth()
     }
   }))
 

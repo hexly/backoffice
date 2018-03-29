@@ -9,6 +9,8 @@
             </v-toolbar>
             <v-card-text>
               <img class="logo" src="../assets/logo.png"/>
+              {{sellerId}}
+              <span v-if="allSales">{{allSales.nodes[0].totalAmount}}</span>
               <v-form ref="login" @submit.prevent="onSubmit()">
                 <v-text-field required v-model="form.email" prepend-icon="person" name="login" label="Login" type="email"></v-text-field>
                 <v-text-field required v-model="form.password" prepend-icon="lock" name="password" label="Password" id="password" type="password"></v-text-field>
@@ -27,6 +29,7 @@
 
 <script>
 import AUTHENTICATE_MUTATION from '../graphql/Authenticate.gql'
+import SALES_QUERY from '../graphql/Sales.gql'
 
 export default {
   data() {
@@ -34,6 +37,21 @@ export default {
       form: {
         email: '',
         password: ''
+      },
+      loginError: null,
+      sellerId: 45,
+      allSales: null
+    }
+  },
+  apollo: {
+    allSales: {
+      query: SALES_QUERY,
+      variables() {
+        return {
+          saleCondition: {
+            sellerId: this.sellerId
+          }
+        }
       }
     }
   },
@@ -49,8 +67,16 @@ export default {
               pPassword: this.form.password
             }
           },
-          update: (store, { data }) => {
-            console.log('AUTH DONE', data, store)
+          update: (store, { data: { authenticate } }) => {
+            if (authenticate.jwtToken) {
+              console.log('Setting JWT', authenticate.jwtToken)
+              localStorage.setItem('apollo-token', authenticate.jwtToken)
+              this.sellerId = 46
+              // this.state.dispatch('LOGIN_SUCCESS')
+            } else {
+              this.loginError = 'Invalid Username/Password.'
+            }
+            console.log('AUTH DONE', authenticate, store)
           }
         })
       } else {
@@ -67,11 +93,10 @@ export default {
   margin: auto;
 }
 
-.logo{
+.logo {
   width: 100%;
   max-width: 250px;
   margin: auto;
   display: block;
 }
-
 </style>

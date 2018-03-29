@@ -21,7 +21,7 @@ export default new Router({
       path: '/',
       name: 'backoffice',
       component: Backoffice,
-      beforeRouteEnter: (to, from, next) => {
+      beforeEnter: (to, from, next) => {
         if (!store.state.user.authorized) {
           next('/login') // they are not authorized, so redirect to login
         } else {
