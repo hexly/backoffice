@@ -1,33 +1,38 @@
 import { apolloClient } from '@/vue-apollo'
 import PRINCIPAL_QUERY from '@/graphql/Principal.gql'
 
-export default {
+export const UserActions = {
+  LOGIN_SUCCESS: 'loginSuccess'
+}
+
+export const UserMutations = {
+  SET_JWT: 'setJwt',
+  AUTH_STATUS: 'authStatus',
+  LOGIN_ERROR: 'setLoginError',
+  INIT: 'storeInt'
+}
+
+export const UserStore = {
   state: {
     authorized: false,
     jwt: null,
     loginError: null
   },
   mutations: {
-    setJwt: (state, jwt) => {
-      state.jwt = jwt
-    },
-    userAuthed: state => {
-      state.authorized = true
-    },
-    setLoginError: (state, err) => {
-      state.loginError = err
-    }
+    [UserMutations.SET_JWT]: (state, jwt) => (state.jwt = jwt),
+    [UserMutations.AUTH_STATUS]: (state, status) => (state.authorized = status),
+    [UserMutations.LOGIN_ERROR]: (state, err) => (state.loginError = err)
   },
   actions: {
-    loginSuccess: async ({ commit }) => {
+    [UserActions.LOGIN_SUCCESS]: async ({ commit }) => {
       const { data: { principal } } = await apolloClient.query({
         query: PRINCIPAL_QUERY
       })
       if (principal.permissions.length >= 1) {
-        commit('userAuthed')
+        commit(UserMutations.AUTH_STATUS, true)
       } else {
         commit(
-          'setLoginError',
+          UserMutations.LOGIN_ERROR,
           'You do not have permissions to access this app.'
         )
       }

@@ -28,6 +28,7 @@
 
 <script>
 import AUTHENTICATE_MUTATION from '../graphql/Authenticate.gql'
+import { UserActions, UserMutations } from '@/stores/UserStore'
 
 export default {
   data() {
@@ -52,11 +53,14 @@ export default {
           },
           update: async (store, { data: { authenticate: { jwtToken } } }) => {
             if (jwtToken) {
-              this.$store.commit('setJwt', jwtToken)
-              await this.$store.dispatch('loginSuccess')
+              this.$store.commit(UserMutations.SET_JWT, jwtToken)
+              await this.$store.dispatch(UserActions.LOGIN_SUCCESS)
               this.$router.push('/home')
             } else {
-              this.$store.commit('setLoginError', 'Invalid Username/Password.')
+              this.$store.commit(
+                UserMutations.LOGIN_ERROR,
+                'Invalid Username/Password.'
+              )
             }
           }
         })
