@@ -1,10 +1,15 @@
-query principal{ 
-	principal {
-    jwt,
-    role,
-    displayName, 
-    username, 
-    identityId, 
+query principal {
+  principal {
+    jwt
+    role
+    displayName
+    username
+    identityId
     tenantId
+    permissions {
+      id
+      key
+      name
+    }
   }
 }
