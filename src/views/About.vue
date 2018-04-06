@@ -10,7 +10,7 @@
           <v-form>
             <v-text-field
               label="Name"
-              v-model="name"
+              v-model="member.name"
               required
             ></v-text-field>
             <v-text-field
@@ -20,7 +20,7 @@
             ></v-text-field>
             <v-text-field
               label="Display name"
-              v-model="displayName"
+              v-model="member.displayName"
               required
             ></v-text-field>
             <v-text-field
@@ -38,7 +38,17 @@
         <v-flex xs6>
           <div class="mx-auto">
             <h2>Profile Image</h2>
-            <img src=""/>
+            <img :src="avatarUrl"/>
+            <form enctype="multipart/form-data" novalidate>
+                <input
+                  type="file"
+                  name="avatar"
+                  :disabled="isSaving"
+                  @change="filesChange($event.target.files)"
+                  accept="image/*"
+                />
+                <h4>After uploading a new image, it may take up to 1 hour for the change to take effect.</h4>
+            </form>
           </div>
         </v-flex>
       </v-layout>
@@ -57,14 +67,51 @@
 </template>
 
 <script>
+import IDENTITY_QUERY from '@/graphql/GetIdentity.gql'
+import { Actions } from '@/store'
+const { VUE_APP_CLOUDINARY_URL, VUE_APP_TENANT_ID, VUE_APP_LANE } = process.env
+
 export default {
   data: () => ({
     visible: false,
-    name: '',
     email: '',
-    displayName: '',
     password: '',
-    snackbar: false
-  })
+    snackbar: false,
+    uploadFileName: null,
+    isSaving: false,
+    member: {
+      name: '',
+      displayName: ''
+    }
+  }),
+  methods: {
+    filesChange(files) {
+      const file = files[0]
+      this.$store.dispatch(Actions.FILE_UPLOAD, { file, name: this.avatarId })
+    }
+  },
+  apollo: {
+    member: {
+      query: IDENTITY_QUERY,
+      variables() {
+        return {
+          condition: {
+            memberId: this.$store.state.user.principal.member.id
+          }
+        }
+      },
+      update({ allIdentities }) {
+        return allIdentities.nodes[0]
+      }
+    }
+  },
+  computed: {
+    avatarId() {
+      return `${VUE_APP_LANE}/${VUE_APP_TENANT_ID}/avatar/${this.member.id}`
+    },
+    avatarUrl() {
+      return `${VUE_APP_CLOUDINARY_URL}c_scale,h_250,w_250/${this.avatarId}`
+    }
+  }
 }
 </script>

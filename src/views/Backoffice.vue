@@ -50,15 +50,15 @@
       <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
       <v-toolbar-title>Hexly Backoffice</v-toolbar-title>
       <v-spacer></v-spacer>
-      <v-toolbar-items class="hidden-sm-and-down">
+      <v-toolbar-items>
         <v-menu offset-y>
-          <v-btn flat slot="activator">Tobias Fünke</v-btn>
+          <v-btn flat slot="activator">{{displayName}}</v-btn>
           <v-list>
             <v-list-tile>
               <v-list-tile-title>Settings</v-list-tile-title>
             </v-list-tile>
             <v-list-tile>
-              <v-list-tile-title>Log Out</v-list-tile-title>
+              <v-list-tile-title @click="logout">Log Out</v-list-tile-title>
             </v-list-tile>
           </v-list>
         </v-menu>
@@ -73,25 +73,38 @@
 </template>
 
 <script>
+import { Actions } from '@/store'
+
 export default {
   data: () => ({
     drawer: null
   }),
   props: {
     source: String
+  },
+  computed: {
+    displayName() {
+      return this.$store.getters.displayName
+    }
+  },
+  methods: {
+    async logout() {
+      await this.$store.dispatch(Actions.LOGOUT)
+      this.$router.go('/login')
+    }
   }
 }
 </script>
 
 <style scoped>
-  .main{
-    padding: 25px;
-    margin: 50px auto;
-    background-color: #fafafa;
-    border-radius: 10px;
-    box-shadow: 1px 2px 6px -2px #000;
-  }
-  .logo{
+.main {
+  padding: 25px;
+  margin: 50px auto;
+  background-color: #fafafa;
+  border-radius: 10px;
+  box-shadow: 1px 2px 6px -2px #000;
+}
+.logo {
   width: 100%;
   max-width: 250px;
   margin: auto;

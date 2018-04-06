@@ -15,7 +15,14 @@ export default new Router({
     {
       path: '/login',
       name: 'login',
-      component: Login
+      component: Login,
+      beforeEnter: (to, from, next) => {
+        if (store.state.user.authorized) {
+          next('/home')
+        } else {
+          next()
+        }
+      }
     },
     {
       path: '/',
@@ -23,9 +30,9 @@ export default new Router({
       component: Backoffice,
       beforeEnter: (to, from, next) => {
         if (!store.state.user.authorized) {
-          next('/login') // they are not authorized, so redirect to login
+          next('/login')
         } else {
-          next() // we are authorized, continue on to the requested route
+          next()
         }
       },
       children: [

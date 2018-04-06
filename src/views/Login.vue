@@ -46,9 +46,9 @@ export default {
           mutation: AUTHENTICATE_MUTATION,
           variables: {
             authInput: {
-              pTenantId: 1001,
-              pUsername: this.form.email,
-              pPassword: this.form.password
+              tenantId: process.env.VUE_APP_TENANT_ID,
+              username: this.form.email,
+              password: this.form.password
             }
           },
           update: async (store, { data: { authenticate: { jwtToken } } }) => {

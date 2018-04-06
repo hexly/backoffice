@@ -8,13 +8,13 @@
           :key="user.email"
           :disabled="index === (lineage.length - 1)"
         >
-          <span @click="updateLineage(user, index)">{{user.name}} {{user.surname}}</span>
+          <span @click="updateLineage(user, index)">{{user.displayName}}</span>
         </v-breadcrumbs-item>
       </v-breadcrumbs>
       <v-container fluid grid-list-lg>
         <v-layout row wrap>
-          <v-flex lg4 v-for="t in team" :key="t.email">
-            <TeamCard @viewTeam="showTeam" :user="t" />
+          <v-flex lg4 v-for="i in allIdentities" :key="i.email">
+            <TeamCard @viewTeam="showTeam" :user="i" />
           </v-flex>
         </v-layout>
       </v-container>
@@ -24,12 +24,15 @@
 
 <script>
 import TeamCard from '../components/TeamCard.vue'
+import FRONT_LINE_QUERY from '@/graphql/FrontLine.gql'
 
 export default {
   name: 'Team',
   data: () => {
     return {
-      lineage: []
+      lineage: [],
+      currentId: null,
+      allIdentities: []
     }
   },
   components: {
@@ -38,20 +41,31 @@ export default {
   methods: {
     showTeam(user) {
       this.lineage.push(user)
-      this.$store.dispatch('getTeam')
+      this.currentId = user.id
     },
     updateLineage(user, index) {
-      this.$store.dispatch('getTeam')
       this.lineage = this.lineage.slice(0, index + 1)
+      this.currentId = user.id || user.identityId
+    }
+  },
+  apollo: {
+    allIdentities: {
+      query: FRONT_LINE_QUERY,
+      variables() {
+        return {
+          condition: {
+            sponsorId: this.currentId
+          }
+        }
+      },
+      update({ allIdentities }) {
+        return allIdentities.nodes
+      }
     }
   },
   mounted() {
-    this.$store.dispatch('getTeam')
-  },
-  computed: {
-    team() {
-      return this.$store.state.team.team
-    }
+    this.currentId = this.$store.state.user.principal.identityId
+    this.lineage.push(this.$store.state.user.principal)
   }
 }
 </script>

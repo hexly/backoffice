@@ -21,9 +21,12 @@
 </template>
 
 <script>
+import ALL_SALES from '@/graphql/Sales.gql'
+
 export default {
   data() {
     return {
+      allSales: [],
       headers: [
         {
           text: 'Item',
@@ -87,6 +90,20 @@ export default {
           points: 21
         }
       ]
+    }
+  },
+  apollo: {
+    allSales: {
+      query: ALL_SALES,
+      variables() {
+        return {
+          saleCondition: {
+            sellerId: this.$store.state.user.principal.identityId,
+            month: new Date().getMonth() + 1,
+            year: new Date().getFullYear()
+          }
+        }
+      }
     }
   }
 }

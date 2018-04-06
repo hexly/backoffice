@@ -1,6 +1,5 @@
 query principal {
   principal {
-    jwt
     role
     displayName
     username
@@ -9,6 +8,10 @@ query principal {
     permissions {
       id
       key
+      name
+    }
+    member {
+      id
       name
     }
   }

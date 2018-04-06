@@ -1,4 +1,4 @@
-query IdentityById($condition: IdentityCondition!) {
+query IdentityBySponsorId($condition: IdentityCondition!) {
   allIdentities(condition: $condition) {
     nodes {
       id
@@ -7,6 +7,7 @@ query IdentityById($condition: IdentityCondition!) {
       displayName
       mrn
       slug
+      email
     }
   }
 }

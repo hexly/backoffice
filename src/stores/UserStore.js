@@ -9,27 +9,32 @@ export const UserMutations = {
   SET_JWT: 'setJwt',
   AUTH_STATUS: 'authStatus',
   LOGIN_ERROR: 'setLoginError',
-  INIT: 'storeInt'
+  SET_PRINCIPAL: 'setPrincipal'
 }
 
 export const UserStore = {
   state: {
     authorized: false,
     jwt: null,
-    loginError: null
+    loginError: null,
+    principal: null
   },
   mutations: {
     [UserMutations.SET_JWT]: (state, jwt) => (state.jwt = jwt),
     [UserMutations.AUTH_STATUS]: (state, status) => (state.authorized = status),
-    [UserMutations.LOGIN_ERROR]: (state, err) => (state.loginError = err)
+    [UserMutations.LOGIN_ERROR]: (state, err) => (state.loginError = err),
+    [UserMutations.SET_PRINCIPAL]: (state, principal) =>
+      (state.principal = principal)
   },
   actions: {
     [UserActions.LOGIN_SUCCESS]: async ({ commit }) => {
+      commit(UserMutations.LOGIN_ERROR, null)
       const { data: { principal } } = await apolloClient.query({
         query: PRINCIPAL_QUERY
       })
-      if (principal.permissions.length >= 1) {
+      if (principal) {
         commit(UserMutations.AUTH_STATUS, true)
+        commit(UserMutations.SET_PRINCIPAL, principal)
       } else {
         commit(
           UserMutations.LOGIN_ERROR,
@@ -38,5 +43,9 @@ export const UserStore = {
       }
     }
   },
-  getters: {}
+  getters: {
+    displayName: state => {
+      return state.principal && state.principal.displayName
+    }
+  }
 }

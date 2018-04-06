@@ -1,8 +1,19 @@
 <template>
-  <v-app id="backoffice">
+  <v-app id="backoffice" :class="tenant">
     <router-view/>
   </v-app>
 </template>
+
+<script>
+console.log(process.env.VUE_APP_TENANT_ID)
+export default {
+  data() {
+    return {
+      tenant: process.env.VUE_APP_TENANT_ID
+    }
+  }
+}
+</script>
 
 <style>
 #app {
