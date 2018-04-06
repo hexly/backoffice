@@ -24,7 +24,7 @@
 
 <script>
 import TeamCard from '../components/TeamCard.vue'
-import FRONT_LINE_QUERY from '@/graphql/FrontLine.gql'
+import FRONT_LINE_QUERY from '@/graphql/GetIdentity.gql'
 
 export default {
   name: 'Team',
