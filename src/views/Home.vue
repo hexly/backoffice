@@ -5,13 +5,13 @@
     <v-container fluid grid-list-xs>
       <v-layout row wrap>
         <v-flex sm4 pa-3>
-          <DashCard color="light-blue" darken="1" display="$100" subheading="Personal" icon="person" />
+          <DashCard color="light-blue" darken="1" :display="'$'+personalSales" subheading="Personal" icon="person" />
         </v-flex>
         <v-flex sm4 pa-3>
           <DashCard color="indigo" darken="1" display="$450" subheading="Team" icon="people" />
         </v-flex>
         <v-flex sm4 pa-3>
-          <DashCard color="pink" darken="1" display="4" subheading="Orders" icon="star" />
+          <DashCard color="pink" darken="1" :display="sales" subheading="Orders" icon="star" />
         </v-flex>
       </v-layout>
     </v-container>
@@ -35,6 +35,7 @@
 </template>
 
 <script>
+import getSales from '@/graphql/GetSales'
 import DashCard from '@/components/DashboardCard.vue'
 
 export default {
@@ -43,8 +44,26 @@ export default {
     DashCard
   },
   data: () => ({
-    chartData: [['Jan', 4], ['Feb', 2], ['Mar', 10], ['Apr', 5], ['May', 3]]
-  })
+    chartData: [['Jan', 4], ['Feb', 2], ['Mar', 10], ['Apr', 5], ['May', 3]],
+    allSales: []
+  }),
+  apollo: {
+    allSales() {
+      return getSales({
+        sellerId: this.$store.state.user.principal.member.id,
+        month: new Date().getMonth() + 1,
+        year: new Date().getFullYear()
+      })
+    }
+  },
+  computed: {
+    personalSales() {
+      return this.allSales.reduce((s, t) => (t += s.total), 0)
+    },
+    sales() {
+      return this.allSales.length
+    }
+  }
 }
 </script>
 

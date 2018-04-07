@@ -21,7 +21,7 @@
 </template>
 
 <script>
-import ALL_SALES from '@/graphql/Sales.gql'
+import getSales from '@/graphql/GetSales'
 import map from 'rambda/lib/map'
 
 export default {
@@ -38,20 +38,12 @@ export default {
     }
   },
   apollo: {
-    allSales: {
-      query: ALL_SALES,
-      variables() {
-        return {
-          saleCondition: {
-            sellerId: this.$store.state.user.principal.member.id,
-            month: new Date().getMonth() + 1,
-            year: new Date().getFullYear()
-          }
-        }
-      },
-      update({ allSales }) {
-        return allSales.nodes
-      }
+    allSales() {
+      return getSales({
+        sellerId: this.$store.state.user.principal.member.id,
+        month: new Date().getMonth() + 1,
+        year: new Date().getFullYear()
+      })
     }
   },
   computed: {
