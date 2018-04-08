@@ -15,7 +15,7 @@ window.sha1 = sha1
 Vue.use(Vuex)
 
 export const Mutations = {
-  INIT: 'storeInt'
+  INIT: 'storeInit'
 }
 
 export const Actions = {
@@ -40,7 +40,7 @@ const store = new Vuex.Store({
     [Actions.LOGOUT]: () => {
       localStorage.clear()
     },
-    [Actions.FILE_UPLOAD]: async (context, { file, name }) => {
+    [Actions.FILE_UPLOAD]: (context, { file, name }) => {
       const timestamp = Date.now()
       const fields = `invalidate=true&public_id=${name}&timestamp=${timestamp}${VUE_APP_CLOUDINARY_SECRET}`
       const signature = sha1(fields)
@@ -51,7 +51,7 @@ const store = new Vuex.Store({
       formData.set('timestamp', timestamp)
       formData.set('signature', signature)
       formData.set('invalidate', true)
-      await axios.post(VUE_APP_CLOUDINARY_UPLOAD, formData)
+      return axios.post(VUE_APP_CLOUDINARY_UPLOAD, formData)
     }
   },
   mutations: {

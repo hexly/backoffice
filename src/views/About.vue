@@ -10,17 +10,17 @@
           <v-form>
             <v-text-field
               label="Name"
-              v-model="member.name"
+              v-model="editMember.name"
               required
             ></v-text-field>
             <v-text-field
               label="E-mail"
-              v-model="email"
+              v-model="editMember.email"
               required
             ></v-text-field>
             <v-text-field
               label="Display name"
-              v-model="member.displayName"
+              v-model="editMember.displayName"
               required
             ></v-text-field>
             <v-text-field
@@ -38,7 +38,8 @@
         <v-flex xs6>
           <div class="mx-auto">
             <h2>Profile Image</h2>
-            <img :src="avatarUrl"/>
+            <h4>After uploading a new image, it may take up to 1 hour for the change to take effect.</h4>
+            <img :src="editMember.profileUrl"/>
             <form enctype="multipart/form-data" novalidate>
                 <input
                   type="file"
@@ -47,12 +48,11 @@
                   @change="filesChange($event.target.files)"
                   accept="image/*"
                 />
-                <h4>After uploading a new image, it may take up to 1 hour for the change to take effect.</h4>
             </form>
           </div>
         </v-flex>
       </v-layout>
-      <v-btn color="success" @click="snackbar = true">Save</v-btn>
+      <v-btn color="success" @click="saveData()">Save</v-btn>
     </v-container>
     <v-snackbar
       :timeout="6000"
@@ -68,26 +68,52 @@
 
 <script>
 import IDENTITY_QUERY from '@/graphql/GetIdentity.gql'
+import UPDATE_PROFILE from '@/graphql/UpdateProfile.gql'
 import { Actions } from '@/store'
 const { VUE_APP_CLOUDINARY_URL, VUE_APP_TENANT_ID, VUE_APP_LANE } = process.env
 
 export default {
   data: () => ({
     visible: false,
-    email: '',
     password: '',
+    newPassword: '',
     snackbar: false,
     uploadFileName: null,
     isSaving: false,
-    member: {
+    editMember: {
       name: '',
-      displayName: ''
+      displayName: '',
+      email: '',
+      profileUrl: this.avatarUrl
     }
   }),
   methods: {
-    filesChange(files) {
+    async filesChange(files) {
       const file = files[0]
-      this.$store.dispatch(Actions.FILE_UPLOAD, { file, name: this.avatarId })
+      const { data } = await this.$store.dispatch(Actions.FILE_UPLOAD, {
+        file,
+        name: this.avatarId
+      })
+      console.log('Image Upload', data)
+    },
+    saveData() {
+      this.$apollo.mutate({
+        mutation: UPDATE_PROFILE,
+        variables: {
+          input: {
+            memberId: this.editMember.memberId,
+            name: this.editMember.name,
+            displayName: this.editMember.displayName,
+            contactEmail: this.editMember.email,
+            profileUrl: this.editMember.profileUrl
+          }
+        },
+        update: (store, { data }) => {
+          // this.editMember.profileUrl
+          console.log(data)
+        }
+      })
+      this.snackbar = true
     }
   },
   apollo: {
@@ -101,7 +127,9 @@ export default {
         }
       },
       update({ allIdentities }) {
-        return allIdentities.nodes[0]
+        const editMember = allIdentities.nodes[0]
+        this.editMember = { ...editMember }
+        return editMember
       }
     }
   },
