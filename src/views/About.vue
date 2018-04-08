@@ -23,16 +23,18 @@
               v-model="editMember.displayName"
               required
             ></v-text-field>
-            <v-text-field
-              name="password"
-              label="Enter your password"
-              hint="At least 8 characters"
-              v-model="password"
-              min="8"
-              :append-icon="visible ? 'visibility_off' : 'visibility'"
-              :append-icon-cb="() => (visible = !visible)"
-              :type="visible ? 'text' : 'password'"
-            ></v-text-field>
+            <!-- 
+              <v-text-field
+                name="password"
+                label="Enter your password"
+                hint="At least 8 characters"
+                v-model="password"
+                min="8"
+                :append-icon="visible ? 'visibility_off' : 'visibility'"
+                :append-icon-cb="() => (visible = !visible)"
+                :type="visible ? 'text' : 'password'"
+              ></v-text-field>
+            -->
           </v-form>
         </v-flex>
         <v-flex xs6>
@@ -48,6 +50,7 @@
                   @change="filesChange($event.target.files)"
                   accept="image/*"
                 />
+                <div v-if="isUploading">Uploading... please wait</div>
             </form>
           </div>
         </v-flex>
@@ -79,6 +82,7 @@ export default {
     newPassword: '',
     snackbar: false,
     uploadFileName: null,
+    isUploading: false,
     isSaving: false,
     editMember: {
       name: '',
@@ -90,13 +94,17 @@ export default {
   methods: {
     async filesChange(files) {
       const file = files[0]
+      this.isSaving = true
+      this.isUploading = true
       const { data } = await this.$store.dispatch(Actions.FILE_UPLOAD, {
         file,
         name: this.avatarId
       })
+      this.isFalse = false
+      this.isUploading = false
       console.log('Image Upload', data)
     },
-    saveData() {
+    saveData() {      
       this.$apollo.mutate({
         mutation: UPDATE_PROFILE,
         variables: {
@@ -105,11 +113,11 @@ export default {
             name: this.editMember.name,
             displayName: this.editMember.displayName,
             contactEmail: this.editMember.email,
-            profileUrl: this.editMember.profileUrl
+            profileUrl: this.avatarUrl
           }
         },
         update: (store, { data }) => {
-          // this.editMember.profileUrl
+          this.editMember.profileUrl = this.avatarUrl
           console.log(data)
         }
       })
@@ -129,13 +137,14 @@ export default {
       update({ allIdentities }) {
         const editMember = allIdentities.nodes[0]
         this.editMember = { ...editMember }
+        this.editMember.profileUrl = this.avatarUrl
         return editMember
       }
     }
   },
   computed: {
     avatarId() {
-      return `${VUE_APP_LANE}/${VUE_APP_TENANT_ID}/avatar/${this.member.id}`
+      return `${VUE_APP_LANE}/${VUE_APP_TENANT_ID}/avatar/${this.editMember.id}`
     },
     avatarUrl() {
       return `${VUE_APP_CLOUDINARY_URL}c_scale,h_250,w_250/${this.avatarId}`

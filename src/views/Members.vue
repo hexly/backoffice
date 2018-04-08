@@ -1,7 +1,9 @@
 <template>
   <v-flex xs12>
     <div class="team">
-      <h1>Team</h1>
+      <h1 v-bind:target="currentId">Team</h1>
+      <TeamCard @viewTeam="showTeam" :user="results.target" v-if="results.target"/>
+      
       <v-breadcrumbs divider="/">
         <v-breadcrumbs-item
           v-for="(user, index) in lineage"
@@ -11,28 +13,33 @@
           <span @click="updateLineage(user, index)">{{user.displayName}}</span>
         </v-breadcrumbs-item>
       </v-breadcrumbs>
+      
       <v-container fluid grid-list-lg>
         <v-layout row wrap>
-          <v-flex lg4 v-for="i in allIdentities" :key="i.email">
-            <TeamCard @viewTeam="showTeam" :user="i" />
+          <v-flex lg4 v-for="i in results.team" :key="i.email">
+            <TeamCard @viewTeam="showTeam" :user="i" :actions="true" />
           </v-flex>
         </v-layout>
       </v-container>
+      
     </div>
   </v-flex>
 </template>
 
 <script>
 import TeamCard from '../components/TeamCard.vue'
-import FRONT_LINE_QUERY from '@/graphql/GetIdentity.gql'
+import getTeam from '@/graphql/GetTeam'
 
 export default {
   name: 'Team',
   data: () => {
     return {
       lineage: [],
-      currentId: null,
-      allIdentities: []
+      currentId: undefined,
+      results: {
+        target: undefined, 
+        team: []
+      }
     }
   },
   components: {
@@ -49,22 +56,24 @@ export default {
     }
   },
   apollo: {
-    allIdentities: {
-      query: FRONT_LINE_QUERY,
-      variables() {
+    // TODO only run AFTER mount
+    // TODO how to do dynamic variables better?    
+    results: getTeam( {
+      variables: function() { // must be a stupid function, closures do not live update
+        const id = this.$store.state.user.principal.memberId || 1
         return {
-          condition: {
-            sponsorId: this.currentId
+          byTarget: {
+            memberId: id
+          },
+          bySponsor: {
+            sponsorId: id
           }
         }
-      },
-      update({ allIdentities }) {
-        return allIdentities.nodes
       }
-    }
+    })    
   },
-  mounted() {
-    this.currentId = this.$store.state.user.principal.identityId
+  beforeMount() {    
+    this.currentId = this.$store.state.user.principal.memberId
     this.lineage.push(this.$store.state.user.principal)
   }
 }

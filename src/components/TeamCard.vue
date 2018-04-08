@@ -19,7 +19,7 @@
         </v-flex>
       </v-layout>
     </v-container>
-    <v-card-actions>
+    <v-card-actions v-if="actions">
       <v-btn flat color="orange" @click="viewTeam">View Team</v-btn>
     </v-card-actions>
   </v-card>
@@ -37,7 +37,8 @@ export default {
     show: false
   }),
   props: {
-    user: Object
+    user: Object,
+    actions: Boolean
   },
   methods: {
     viewTeam() {
