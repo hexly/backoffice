@@ -5,7 +5,7 @@
     <v-container fluid grid-list-xs>
       <v-layout row wrap>
         <v-flex sm4 pa-3>
-          <DashCard color="light-blue" darken="1" :display="'$'+personalSales" subheading="Personal" icon="person" />
+          <DashCard color="light-blue" darken="1" :display="'$' + personalSales.totalAmount" subheading="Personal" icon="person" />
         </v-flex>
         <v-flex sm4 pa-3>
           <DashCard color="indigo" darken="1" display="$450" subheading="Team" icon="people" />
@@ -58,7 +58,20 @@ export default {
   },
   computed: {
     personalSales() {
-      return this.allSales.reduce((s, t) => (t += s.total), 0)
+      return this.allSales.reduce((t, s) => (
+        {
+          totalAmount: t.totalAmount + s.totalAmount,
+          totalPoints: t.totalPoints + s.totalPoints,
+          commissionableAmount: t.commissionableAmount + s.commissionableAmount,
+          commissionableTotal: t.commissionableTotal + s.commissionableTotal
+        }),       
+        {
+          totalAmount: 0,
+          totalPoints: 0,
+          commissionableAmount: 0,
+          commissionableTotal: 0
+        }
+      )
     },
     sales() {
       return this.allSales.length
