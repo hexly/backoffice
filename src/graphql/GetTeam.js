@@ -8,6 +8,7 @@ export const QUERY = gql`
     target: allIdentities(condition: $byTarget) {
       nodes {
         id
+        memberId
         tenantId
         name
         displayName
@@ -20,6 +21,7 @@ export const QUERY = gql`
     team: allIdentities(condition: $bySponsor) {
       nodes {
         id
+        memberId
         tenantId
         name
         displayName
@@ -32,16 +34,25 @@ export const QUERY = gql`
   }
 `
 
-export default cfg => {
-  const result = {
-    ...cfg,
-    query: QUERY,
-    update({ target, team }) {
-      return {
-        target: target.nodes[0],
-        team: team.nodes
+export const getTeamByMemberId = memberIdFn => ({
+  query: QUERY,
+  variables: function() {
+    const memberId = this[memberIdFn] || -1
+    return {
+      byTarget: {
+        memberId: memberId
+      },
+      bySponsor: {
+        sponsorId: memberId
       }
     }
+  },
+  update({ target, team }) {
+    return {
+      target: target.nodes[0],
+      team: team.nodes
+    }
   }
-  return result
-}
+})
+
+export default getTeamByMemberId
