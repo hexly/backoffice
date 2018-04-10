@@ -48,7 +48,8 @@ export default {
             authInput: {
               tenantId: process.env.VUE_APP_TENANT_ID,
               username: this.form.email,
-              password: this.form.password
+              password: this.form.password,
+              memberId: null
             }
           },
           update: async (store, { data: { authenticate: { jwtToken } } }) => {
