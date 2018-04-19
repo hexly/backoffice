@@ -23,7 +23,7 @@
               v-model="editMember.displayName"
               required
             ></v-text-field>
-            <!-- 
+            <!--
               <v-text-field
                 name="password"
                 label="Enter your password"
@@ -40,8 +40,7 @@
         <v-flex xs6>
           <div class="mx-auto">
             <h2>Profile Image</h2>
-            <h4>After uploading a new image, it may take up to 1 hour for the change to take effect.</h4>
-            <img :src="editMember.profileUrl"/>
+            <img :src="getAvatar"/>
             <form enctype="multipart/form-data" novalidate>
                 <input
                   type="file"
@@ -73,7 +72,7 @@
 import IDENTITY_QUERY from '@/graphql/GetIdentity.gql'
 import UPDATE_PROFILE from '@/graphql/UpdateProfile.gql'
 import { Actions } from '@/store'
-const { VUE_APP_CLOUDINARY_URL, VUE_APP_TENANT_ID, VUE_APP_LANE } = process.env
+const { VUE_APP_TENANT_ID, VUE_APP_LANE } = process.env
 
 export default {
   data: () => ({
@@ -85,10 +84,11 @@ export default {
     isUploading: false,
     isSaving: false,
     editMember: {
+      id: '',
       name: '',
       displayName: '',
       email: '',
-      profileUrl: this.avatarUrl
+      profileUrl: ''
     }
   }),
   methods: {
@@ -96,15 +96,15 @@ export default {
       const file = files[0]
       this.isSaving = true
       this.isUploading = true
-      const { data } = await this.$store.dispatch(Actions.FILE_UPLOAD, {
+      const { data } = await this.$store.dispatch(Actions.AVATAR_UPLOAD, {
         file,
         name: this.avatarId
       })
       this.isFalse = false
       this.isUploading = false
-      console.log('Image Upload', data)
+      this.editMember.profileUrl = data.secure_url
     },
-    saveData() {      
+    saveData() {
       this.$apollo.mutate({
         mutation: UPDATE_PROFILE,
         variables: {
@@ -113,12 +113,8 @@ export default {
             name: this.editMember.name,
             displayName: this.editMember.displayName,
             contactEmail: this.editMember.email,
-            profileUrl: this.avatarUrl
+            profileUrl: this.editMember.profileUrl
           }
-        },
-        update: (store, { data }) => {
-          this.editMember.profileUrl = this.avatarUrl
-          console.log(data)
         }
       })
       this.snackbar = true
@@ -137,17 +133,19 @@ export default {
       update({ allIdentities }) {
         const editMember = allIdentities.nodes[0]
         this.editMember = { ...editMember }
-        this.editMember.profileUrl = this.avatarUrl
         return editMember
       }
     }
   },
   computed: {
+    getAvatar() {
+      return (
+        this.editMember.profileUrl ||
+        'http://res.cloudinary.com/hexly/image/upload/dev/1001/avatar/undefined.jpg'
+      )
+    },
     avatarId() {
       return `${VUE_APP_LANE}/${VUE_APP_TENANT_ID}/avatar/${this.editMember.id}`
-    },
-    avatarUrl() {
-      return `${VUE_APP_CLOUDINARY_URL}c_scale,h_250,w_250/${this.avatarId}`
     }
   }
 }

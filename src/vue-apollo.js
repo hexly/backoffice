@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import VueApollo from 'vue-apollo'
 import createApolloClient from './apollo'
+const JWT_EXPIRED = 'jwt expired'
 
 // Install the vue plugin
 Vue.use(VueApollo)
@@ -21,5 +22,11 @@ export const apolloClient = createApolloClient(options)
 
 // Create vue apollo provider
 export const apolloProvider = new VueApollo({
-  defaultClient: apolloClient
+  defaultClient: apolloClient,
+  errorHandler(err) {
+    if (err.message.toString().indexOf(JWT_EXPIRED) > -1) {
+      localStorage.clear()
+      window.location = '/'
+    }
+  }
 })

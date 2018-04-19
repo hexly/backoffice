@@ -58,13 +58,13 @@ export default {
   },
   computed: {
     personalSales() {
-      return this.allSales.reduce((t, s) => (
-        {
+      return this.allSales.reduce(
+        (t, s) => ({
           totalAmount: t.totalAmount + s.totalAmount,
           totalPoints: t.totalPoints + s.totalPoints,
           commissionableAmount: t.commissionableAmount + s.commissionableAmount,
           commissionableTotal: t.commissionableTotal + s.commissionableTotal
-        }),       
+        }),
         {
           totalAmount: 0,
           totalPoints: 0,

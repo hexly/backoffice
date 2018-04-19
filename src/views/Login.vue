@@ -10,9 +10,9 @@
             <v-card-text>
               <img class="logo" src="../assets/logo.png"/>
               <h2 v-if="$store.state.user.loginError">{{$store.state.user.loginError}}</h2>
-              <v-form ref="login" @submit.prevent="onSubmit()">
-                <v-text-field required v-model="form.email" prepend-icon="person" name="login" label="Login" type="email"></v-text-field>
-                <v-text-field required v-model="form.password" prepend-icon="lock" name="password" label="Password" id="password" type="password"></v-text-field>
+              <v-form ref="login" @submit.prevent="onSubmit" lazy-validation>
+                <v-text-field required :rules="[v => !!v || 'Field is required']" v-model="form.email" prepend-icon="person" name="login" label="Login" type="email"></v-text-field>
+                <v-text-field required :rules="[v => !!v || 'Field is required']" v-model="form.password" prepend-icon="lock" name="password" label="Password" id="password" type="password"></v-text-field>
                 <v-card-actions>
                   <v-spacer></v-spacer>
                   <v-btn type="submit" color="deep-purple" dark>Login</v-btn>

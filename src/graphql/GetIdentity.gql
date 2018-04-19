@@ -2,6 +2,7 @@ query IdentityById($condition: IdentityCondition!) {
   allIdentities(condition: $condition) {
     nodes {
       id
+      memberId
       tenantId
       name
       displayName

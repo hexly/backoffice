@@ -3,6 +3,7 @@ import Vuex from 'vuex'
 import axios from 'axios'
 import sha1 from 'sha1'
 import { UserStore } from '@/stores/UserStore'
+import { ClaimStore } from '@/stores/ClaimStore'
 import TeamStore from '@/stores/TeamStore'
 const {
   VUE_APP_CLOUDINARY_UPLOAD,
@@ -20,7 +21,7 @@ export const Mutations = {
 
 export const Actions = {
   LOGOUT: 'logout',
-  FILE_UPLOAD: 'fileUpload'
+  AVATAR_UPLOAD: 'avatarUpload'
 }
 
 const store = new Vuex.Store({
@@ -34,13 +35,14 @@ const store = new Vuex.Store({
   ],
   modules: {
     user: UserStore,
-    team: TeamStore
+    team: TeamStore,
+    claim: ClaimStore
   },
   actions: {
     [Actions.LOGOUT]: () => {
       localStorage.clear()
     },
-    [Actions.FILE_UPLOAD]: (context, { file, name }) => {
+    [Actions.AVATAR_UPLOAD]: (context, { file, name }) => {
       const timestamp = Date.now()
       const fields = `invalidate=true&public_id=${name}&timestamp=${timestamp}${VUE_APP_CLOUDINARY_SECRET}`
       const signature = sha1(fields)

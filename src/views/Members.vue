@@ -2,9 +2,10 @@
   <v-flex xs12>
     <div class="team" v-if="!!results.target">
       <h1 v-bind:target="currentId">Team</h1>
-      <TeamCard @viewTeam="showTeam" :user="results.target"/>
-      
-      <v-breadcrumbs divider="/">      
+      <v-layout row wrap justify-center>
+        <TeamCard @viewTeam="showTeam" :user="results.target"/>
+      </v-layout>
+      <v-breadcrumbs divider="/">
         <v-breadcrumbs-item
           v-for="(user, index) in lineage"
           :key="user.email"
@@ -13,15 +14,11 @@
           <span @click="updateLineage(user, index)">{{user.displayName}}</span>
         </v-breadcrumbs-item>
       </v-breadcrumbs>
-      
-      <v-container fluid grid-list-lg>
-        <v-layout row wrap>
-          <v-flex lg4 v-for="i in results.team" :key="i.email">
-            <TeamCard @viewTeam="showTeam" :user="i" :actions="true" />
-          </v-flex>
-        </v-layout>
-      </v-container>
-      
+      <v-layout row wrap>
+        <v-flex lg4 v-for="i in results.team" :key="i.email">
+          <TeamCard @viewTeam="showTeam" :user="i" :actions="true" />
+        </v-flex>
+      </v-layout>
     </div>
   </v-flex>
 </template>
@@ -37,7 +34,7 @@ export default {
     lineage: [],
     currentId: undefined,
     results: {
-      target: undefined, 
+      target: undefined,
       team: []
     }
   }),
@@ -54,10 +51,10 @@ export default {
       this.currentId = user.memberId
     }
   },
-  apollo: {    
-    results: getTeamByMemberId('currentId'),
+  apollo: {
+    results: getTeamByMemberId('currentId')
   },
-  mounted() {    
+  mounted() {
     const { member } = this.$store.state.user.principal
     this.currentId = member.id
     this.lineage.push({ memberId: member.id, displayName: member.name })

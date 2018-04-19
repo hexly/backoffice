@@ -1,10 +1,11 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import store from './store'
+import Login from './views/Login.vue'
+import AccountClaim from './views/AccountClaim.vue'
+import Backoffice from './views/Backoffice.vue'
 import Home from './views/Home.vue'
 import About from './views/About.vue'
-import Login from './views/Login.vue'
-import Backoffice from './views/Backoffice.vue'
 import Team from './views/Members.vue'
 import Orders from './views/Orders.vue'
 
@@ -16,6 +17,18 @@ export default new Router({
       path: '/login',
       name: 'login',
       component: Login,
+      beforeEnter: (to, from, next) => {
+        if (store.state.user.authorized) {
+          next('/home')
+        } else {
+          next()
+        }
+      }
+    },
+    {
+      path: '/account/claim/:token',
+      name: 'account-claim',
+      component: AccountClaim,
       beforeEnter: (to, from, next) => {
         if (store.state.user.authorized) {
           next('/home')

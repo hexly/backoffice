@@ -14,7 +14,8 @@
             height="125px"
             width="125px"
           >
-            <gravatar :email="user.email" />
+            <img v-if="user.profileUrl" :src="user.profileUrl" />
+            <gravatar v-if="!user.profileUrl" :email="user.email" />
           </v-card-media>
         </v-flex>
       </v-layout>
@@ -53,5 +54,11 @@ export default {
 .team-card {
   margin: 10px;
   min-width: 350px;
+  max-width: 500px;
+}
+.team-card img {
+  width: 125px;
+  height: 125px;
+  margin: auto;
 }
 </style>
