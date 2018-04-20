@@ -3,7 +3,7 @@
     <div class="team" v-if="!!results.target">
       <h1 v-bind:target="currentId">Team</h1>
       <v-layout row wrap justify-center>
-        <TeamCard @viewTeam="showTeam" :user="results.target"/>
+        <TeamCard @viewTeam="showTeam" :user="results.target" :stats="getStats(results.target)"/>
       </v-layout>
       <v-breadcrumbs divider="/">
         <v-breadcrumbs-item
@@ -16,7 +16,7 @@
       </v-breadcrumbs>
       <v-layout row wrap>
         <v-flex lg4 v-for="i in results.team" :key="i.email">
-          <TeamCard @viewTeam="showTeam" :user="i" :actions="true" />
+          <TeamCard @viewTeam="showTeam" :user="i" :actions="true" :stats="getStats(i)"/>
         </v-flex>
       </v-layout>
     </div>
@@ -26,6 +26,9 @@
 <script>
 import TeamCard from '../components/TeamCard.vue'
 import getTeamByMemberId from '@/graphql/GetTeam'
+import MONTHLY_STATS_QUERY from '@/graphql/GetMonthlyStats.gql'
+import find from 'rambda/lib/find'
+import defaultTo from 'rambda/lib/defaultTo'
 
 export default {
   name: 'Team',
@@ -33,10 +36,13 @@ export default {
     root: {},
     lineage: [],
     currentId: undefined,
+    month: new Date().getMonth() + 1,
+    year: new Date().getFullYear(),
     results: {
       target: undefined,
       team: []
-    }
+    },
+    stats: []
   }),
   components: {
     TeamCard
@@ -49,10 +55,37 @@ export default {
     updateLineage(user, index) {
       this.lineage = this.lineage.slice(0, index + 1)
       this.currentId = user.memberId
+    },
+    getStats(target) {
+      return defaultTo(
+        {},
+        find(_ => _.sellerId === target.memberId, this.stats)
+      )
     }
   },
   apollo: {
-    results: getTeamByMemberId('currentId')
+    results: getTeamByMemberId('currentId'),
+    stats: {
+      query: MONTHLY_STATS_QUERY,
+      variables() {
+        return {
+          targetCondition: {
+            sellerId: this.currentId,
+            month: this.month,
+            year: this.year
+          },
+          firstLevelCondition: {
+            sponsorId: this.currentId,
+            month: this.month,
+            year: this.year
+          }
+        }
+      },
+      update({ targetStats, firstLevelStats }) {
+        return targetStats.nodes.concat(firstLevelStats.nodes)
+      },
+      fetchPolicy: 'cache-and-network'
+    }
   },
   mounted() {
     const { member } = this.$store.state.user.principal

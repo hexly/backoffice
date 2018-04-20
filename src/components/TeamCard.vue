@@ -7,6 +7,10 @@
             <div class="headline">{{user.name}}</div>
             <div>{{user.email}}</div>
             <div>{{user.displayName}}</div>
+            <div>Team Size: {{stats.teamSize || 0}}</div>
+            <div>Front Line: {{stats.firstLevelSize || 0}}</div>
+            <div>Total Points: {{stats.totalPoints || 0}}</div>
+            <div>Total Amount: {{stats.totalAmount || 0}}</div>
           </div>
         </v-flex>
         <v-flex xs5>
@@ -39,7 +43,8 @@ export default {
   }),
   props: {
     user: Object,
-    actions: Boolean
+    actions: Boolean,
+    stats: Object
   },
   methods: {
     viewTeam() {

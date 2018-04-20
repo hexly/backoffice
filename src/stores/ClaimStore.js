@@ -9,10 +9,10 @@ export const ClaimStore = {
   state: {},
   mutations: {},
   actions: {
-    [ClaimActions.GET_TOKEN]: async ({ commit }, token) => {
+    [ClaimActions.GET_TOKEN]: ({ commit }, token) => {
       return ClaimApi.get(token)
     },
-    [ClaimActions.CONSUME_TOKEN]: async ({ commit }, { token, member }) => {
+    [ClaimActions.CONSUME_TOKEN]: ({ commit }, { token, member }) => {
       return ClaimApi.consume(token, member)
     }
   },

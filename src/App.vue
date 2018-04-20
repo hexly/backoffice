@@ -1,5 +1,5 @@
 <template>
-  <v-app id="backoffice" :class="tenant">
+  <v-app id="backoffice" :class="'tenant-' + tenant">
     <router-view/>
   </v-app>
 </template>
@@ -26,6 +26,10 @@ export default {
 
 #backoffice {
   background-image: linear-gradient(to right top, #33ccbb, #3b2f93);
+}
+
+#backoffice.tenant-1004 {
+  background-image: linear-gradient(to right, #722c7c, #6fb457);
 }
 
 #nav {

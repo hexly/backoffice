@@ -1,17 +1,10 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import axios from 'axios'
-import sha1 from 'sha1'
 import { UserStore } from '@/stores/UserStore'
 import { ClaimStore } from '@/stores/ClaimStore'
 import TeamStore from '@/stores/TeamStore'
-const {
-  VUE_APP_CLOUDINARY_UPLOAD,
-  VUE_APP_CLOUDINARY_SECRET,
-  VUE_APP_CLOUDINARY_KEY
-} = process.env
-
-window.sha1 = sha1
+const { VUE_APP_API_ENDPOINT, VUE_APP_TENANT_ID, VUE_APP_LANE } = process.env
 
 Vue.use(Vuex)
 
@@ -42,26 +35,29 @@ const store = new Vuex.Store({
     [Actions.LOGOUT]: () => {
       localStorage.clear()
     },
-    [Actions.AVATAR_UPLOAD]: (context, { file, name }) => {
-      const timestamp = Date.now()
-      const fields = `invalidate=true&public_id=${name}&timestamp=${timestamp}${VUE_APP_CLOUDINARY_SECRET}`
-      const signature = sha1(fields)
+    [Actions.AVATAR_UPLOAD]: async (context, { file }) => {
+      const { data } = await axios.get(
+        `${VUE_APP_API_ENDPOINT}/storage/destinations/${VUE_APP_TENANT_ID}/cloudinary`,
+        { params: { lane: VUE_APP_LANE } }
+      )
+
       const formData = new FormData()
       formData.set('file', file)
-      formData.set('api_key', VUE_APP_CLOUDINARY_KEY)
-      formData.set('public_id', name)
-      formData.set('timestamp', timestamp)
-      formData.set('signature', signature)
-      formData.set('invalidate', true)
-      return axios.post(VUE_APP_CLOUDINARY_UPLOAD, formData)
+      Object.keys(data.fields).forEach(f => formData.set([f], data.fields[f]))
+      return axios.post(data.url, formData)
     }
   },
   mutations: {
     [Mutations.INIT](state) {
       if (localStorage.getItem('store')) {
-        this.replaceState(
-          Object.assign(state, JSON.parse(localStorage.getItem('store')))
-        )
+        const hydratedState = JSON.parse(localStorage.getItem('store'))
+        axios.interceptors.request.use(config => {
+          if (config.url.indexOf(VUE_APP_API_ENDPOINT) > -1) {
+            config.headers['Authorization'] = `Bearer ${hydratedState.user.jwt}`
+          }
+          return config
+        })
+        this.replaceState(Object.assign(state, hydratedState))
       }
     }
   }

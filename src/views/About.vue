@@ -97,8 +97,7 @@ export default {
       this.isSaving = true
       this.isUploading = true
       const { data } = await this.$store.dispatch(Actions.AVATAR_UPLOAD, {
-        file,
-        name: this.avatarId
+        file
       })
       this.isFalse = false
       this.isUploading = false

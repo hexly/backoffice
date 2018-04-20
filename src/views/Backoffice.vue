@@ -48,7 +48,7 @@
     </v-navigation-drawer>
     <v-toolbar color="black" dark fixed app>
       <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
-      <v-toolbar-title>Hexly Backoffice</v-toolbar-title>
+      <v-toolbar-title>Backoffice</v-toolbar-title>
       <v-spacer></v-spacer>
       <v-toolbar-items>
         <v-menu offset-y>
