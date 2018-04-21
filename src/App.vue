@@ -5,7 +5,6 @@
 </template>
 
 <script>
-console.log(process.env.VUE_APP_TENANT_ID)
 export default {
   data() {
     return {

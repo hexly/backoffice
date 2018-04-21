@@ -5,10 +5,10 @@
         <v-flex xs12 sm8 md4>
           <v-card class="elevation-12">
             <v-toolbar dark color="black">
-              <v-toolbar-title>Login</v-toolbar-title>
+              <v-toolbar-title>{{title}} Login</v-toolbar-title>
             </v-toolbar>
             <v-card-text>
-              <img class="logo" src="../assets/logo.png"/>
+              <img class="logo" :src="logoPath"/>
               <h2 v-if="$store.state.user.loginError">{{$store.state.user.loginError}}</h2>
               <v-form ref="login" @submit.prevent="onSubmit" lazy-validation>
                 <v-text-field required :rules="[v => !!v || 'Field is required']" v-model="form.email" prepend-icon="person" name="login" label="Login" type="email"></v-text-field>
@@ -27,6 +27,7 @@
 </template>
 
 <script>
+import tenantInfo from '@/tenant.js'
 import AUTHENTICATE_MUTATION from '../graphql/Authenticate.gql'
 import { UserActions, UserMutations } from '@/stores/UserStore'
 
@@ -36,7 +37,9 @@ export default {
       form: {
         email: '',
         password: ''
-      }
+      },
+      title: tenantInfo.name,
+      logoPath: tenantInfo.logoPath
     }
   },
   methods: {

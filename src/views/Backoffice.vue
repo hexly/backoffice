@@ -8,7 +8,7 @@
       clipped
     >
       <div class="text-xs-center">
-        <img src="../assets/logo.png" class="logo" />
+        <img :src="logoPath" class="logo" />
       </div>
       <v-divider></v-divider>
       <v-list dense>
@@ -73,11 +73,13 @@
 </template>
 
 <script>
+import tenantInfo from '@/tenant.js'
 import { Actions } from '@/store'
 
 export default {
   data: () => ({
-    drawer: null
+    drawer: null,
+    logoPath: tenantInfo.logoPath
   }),
   props: {
     source: String

@@ -8,7 +8,7 @@
               <v-toolbar-title>Account Creation</v-toolbar-title>
             </v-toolbar>
             <v-card-text>
-              <img class="logo" src="../assets/logo.png"/>
+              <img class="logo" :src="logoPath"/>
               <div class="center" v-if="loading">
                 <v-progress-circular indeterminate :size="70" :width="7" color="black"></v-progress-circular>
                 <p>We are reteiving your information, please hold.</p>
@@ -91,6 +91,7 @@
 </template>
 
 <script>
+import tenantInfo from '@/tenant.js'
 import { ClaimActions } from '@/stores/ClaimStore'
 import getLocalSettings from '@/graphql/GetLocalSettings'
 
@@ -117,7 +118,8 @@ export default {
         timezone_id: null,
         username: null
       },
-      settings: {}
+      settings: {},
+      logoPath: tenantInfo.logoPath
     }
   },
   async beforeCreate() {
