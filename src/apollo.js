@@ -20,31 +20,31 @@ export default function createApolloClient({
   persisting
 }) {
   // hack aroung serverless + lambda issue where header case is important
-  const customFetch = (uri, options) => {
-    const { headers = {} } = options
-    delete headers['content-type']
-    headers['Content-Type'] = 'application/json'
-    options.headers = headers
-    console.log('patched the headers', headers)
+  // const customFetch = (uri, options) => {
+  //   const { headers = {} } = options
+  //   delete headers['content-type']
+  //   headers['Content-Type'] = 'application/json'
+  //   options.headers = headers
+  //   console.log('patched the headers', headers)
 
-    const { method, body: data } = options
-    // return fetch(uri, options)
-    return axios({
-      url: uri,
-      method,
-      headers,
-      data
-    }).then(res => {
-      return {
-        text: () => Promise.resolve(JSON.stringify(res.data))
-      }
-    })
-  }
+  //   const { method, body: data } = options
+  //   // return fetch(uri, options)
+  //   return axios({
+  //     url: uri,
+  //     method,
+  //     headers,
+  //     data
+  //   }).then(res => {
+  //     return {
+  //       text: () => Promise.resolve(JSON.stringify(res.data))
+  //     }
+  //   })
+  // }
 
   let httpLink = new HttpLink({
     // You should use an absolute URL here
-    uri: base + endpoints.graphql,
-    fetch: customFetch
+    uri: base + endpoints.graphql
+    // fetch: customFetch
   })
 
   // HTTP Auth header injection
