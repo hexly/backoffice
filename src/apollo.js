@@ -27,7 +27,8 @@ export default function createApolloClient({
   const authLink = setContext((_, { headers }) => ({
     headers: {
       ...headers,
-      Authorization: getAuth()
+      Authorization: getAuth(),
+      'Content-Type': 'application/json'
     }
   }))
 
