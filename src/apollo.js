@@ -3,6 +3,7 @@ import { HttpLink } from 'apollo-link-http'
 import { InMemoryCache } from 'apollo-cache-inmemory'
 import { setContext } from 'apollo-link-context'
 import store from '@/store'
+const axios = require('axios')
 
 function getAuth() {
   // get the authentication token from local storage if it exists
@@ -18,13 +19,26 @@ export default function createApolloClient({
   endpoints,
   persisting
 }) {
+  // hack aroung serverless + lambda issue where header case is important
   const customFetch = (uri, options) => {
-    // const { operationName } = JSON.parse(options.body)
-
     const { headers = {} } = options
     delete headers['content-type']
     headers['Content-Type'] = 'application/json'
-    return fetch(uri, options)
+    options.headers = headers
+    console.log('patched the headers', headers)
+
+    const { method, body: data } = options
+    // return fetch(uri, options)
+    return axios({
+      url: uri,
+      method,
+      headers,
+      data
+    }).then(res => {
+      return {
+        text: () => Promise.resolve(JSON.stringify(res.data))
+      }
+    })
   }
 
   let httpLink = new HttpLink({
@@ -41,8 +55,10 @@ export default function createApolloClient({
       }
     }
     const authToken = getAuth()
-    if (authToken) {
+    if (authToken && authToken.trim().length > 0) {
       context.headers.Authorization = authToken
+    } else {
+      delete context.headers.Authorization
     }
     return context
   })

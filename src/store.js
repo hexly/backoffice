@@ -51,9 +51,11 @@ const store = new Vuex.Store({
     [Mutations.INIT](state) {
       if (localStorage.getItem('store')) {
         const hydratedState = JSON.parse(localStorage.getItem('store'))
+        const jwt =
+          hydratedState && hydratedState.user && hydratedState.user.jwt
         axios.interceptors.request.use(config => {
-          if (config.url.indexOf(VUE_APP_API_ENDPOINT) > -1) {
-            config.headers['Authorization'] = `Bearer ${hydratedState.user.jwt}`
+          if (jwt && config.url.indexOf(VUE_APP_API_ENDPOINT) > -1) {
+            config.headers['Authorization'] = `Bearer ${jwt}`
           }
           return config
         })
