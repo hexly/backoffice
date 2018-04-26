@@ -8,7 +8,7 @@ function getAuth() {
   // get the authentication token from local storage if it exists
   const token = store.state.user.jwt
   // return the headers to the context so httpLink can read them
-  return token ? `Bearer ${token}` : ''
+  return token ? `Bearer ${token}` : undefined
 }
 
 // Create the apollo client
@@ -24,13 +24,24 @@ export default function createApolloClient({
   })
 
   // HTTP Auth header injection
-  const authLink = setContext((_, { headers }) => ({
-    headers: {
-      ...headers,
-      Authorization: getAuth(),
-      'Content-Type': 'application/json'
+  const authLink = setContext((_, { headers }) => {
+    Object.keys(headers)
+      .filter(p => p.toLowerCase() === 'content-type')
+      .forEach(p => {
+        delete headers[p]
+      })
+    const context = {
+      headers: {
+        ...headers,
+        'Content-Type': 'application/json'
+      }
     }
-  }))
+    const authToken = getAuth()
+    if (authToken) {
+      context.headers.Authorization = authToken
+    }
+    return context
+  })
 
   // Concat all the http link parts
   const link = authLink.concat(httpLink)
