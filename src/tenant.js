@@ -1,3 +1,3 @@
 
 /* eslint-disable */
-export default {"name":"Hexly","logoPath":"logo.png"}
+export default {"name":"Veridian Dynamics","logoPath":"veridian.jpg"}
