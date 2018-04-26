@@ -18,22 +18,26 @@ export default function createApolloClient({
   endpoints,
   persisting
 }) {
+  const customFetch = (uri, options) => {
+    // const { operationName } = JSON.parse(options.body)
+
+    const { headers = {} } = options
+    delete headers['content-type']
+    headers['Content-Type'] = 'application/json'
+    return fetch(uri, options)
+  }
+
   let httpLink = new HttpLink({
     // You should use an absolute URL here
-    uri: base + endpoints.graphql
+    uri: base + endpoints.graphql,
+    fetch: customFetch
   })
 
   // HTTP Auth header injection
-  const authLink = setContext((_, { headers }) => {
-    Object.keys(headers)
-      .filter(p => p.toLowerCase() === 'content-type')
-      .forEach(p => {
-        delete headers[p]
-      })
+  const authLink = setContext((_, { headers = {} }) => {
     const context = {
       headers: {
-        ...headers,
-        'Content-Type': 'application/json'
+        ...headers
       }
     }
     const authToken = getAuth()
