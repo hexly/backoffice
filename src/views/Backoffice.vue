@@ -12,7 +12,7 @@
       </div>
       <v-divider></v-divider>
       <v-list dense>
-        <v-list-tile to="/home">
+        <v-list-tile to="/dashboard">
           <v-list-tile-action>
             <v-icon>home</v-icon>
           </v-list-tile-action>
@@ -20,7 +20,7 @@
             <v-list-tile-title>Dashboard</v-list-tile-title>
           </v-list-tile-content>
         </v-list-tile>
-        <v-list-tile to="/about">
+        <v-list-tile to="/profile">
           <v-list-tile-action>
             <v-icon>contact_mail</v-icon>
           </v-list-tile-action>
@@ -28,7 +28,7 @@
             <v-list-tile-title>Profile</v-list-tile-title>
           </v-list-tile-content>
         </v-list-tile>
-        <v-list-tile to="/orders">
+        <v-list-tile to="/sales">
           <v-list-tile-action>
             <v-icon>shopping_basket</v-icon>
           </v-list-tile-action>

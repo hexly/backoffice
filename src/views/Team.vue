@@ -1,24 +1,31 @@
 <template>
   <v-flex xs12>
-    <div class="team" v-if="!!results.target">
+    <div class="team">
       <h1 v-bind:target="currentId">Team</h1>
-      <v-layout row wrap justify-center>
-        <TeamCard @viewTeam="showTeam" :user="results.target" :stats="getStats(results.target)"/>
-      </v-layout>
-      <v-breadcrumbs divider="/">
-        <v-breadcrumbs-item
-          v-for="(user, index) in lineage"
-          :key="user.email"
-          :disabled="index === (lineage.length - 1)"
-        >
-          <span @click="updateLineage(user, index)">{{user.displayName}}</span>
-        </v-breadcrumbs-item>
-      </v-breadcrumbs>
-      <v-layout row wrap>
-        <v-flex lg4 v-for="i in results.team" :key="i.email">
-          <TeamCard @viewTeam="showTeam" :user="i" :actions="true" :stats="getStats(i)"/>
-        </v-flex>
-      </v-layout>
+      <div>
+        <v-layout row wrap justify-center>
+          <TeamCard :loading="$apollo.queries.stats.loading" @viewTeam="showTeam" :user="results.target" :stats="getStats(results.target)"/>
+        </v-layout>
+        <v-breadcrumbs divider="/">
+            <v-breadcrumbs-item
+              v-for="(user, index) in lineage"
+              :key="user.email"
+              :disabled="index === (lineage.length - 1)"
+            >
+              <span @click="updateLineage(user, index)">{{user.displayName}}</span>
+            </v-breadcrumbs-item>
+          </v-breadcrumbs>
+        <div  v-if="!$apollo.queries.results.loading">
+          <v-layout row wrap>
+            <v-flex lg4 v-for="i in results.team" :key="i.email">
+              <TeamCard :loading="$apollo.queries.stats.loading" @viewTeam="showTeam" :user="i" :actions="true" :stats="getStats(i)"/>
+            </v-flex>
+          </v-layout>
+        </div>
+        <div v-if="$apollo.queries.results.loading">
+          <v-progress-circular indeterminate :size="70" :width="7" color="black"></v-progress-circular>
+        </div>
+      </div>
     </div>
   </v-flex>
 </template>

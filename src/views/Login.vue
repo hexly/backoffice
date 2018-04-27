@@ -59,7 +59,7 @@ export default {
             if (jwtToken) {
               this.$store.commit(UserMutations.SET_JWT, jwtToken)
               await this.$store.dispatch(UserActions.LOGIN_SUCCESS)
-              this.$router.push('/home')
+              this.$router.push('/dashboard')
             } else {
               this.$store.commit(
                 UserMutations.LOGIN_ERROR,

@@ -4,10 +4,10 @@ import store from './store'
 import Login from './views/Login.vue'
 import AccountClaim from './views/AccountClaim.vue'
 import Backoffice from './views/Backoffice.vue'
-import Home from './views/Home.vue'
-import About from './views/About.vue'
-import Team from './views/Members.vue'
-import Orders from './views/Orders.vue'
+import Dashboard from './views/Dashboard.vue'
+import Profile from './views/Profile.vue'
+import Team from './views/Team.vue'
+import Sales from './views/Sales.vue'
 
 Vue.use(Router)
 
@@ -19,7 +19,7 @@ export default new Router({
       component: Login,
       beforeEnter: (to, from, next) => {
         if (store.state.user.authorized) {
-          next('/home')
+          next('/dashboard')
         } else {
           next()
         }
@@ -31,7 +31,7 @@ export default new Router({
       component: AccountClaim,
       beforeEnter: (to, from, next) => {
         if (store.state.user.authorized) {
-          next('/home')
+          next('/dashboard')
         } else {
           next()
         }
@@ -50,20 +50,20 @@ export default new Router({
       },
       children: [
         {
-          path: 'home',
+          path: 'dashboard',
           alias: '',
-          name: 'home',
-          component: Home
+          name: 'dashboard',
+          component: Dashboard
         },
         {
-          path: 'about',
-          name: 'about',
-          component: About
+          path: 'profile',
+          name: 'profile',
+          component: Profile
         },
         {
-          path: 'orders',
-          name: 'orders',
-          component: Orders
+          path: 'sales',
+          name: 'sales',
+          component: Sales
         },
         {
           path: 'team',

@@ -1,17 +1,19 @@
 <template>
-  <div class="home">
+  <div class="dashboard">
     <h1>Dashboard</h1>
     <v-subheader>Sales</v-subheader>
     <v-container fluid grid-list-xs>
       <v-layout row wrap>
+        <span>
+        </span>
         <v-flex sm4 pa-3>
-          <DashCard color="light-blue" darken="1" :display="'$' + personalSales.totalAmount" subheading="Personal" icon="person" />
+          <DashCard :loading="$apollo.queries.allSales.loading" color="light-blue" darken="1" :display="'$' + personalSales.totalAmount" subheading="Personal" icon="person" />
         </v-flex>
         <v-flex sm4 pa-3>
-          <DashCard color="indigo" darken="1" :display="'$' + team.totalTeamAmount" subheading="Team" icon="people" />
+          <DashCard :loading="$apollo.queries.team.loading" color="indigo" darken="1" :display="'$' + team.totalTeamAmount" subheading="Team" icon="people" />
         </v-flex>
         <v-flex sm4 pa-3>
-          <DashCard color="pink" darken="1" :display="sales" subheading="Orders" icon="star" />
+          <DashCard :loading="$apollo.queries.allSales.loading" color="pink" darken="1" :display="sales" subheading="Sales" icon="star" />
         </v-flex>
       </v-layout>
     </v-container>
@@ -19,10 +21,10 @@
     <v-container fluid grid-list-xs>
       <v-layout row wrap>
         <v-flex sm6 pa-3>
-          <DashCard color="light-blue" darken="2" :display="team.teamSize" subheading="Size" icon="person_outline" />
+          <DashCard :loading="$apollo.queries.team.loading" color="light-blue" darken="2" :display="team.teamSize" subheading="Size" icon="person_outline" />
         </v-flex>
         <v-flex sm6 pa-3>
-          <DashCard color="indigo" darken="2" :display="team.firstLevelSize" subheading="First Level" icon="people_outline" />
+          <DashCard :loading="$apollo.queries.team.loading" color="indigo" darken="2" :display="team.firstLevelSize" subheading="First Level" icon="people_outline" />
         </v-flex>
       </v-layout>
     </v-container>
@@ -39,7 +41,7 @@ import DashCard from '@/components/DashboardCard.vue'
 import MONTHLY_STATS_QUERY from '@/graphql/GetMonthlyStats.gql'
 
 export default {
-  name: 'home',
+  name: 'dashboard',
   components: {
     DashCard
   },

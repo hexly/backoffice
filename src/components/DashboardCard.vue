@@ -2,7 +2,10 @@
   <v-card :color="`${color} darken-${darken}`" class="white--text" :style="{overflow: 'hidden'}">
     <v-card-title primary-title>
       <div>
-        <span class="display-2">{{display}}</span>
+        <span v-if="!loading" class="display-2">{{display}}</span>
+        <span v-if="loading" class="display-2">
+          <v-progress-circular indeterminate :size="30" :width="3" color="white"></v-progress-circular>
+        </span>
         <p class="subheading">{{subheading}}</p>
       </div>
     </v-card-title>
@@ -18,7 +21,8 @@ export default {
     subheading: String,
     icon: String,
     color: String,
-    darken: String
+    darken: String,
+    loading: Boolean
   }
 }
 </script>

@@ -1,6 +1,6 @@
 <template>
   <v-flex xs12>
-    <div class="about">
+    <div class="sales">
       <h1>Sales</h1>
       <v-data-table
         :headers="headers"

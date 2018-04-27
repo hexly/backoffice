@@ -1,5 +1,5 @@
 <template>
-  <div class="about">
+  <div class="profile">
     <h1>Your Profile</h1>
     <v-container grid-list-md text-xs-center>
       <v-layout row wrap>

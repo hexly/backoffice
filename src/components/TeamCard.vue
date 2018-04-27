@@ -3,7 +3,7 @@
     <v-container fluid grid-list-lg>
       <v-layout row>
         <v-flex xs7>
-          <div>
+          <div v-if="!loading">
             <div class="headline">{{user.name}}</div>
             <div>{{user.email}}</div>
             <div>{{user.displayName}}</div>
@@ -12,14 +12,16 @@
             <div>Total Points: {{stats.totalPoints || 0}}</div>
             <div>Total Amount: {{stats.totalAmount || 0}}</div>
           </div>
+          <div v-if="loading">
+            <v-progress-circular indeterminate :size="50" :width="5" color="black"></v-progress-circular>
+          </div>
         </v-flex>
         <v-flex xs5>
           <v-card-media
             height="125px"
             width="125px"
           >
-            <img v-if="user.profileUrl" :src="user.profileUrl" />
-            <gravatar v-if="!user.profileUrl" :email="user.email" />
+            <img :src="getAvatar" />
           </v-card-media>
         </v-flex>
       </v-layout>
@@ -31,24 +33,28 @@
 </template>
 
 <script>
-import Gravatar from '@/components/Gravatar'
-
 export default {
   name: 'TeamCard',
-  components: {
-    Gravatar
-  },
   data: () => ({
     show: false
   }),
   props: {
     user: Object,
     actions: Boolean,
-    stats: Object
+    stats: Object,
+    loading: Boolean
   },
   methods: {
     viewTeam() {
       this.$emit('viewTeam', this.user)
+    }
+  },
+  computed: {
+    getAvatar() {
+      return (
+        (this.user && this.user.profileUrl) ||
+        'http://res.cloudinary.com/hexly/image/upload/dev/1001/avatar/undefined.jpg'
+      )
     }
   }
 }
