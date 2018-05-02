@@ -19,7 +19,6 @@
 
 <script>
 import range from 'rambda/lib/range'
-import { nextTick } from 'async'
 export default {
   name: 'date-selector',
   data() {
