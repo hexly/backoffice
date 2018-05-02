@@ -16,12 +16,14 @@ const SALES_QUERY = gql`
   }
 `
 
-export default variables => {
+export default v => {
   return {
     query: SALES_QUERY,
-    variables: {
-      saleCondition: {
-        ...variables
+    variables() {
+      return {
+        saleCondition: {
+          ...v
+        }
       }
     },
     update({ allSales }) {

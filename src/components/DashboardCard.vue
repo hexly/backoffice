@@ -17,7 +17,10 @@
 export default {
   name: 'DashboardCard',
   props: {
-    display: [String, Number],
+    display: {
+      type: [String, Number],
+      default: 0
+    },
     subheading: String,
     icon: String,
     color: String,

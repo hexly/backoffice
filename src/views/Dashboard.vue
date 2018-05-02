@@ -2,6 +2,7 @@
   <div class="dashboard">
     <h1>Dashboard</h1>
     <v-subheader>Sales</v-subheader>
+    <date-selector :year="year" :month="month" @date-changed="dateChanged"/>
     <v-container fluid grid-list-xs>
       <v-layout row wrap>
         <span>
@@ -36,14 +37,16 @@
 </template>
 
 <script>
-import getSales from '@/graphql/GetSales'
 import DashCard from '@/components/DashboardCard.vue'
+import DateSelector from '@/components/DateSelector.vue'
+import SALES from '@/graphql/Sales.gql'
 import MONTHLY_STATS_QUERY from '@/graphql/GetMonthlyStats.gql'
 
 export default {
   name: 'dashboard',
   components: {
-    DashCard
+    DashCard,
+    DateSelector
   },
   data: () => ({
     chartData: [['Jan', 4], ['Feb', 2], ['Mar', 10], ['Apr', 5], ['May', 3]],
@@ -53,12 +56,20 @@ export default {
     team: {}
   }),
   apollo: {
-    allSales() {
-      return getSales({
-        sellerId: this.$store.state.user.principal.member.id,
-        month: this.month,
-        year: this.year
-      })
+    allSales: {
+      query: SALES,
+      variables() {
+        return {
+          saleCondition: {
+            sellerId: this.$store.state.user.principal.member.id,
+            month: this.month,
+            year: this.year
+          }
+        }
+      },
+      update({ allSales }) {
+        return allSales.nodes
+      }
     },
     team: {
       query: MONTHLY_STATS_QUERY,
@@ -77,9 +88,14 @@ export default {
         }
       },
       update({ targetStats }) {
-        return targetStats.nodes[0]
+        return targetStats.nodes[0] || { totalTeamAmount: 0 }
       },
       fetchPolicy: 'cache-and-network'
+    }
+  },
+  methods: {
+    dateChanged({ dateType, date }) {
+      this[dateType] = date
     }
   },
   computed: {

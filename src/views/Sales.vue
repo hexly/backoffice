@@ -2,6 +2,7 @@
   <v-flex xs12>
     <div class="sales">
       <h1>Sales</h1>
+      <date-selector :year="year" :month="month" @date-changed="dateChanged"/>
       <v-data-table
         :headers="headers"
         :items="items"
@@ -21,12 +22,18 @@
 </template>
 
 <script>
-import getSales from '@/graphql/GetSales'
+import DateSelector from '@/components/DateSelector.vue'
+import SALES from '@/graphql/Sales.gql'
 import map from 'rambda/lib/map'
 
 export default {
+  components: {
+    DateSelector
+  },
   data() {
     return {
+      month: new Date().getMonth() + 1,
+      year: new Date().getFullYear(),
       allSales: [],
       headers: [
         { text: 'Date', value: 'date' },
@@ -38,12 +45,25 @@ export default {
     }
   },
   apollo: {
-    allSales() {
-      return getSales({
-        sellerId: this.$store.state.user.principal.member.id,
-        month: new Date().getMonth() + 1,
-        year: new Date().getFullYear()
-      })
+    allSales: {
+      query: SALES,
+      variables() {
+        return {
+          saleCondition: {
+            sellerId: this.$store.state.user.principal.member.id,
+            month: this.month,
+            year: this.year
+          }
+        }
+      },
+      update({ allSales }) {
+        return allSales.nodes
+      }
+    }
+  },
+  methods: {
+    dateChanged({ dateType, date }) {
+      this[dateType] = date
     }
   },
   computed: {

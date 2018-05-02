@@ -17,19 +17,42 @@ export const Actions = {
   AVATAR_UPLOAD: 'avatarUpload'
 }
 
-const store = new Vuex.Store({
-  plugins: [
-    store => {
-      store.commit(Mutations.INIT)
-      store.subscribe((mutation, state) => {
-        localStorage.setItem('store', JSON.stringify(state))
-      })
+const axiosSetup = hydratedState => {
+  const jwt = hydratedState && hydratedState.user && hydratedState.user.jwt
+  axios.interceptors.request.use(config => {
+    if (jwt && config.url.indexOf(VUE_APP_API_ENDPOINT) > -1) {
+      config.headers['Authorization'] = `Bearer ${jwt}`
     }
-  ],
+    return config
+  })
+}
+
+const DejaVue = {
+  plugin: (init, localStorageName) => store => {
+    store.commit(init)
+    store.subscribe((mutation, state) => {
+      localStorage.setItem(localStorageName, JSON.stringify(state))
+    })
+  },
+  mutation: (localStorageName, setup) => state => {
+    const dehydratedState = localStorage.getItem(localStorageName)
+    if (dehydratedState) {
+      const hydratedState = JSON.parse(dehydratedState)
+      setup(hydratedState)
+      state = Object.assign(state, hydratedState)
+    }
+  }
+}
+
+const store = new Vuex.Store({
+  plugins: [DejaVue.plugin(Mutations.INIT, 'store')],
   modules: {
     user: UserStore,
     team: TeamStore,
     claim: ClaimStore
+  },
+  state: {
+    locale: 'en-us'
   },
   actions: {
     [Actions.LOGOUT]: () => {
@@ -48,20 +71,7 @@ const store = new Vuex.Store({
     }
   },
   mutations: {
-    [Mutations.INIT](state) {
-      if (localStorage.getItem('store')) {
-        const hydratedState = JSON.parse(localStorage.getItem('store'))
-        const jwt =
-          hydratedState && hydratedState.user && hydratedState.user.jwt
-        axios.interceptors.request.use(config => {
-          if (jwt && config.url.indexOf(VUE_APP_API_ENDPOINT) > -1) {
-            config.headers['Authorization'] = `Bearer ${jwt}`
-          }
-          return config
-        })
-        this.replaceState(Object.assign(state, hydratedState))
-      }
-    }
+    [Mutations.INIT]: DejaVue.mutation('store', axiosSetup)
   }
 })
 

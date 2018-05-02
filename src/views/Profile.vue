@@ -40,7 +40,7 @@
         <v-flex xs6>
           <div class="mx-auto">
             <h2>Profile Image</h2>
-            <img :src="getAvatar"/>
+            <img class="image" :src="getAvatar"/>
             <form enctype="multipart/form-data" novalidate>
                 <input
                   type="file"
@@ -149,3 +149,9 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.image {
+  width: 100%;
+}
+</style>
