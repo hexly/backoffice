@@ -102,8 +102,8 @@ export default {
   },
   mounted() {
     const { member } = this.$store.state.user.principal
-    this.currentId = member.memberId
-    this.lineage.push({ memberId: memberId, displayName: member.name })
+    this.currentId = member.id
+    this.lineage.push({ memberId: this.currentId, displayName: member.name })
   }
 }
 </script>

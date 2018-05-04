@@ -7,7 +7,6 @@ export const QUERY = gql`
   ) {
     target: allIdentities(condition: $byTarget) {
       nodes {
-        id
         memberId
         tenantId
         name
@@ -20,7 +19,6 @@ export const QUERY = gql`
     }
     team: allIdentities(condition: $bySponsor) {
       nodes {
-        id
         memberId
         tenantId
         name
