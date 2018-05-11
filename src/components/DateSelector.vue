@@ -1,57 +1,53 @@
 <template>
   <div>
-    <v-select
-      :items="availableMonths"
-      v-model="selectedMonth"
-      label="Month"
-      single-line
-      @change="monthChanged"
-    ></v-select>
-    <v-select
-      :items="availableYears"
-      v-model="selectedYear"
-      label="Year"
-      single-line
-      @change="yearChanged"
-    ></v-select>
+    <v-flex xs11 sm5>
+      <v-menu
+        ref="menu"
+        :close-on-content-click="false"
+        v-model="menu"
+        :nudge-right="40"
+        :return-value.sync="date"
+        lazy
+        transition="scale-transition"
+        offset-y
+        full-width
+        max-width="290px"
+        min-width="290px"
+      >
+        <v-text-field
+          slot="activator"
+          v-model="date"
+          label="Choose Month"
+          prepend-icon="event"
+          readonly
+        ></v-text-field>
+        <v-date-picker
+          v-model="date"
+          type="month"
+          no-title
+          scrollable
+        >
+          <v-spacer></v-spacer>
+          <v-btn flat color="primary" @click="menu = false">Cancel</v-btn>
+          <v-btn flat color="primary" @click="updateDate">OK</v-btn>
+        </v-date-picker>
+      </v-menu>
+    </v-flex>
   </div>
 </template>
 
 <script>
-import range from 'rambda/lib/range'
 export default {
   name: 'date-selector',
   data() {
-    const currentYear = new Date().getFullYear()
-    const lastYear = currentYear - 1
-    const nextYear = currentYear + 1
-    const availableMonths = range(0, 12).map(m => {
-      const date = new Date()
-      date.setMonth(m)
-      return {
-        value: m + 1,
-        text: date.toLocaleString(this.$store.locale, { month: 'long' })
-      }
-    })
     return {
-      selectedMonth: this.month,
-      selectedYear: this.year,
-      availableMonths,
-      availableYears: [
-        {
-          value: lastYear,
-          text: lastYear
-        },
-        {
-          value: currentYear,
-          text: currentYear
-        },
-        {
-          value: nextYear,
-          text: nextYear
-        }
-      ]
+      date: null,
+      menu: false,
+      modal: false
     }
+  },
+  mounted() {
+    this.date = `${this.year}-${this.month}`
   },
   props: {
     month: {
@@ -64,16 +60,11 @@ export default {
     }
   },
   methods: {
-    monthChanged(date) {
+    updateDate() {
+      this.$refs.menu.save(this.date)
+      console.log(this.date)
       this.$emit('date-changed', {
-        dateType: 'month',
-        date
-      })
-    },
-    yearChanged(date) {
-      this.$emit('date-changed', {
-        dateType: 'year',
-        date
+        date: this.date
       })
     }
   }

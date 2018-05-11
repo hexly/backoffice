@@ -62,8 +62,10 @@ export default {
     }
   },
   methods: {
-    dateChanged({ dateType, date }) {
-      this[dateType] = date
+    dateChanged({ date }) {
+      const dateSplit = date.split('-')
+      this.month = dateSplit[1]
+      this.year = dateSplit[0]
     }
   },
   computed: {
