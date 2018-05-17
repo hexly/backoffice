@@ -2,20 +2,39 @@
   <v-content>
     <v-container fluid fill-height>
       <v-layout align-center justify-center>
-        <v-flex xs12 sm8 md4>
-          <v-card class="elevation-12">
+        <v-flex xs12 sm8 md8>
+          <v-card v-if="!register" class="elevation-12">
             <v-toolbar dark color="black">
               <v-toolbar-title>{{title}} Login</v-toolbar-title>
             </v-toolbar>
             <v-card-text>
               <img class="logo" :src="logoPath"/>
-              <h2 v-if="$store.state.user.loginError">{{$store.state.user.loginError}}</h2>
-              <v-form ref="login" @submit.prevent="onSubmit" lazy-validation>
-                <v-text-field required :rules="[v => !!v || 'Field is required']" v-model="form.email" prepend-icon="person" name="login" label="Login" type="email"></v-text-field>
+              <h2 class="error" v-if="error">{{error}}</h2>
+              <v-form ref="login" @submit.prevent="onLogin" lazy-validation>
+                <v-text-field required :rules="[v => !!v || 'Field is required']" v-model="form.email" prepend-icon="person" name="email" label="Email" type="email"></v-text-field>
                 <v-text-field required :rules="[v => !!v || 'Field is required']" v-model="form.password" prepend-icon="lock" name="password" label="Password" id="password" type="password"></v-text-field>
                 <v-card-actions>
+                  <span>Need access to your account?<a @click="register = true"> Register</a></span>
                   <v-spacer></v-spacer>
                   <v-btn type="submit" color="deep-purple" dark>Login</v-btn>
+                </v-card-actions>
+              </v-form>
+            </v-card-text>
+          </v-card>
+          <v-card v-if="register" class="elevation-12">
+            <v-toolbar dark color="black">
+              <v-toolbar-title>{{title}} Register</v-toolbar-title>
+            </v-toolbar>
+            <v-card-text>
+              <img class="logo" :src="logoPath"/>
+              <h2 class="error" v-if="error">{{error}}</h2>
+              <h2 class="success" v-if="emailSentSuccess">An email has been succesfully sent!</h2>
+              <v-form ref="register" @submit.prevent="onRegister" lazy-validation>
+                <v-text-field required :rules="[v => !!v || 'Field is required']" v-model="form.email" prepend-icon="person" name="email" label="Email" type="email"></v-text-field>
+                <v-card-actions>
+                  <span>Already have an account?<a @click="register = false"> Login</a></span>
+                  <v-spacer></v-spacer>
+                  <v-btn type="submit" color="deep-purple" dark>Register</v-btn>
                 </v-card-actions>
               </v-form>
             </v-card-text>
@@ -30,6 +49,7 @@
 import tenantInfo from '@/tenant.js'
 import AUTHENTICATE_MUTATION from '../graphql/Authenticate.gql'
 import { UserActions, UserMutations } from '@/stores/UserStore'
+import { ClaimActions } from '@/stores/ClaimStore'
 
 export default {
   data() {
@@ -39,11 +59,14 @@ export default {
         password: ''
       },
       title: tenantInfo.name,
-      logoPath: tenantInfo.logoPath
+      logoPath: tenantInfo.logoPath,
+      register: false,
+      error: null,
+      emailSentSuccess: false
     }
   },
   methods: {
-    onSubmit() {
+    onLogin() {
       if (this.$refs.login.validate()) {
         this.$apollo.mutate({
           mutation: AUTHENTICATE_MUTATION,
@@ -61,15 +84,25 @@ export default {
               await this.$store.dispatch(UserActions.LOGIN_SUCCESS)
               this.$router.push('/dashboard')
             } else {
-              this.$store.commit(
-                UserMutations.LOGIN_ERROR,
-                'Invalid Username/Password.'
-              )
+              this.error = 'Invalid Username/Password.'
             }
           }
         })
       } else {
         console.log('Error in form')
+      }
+    },
+    changeMode() {
+      this.error = null
+      this.emailSentSuccess = false
+      this.register = !this.register
+    },
+    async onRegister() {
+      try {
+        await this.$store.dispatch(ClaimActions.CLAIM, this.form.email)
+        this.emailSentSuccess = true
+      } catch (error) {
+        this.error = error
       }
     }
   }
@@ -87,5 +120,16 @@ export default {
   max-width: 250px;
   margin: auto;
   display: block;
+}
+
+.error {
+  margin: 5px;
+  padding: 10px;
+  text-align: center;
+}
+.success {
+  margin: 5px;
+  padding: 10px;
+  text-align: center;
 }
 </style>

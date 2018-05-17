@@ -4,12 +4,12 @@ const path = require('path')
 const tenantId = ~~process.env.VUE_APP_TENANT_ID
 const tenantOptions = {
   name: 'Veridian Dynamics',
-  logoPath: 'veridian.jpg'
+  logoPath: '/veridian.jpg'
 }
 
 if (R.equals(tenantId, 1001)) {
   tenantOptions.name = 'Hexly'
-  tenantOptions.logoPath = 'logo.png'
+  tenantOptions.logoPath = '/logo.png'
 }
 
 if (R.equals(tenantId, 1004)) {

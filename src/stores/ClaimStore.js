@@ -2,7 +2,8 @@ import ClaimApi from '@/api/claim'
 
 export const ClaimActions = {
   GET_TOKEN: 'getToken',
-  CONSUME_TOKEN: 'consumeToken'
+  CONSUME_TOKEN: 'consumeToken',
+  CLAIM: 'claim'
 }
 
 export const ClaimStore = {
@@ -14,6 +15,9 @@ export const ClaimStore = {
     },
     [ClaimActions.CONSUME_TOKEN]: ({ commit }, { token, member }) => {
       return ClaimApi.consume(token, member)
+    },
+    [ClaimActions.CLAIM]: ({ commit }, email) => {
+      return ClaimApi.claim(email)
     }
   },
   getters: {}

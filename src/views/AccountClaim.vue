@@ -35,6 +35,12 @@
                     required
                   ></v-text-field>
                   <v-text-field
+                    label="Store Name"
+                    v-model="editMember.slug"
+                    :rules="slugRule"
+                    required
+                  ></v-text-field>
+                  <v-text-field
                     label="username"
                     v-model="editMember.username"
                     :rules="requiredRule"
@@ -102,6 +108,12 @@ export default {
       visible: false,
       error: null,
       requiredRule: [v => !!v || 'Field is required'],
+      slugRule: [
+        v => !!v || 'Field is required',
+        v =>
+          (v && /^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$/.test(v)) ||
+          'Store name must not have spaces nor special characters'
+      ],
       passwordRule: [
         v => !!v || 'Field is required',
         v => (v && v.length > 8) || 'Password must be more than 8 characters'
@@ -111,6 +123,7 @@ export default {
         password: null,
         member_id: null,
         name: null,
+        slug: null,
         display_name: null,
         contact_email: null,
         legal_locale_id: null,
@@ -153,6 +166,7 @@ export default {
           token: this.$route.params.token,
           member: this.editMember
         })
+        this.$router.push('/login')
       } else {
         console.log('Error in form')
       }
