@@ -14,7 +14,7 @@
                 <v-text-field required :rules="[v => !!v || 'Field is required']" v-model="form.email" prepend-icon="person" name="email" label="Email" type="email"></v-text-field>
                 <v-text-field required :rules="[v => !!v || 'Field is required']" v-model="form.password" prepend-icon="lock" name="password" label="Password" id="password" type="password"></v-text-field>
                 <v-card-actions>
-                  <span>Need access to your account?<a @click="register = true"> Register</a></span>
+                  <span>Need access to your account?<a @click="changeMode"> Register</a></span>
                   <v-spacer></v-spacer>
                   <v-btn type="submit" color="deep-purple" dark>Login</v-btn>
                 </v-card-actions>
@@ -32,7 +32,7 @@
               <v-form ref="register" @submit.prevent="onRegister" lazy-validation>
                 <v-text-field required :rules="[v => !!v || 'Field is required']" v-model="form.email" prepend-icon="person" name="email" label="Email" type="email"></v-text-field>
                 <v-card-actions>
-                  <span>Already have an account?<a @click="register = false"> Login</a></span>
+                  <span>Already have an account?<a @click="changeMode"> Login</a></span>
                   <v-spacer></v-spacer>
                   <v-btn type="submit" color="deep-purple" dark>Register</v-btn>
                 </v-card-actions>
