@@ -102,7 +102,9 @@ export default {
         await this.$store.dispatch(ClaimActions.CLAIM, this.form.email)
         this.emailSentSuccess = true
       } catch (error) {
-        this.error = error
+        // this.error = error
+        this.error =
+          'There seems to be a problem. Please try again later or contact customer support.'
       }
     }
   }
