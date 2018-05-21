@@ -43,8 +43,7 @@
                   <v-text-field
                     label="username"
                     v-model="editMember.username"
-                    :rules="requiredRule"
-                    required
+                    disabled
                   ></v-text-field>
                   <v-text-field
                     name="password"
@@ -111,8 +110,12 @@ export default {
       slugRule: [
         v => !!v || 'Field is required',
         v =>
-          (v && /^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$/.test(v)) ||
-          'Store name must not have spaces nor special characters'
+          (v && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(v)) ||
+          'Store name must not have spaces, special characters, nor capital letters',
+        v => {
+          if (v.length > 20) return 'Password must be 20 or less characters'
+          return true
+        }
       ],
       passwordRule: [
         v => !!v || 'Field is required',

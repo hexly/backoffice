@@ -11,7 +11,7 @@
               <img class="logo" :src="logoPath"/>
               <h2 class="error" v-if="error">{{error}}</h2>
               <v-form ref="login" @submit.prevent="onLogin" lazy-validation>
-                <v-text-field required :rules="[v => !!v || 'Field is required']" v-model="form.email" prepend-icon="person" name="email" label="Email" type="email"></v-text-field>
+                <v-text-field required :rules="[v => !!v || 'Field is required']" v-model="form.email" prepend-icon="person" name="email" label="Username" type="email"></v-text-field>
                 <v-text-field required :rules="[v => !!v || 'Field is required']" v-model="form.password" prepend-icon="lock" name="password" label="Password" id="password" type="password"></v-text-field>
                 <v-card-actions>
                   <span>Need access to your account?<a @click="changeMode"> Register</a></span>
