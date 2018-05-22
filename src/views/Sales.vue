@@ -38,8 +38,8 @@ export default {
       headers: [
         { text: 'Date', value: 'date' },
         { text: 'Sale Total', value: 'total' },
-        { text: 'Commissionable Total', value: 'comTotal' },
         { text: 'Total Points', value: 'points' },
+        { text: 'Commissionable Total', value: 'comTotal' },
         { text: 'Commissionable Points', value: 'comPoints' }
       ]
     }
@@ -74,8 +74,8 @@ export default {
         return {
           date: `${sale.month}/${sale.day}/${sale.year}`,
           total: sale.totalAmount,
-          comTotal: sale.commissionableAmount,
           points: sale.totalPoints,
+          comTotal: sale.commissionableAmount,
           comPoints: sale.commissionablePoints
         }
       }, this.allSales)
