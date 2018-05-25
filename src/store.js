@@ -27,6 +27,13 @@ const axiosSetup = hydratedState => {
   })
 }
 
+const verifyPrincipal = async hydratedState => {
+  if (!hydratedState.user.principal || !hydratedState.user.principal.member) {
+    localStorage.clear()
+    window.location = '/'
+  }
+}
+
 const DejaVue = {
   plugin: (init, localStorageName) => store => {
     store.commit(init)
@@ -38,7 +45,12 @@ const DejaVue = {
     const dehydratedState = localStorage.getItem(localStorageName)
     if (dehydratedState) {
       const hydratedState = JSON.parse(dehydratedState)
-      setup(hydratedState)
+      if (Array.isArray(setup)) {
+        setup.forEach(s => s(hydratedState))
+      }
+      if (typeof setup === 'function') {
+        setup(hydratedState)
+      }
       state = Object.assign(state, hydratedState)
     }
   }
@@ -71,7 +83,7 @@ const store = new Vuex.Store({
     }
   },
   mutations: {
-    [Mutations.INIT]: DejaVue.mutation('store', axiosSetup)
+    [Mutations.INIT]: DejaVue.mutation('store', [axiosSetup, verifyPrincipal])
   }
 })
 
