@@ -3,40 +3,51 @@
     <v-container fluid fill-height>
       <v-layout align-center justify-center>
         <v-flex xs12 sm8 md8>
-          <v-card v-if="!register" class="elevation-12">
+          <v-card class="elevation-12">
             <v-toolbar dark color="black">
               <v-toolbar-title>{{title}} Login</v-toolbar-title>
             </v-toolbar>
             <v-card-text>
               <img class="logo" :src="logoPath"/>
               <h2 class="error" v-if="error">{{error}}</h2>
-              <v-form ref="login" @submit.prevent="onLogin" lazy-validation>
-                <v-text-field required :rules="[v => !!v || 'Field is required']" v-model="form.email" prepend-icon="person" name="email" label="Username" type="email"></v-text-field>
-                <v-text-field required :rules="[v => !!v || 'Field is required']" v-model="form.password" prepend-icon="lock" name="password" label="Password" id="password" type="password"></v-text-field>
-                <v-card-actions>
-                  <span>Need access to your account?<a @click="changeMode"> Register</a></span>
-                  <v-spacer></v-spacer>
-                  <v-btn type="submit" color="deep-purple" dark>Login</v-btn>
-                </v-card-actions>
-              </v-form>
-            </v-card-text>
-          </v-card>
-          <v-card v-if="register" class="elevation-12">
-            <v-toolbar dark color="black">
-              <v-toolbar-title>{{title}} Register</v-toolbar-title>
-            </v-toolbar>
-            <v-card-text>
-              <img class="logo" :src="logoPath"/>
-              <h2 class="error" v-if="error">{{error}}</h2>
-              <h2 class="success" v-if="emailSentSuccess">An email has been succesfully sent!</h2>
-              <v-form ref="register" @submit.prevent="onRegister" lazy-validation>
-                <v-text-field required :rules="[v => !!v || 'Field is required']" v-model="form.email" prepend-icon="person" name="email" label="Email" type="email"></v-text-field>
-                <v-card-actions>
-                  <span>Already have an account?<a @click="changeMode"> Login</a></span>
-                  <v-spacer></v-spacer>
-                  <v-btn type="submit" color="deep-purple" dark>Register</v-btn>
-                </v-card-actions>
-              </v-form>
+              <div v-if="type === 'login'">
+                <v-form ref="login" @submit.prevent="onLogin" lazy-validation>
+                  <v-text-field required :rules="[v => !!v || 'Field is required']" v-model="form.email" prepend-icon="person" name="email" label="Username" type="email"></v-text-field>
+                  <v-text-field required :rules="[v => !!v || 'Field is required']" v-model="form.password" prepend-icon="lock" name="password" label="Password" id="password" type="password"></v-text-field>
+                  <v-card-actions>
+                    <div>
+                      <span>Need access to your account?<a @click="changeMode('register')"> Register</a></span>
+                      <br/>
+                      <span>Forgot your Password?<a @click="changeMode('reset')"> Reset Password</a></span>
+                    </div>
+                    <v-spacer></v-spacer>
+                    <v-btn type="submit" color="deep-purple" dark>Login</v-btn>
+                  </v-card-actions>
+                </v-form>
+              </div>
+              <div v-if="type === 'register'">
+                <h2 class="success" v-if="emailSentSuccess">An email has been succesfully sent!</h2>
+                <v-form ref="register" @submit.prevent="onRegister" lazy-validation>
+                  <v-text-field required :rules="[v => !!v || 'Field is required']" v-model="form.email" prepend-icon="person" name="email" label="Email" type="email"></v-text-field>
+                  <v-card-actions>
+                    <span>Already have an account?<a @click="changeMode('login')"> Login</a></span>
+                    <br/>
+                    <span>Forgot your Password?<a @click="changeMode('reset')"> Reset Password</a></span>
+                    <v-spacer></v-spacer>
+                    <v-btn type="submit" color="deep-purple" dark>Register</v-btn>
+                  </v-card-actions>
+                </v-form>
+              </div>
+              <div v-if="type === 'reset'">
+                <v-form ref="reset" @submit.prevent="onReset" lazy-validation>
+                  <v-text-field required :rules="[v => !!v || 'Field is required']" v-model="form.email" prepend-icon="person" name="email" label="Email" type="email"></v-text-field>
+                  <v-card-actions>
+                    <span>Remembered your password?<a @click="changeMode('login')"> Login</a></span>
+                    <v-spacer></v-spacer>
+                    <v-btn type="submit" color="deep-purple" dark>Reset</v-btn>
+                  </v-card-actions>
+                </v-form>
+              </div>
             </v-card-text>
           </v-card>
         </v-flex>
@@ -60,7 +71,7 @@ export default {
       },
       title: tenantInfo.name,
       logoPath: tenantInfo.logoPath,
-      register: false,
+      type: 'login',
       error: null,
       emailSentSuccess: false
     }
@@ -92,14 +103,24 @@ export default {
         console.log('Error in form')
       }
     },
-    changeMode() {
+    changeMode(type) {
       this.error = null
       this.emailSentSuccess = false
-      this.register = !this.register
+      this.type = type
     },
     async onRegister() {
       try {
         await this.$store.dispatch(ClaimActions.CLAIM, this.form.email)
+        this.emailSentSuccess = true
+      } catch (error) {
+        // this.error = error
+        this.error =
+          'There seems to be a problem. Please try again later or contact customer support.'
+      }
+    },
+    async onReset() {
+      try {
+        await this.$store.dispatch(ClaimActions.RESET, this.form.email)
         this.emailSentSuccess = true
       } catch (error) {
         // this.error = error

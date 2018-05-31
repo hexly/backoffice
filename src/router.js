@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import store from './store'
 import Login from './views/Login.vue'
 import AccountClaim from './views/AccountClaim.vue'
+import PasswordReset from './views/PasswordReset.vue'
 import Backoffice from './views/Backoffice.vue'
 import Dashboard from './views/Dashboard.vue'
 import Profile from './views/Profile.vue'
@@ -30,6 +31,18 @@ export default new Router({
       path: '/account/claim/:token',
       name: 'account-claim',
       component: AccountClaim,
+      beforeEnter: (to, from, next) => {
+        if (store.state.user.authorized) {
+          next('/dashboard')
+        } else {
+          next()
+        }
+      }
+    },
+    {
+      path: '/account/reset/:token',
+      name: 'password-rest',
+      component: PasswordReset,
       beforeEnter: (to, from, next) => {
         if (store.state.user.authorized) {
           next('/dashboard')
