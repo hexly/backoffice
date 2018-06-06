@@ -10,6 +10,7 @@
             <v-card-text>
               <img class="logo" :src="logoPath"/>
               <h2 class="error" v-if="error">{{error}}</h2>
+              <h2 class="success" v-if="success">{{success}}</h2>
               <div v-if="type === 'login'">
                 <v-form ref="login" @submit.prevent="onLogin" lazy-validation>
                   <v-text-field required :rules="[v => !!v || 'Field is required']" v-model="form.email" prepend-icon="person" name="email" label="Username" type="email"></v-text-field>
@@ -21,20 +22,21 @@
                       <span>Forgot your Password?<a @click="changeMode('reset')"> Reset Password</a></span>
                     </div>
                     <v-spacer></v-spacer>
-                    <v-btn type="submit" color="deep-purple" dark>Login</v-btn>
+                    <v-btn :loading="buttonLoading" type="submit" color="deep-purple" dark>Login</v-btn>
                   </v-card-actions>
                 </v-form>
               </div>
               <div v-if="type === 'register'">
-                <h2 class="success" v-if="emailSentSuccess">An email has been succesfully sent!</h2>
                 <v-form ref="register" @submit.prevent="onRegister" lazy-validation>
                   <v-text-field required :rules="[v => !!v || 'Field is required']" v-model="form.email" prepend-icon="person" name="email" label="Email" type="email"></v-text-field>
                   <v-card-actions>
-                    <span>Already have an account?<a @click="changeMode('login')"> Login</a></span>
-                    <br/>
-                    <span>Forgot your Password?<a @click="changeMode('reset')"> Reset Password</a></span>
+                    <div>
+                      <span>Already have an account?<a @click="changeMode('login')"> Login</a></span>
+                      <br/>
+                      <span>Forgot your Password?<a @click="changeMode('reset')"> Reset Password</a></span>
+                    </div>
                     <v-spacer></v-spacer>
-                    <v-btn type="submit" color="deep-purple" dark>Register</v-btn>
+                    <v-btn :loading="buttonLoading" type="submit" color="deep-purple" dark>Register</v-btn>
                   </v-card-actions>
                 </v-form>
               </div>
@@ -44,7 +46,7 @@
                   <v-card-actions>
                     <span>Remembered your password?<a @click="changeMode('login')"> Login</a></span>
                     <v-spacer></v-spacer>
-                    <v-btn type="submit" color="deep-purple" dark>Reset</v-btn>
+                    <v-btn :loading="buttonLoading" type="submit" color="deep-purple" dark>Reset</v-btn>
                   </v-card-actions>
                 </v-form>
               </div>
@@ -61,6 +63,9 @@ import tenantInfo from '@/tenant.js'
 import AUTHENTICATE_MUTATION from '../graphql/Authenticate.gql'
 import { UserActions, UserMutations } from '@/stores/UserStore'
 import { ClaimActions } from '@/stores/ClaimStore'
+import { delay } from '@/utils/timer.js'
+import pathOr from 'rambda/lib/pathOr'
+import { error } from 'util'
 
 export default {
   data() {
@@ -73,11 +78,13 @@ export default {
       logoPath: tenantInfo.logoPath,
       type: 'login',
       error: null,
-      emailSentSuccess: false
+      success: null,
+      buttonLoading: false
     }
   },
   methods: {
     onLogin() {
+      this.buttonLoading = true
       if (this.$refs.login.validate()) {
         this.$apollo.mutate({
           mutation: AUTHENTICATE_MUTATION,
@@ -95,37 +102,61 @@ export default {
               await this.$store.dispatch(UserActions.LOGIN_SUCCESS)
               this.$router.push('/dashboard')
             } else {
-              this.error = 'Invalid Username/Password.'
+              this.onError('Invalid Username/Password.')
             }
+            this.buttonLoading = false
           }
         })
       } else {
-        console.log('Error in form')
+        this.onError('Invalid Username/Password.')
+        this.buttonLoading = false
       }
     },
     changeMode(type) {
       this.error = null
-      this.emailSentSuccess = false
+      this.success = null
       this.type = type
     },
     async onRegister() {
+      this.buttonLoading = true
       try {
         await this.$store.dispatch(ClaimActions.CLAIM, this.form.email)
-        this.emailSentSuccess = true
+        this.onSuccess(
+          'Registrations email has been sent! Please check your email.'
+        )
       } catch (error) {
-        // this.error = error
-        this.error =
-          'There seems to be a problem. Please try again later or contact customer support.'
+        this.onError(error)
       }
+      this.buttonLoading = false
     },
     async onReset() {
+      this.buttonLoading = true
       try {
         await this.$store.dispatch(ClaimActions.RESET, this.form.email)
-        this.emailSentSuccess = true
+        this.onSuccess(
+          'Password reset email has been sent! Please check your email.'
+        )
       } catch (error) {
-        // this.error = error
-        this.error =
-          'There seems to be a problem. Please try again later or contact customer support.'
+        this.onError(error)
+      }
+      this.buttonLoading = false
+    },
+    async onSuccess(message) {
+      this.success = message
+      await delay(7000)
+      this.success = null
+      this.type = 'login'
+    },
+    onError(errorMessage) {
+      if (typeof errorMessage === 'string') {
+        this.error = errorMessage
+      } else {
+        const errors = pathOr({}, 'response.data.errors', errorMessage)
+        this.error = pathOr(
+          'There seems to be a problem. Please try again later or contact customer support.',
+          ['message'],
+          errors[0]
+        )
       }
     }
   }
