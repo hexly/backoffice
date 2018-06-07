@@ -62,7 +62,6 @@ export default {
   methods: {
     updateDate() {
       this.$refs.menu.save(this.date)
-      console.log(this.date)
       this.$emit('date-changed', {
         date: this.date
       })
@@ -72,5 +71,4 @@ export default {
 </script>
 
 <style scoped>
-
 </style>

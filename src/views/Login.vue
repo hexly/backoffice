@@ -65,7 +65,6 @@ import { UserActions, UserMutations } from '@/stores/UserStore'
 import { ClaimActions } from '@/stores/ClaimStore'
 import { delay } from '@/utils/timer.js'
 import pathOr from 'rambda/lib/pathOr'
-import { error } from 'util'
 
 export default {
   data() {
@@ -84,6 +83,7 @@ export default {
   },
   methods: {
     onLogin() {
+      this.error = null
       this.buttonLoading = true
       if (this.$refs.login.validate()) {
         this.$apollo.mutate({
@@ -119,6 +119,7 @@ export default {
     },
     async onRegister() {
       this.buttonLoading = true
+      this.error = null
       try {
         await this.$store.dispatch(ClaimActions.CLAIM, this.form.email)
         this.onSuccess(
@@ -130,6 +131,7 @@ export default {
       this.buttonLoading = false
     },
     async onReset() {
+      this.error = null
       this.buttonLoading = true
       try {
         await this.$store.dispatch(ClaimActions.RESET, this.form.email)
