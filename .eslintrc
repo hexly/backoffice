@@ -5,5 +5,8 @@
   ],
   "rules": {
     "space-before-function-paren": 0
+  },
+  "globals": {
+    "VERSION": true
   }
 }

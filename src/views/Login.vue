@@ -1,5 +1,6 @@
 <template>
   <v-content>
+    <div class="version">v. {{version}}</div>
     <v-container fluid fill-height>
       <v-layout align-center justify-center>
         <v-flex xs12 sm8 md8>
@@ -78,7 +79,8 @@ export default {
       type: 'login',
       error: null,
       success: null,
-      buttonLoading: false
+      buttonLoading: false,
+      version: VERSION
     }
   },
   methods: {
@@ -187,5 +189,10 @@ export default {
   margin: 5px;
   padding: 10px;
   text-align: center;
+}
+.version {
+  opacity: 0.3;
+  color: #fff;
+  padding: 5px;
 }
 </style>
