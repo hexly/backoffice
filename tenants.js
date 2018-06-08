@@ -16,6 +16,7 @@ if (R.equals(tenantId, 1004)) {
   tenantOptions.name = 'Green HoriZen'
   tenantOptions.logoPath =
     'https://res.cloudinary.com/hexly/image/upload/v1524349012/greenhorizen.png'
+  tenantOptions.incentiveTrip = true
 }
 
 const contents = `

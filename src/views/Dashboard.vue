@@ -1,17 +1,17 @@
 <template>
   <div class="dashboard">
     <h1>Dashboard</h1>
-    <v-subheader>Sales</v-subheader>
     <date-selector :year="year" :month="month" @date-changed="dateChanged"/>
+    <v-subheader>Sales</v-subheader>
     <v-container fluid grid-list-xs>
       <v-layout row wrap>
         <span>
         </span>
         <v-flex sm4 pa-3>
-          <DashCard :loading="$apollo.queries.allSales.loading" color="light-blue" darken="1" :display="'$' + personalSales.totalAmount" subheading="Personal" icon="person" />
+          <DashCard :loading="$apollo.queries.allSales.loading" color="light-blue" darken="1" :display="`$${personalSales.totalAmount}`" subheading="Personal" icon="person" />
         </v-flex>
         <v-flex sm4 pa-3>
-          <DashCard :loading="$apollo.queries.team.loading" color="indigo" darken="1" :display="'$' + team.totalTeamAmount" subheading="Team" icon="people" />
+          <DashCard :loading="$apollo.queries.team.loading" color="indigo" darken="1" :display="`$${team.totalTeamAmount}`" subheading="Team" icon="people" />
         </v-flex>
         <v-flex sm4 pa-3>
           <DashCard :loading="$apollo.queries.allSales.loading" color="pink" darken="1" :display="sales" subheading="Sales" icon="star" />
@@ -29,6 +29,16 @@
         </v-flex>
       </v-layout>
     </v-container>
+    <div v-if="incentiveTrip">
+      <v-subheader>Incentive Trip</v-subheader>
+      <v-container fluid grid-list-xs>
+        <v-layout row wrap>
+          <v-flex>
+            <IncentiveTrip />
+          </v-flex>
+        </v-layout>
+      </v-container>
+    </div>
     <!-- <v-container>
       <h2>Monthly Sales</h2>
       <line-chart :data="chartData"></line-chart>
@@ -39,21 +49,25 @@
 <script>
 import DashCard from '@/components/DashboardCard.vue'
 import DateSelector from '@/components/DateSelector.vue'
+import IncentiveTrip from '@/components/IncentiveTrip.vue'
 import SALES from '@/graphql/Sales.gql'
 import MONTHLY_STATS_QUERY from '@/graphql/GetMonthlyStats.gql'
+import tenantInfo from '@/tenant.js'
 
 export default {
   name: 'dashboard',
   components: {
     DashCard,
-    DateSelector
+    DateSelector,
+    IncentiveTrip
   },
   data: () => ({
     chartData: [['Jan', 4], ['Feb', 2], ['Mar', 10], ['Apr', 5], ['May', 3]],
     allSales: [],
     month: new Date().getMonth() + 1,
     year: new Date().getFullYear(),
-    team: {}
+    team: {},
+    incentiveTrip: tenantInfo.incentiveTrip
   }),
   apollo: {
     allSales: {
@@ -125,5 +139,4 @@ export default {
 </script>
 
 <style scoped>
-
 </style>
