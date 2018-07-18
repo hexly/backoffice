@@ -1,0 +1,10 @@
+query teamStatSummaryByDepth($rangeInput: RangedSaleSummaryInput!) {
+  teamStatSummaryByDepth(input: $rangeInput) {
+    commissionableAmount
+    commissionablePoints
+    totalAmount
+    totalPoints
+    displayName
+    salesCount
+  }
+}
