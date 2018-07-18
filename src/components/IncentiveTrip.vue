@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import SALES from '@/graphql/Sales.gql'
+import TEAM_STATS from '@/graphql/TeamStatSummaryByDepth.gql'
 // ** WARNING **
 // THIS IS A HARDCODED HACK! THIS IS NOT HOW WE WANT TO HANDLE INCENTIVE TRIPS
 // ** WARNING **
@@ -27,32 +27,34 @@ export default {
       maxPoints: 50000,
       totalPoints: 0,
       percentComplete: 0,
-      loading: true,
-      sales: []
+      loading: true
     }
   },
   apollo: {
-    sales: {
-      query: SALES,
+    totalPoints: {
+      query: TEAM_STATS,
       variables() {
+        console.log('Gonna fetch incetive trip', {
+          sellerId: this.$store.state.user.principal.member.id,
+          tenantId: process.env.VUE_APP_TENANT_ID,
+          startDate: '2018-06-01',
+          endDate: '2018-10-31',
+          targetDepth: 4
+        })
         return {
-          saleCondition: {
+          rangeInput: {
             sellerId: this.$store.state.user.principal.member.id,
-            year: '2018'
+            tenantId: process.env.VUE_APP_TENANT_ID,
+            startDate: '2018-06-01',
+            endDate: '2018-10-31',
+            targetDepth: 4
           }
         }
       },
-      update({ allSales }) {
-        // Figure out June (6) - October (10)
-        const sales = allSales.nodes
-        sales.forEach(s => {
-          if (s.month >= 6 && s.month <= 10) {
-            this.totalPoints += s.commissionablePoints || 0
-          }
-        })
-        this.percentComplete = this.totalPoints / this.maxPoints * 100
+      update({ teamStatSummaryByDepth }) {
         this.loading = false
-        return sales
+        this.percentComplete = this.totalPoints / this.maxPoints * 100
+        return teamStatSummaryByDepth.totalPoints
       }
     }
   }
