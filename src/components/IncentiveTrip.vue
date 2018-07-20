@@ -34,13 +34,6 @@ export default {
     totalPoints: {
       query: TEAM_STATS,
       variables() {
-        console.log('Gonna fetch incetive trip', {
-          sellerId: this.$store.state.user.principal.member.id,
-          tenantId: process.env.VUE_APP_TENANT_ID,
-          startDate: '2018-06-01',
-          endDate: '2018-10-31',
-          targetDepth: 4
-        })
         return {
           rangeInput: {
             sellerId: this.$store.state.user.principal.member.id,
@@ -53,7 +46,8 @@ export default {
       },
       update({ teamStatSummaryByDepth }) {
         this.loading = false
-        this.percentComplete = this.totalPoints / this.maxPoints * 100
+        this.percentComplete =
+          teamStatSummaryByDepth.totalPoints / this.maxPoints * 100
         return teamStatSummaryByDepth.totalPoints
       }
     }
