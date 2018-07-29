@@ -1,7 +1,7 @@
 <template>
   <div class="dashboard">
     <h1>Dashboard</h1>
-    <date-selector :year="year" :month="month" @date-changed="dateChanged"/>
+    <month-selector :year="year" :month="month" @date-changed="dateChanged"/>
     <v-subheader>Sales</v-subheader>
     <v-container fluid grid-list-xs>
       <v-layout row wrap>
@@ -48,7 +48,7 @@
 
 <script>
 import DashCard from '@/components/DashboardCard.vue'
-import DateSelector from '@/components/DateSelector.vue'
+import MonthSelector from '@/components/MonthSelector.vue'
 import IncentiveTrip from '@/components/IncentiveTrip.vue'
 import SALES from '@/graphql/Sales.gql'
 import MONTHLY_STATS_QUERY from '@/graphql/GetMonthlyStats.gql'
@@ -58,7 +58,7 @@ export default {
   name: 'dashboard',
   components: {
     DashCard,
-    DateSelector,
+    MonthSelector,
     IncentiveTrip
   },
   data: () => ({

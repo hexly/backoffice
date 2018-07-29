@@ -2,7 +2,7 @@
   <v-flex xs12>
     <div class="team">
       <h1 v-bind:target="currentId">Team</h1>
-      <date-selector :year="year" :month="month" @date-changed="dateChanged"/>
+      <month-selector :year="year" :month="month" @date-changed="dateChanged"/>
       <div>
         <v-layout v-if="results.target" row wrap justify-center>
           <TeamCard :loading="$apollo.queries.stats.loading" @viewTeam="showTeam" :user="results.target" :stats="getStats(results.target)"/>
@@ -32,7 +32,7 @@
 </template>
 
 <script>
-import DateSelector from '@/components/DateSelector.vue'
+import MonthSelector from '@/components/MonthSelector.vue'
 import TeamCard from '../components/TeamCard.vue'
 import getTeamByMemberId from '@/graphql/GetTeam'
 import MONTHLY_STATS_QUERY from '@/graphql/GetMonthlyStats.gql'
@@ -55,7 +55,7 @@ export default {
   }),
   components: {
     TeamCard,
-    DateSelector
+    MonthSelector
   },
   methods: {
     showTeam(user) {

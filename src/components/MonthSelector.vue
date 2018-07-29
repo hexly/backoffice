@@ -11,17 +11,26 @@
         transition="scale-transition"
         offset-y
         full-width
+        max-width="290px"
         min-width="290px"
       >
         <v-text-field
           slot="activator"
           v-model="date"
-          :label="label"
+          label="Choose Month"
           prepend-icon="event"
           readonly
         ></v-text-field>
-        <v-date-picker v-model="date" @input="updateDate"></v-date-picker>
-
+        <v-date-picker
+          v-model="date"
+          type="month"
+          no-title
+          scrollable
+        >
+          <v-spacer></v-spacer>
+          <v-btn flat color="primary" @click="menu = false">Cancel</v-btn>
+          <v-btn flat color="primary" @click="updateDate">OK</v-btn>
+        </v-date-picker>
       </v-menu>
     </v-flex>
   </div>
@@ -29,7 +38,7 @@
 
 <script>
 export default {
-  name: 'date-selector',
+  name: 'month-selector',
   data() {
     return {
       date: null,
@@ -38,16 +47,16 @@ export default {
     }
   },
   mounted() {
-    this.date = this.selectedDate
+    this.date = `${this.year}-${this.month}`
   },
   props: {
-    selectedDate: {
-      type: String,
-      default: new Date()
+    month: {
+      type: Number,
+      default: new Date().getMonth() + 1
     },
-    label: {
-      type: String,
-      default: 'Select Month'
+    year: {
+      type: Number,
+      default: new Date().getFullYear()
     }
   },
   methods: {
@@ -56,11 +65,10 @@ export default {
       this.$emit('date-changed', {
         date: this.date
       })
-    },
-    parseDate(d) {
-      console.log('parseDate', d)
-      return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`
     }
   }
 }
 </script>
+
+<style scoped>
+</style>

@@ -65,7 +65,7 @@
       </v-toolbar-items>
     </v-toolbar>
     <v-content>
-      <v-container class="main">
+      <v-container fluid class="main">
         <router-view />
       </v-container>
     </v-content>
@@ -103,8 +103,8 @@ export default {
   padding: 25px;
   margin: 50px auto;
   background-color: #fafafa;
-  border-radius: 10px;
   box-shadow: 1px 2px 6px -2px #000;
+  min-height: calc(100vh - 164px);
 }
 .logo {
   width: 100%;

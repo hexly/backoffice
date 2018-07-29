@@ -9,8 +9,8 @@
             <div>{{user.displayName}}</div>
             <div>Team Size: {{stats.teamSize || 0}}</div>
             <div>Front Line: {{stats.firstLevelSize || 0}}</div>
-            <div>Total Points: {{stats.totalPoints || 0}}</div>
-            <div>Total Amount: {{stats.totalAmount || 0}}</div>
+            <!-- <div>Total Points: {{stats.totalPoints || 0}}</div>
+            <div>Total Amount: {{stats.totalAmount || 0}}</div> -->
           </div>
           <div v-if="loading">
             <v-progress-circular indeterminate :size="50" :width="5" color="black"></v-progress-circular>
