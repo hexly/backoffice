@@ -39,35 +39,51 @@
         </v-layout>
       </v-container>
     </div>
-    <!-- <v-container>
-      <h2>Monthly Sales</h2>
-      <line-chart :data="chartData"></line-chart>
-    </v-container> -->
+    <v-subheader>Leaderboards</v-subheader>
+    <v-container fluid grid-list-xs>
+      <v-layout row wrap>
+        <v-flex sm6 pa-3>
+          <LeaderBoard :leaders="MonthlySalesLeaders" title="Monthly Sales Leaders" :showTotal="false"/>
+        </v-flex>
+        <v-flex sm6 pa-3>
+          <LeaderBoard :leaders="MonthlyFrontlineLeaders" title="Monthly Frontline Leaders"/>
+        </v-flex>
+      </v-layout>
+    </v-container>
   </div>
 </template>
 
 <script>
 import DashCard from '@/components/DashboardCard.vue'
+import LeaderBoard from '@/components/Leaderboard.vue'
 import MonthSelector from '@/components/MonthSelector.vue'
 import IncentiveTrip from '@/components/IncentiveTrip.vue'
 import SALES from '@/graphql/Sales.gql'
 import MONTHLY_STATS_QUERY from '@/graphql/GetMonthlyStats.gql'
+import {
+  MONTHLY_SALES_LEADERBOARD,
+  MONTHLY_FRONTLINE_LEADERBOARD
+} from '@/graphql/Leaderboard.js'
 import tenantInfo from '@/tenant.js'
+
+const { VUE_APP_TENANT_ID } = process.env
 
 export default {
   name: 'dashboard',
   components: {
     DashCard,
     MonthSelector,
-    IncentiveTrip
+    IncentiveTrip,
+    LeaderBoard
   },
   data: () => ({
-    chartData: [['Jan', 4], ['Feb', 2], ['Mar', 10], ['Apr', 5], ['May', 3]],
     allSales: [],
     month: new Date().getMonth() + 1,
     year: new Date().getFullYear(),
     team: {},
-    incentiveTrip: tenantInfo.incentiveTrip
+    incentiveTrip: tenantInfo.incentiveTrip,
+    MonthlyFrontlineLeaders: [],
+    MonthlySalesLeaders: []
   }),
   apollo: {
     allSales: {
@@ -105,6 +121,36 @@ export default {
         return targetStats.nodes[0] || { totalTeamAmount: 0 }
       },
       fetchPolicy: 'cache-and-network'
+    },
+    MonthlySalesLeaders: {
+      query: MONTHLY_SALES_LEADERBOARD,
+      variables() {
+        return {
+          leaderInput: {
+            tenantId: VUE_APP_TENANT_ID,
+            month: this.month,
+            year: this.year
+          }
+        }
+      },
+      update({ monthlySalesLeaderboard }) {
+        return monthlySalesLeaderboard
+      }
+    },
+    MonthlyFrontlineLeaders: {
+      query: MONTHLY_FRONTLINE_LEADERBOARD,
+      variables() {
+        return {
+          leaderInput: {
+            tenantId: VUE_APP_TENANT_ID,
+            month: this.month,
+            year: this.year
+          }
+        }
+      },
+      update({ monthlyFrontlineLeaderboard }) {
+        return monthlyFrontlineLeaderboard
+      }
     }
   },
   methods: {

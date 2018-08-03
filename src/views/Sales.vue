@@ -90,7 +90,7 @@
 
 <script>
 import DateSelector from '@/components/DateSelector.vue'
-import SEARCH_SALES_QUERY from '@/graphql/Sales.gql'
+import SEARCH_SALES_QUERY from '@/graphql/SearchSales.gql'
 import { map } from 'ramda'
 import moment from 'moment'
 

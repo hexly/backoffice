@@ -1,0 +1,55 @@
+<template>
+  <v-card>
+    <v-toolbar color="cyan" dark>
+      <v-toolbar-title>{{title}}</v-toolbar-title>
+    </v-toolbar>
+    <v-list two-line>
+      <div v-for="item in leaders" :key="item.contactEmail">
+        <v-list-tile :key="item.name" avatar >
+          <v-list-tile-avatar>
+            <img :src="item.profileUrl">
+          </v-list-tile-avatar>
+          <v-list-tile-content>
+            <v-list-tile-title>{{item.name}}</v-list-tile-title>
+            <v-list-tile-sub-title>{{item.contactEmail}}</v-list-tile-sub-title>
+          </v-list-tile-content>
+          <v-list-tile-action v-if="showTotal">
+            <v-list-tile-title v-if="!currency">{{ item.total }}</v-list-tile-title>
+            <v-list-tile-title v-if="currency">{{ formatCurrency(~~item.total) }}</v-list-tile-title>
+          </v-list-tile-action>
+        </v-list-tile>
+      </div>
+    </v-list>
+  </v-card>
+</template>
+
+<script>
+export default {
+  name: 'LeaderBoard',
+  data: () => ({}),
+  props: {
+    leaders: Array,
+    title: String,
+    currency: {
+      type: Boolean,
+      default: false
+    },
+    showTotal: {
+      type: Boolean,
+      default: true
+    }
+  },
+  methods: {
+    formatCurrency(total) {
+      return total.toLocaleString('us-EN', {
+        style: 'currency',
+        currency: 'USD'
+      })
+    }
+  }
+}
+</script>
+
+<!-- Add "scoped" attribute to limit CSS to this component only -->
+<style scoped>
+</style>
