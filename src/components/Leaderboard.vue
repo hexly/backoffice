@@ -7,7 +7,7 @@
       <div v-for="item in leaders" :key="item.contactEmail">
         <v-list-tile :key="item.name" avatar >
           <v-list-tile-avatar>
-            <img :src="item.profileUrl">
+            <img :src="scaleImage(item.profileUrl)">
           </v-list-tile-avatar>
           <v-list-tile-content>
             <v-list-tile-title>{{item.name}}</v-list-tile-title>
@@ -45,6 +45,12 @@ export default {
         style: 'currency',
         currency: 'USD'
       })
+    },
+    scaleImage(image) {
+      if (image) {
+        return image.replace('/image/upload', '/image/upload/w_80')
+      }
+      return image
     }
   }
 }
