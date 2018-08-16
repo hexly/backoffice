@@ -50,6 +50,30 @@
         </v-flex>
       </v-layout>
     </v-container>
+    <v-dialog
+      v-model="showAddressDialog"
+      max-width="290"
+      persistent
+    >
+      <v-card>
+        <v-card-title class="headline">We need your address</v-card-title>
+
+        <v-card-text>
+          Welcome Back to your backoffice. Since last time you were here we've added the ability to input your address. Please go to your profile page and update your address!
+        </v-card-text>
+
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn
+            color="green darken-1"
+            flat="flat"
+            @click="$router.push('/profile')"
+          >
+            Profile Page
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -64,6 +88,7 @@ import {
   MONTHLY_SALES_LEADERBOARD,
   MONTHLY_FRONTLINE_LEADERBOARD
 } from '@/graphql/Leaderboard.js'
+import { ADDRESS_BY_MEMBER_ID } from '@/graphql/Address.js'
 import tenantInfo from '@/tenant.js'
 
 const { VUE_APP_TENANT_ID } = process.env
@@ -83,7 +108,9 @@ export default {
     team: {},
     incentiveTrip: tenantInfo.incentiveTrip,
     MonthlyFrontlineLeaders: [],
-    MonthlySalesLeaders: []
+    MonthlySalesLeaders: [],
+    address: null,
+    showAddressDialog: false
   }),
   apollo: {
     allSales: {
@@ -100,6 +127,26 @@ export default {
       update({ allSales }) {
         return allSales.nodes
       }
+    },
+    address: {
+      query: ADDRESS_BY_MEMBER_ID,
+      variables() {
+        return {
+          addressMemberId: {
+            memberId: this.$store.state.user.principal.member.id
+          }
+        }
+      },
+      update({ addressByMemberOrTenant }) {
+        const a = addressByMemberOrTenant[0]
+        console.log('ADDRESS', a)
+        this.showAddressDialog = false
+        if (!a) {
+          this.showAddressDialog = true
+        }
+        return Object.assign({}, a)
+      },
+      fetchPolicy: 'cache-and-network'
     },
     team: {
       query: MONTHLY_STATS_QUERY,

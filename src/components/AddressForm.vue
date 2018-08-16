@@ -1,42 +1,47 @@
 <template>
   <div>
-    <v-form @submit.prevent="save">
+    <v-form ref="addressForm" @submit.prevent="save()" lazy-validation>
       <v-text-field
         label="Name"
         v-model="address.name"
+        :rules="requiredRule"
         required
       ></v-text-field>
       <v-text-field
         label="Street"
         v-model="address.street"
+        :rules="requiredRule"
         required
       ></v-text-field>
       <v-text-field
         label="Street 2"
         v-model="address.street2"
-        required
       ></v-text-field>
       <v-text-field
         label="City"
         v-model="address.city"
+        :rules="requiredRule"
         required
       ></v-text-field>
       <v-text-field
         label="State/Province"
         v-model="address.province"
+        :rules="requiredRule"
         required
       ></v-text-field>
       <v-text-field
         label="Postal Code"
         v-model="address.postalCode"
+        :rules="requiredRule"
         required
       ></v-text-field>
       <v-text-field
         label="Country"
         v-model="address.country"
+        :rules="requiredRule"
         required
       ></v-text-field>
-      <v-btn color="success" @click="save()">Save Address</v-btn>
+      <v-btn type="submit" color="success">Save Address</v-btn>
     </v-form>
   </div>
 </template>
@@ -56,7 +61,8 @@ export default {
         country: null,
         postalCode: null,
         street2: null
-      }
+      },
+      requiredRule: [v => !!v || 'Field is required']
     }
   },
   apollo: {
@@ -76,25 +82,27 @@ export default {
   },
   methods: {
     save() {
-      this.$apollo.mutate({
-        mutation: UPDATE_ADDRESS,
-        variables: {
-          addressInput: {
-            id: this.address.id,
-            name: this.address.name,
-            street: this.address.street,
-            city: this.address.city,
-            province: this.address.province,
-            country: this.address.country,
-            postalCode: this.address.postalCode,
-            street2: this.address.street2,
-            memberId: this.$store.state.user.principal.member.id
+      if (this.$refs.addressForm.validate()) {
+        this.$apollo.mutate({
+          mutation: UPDATE_ADDRESS,
+          variables: {
+            addressInput: {
+              id: this.address.id,
+              name: this.address.name,
+              street: this.address.street,
+              city: this.address.city,
+              province: this.address.province,
+              country: this.address.country,
+              postalCode: this.address.postalCode,
+              street2: this.address.street2 || '',
+              memberId: this.$store.state.user.principal.member.id
+            }
+          },
+          update: async (store, { data: { updateAddress } }) => {
+            this.address = updateAddress
           }
-        },
-        update: async (store, { data: { updateAddress } }) => {
-          this.address = updateAddress
-        }
-      })
+        })
+      }
     }
   }
 }
