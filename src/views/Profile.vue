@@ -36,6 +36,9 @@
               ></v-text-field>
             -->
           </v-form>
+          <v-btn color="success" @click="saveData()">Save Information</v-btn>
+          <h2>Your Address</h2>
+          <AddressForm />
         </v-flex>
         <v-flex xs6>
           <div class="mx-auto">
@@ -54,7 +57,6 @@
           </div>
         </v-flex>
       </v-layout>
-      <v-btn color="success" @click="saveData()">Save</v-btn>
     </v-container>
     <v-snackbar
       :timeout="6000"
@@ -69,12 +71,16 @@
 </template>
 
 <script>
+import AddressForm from '@/components/AddressForm.vue'
 import IDENTITY_QUERY from '@/graphql/GetIdentity.gql'
 import UPDATE_PROFILE from '@/graphql/UpdateProfile.gql'
 import { Actions } from '@/store'
 const { VUE_APP_TENANT_ID, VUE_APP_LANE } = process.env
 
 export default {
+  components: {
+    AddressForm
+  },
   data: () => ({
     visible: false,
     password: '',
