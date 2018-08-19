@@ -8,13 +8,13 @@
         <span>
         </span>
         <v-flex sm4 pa-3>
-          <DashCard :loading="$apollo.queries.allSales.loading" color="light-blue" darken="1" :display="`$${personalSales.totalAmount}`" subheading="Personal" icon="person" />
+          <DashCard :loading="$apollo.queries.teamStats.loading" color="light-blue" darken="1" :display="`$${teamStats.personal.totalAmount}`" subheading="Personal" icon="person" />
         </v-flex>
         <v-flex sm4 pa-3>
-          <DashCard :loading="$apollo.queries.team.loading" color="indigo" darken="1" :display="`$${team.totalTeamAmount}`" subheading="Team" icon="people" />
+          <DashCard :loading="$apollo.queries.teamStats.loading" color="indigo" darken="1" :display="`$${team.totalTeamAmount}`" subheading="Team" icon="people" />
         </v-flex>
         <v-flex sm4 pa-3>
-          <DashCard :loading="$apollo.queries.allSales.loading" color="pink" darken="1" :display="sales" subheading="Sales" icon="star" />
+          <DashCard :loading="$apollo.queries.teamStats.loading" color="pink" darken="1" :display="teamStats.personal.sales" subheading="Sales" icon="star" />
         </v-flex>
       </v-layout>
     </v-container>
@@ -22,10 +22,10 @@
     <v-container fluid grid-list-xs>
       <v-layout row wrap>
         <v-flex sm6 pa-3>
-          <DashCard :loading="$apollo.queries.team.loading" color="light-blue" darken="2" :display="team.teamSize" subheading="Size" icon="person_outline" />
+          <DashCard :loading="$apollo.queries.teamStats.loading" color="light-blue" darken="2" :display="team.teamSize" subheading="Size" icon="person_outline" />
         </v-flex>
         <v-flex sm6 pa-3>
-          <DashCard :loading="$apollo.queries.team.loading" color="indigo" darken="2" :display="team.firstLevelSize" subheading="First Level" icon="people_outline" />
+          <DashCard :loading="$apollo.queries.teamStats.loading" color="indigo" darken="2" :display="teamStats.firstLevel.size" subheading="First Level" icon="people_outline" />
         </v-flex>
       </v-layout>
     </v-container>
@@ -82,14 +82,14 @@ import DashCard from '@/components/DashboardCard.vue'
 import LeaderBoard from '@/components/Leaderboard.vue'
 import MonthSelector from '@/components/MonthSelector.vue'
 import IncentiveTrip from '@/components/IncentiveTrip.vue'
-import SALES from '@/graphql/Sales.gql'
-import MONTHLY_STATS_QUERY from '@/graphql/GetMonthlyStats.gql'
+import TEAM_STATS_BY_LEVEL from '@/graphql/TeamStatsByLevel.gql'
 import {
   MONTHLY_SALES_LEADERBOARD,
   MONTHLY_FRONTLINE_LEADERBOARD
 } from '@/graphql/Leaderboard.js'
 import { ADDRESS_BY_MEMBER_ID } from '@/graphql/Address.js'
 import tenantInfo from '@/tenant.js'
+import moment from 'moment'
 
 const { VUE_APP_TENANT_ID } = process.env
 
@@ -105,27 +105,61 @@ export default {
     allSales: [],
     month: new Date().getMonth() + 1,
     year: new Date().getFullYear(),
-    team: {},
+    startDate: moment()
+      .startOf('month')
+      .format('YYYY-MM-DD'),
+    endDate: moment()
+      .endOf('month')
+      .format('YYYY-MM-DD'),
+    team: {
+      totalTeamAmount: 0,
+      teamSize: 0
+    },
     incentiveTrip: tenantInfo.incentiveTrip,
     MonthlyFrontlineLeaders: [],
     MonthlySalesLeaders: [],
     address: null,
-    showAddressDialog: false
+    showAddressDialog: false,
+    teamStats: {
+      personal: {
+        totalAmount: 0,
+        sales: 0
+      },
+      firstLevel: {
+        size: 0
+      }
+    }
   }),
   apollo: {
-    allSales: {
-      query: SALES,
+    teamStats: {
+      query: TEAM_STATS_BY_LEVEL,
       variables() {
         return {
-          saleCondition: {
-            sellerId: this.$store.state.user.principal.member.id,
+          teamInput: {
+            memberId: this.$store.state.user.principal.member.id,
+            tenantId: process.env.VUE_APP_TENANT_ID,
+            startDate: this.startDate,
+            endDate: this.endDate,
             month: this.month,
             year: this.year
           }
         }
       },
-      update({ allSales }) {
-        return allSales.nodes
+      update({ TeamStatsByLevel }) {
+        this.team.totalTeamAmount =
+          TeamStatsByLevel.personal.totalAmount +
+          TeamStatsByLevel.firstLevel.totalAmount +
+          TeamStatsByLevel.secondLevel.totalAmount +
+          TeamStatsByLevel.thirdLevel.totalAmount +
+          TeamStatsByLevel.fourthLevel.totalAmount
+
+        this.team.teamSize =
+          TeamStatsByLevel.firstLevel.size +
+          TeamStatsByLevel.secondLevel.size +
+          TeamStatsByLevel.thirdLevel.size +
+          TeamStatsByLevel.fourthLevel.size
+
+        return TeamStatsByLevel
       }
     },
     address: {
@@ -139,33 +173,11 @@ export default {
       },
       update({ addressByMemberOrTenant }) {
         const a = addressByMemberOrTenant[0]
-        console.log('ADDRESS', a)
         this.showAddressDialog = false
         if (!a) {
           this.showAddressDialog = true
         }
         return Object.assign({}, a)
-      },
-      fetchPolicy: 'cache-and-network'
-    },
-    team: {
-      query: MONTHLY_STATS_QUERY,
-      variables() {
-        return {
-          targetCondition: {
-            sellerId: this.$store.state.user.principal.member.id,
-            month: this.month,
-            year: this.year
-          },
-          firstLevelCondition: {
-            sponsorId: this.$store.state.user.principal.member.id,
-            month: this.month,
-            year: this.year
-          }
-        }
-      },
-      update({ targetStats }) {
-        return targetStats.nodes[0] || { totalTeamAmount: 0 }
       },
       fetchPolicy: 'cache-and-network'
     },
@@ -205,27 +217,9 @@ export default {
       const dateSplit = date.split('-')
       this.month = dateSplit[1]
       this.year = dateSplit[0]
-    }
-  },
-  computed: {
-    personalSales() {
-      return this.allSales.reduce(
-        (t, s) => ({
-          totalAmount: t.totalAmount + s.totalAmount,
-          totalPoints: t.totalPoints + s.totalPoints,
-          commissionableAmount: t.commissionableAmount + s.commissionableAmount,
-          commissionableTotal: t.commissionableTotal + s.commissionableTotal
-        }),
-        {
-          totalAmount: 0,
-          totalPoints: 0,
-          commissionableAmount: 0,
-          commissionableTotal: 0
-        }
-      )
-    },
-    sales() {
-      return this.allSales.length
+      const monthDate = moment().set({ year: this.year, month: this.month })
+      this.startDate = monthDate.startOf('month').format('YYYY-MM-DD')
+      this.endDate = monthDate.endOf('month').format('YYYY-MM-DD')
     }
   }
 }

@@ -1,0 +1,11 @@
+query teamStats($teamInput: TeamStatsInput!) {
+  TeamStatsByLevel(input: $teamInput) {
+    memberId
+    tenantId
+    personal
+    firstLevel
+    secondLevel
+    thirdLevel
+    fourthLevel
+  }
+}
