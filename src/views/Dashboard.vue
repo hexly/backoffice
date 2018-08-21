@@ -8,11 +8,14 @@
           <img class="image" :src="getAvatar" />
         </v-flex>
         <v-flex sm6>
-          <h3>Current Level: Ambassador</h3>
+          <!-- <h3>Current Level: Ambassador</h3> -->
+          <h3>Personl Stats</h3>
           <ul>
             <li>Qualified First Level: {{team.personal.qualified}}</li>
             <li>Total Personal Points: {{team.personal.totalPoints}}</li>
             <li>Total Personal Amount: {{team.personal.totalAmount}}</li>
+            <li>Total Personal Sales: {{team.personal.sales}}</li>
+            <li>Personal Recruites: {{team.personal.recruited}}</li>
             <li><hr/></li>
             <li>Team Size: {{team.teamSize}}</li>
             <li>Total Team Points: {{team.totalTeamAmount}}</li>
