@@ -51,11 +51,11 @@ export default {
   },
   props: {
     month: {
-      type: Number,
+      type: [Number, String],
       default: new Date().getMonth() + 1
     },
     year: {
-      type: Number,
+      type: [Number, String],
       default: new Date().getFullYear()
     }
   },

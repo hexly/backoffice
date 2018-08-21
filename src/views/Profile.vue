@@ -75,7 +75,6 @@ import AddressForm from '@/components/AddressForm.vue'
 import IDENTITY_QUERY from '@/graphql/GetIdentity.gql'
 import UPDATE_PROFILE from '@/graphql/UpdateProfile.gql'
 import { Actions } from '@/store'
-const { VUE_APP_TENANT_ID, VUE_APP_LANE } = process.env
 
 export default {
   components: {
@@ -148,9 +147,6 @@ export default {
         this.editMember.profileUrl ||
         'http://res.cloudinary.com/hexly/image/upload/dev/1001/avatar/undefined.jpg'
       )
-    },
-    avatarId() {
-      return `${VUE_APP_LANE}/${VUE_APP_TENANT_ID}/avatar/${this.editMember.id}`
     }
   }
 }

@@ -1,33 +1,49 @@
 <template>
   <div class="dashboard">
-    <h1>Dashboard</h1>
+    <h1>Welcome To your backoffice {{member.displayName}}!</h1>
     <month-selector :year="year" :month="month" @date-changed="dateChanged"/>
-    <v-subheader>Sales</v-subheader>
-    <v-container fluid grid-list-xs>
+    <v-container fluid class="contain">
       <v-layout row wrap>
-        <span>
-        </span>
-        <v-flex sm4 pa-3>
-          <DashCard :loading="$apollo.queries.teamStats.loading" color="light-blue" darken="1" :display="`$${teamStats.personal.totalAmount}`" subheading="Personal" icon="person" />
+        <v-flex sm2>
+          <img class="image" :src="getAvatar" />
         </v-flex>
-        <v-flex sm4 pa-3>
-          <DashCard :loading="$apollo.queries.teamStats.loading" color="indigo" darken="1" :display="`$${team.totalTeamAmount}`" subheading="Team" icon="people" />
+        <v-flex sm6>
+          <h3>Current Level: Ambassador</h3>
+          <ul>
+            <li>Qualified First Level: {{team.personal.qualified}}</li>
+            <li>Total Personal Points: {{team.personal.totalPoints}}</li>
+            <li>Total Personal Amount: {{team.personal.totalAmount}}</li>
+            <li><hr/></li>
+            <li>Team Size: {{team.teamSize}}</li>
+            <li>Total Team Points: {{team.totalTeamAmount}}</li>
+          </ul>
         </v-flex>
-        <v-flex sm4 pa-3>
-          <DashCard :loading="$apollo.queries.teamStats.loading" color="pink" darken="1" :display="teamStats.personal.sales" subheading="Sales" icon="star" />
-        </v-flex>
+        <v-spacer/>
       </v-layout>
-    </v-container>
-    <v-subheader>Team</v-subheader>
-    <v-container fluid grid-list-xs>
-      <v-layout row wrap>
-        <v-flex sm6 pa-3>
-          <DashCard :loading="$apollo.queries.teamStats.loading" color="light-blue" darken="2" :display="team.teamSize" subheading="Size" icon="person_outline" />
-        </v-flex>
-        <v-flex sm6 pa-3>
-          <DashCard :loading="$apollo.queries.teamStats.loading" color="indigo" darken="2" :display="teamStats.firstLevel.size" subheading="First Level" icon="people_outline" />
-        </v-flex>
-      </v-layout>
+      <CompPlanLevel
+        :level="team.firstLevel"
+        levelName="One"
+        :percent="calculatePercent(.1, 1)"
+        notes="If you have 1 active* person in your first level you will receive 10% of your First Level Commissionable Points"
+      />
+      <CompPlanLevel
+        :level="team.secondLevel"
+        levelName="Two"
+        :percent="calculatePercent(.05, 2)"
+        notes="If you have 2 active* person in your first level you will receive 5% of your Fourth Level Commissionable Points"
+      />
+      <CompPlanLevel
+        :level="team.thirdLevel"
+        levelName="Three"
+        :percent="calculatePercent(.05, 3)"
+        notes="If you have 3 active* person in your first level you will receive 5% of your Third Level Commissionable Points"
+      />
+      <CompPlanLevel
+        :level="team.fourthLevel"
+        levelName="Fourth"
+        :percent="calculatePercent(.1, 4)"
+        notes="If you have 4 active* person in your first level you will receive 10% of your Fourth Level Commissionable Points"
+      />
     </v-container>
     <div v-if="incentiveTrip">
       <v-subheader>Incentive Trip</v-subheader>
@@ -43,10 +59,10 @@
     <v-container fluid grid-list-xs>
       <v-layout row wrap>
         <v-flex sm6 pa-3>
-          <LeaderBoard :leaders="MonthlySalesLeaders" title="Monthly Sales Leaders" :showTotal="false"/>
+          <LeaderBoard :leaders="MonthlySalesLeaders" title="Top Sellers" :showTotal="false"/>
         </v-flex>
         <v-flex sm6 pa-3>
-          <LeaderBoard :leaders="MonthlyFrontlineLeaders" title="Monthly Frontline Leaders"/>
+          <LeaderBoard :leaders="MonthlyFrontlineLeaders" title="Top Recruiters"/>
         </v-flex>
       </v-layout>
     </v-container>
@@ -80,8 +96,10 @@
 <script>
 import DashCard from '@/components/DashboardCard.vue'
 import LeaderBoard from '@/components/Leaderboard.vue'
+import CompPlanLevel from '@/components/CompPlanLevel.vue'
 import MonthSelector from '@/components/MonthSelector.vue'
 import IncentiveTrip from '@/components/IncentiveTrip.vue'
+import IDENTITY_QUERY from '@/graphql/GetIdentity.gql'
 import TEAM_STATS_BY_LEVEL from '@/graphql/TeamStatsByLevel.gql'
 import {
   MONTHLY_SALES_LEADERBOARD,
@@ -99,7 +117,8 @@ export default {
     DashCard,
     MonthSelector,
     IncentiveTrip,
-    LeaderBoard
+    LeaderBoard,
+    CompPlanLevel
   },
   data: () => ({
     allSales: [],
@@ -111,27 +130,40 @@ export default {
     endDate: moment()
       .endOf('month')
       .format('YYYY-MM-DD'),
-    team: {
-      totalTeamAmount: 0,
-      teamSize: 0
-    },
     incentiveTrip: tenantInfo.incentiveTrip,
     MonthlyFrontlineLeaders: [],
     MonthlySalesLeaders: [],
     address: null,
     showAddressDialog: false,
-    teamStats: {
+    team: {
       personal: {
-        totalAmount: 0,
-        sales: 0
+        qualified: 0
       },
-      firstLevel: {
-        size: 0
-      }
-    }
+      firstLevel: {},
+      secondLevel: {},
+      thirdLevel: {},
+      fourthLevel: {},
+      teamSize: 0,
+      totalTeamAmount: 0
+    },
+    member: {}
   }),
   apollo: {
-    teamStats: {
+    member: {
+      query: IDENTITY_QUERY,
+      variables() {
+        return {
+          condition: {
+            memberId: this.$store.state.user.principal.member.id
+          }
+        }
+      },
+      update({ allIdentities }) {
+        const member = allIdentities.nodes[0]
+        return member
+      }
+    },
+    team: {
       query: TEAM_STATS_BY_LEVEL,
       variables() {
         return {
@@ -146,20 +178,20 @@ export default {
         }
       },
       update({ TeamStatsByLevel }) {
-        this.team.totalTeamAmount =
+        const totalTeamAmount =
           TeamStatsByLevel.personal.totalAmount +
           TeamStatsByLevel.firstLevel.totalAmount +
           TeamStatsByLevel.secondLevel.totalAmount +
           TeamStatsByLevel.thirdLevel.totalAmount +
           TeamStatsByLevel.fourthLevel.totalAmount
 
-        this.team.teamSize =
+        const teamSize =
           TeamStatsByLevel.firstLevel.size +
           TeamStatsByLevel.secondLevel.size +
           TeamStatsByLevel.thirdLevel.size +
           TeamStatsByLevel.fourthLevel.size
 
-        return TeamStatsByLevel
+        return { ...TeamStatsByLevel, totalTeamAmount, teamSize }
       }
     },
     address: {
@@ -220,10 +252,35 @@ export default {
       const monthDate = moment().set({ year: this.year, month: this.month })
       this.startDate = monthDate.startOf('month').format('YYYY-MM-DD')
       this.endDate = monthDate.endOf('month').format('YYYY-MM-DD')
+    },
+    calculatePercent(percent, qualified) {
+      if (this.team.personal.qualified >= qualified) {
+        return percent
+      }
+      return 0
+    }
+  },
+  computed: {
+    getAvatar() {
+      return (
+        this.member.profileUrl ||
+        'http://res.cloudinary.com/hexly/image/upload/dev/1001/avatar/undefined.jpg'
+      )
     }
   }
 }
 </script>
 
 <style scoped>
+.image {
+  width: 100%;
+  border-radius: 100%;
+  border: 10px solid white;
+}
+.comp-plan .contain {
+  max-width: 1400px;
+}
+ul li {
+  list-style: none;
+}
 </style>
