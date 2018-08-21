@@ -9,7 +9,7 @@
         </v-flex>
         <v-flex sm6>
           <!-- <h3>Current Level: Ambassador</h3> -->
-          <h3>Personl Stats</h3>
+          <h3>Personal Stats</h3>
           <ul>
             <li>Qualified First Level: {{team.personal.qualified}}</li>
             <li>Total Personal Points: {{team.personal.totalPoints}}</li>
@@ -265,10 +265,13 @@ export default {
   },
   computed: {
     getAvatar() {
-      return (
-        this.member.profileUrl ||
+      let image =
         'http://res.cloudinary.com/hexly/image/upload/dev/1001/avatar/undefined.jpg'
-      )
+      if (this.member.profileUrl) {
+        image = this.member.profileUrl
+        image.replace('/image/upload', '/image/upload/w_190,h_190')
+      }
+      return image
     }
   }
 }
