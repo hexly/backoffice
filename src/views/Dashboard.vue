@@ -268,8 +268,10 @@ export default {
       let image =
         'http://res.cloudinary.com/hexly/image/upload/dev/1001/avatar/undefined.jpg'
       if (this.member.profileUrl) {
-        image = this.member.profileUrl
-        image.replace('/image/upload', '/image/upload/w_190,h_190')
+        image = this.member.profileUrl.replace(
+          '/image/upload',
+          '/image/upload/w_190,h_190'
+        )
       }
       return image
     }
