@@ -2,7 +2,7 @@
   <div class="comp-plan-level">
     <v-layout row wrap>
       <v-flex>
-      <div class="ma-2">
+      <div class="ma-2" :style="{ border: `3px solid #${percent > 0 ? color: 'FFFFFF'}`}">
         <div class="pa-2 grey lighten-4 d-flex align-top">
           <div class="flex xs3 text-xs-left">
             <div class="header grey--text text--darken-1">Level</div>
@@ -62,7 +62,8 @@ export default {
     },
     levelName: String,
     percent: Number,
-    notes: String
+    notes: String,
+    color: String
   }
 }
 </script>

@@ -5,11 +5,11 @@
     <v-container fluid class="contain">
       <v-layout row wrap>
         <v-flex sm2>
-          <img class="image" :src="getAvatar" />
+          <img class="image" :src="getAvatar" :style="{ borderColor: `#${currentRank.color}`}"/>
         </v-flex>
         <v-flex sm6>
           <!-- <h3>Current Level: Ambassador</h3> -->
-          <h3>Personal Stats</h3>
+          <h3>Chakra: {{currentRank.name}}</h3>
           <ul>
             <li>Qualified First Level: {{team.personal.qualified}}</li>
             <li>Total Personal Points: {{team.personal.totalPoints}}</li>
@@ -17,8 +17,8 @@
             <li>Total Personal Sales: {{team.personal.sales}}</li>
             <li>Personal Recruites: {{team.personal.recruited}}</li>
             <li><hr/></li>
-            <li>Team Size: {{team.teamSize}}</li>
-            <li>Total Team Points: {{team.totalTeamAmount}}</li>
+            <li>Family Size: {{team.teamSize}}</li>
+            <li>Total Family Points: {{team.totalTeamAmount}}</li>
           </ul>
         </v-flex>
         <v-spacer/>
@@ -27,25 +27,29 @@
         :level="team.firstLevel"
         levelName="One"
         :percent="calculatePercent(.1, 1)"
-        notes="If you have 1 active* person in your first level you will receive 10% of your First Level Commissionable Points"
+        notes="If you have 1 qualifying member in your first level you will receive 10% of your First Level Commissionable Points"
+        :color="ranks[2].color"
       />
       <CompPlanLevel
         :level="team.secondLevel"
         levelName="Two"
         :percent="calculatePercent(.05, 2)"
-        notes="If you have 2 active* person in your first level you will receive 5% of your Fourth Level Commissionable Points"
+        notes="If you have 2 qualifying members in your first level you will receive 5% of your Second Level Commissionable Points"
+        :color="ranks[3].color"
       />
       <CompPlanLevel
         :level="team.thirdLevel"
         levelName="Three"
         :percent="calculatePercent(.05, 3)"
-        notes="If you have 3 active* person in your first level you will receive 5% of your Third Level Commissionable Points"
+        notes="If you have 3 qualifying members in your first level you will receive 5% of your Third Level Commissionable Points"
+        :color="ranks[4].color"
       />
       <CompPlanLevel
         :level="team.fourthLevel"
         levelName="Fourth"
         :percent="calculatePercent(.1, 4)"
-        notes="If you have 4 active* person in your first level you will receive 10% of your Fourth Level Commissionable Points"
+        notes="If you have 4 qualifying members in your first level you will receive 10% of your Fourth Level Commissionable Points"
+        :color="ranks[5].color"
       />
     </v-container>
     <div v-if="incentiveTrip">
@@ -124,6 +128,16 @@ export default {
     CompPlanLevel
   },
   data: () => ({
+    ranks: {
+      0: { name: 'Unqualified', color: 'FFFFFF' },
+      1: { name: 'Zen Ambassador', color: 'E53A37' },
+      2: { name: 'Zen Guide', color: 'E67C4F' },
+      3: { name: 'Zen Guru', color: 'FDEF53' },
+      4: { name: 'Zen Sage', color: '7FB75F' },
+      5: { name: 'Zen Master', color: '3848A0' }
+    },
+    rankStyle: {},
+    currentRank: { name: 'Unqualified', color: 'FFFFFF' },
     allSales: [],
     month: new Date().getMonth() + 1,
     year: new Date().getFullYear(),
@@ -194,6 +208,17 @@ export default {
           TeamStatsByLevel.thirdLevel.size +
           TeamStatsByLevel.fourthLevel.size
 
+        // Calculate Rank
+        let r = 0
+        if (TeamStatsByLevel.personal.totalPoints >= 60) {
+          r = 1
+        }
+        if (r >= 1) {
+          r += TeamStatsByLevel.personal.qualified
+        }
+
+        this.currentRank = this.ranks[r > 5 ? 5 : r]
+        this.rankStyle.borderStyle = `#${this.currentRank.color}`
         return { ...TeamStatsByLevel, totalTeamAmount, teamSize }
       }
     },
@@ -261,7 +286,8 @@ export default {
         return percent
       }
       return 0
-    }
+    },
+    calculateRank(qualified) {}
   },
   computed: {
     getAvatar() {
