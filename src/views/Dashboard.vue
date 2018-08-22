@@ -8,7 +8,6 @@
           <img class="image" :src="getAvatar" :style="{ borderColor: `#${currentRank.color}`}"/>
         </v-flex>
         <v-flex sm6>
-          <!-- <h3>Current Level: Ambassador</h3> -->
           <h3>Chakra: {{currentRank.name}}</h3>
           <ul>
             <li>Qualified First Level: {{team.personal.qualified}}</li>
@@ -282,7 +281,10 @@ export default {
       this.endDate = monthDate.endOf('month').format('YYYY-MM-DD')
     },
     calculatePercent(percent, qualified) {
-      if (this.team.personal.qualified >= qualified) {
+      if (
+        this.team.personal.qualified >= qualified ||
+        this.team.personal.totalPoints >= 60
+      ) {
         return percent
       }
       return 0
