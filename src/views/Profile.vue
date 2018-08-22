@@ -107,6 +107,7 @@ export default {
       this.isFalse = false
       this.isUploading = false
       this.editMember.profileUrl = data.secure_url
+      this.saveData()
     },
     saveData() {
       this.$apollo.mutate({
