@@ -282,7 +282,7 @@ export default {
     },
     calculatePercent(percent, qualified) {
       if (
-        this.team.personal.qualified >= qualified ||
+        this.team.personal.qualified >= qualified &&
         this.team.personal.totalPoints >= 60
       ) {
         return percent
