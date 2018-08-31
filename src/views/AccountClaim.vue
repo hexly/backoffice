@@ -112,10 +112,7 @@ export default {
         v =>
           (v && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(v)) ||
           'Store name must not have spaces, special characters, nor capital letters',
-        v => {
-          if (v.length > 20) return 'Password must be 20 or less characters'
-          return true
-        }
+        v => (v && v.length <= 20) || 'Slug must be 20 or less characters'
       ],
       passwordRule: [
         v => !!v || 'Field is required',

@@ -36,9 +36,9 @@
               ></v-text-field>
             -->
           </v-form>
-          <v-btn color="success" @click="saveData()">Save Information</v-btn>
+          <v-btn :disabled="saving" :loading="saving" color="success" @click="saveData()">Save Information</v-btn>
           <h2>Your Address</h2>
-          <AddressForm />
+          <AddressForm @addressSaved="snackbar = true"/>
         </v-flex>
         <v-flex xs6>
           <div class="mx-auto">
@@ -94,7 +94,8 @@ export default {
       displayName: '',
       email: '',
       profileUrl: ''
-    }
+    },
+    saving: false
   }),
   methods: {
     async filesChange(files) {
@@ -110,6 +111,7 @@ export default {
       this.saveData()
     },
     saveData() {
+      this.saving = true
       this.$apollo.mutate({
         mutation: UPDATE_PROFILE,
         variables: {
@@ -120,9 +122,12 @@ export default {
             contactEmail: this.editMember.email,
             profileUrl: this.editMember.profileUrl
           }
+        },
+        update: (store, response) => {
+          this.saving = false
+          this.snackbar = true
         }
       })
-      this.snackbar = true
     }
   },
   apollo: {

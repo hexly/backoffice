@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import axios from 'axios'
+import crisp from '@/plugins/crisp'
 import { UserStore } from '@/stores/UserStore'
 import { ClaimStore } from '@/stores/ClaimStore'
 import TeamStore from '@/stores/TeamStore'
@@ -32,6 +33,7 @@ const verifyPrincipal = async hydratedState => {
     localStorage.clear()
     window.location = '/'
   }
+  window.CRISP_READY_TRIGGER = crisp.load(hydratedState.user.principal)
 }
 
 const DejaVue = {

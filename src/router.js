@@ -7,6 +7,7 @@ import PasswordReset from './views/PasswordReset.vue'
 import Backoffice from './views/Backoffice.vue'
 import Dashboard from './views/Dashboard.vue'
 import Profile from './views/Profile.vue'
+import Assets from './views/Assets.vue'
 import Team from './views/Team.vue'
 import Sales from './views/Sales.vue'
 
@@ -73,6 +74,11 @@ export default new Router({
           path: 'profile',
           name: 'profile',
           component: Profile
+        },
+        {
+          path: 'assets',
+          name: 'assets',
+          component: Assets
         },
         {
           path: 'sales',

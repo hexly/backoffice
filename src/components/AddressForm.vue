@@ -41,7 +41,7 @@
         :rules="requiredRule"
         required
       ></v-text-field>
-      <v-btn type="submit" color="success">Save Address</v-btn>
+      <v-btn :disabled="saving" :loading="saving" type="submit" color="success">Save Address</v-btn>
     </v-form>
   </div>
 </template>
@@ -62,7 +62,8 @@ export default {
         postalCode: null,
         street2: null
       },
-      requiredRule: [v => !!v || 'Field is required']
+      requiredRule: [v => !!v || 'Field is required'],
+      saving: false
     }
   },
   apollo: {
@@ -83,6 +84,7 @@ export default {
   methods: {
     save() {
       if (this.$refs.addressForm.validate()) {
+        this.saving = true
         this.$apollo.mutate({
           mutation: UPDATE_ADDRESS,
           variables: {
@@ -98,8 +100,10 @@ export default {
               memberId: this.$store.state.user.principal.member.id
             }
           },
-          update: async (store, { data: { updateAddress } }) => {
+          update: (store, { data: { updateAddress } }) => {
+            this.saving = false
             this.address = updateAddress
+            this.$emit('addressSaved')
           }
         })
       }

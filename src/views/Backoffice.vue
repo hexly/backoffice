@@ -28,6 +28,14 @@
             <v-list-tile-title>Profile</v-list-tile-title>
           </v-list-tile-content>
         </v-list-tile>
+        <!-- <v-list-tile to="/assets">
+          <v-list-tile-action>
+            <v-icon>perm_media</v-icon>
+          </v-list-tile-action>
+          <v-list-tile-content>
+            <v-list-tile-title>Assets</v-list-tile-title>
+          </v-list-tile-content>
+        </v-list-tile> -->
         <v-list-tile to="/sales">
           <v-list-tile-action>
             <v-icon>shopping_basket</v-icon>

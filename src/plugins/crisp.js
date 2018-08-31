@@ -11,5 +11,19 @@ export default {
     } else {
       console.warn('No Crisp id found, Crip is not set up')
     }
+  },
+  load(principal) {
+    return () => {
+      window.$crisp.set('session:data', [
+        [
+          ['displayName', principal.displayName],
+          ['identityId', principal.identityId],
+          ['username', principal.username],
+          ['memberId', principal.member.id]
+        ]
+      ])
+      window.$crisp.set('user:nickname', principal.member.name)
+      window.$crisp.set('user:email', principal.username)
+    }
   }
 }
