@@ -26,15 +26,21 @@
         </v-flex>
       </v-layout>
     </v-container>
-    <v-card-actions v-if="actions">
-      <v-btn flat color="orange" @click="viewTeam">View Team</v-btn>
-    </v-card-actions>
+          <div width=100%>
+            <v-card-actions v-if="actions">
+              <v-btn flat color="blue" block="true" @click="viewTeam">View Team</v-btn>
+              <v-btn flat color="white" block="true" disabled="true"></v-btn>
+              <v-btn flat color="green" block="true" v-if="stats.totalPoints >= 60">qualified</v-btn>
+              <v-btn flat color= white block="true" disabled v-else>unqaulified</v-btn>
+            </v-card-actions>
+          </div>
   </v-card>
+
 </template>
 
 <script>
 export default {
-  name: 'TeamCard',
+  name: "TeamCard",
   data: () => ({
     show: false
   }),
@@ -46,22 +52,22 @@ export default {
   },
   methods: {
     viewTeam() {
-      this.$emit('viewTeam', this.user)
+      this.$emit("viewTeam", this.user);
     }
   },
   computed: {
     getAvatar() {
       return (
         (this.user && this.user.profileUrl) ||
-        'http://res.cloudinary.com/hexly/image/upload/dev/1001/avatar/undefined.jpg'
-      )
+        "http://res.cloudinary.com/hexly/image/upload/dev/1001/avatar/undefined.jpg"
+      );
     }
   }
-}
+};
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
+<style>
 .team-card {
   margin: 10px;
   min-width: 350px;
