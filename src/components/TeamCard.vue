@@ -7,6 +7,7 @@
             <div class="headline">{{user.name}}</div>
             <div>{{user.email}}</div>
             <div>{{user.displayName}}</div>
+            <div>Date Joined: {{stats.joinedOn | formatDate}}</div>
             <div>Team Size: {{stats.teamSize || 0}}</div>
             <div>Front Line: {{stats.firstLevelSize || 0}}</div>
             <!-- <div>Total Points: {{stats.totalPoints || 0}}</div>
@@ -28,10 +29,10 @@
     </v-container>
           <div width=100%>
             <v-card-actions v-if="actions">
-              <v-btn flat color="blue" block="true" @click="viewTeam">View Team</v-btn>
-              <v-btn flat color="white" block="true" disabled="true"></v-btn>
-              <v-btn flat color="green" block="true" v-if="stats.totalPoints >= 60">qualified</v-btn>
-              <v-btn flat color= white block="true" disabled v-else>unqaulified</v-btn>
+              <v-btn flat color="blue" block @click="viewTeam">View Team</v-btn>
+              <v-btn flat color="white" block disabled></v-btn>
+              <v-btn flat color="green" block v-if="isQualified">qualified</v-btn>
+              <v-btn flat color= white block disabled v-else>unqaulified</v-btn>
             </v-card-actions>
           </div>
   </v-card>
@@ -40,7 +41,7 @@
 
 <script>
 export default {
-  name: "TeamCard",
+  name: 'TeamCard',
   data: () => ({
     show: false
   }),
@@ -50,20 +51,35 @@ export default {
     stats: Object,
     loading: Boolean
   },
+  filters: {
+    formatDate(value) {
+      const joinedDate = new Date(value)
+      return `${joinedDate.getMonth() +
+        1}/${joinedDate.getDate()}/${joinedDate.getFullYear()}`
+    }
+  },
   methods: {
     viewTeam() {
-      this.$emit("viewTeam", this.user);
+      this.$emit('viewTeam', this.user)
     }
   },
   computed: {
     getAvatar() {
       return (
         (this.user && this.user.profileUrl) ||
-        "http://res.cloudinary.com/hexly/image/upload/dev/1001/avatar/undefined.jpg"
-      );
+        'http://res.cloudinary.com/hexly/image/upload/dev/1001/avatar/undefined.jpg'
+      )
+    },
+    isQualified() {
+      let joined = new Date(this.stats.joinedOn)
+      let today = new Date()
+      joined = `${joined.getFullYear()}-${joined.getMonth()}`
+      today = `${today.getFullYear()}-${today.getMonth()}`
+      const joinedThisMonth = joined === today
+      return this.stats.totalPoints >= 60 || joinedThisMonth
     }
   }
-};
+}
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
