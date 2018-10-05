@@ -1,6 +1,6 @@
 <template>
   <div class="dashboard">
-    <h1>Welcome To your backoffice {{member.displayName}}!</h1>
+    <h1>Welcome To Your Backoffice {{member.displayName}}!</h1>
     <month-selector :year="year" :month="month" @date-changed="dateChanged"/>
     <v-container fluid class="contain">
       <v-layout row wrap>
@@ -8,7 +8,7 @@
           <img class="image" :src="getAvatar" :style="{ borderColor: `#${currentRank.color}`}"/>
         </v-flex>
         <v-flex sm6>
-          <h3>Chakra: {{currentRank.name}}</h3>
+          <h3>Chakra: {{currentRank.name}}</h3> 
           <ul>
             <li>Qualified First Level: {{team.personal.qualified}}</li>
             <li>Total Personal Points: {{team.personal.totalPoints}}</li>
@@ -19,10 +19,17 @@
             <li>Family Size: {{team.teamSize}}</li>
             <li>Total Family Points: {{team.totalTeamAmount}}</li>
           </ul>
+
+          <div class="chakra ambassador" :class="{'active': team.personal.totalPoints >= 60}"></div>
+          <div class="chakra guide" :class="{'active': calculateRank(1)}"></div>
+          <div class="chakra guru" :class="{'active': calculateRank(2)}"></div>
+          <div class="chakra sage" :class="{'active': calculateRank(3)}"></div>
+          <div class="chakra master" :class="{'active': calculateRank(4)}"></div>
+
         </v-flex>
         <v-spacer/>
       </v-layout>
-      <CompPlanLevel
+        <CompPlanLevel
         :level="team.firstLevel"
         levelName="One"
         :percent="calculatePercent(.1, 1)"
@@ -45,7 +52,7 @@
       />
       <CompPlanLevel
         :level="team.fourthLevel"
-        levelName="Fourth"
+        levelName="Four"
         :percent="calculatePercent(.1, 4)"
         notes="If you have 4 qualifying members in your first level you will receive 10% of your Fourth Level Commissionable Points"
         :color="ranks[5].color"
@@ -289,7 +296,15 @@ export default {
       }
       return 0
     },
-    calculateRank(qualified) {}
+    calculateRank(qualified) {
+      if (
+        this.team.personal.qualified >= qualified &&
+        this.team.personal.totalPoints >= 60
+      ) {
+        return true
+      }
+      return false
+    }
   },
   computed: {
     getAvatar() {
@@ -319,4 +334,40 @@ export default {
 ul li {
   list-style: none;
 }
+
+.chakra {
+  width: 78px;
+  height: 67px;
+  display: inline-block;
+  filter: grayscale(100%) opacity(50%);
+  background-image: url('../../public/img/css_sprites.png');
+}
+
+.ambassador {
+  background-position: -108px -107px;
+}
+.guide {
+  background-position: -209px -85px;
+}
+.guru {
+  background-position: -10px -199px;
+}
+.sage {
+  background-position: -111px -10px;
+}
+.master {
+  background-position: -10px -107px;
+}
+
+.active {
+  filter: grayscale(0%) opacity(100%);
+}
+
+/* .chakra6 {
+  background-position: -209px -10px;
+}
+
+.chakra7 {
+  background-position: -10px -10px;
+} */
 </style>
