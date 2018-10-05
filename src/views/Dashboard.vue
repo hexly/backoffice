@@ -121,7 +121,6 @@ import {
 import { ADDRESS_BY_MEMBER_ID } from '@/graphql/Address.js'
 import tenantInfo from '@/tenant.js'
 import moment from 'moment'
-// import { url } from "koa-router";
 
 const { VUE_APP_TENANT_ID } = process.env
 
