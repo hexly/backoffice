@@ -8,7 +8,7 @@
           <img class="image" :src="getAvatar" :style="{ borderColor: `#${currentRank.color}`}"/>
         </v-flex>
         <v-flex sm6>
-          <h3>Chakra: {{currentRank.name}}</h3> 
+          <h3>Chakra: {{currentRank.name}}</h3>
           <ul>
             <li>Qualified First Level: {{team.personal.qualified}}</li>
             <li>Total Personal Points: {{team.personal.totalPoints}}</li>
