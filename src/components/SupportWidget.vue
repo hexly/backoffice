@@ -9,14 +9,14 @@
       </v-btn>
     </div>
     <v-alert
-      style="background-color: white;"
+      style="background-color: white; width: 350px;"
       :value="alert"
       color="white"
       transition="scale-transition"
     >
       <div v-if="error" class="error">{{error}}</div>
       <div v-if="success" class="success">{{success}}</div>
-      <v-form v-if="!success" lazy-validation="">
+      <v-form v-if="!success" lazy-validation ref="supportForm">
         <p style="color: black;"><strong>Questions? Chat with us!</strong></p>
         <v-text-field :rules="requiredRule" label="Name" v-model="name"></v-text-field>
         <v-text-field :rules="requiredRule" label="Subject" v-model="subject"></v-text-field>
@@ -37,8 +37,8 @@ export default {
   data() {
     return {
       alert: false,
-      name: this.$store.state.user.principal.member.name || '',
-      email: this.$store.state.user.principal.username || '',
+      name: '',
+      email: '',
       subject: '',
       message: '',
       success: false,
@@ -52,39 +52,55 @@ export default {
       ]
     }
   },
+  mounted() {
+    if (
+      this.$store.state.user.principal &&
+      this.$store.state.user.principal.member.name
+    ) {
+      this.name = this.$store.state.user.principal.member.name
+    }
+    if (
+      this.$store.state.user.principal &&
+      this.$store.state.user.principal.username
+    ) {
+      this.email = this.$store.state.user.principal.username
+    }
+  },
   methods: {
     submit: async function() {
       this.error = false
-      try {
-        await this.$apollo.mutate({
-          mutation: AddSupportTicket,
-          variables: {
-            tc: {
-              name: this.name,
-              email: this.email,
-              message: this.message,
-              subject: this.subject,
-              tenantId: VUE_APP_TENANT_ID
+      if (this.$refs.supportForm.validate()) {
+        try {
+          await this.$apollo.mutate({
+            mutation: AddSupportTicket,
+            variables: {
+              tc: {
+                name: this.name,
+                email: this.email,
+                message: this.message,
+                subject: this.subject,
+                tenantId: VUE_APP_TENANT_ID
+              }
+            },
+            update(
+              store,
+              {
+                data: { ticketCreate },
+                error: { errors }
+              }
+            ) {
+              if (errors) {
+                this.error = errors[0]
+              } else {
+                this.success = `Your support ticket has been created. Your ticket number is ${
+                  ticketCreate.short
+                }. For future reference please use this number.`
+              }
             }
-          },
-          update(
-            store,
-            {
-              data: { ticketCreate },
-              error: { errors }
-            }
-          ) {
-            if (errors) {
-              this.error = errors[0]
-            } else {
-              this.success = `Your support ticket has been created. Your ticket number is ${
-                ticketCreate.short
-              }. For future reference please use this number.`
-            }
-          }
-        })
-      } catch (err) {
-        this.error = err
+          })
+        } catch (err) {
+          this.error = err
+        }
       }
     }
   }
@@ -97,7 +113,7 @@ export default {
   right: 25px;
 }
 
-<<<<<<< head .error {
+.error {
   margin: 5px;
   padding: 10px;
   text-align: center;
@@ -109,7 +125,7 @@ export default {
   text-align: center;
 }
 
-=======>>>>>>>50e6aa70c901d6877200a57b28fd378122c9a2ed .sup-form {
+.sup-form {
   height: 40%;
 }
 </style>
