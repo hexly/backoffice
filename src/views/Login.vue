@@ -55,12 +55,16 @@
           </v-card>
         </v-flex>
       </v-layout>
+      <div justify-right>
+        <SupportWidget />
+      </div>
     </v-container>
   </v-content>
 </template>
 
 <script>
 import tenantInfo from '@/tenant.js'
+import SupportWidget from '@/components/SupportWidget'
 import AUTHENTICATE_MUTATION from '../graphql/Authenticate.gql'
 import { UserActions, UserMutations } from '@/stores/UserStore'
 import { ClaimActions } from '@/stores/ClaimStore'
@@ -82,6 +86,9 @@ export default {
       buttonLoading: false,
       version: VERSION
     }
+  },
+  components: {
+    SupportWidget
   },
   methods: {
     onLogin() {
