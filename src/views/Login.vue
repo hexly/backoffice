@@ -98,7 +98,14 @@ export default {
               memberId: null
             }
           },
-          update: async (store, { data: { authenticate: { jwtToken } } }) => {
+          update: async (
+            store,
+            {
+              data: {
+                authenticate: { jwtToken }
+              }
+            }
+          ) => {
             if (jwtToken) {
               this.$store.commit(UserMutations.SET_JWT, jwtToken)
               await this.$store.dispatch(UserActions.LOGIN_SUCCESS)
