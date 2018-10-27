@@ -5,24 +5,13 @@ import router from './router'
 import store from './store'
 import Chartkick from 'chartkick'
 import VueChartkick from 'vue-chartkick'
-import Crisp from './plugins/crisp'
 import 'chart.js'
 import 'vuetify/dist/vuetify.min.css'
-import {
-  apolloProvider
-} from './vue-apollo'
-const {
-  VUE_APP_CRIPS_WEBSITE_ID
-} = process.env
+import { apolloProvider } from './vue-apollo'
 
 Vue.use(VueChartkick, {
   Chartkick
 })
-
-Vue.use(Crisp, {
-  CRISP_WEBSITE_ID: VUE_APP_CRIPS_WEBSITE_ID
-})
-
 
 Vue.use(Vuetify)
 Vue.config.productionTip = false
@@ -31,7 +20,7 @@ Vue.config.productionTip = false
 // At some point in the future we will want to use it
 // and properly leverage it but for now, its just annoying
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.getRegistrations().then(function (registrations) {
+  navigator.serviceWorker.getRegistrations().then(function(registrations) {
     for (let registration of registrations) {
       registration.unregister()
     }

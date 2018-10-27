@@ -1,0 +1,5 @@
+mutation TicketCreateThing ($tc: TicketCreateInput!) {
+  ticketCreate (input:$tc) {
+    id
+  }
+}

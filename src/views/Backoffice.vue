@@ -75,6 +75,9 @@
     <v-content>
       <v-container fluid class="main">
         <router-view />
+        <div justify-right>
+          <SupportWidget />
+        </div>
       </v-container>
     </v-content>
   </div>
@@ -83,12 +86,16 @@
 <script>
 import tenantInfo from '@/tenant.js'
 import { Actions } from '@/store'
+import SupportWidget from '@/components/SupportWidget'
 
 export default {
   data: () => ({
     drawer: null,
     logoPath: tenantInfo.logoPath
   }),
+  components: {
+    SupportWidget
+  },
   props: {
     source: String
   },
