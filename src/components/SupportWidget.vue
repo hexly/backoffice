@@ -14,13 +14,8 @@
       color="white"
       transition="scale-transition"
     >
-<<<<<<< HEAD
       <div v-if="error" class="error">{{error}}</div>
       <div v-if="success" class="success">{{success}}</div>
-=======
-      <div v-if="error">{{error}}</div>
-      <div v-if="success">{{success}}</div>
->>>>>>> 50e6aa70c901d6877200a57b28fd378122c9a2ed
       <v-form v-if="!success" lazy-validation="">
         <p style="color: black;"><strong>Questions? Chat with us!</strong></p>
         <v-text-field :rules="requiredRule" label="Name" v-model="name"></v-text-field>
@@ -102,8 +97,7 @@ export default {
   right: 25px;
 }
 
-<<<<<<< HEAD
-.error {
+<<<<<<< head .error {
   margin: 5px;
   padding: 10px;
   text-align: center;
@@ -115,9 +109,7 @@ export default {
   text-align: center;
 }
 
-=======
->>>>>>> 50e6aa70c901d6877200a57b28fd378122c9a2ed
-.sup-form {
+=======>>>>>>>50e6aa70c901d6877200a57b28fd378122c9a2ed .sup-form {
   height: 40%;
 }
 </style>
