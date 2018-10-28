@@ -21,8 +21,8 @@
         <v-text-field :rules="requiredRule" label="Name" v-model="name"></v-text-field>
         <v-text-field :rules="requiredRule" label="Subject" v-model="subject"></v-text-field>
         <v-text-field :rules="emailRule" label="Email Address" v-model="email"></v-text-field>
-        <v-textarea :rules="requiredRule" auto-grow label="Suport Question" v-model="message"></v-textarea>
-        <v-btn @click="submit" style="background-color: blue; color: white;"> Submit </v-btn>
+        <v-textarea :rules="requiredRule" auto-grow label="Support Question" v-model="message"></v-textarea>
+        <v-btn :loading="loading" @click="submit" style="background-color: blue; color: white;"> Submit </v-btn>
       </v-form>
     </v-alert>
   </div>
@@ -43,6 +43,7 @@ export default {
       message: '',
       success: false,
       error: false,
+      loading: false,
       requiredRule: [v => !!v || 'This field is required'],
       emailRule: [
         v => !!v || 'E-mail is required',
@@ -70,6 +71,7 @@ export default {
     submit: async function() {
       this.error = false
       if (this.$refs.supportForm.validate()) {
+        this.loading = true
         try {
           await this.$apollo.mutate({
             mutation: AddSupportTicket,
@@ -85,20 +87,17 @@ export default {
             update(
               store,
               {
-                data: { ticketCreate },
-                error: { errors }
+                data: { ticketCreate }
               }
             ) {
-              if (errors) {
-                this.error = errors[0]
-              } else {
-                this.success = `Your support ticket has been created. Your ticket number is ${
-                  ticketCreate.short
-                }. For future reference please use this number.`
-              }
+              this.success = `Your support ticket has been created. Your ticket number is ${
+                ticketCreate.short
+              }. For future reference please use this number.`
+              this.loading = false
             }
           })
         } catch (err) {
+          this.loading = false
           this.error = err
         }
       }
