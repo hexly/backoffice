@@ -87,7 +87,7 @@ export default {
           })
           this.success = `Your support ticket has been created. Your ticket number is ${
             data.ticketCreate.short
-          }. For future reference please use this number.`
+          }. For future reference please keep this ticket number and respond by email as necessary.`
           this.loading = false
         } catch (err) {
           console.log('got an error', err)
