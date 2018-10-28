@@ -1,7 +1,7 @@
 <template>
   <div class="floaty-button">
     <div class="text-xs-center">
-      <v-btn fab large 
+      <v-btn fab large
         color="primary"
         @click="alert = !alert"
       >
@@ -16,12 +16,12 @@
     >
       <div v-if="error" class="error">{{error}}</div>
       <div v-if="success" class="success">{{success}}</div>
-      <v-form v-if="!success" lazy-validation ref="supportForm">
+      <v-form v-if="!success" ref="supportForm">
         <p style="color: black;"><strong>Questions? Chat with us!</strong></p>
-        <v-text-field :rules="requiredRule" label="Name" v-model="name"></v-text-field>
-        <v-text-field :rules="requiredRule" label="Subject" v-model="subject"></v-text-field>
-        <v-text-field :rules="emailRule" label="Email Address" v-model="email"></v-text-field>
-        <v-textarea :rules="requiredRule" auto-grow label="Support Question" v-model="message"></v-textarea>
+        <v-text-field required :rules="requiredRule" id="name" label="Name" v-model="name"></v-text-field>
+        <v-text-field required :rules="emailRule" id="email" label="Email Address" v-model="email"></v-text-field>
+        <v-text-field required :rules="requiredRule" id="subject" label="Subject" v-model="subject"></v-text-field>
+        <v-textarea required :rules="requiredRule" auto-grow id="question" label="Support Question" v-model="message"></v-textarea>
         <v-btn :loading="loading" @click="submit" style="background-color: blue; color: white;"> Submit </v-btn>
       </v-form>
     </v-alert>
@@ -73,7 +73,7 @@ export default {
       if (this.$refs.supportForm.validate()) {
         this.loading = true
         try {
-          await this.$apollo.mutate({
+          const { data } = await this.$apollo.mutate({
             mutation: AddSupportTicket,
             variables: {
               tc: {
@@ -83,20 +83,14 @@ export default {
                 subject: this.subject,
                 tenantId: VUE_APP_TENANT_ID
               }
-            },
-            update(
-              store,
-              {
-                data: { ticketCreate }
-              }
-            ) {
-              this.success = `Your support ticket has been created. Your ticket number is ${
-                ticketCreate.short
-              }. For future reference please use this number.`
-              this.loading = false
             }
           })
+          this.success = `Your support ticket has been created. Your ticket number is ${
+            data.ticketCreate.short
+          }. For future reference please use this number.`
+          this.loading = false
         } catch (err) {
+          console.log('got an error', err)
           this.loading = false
           this.error = err
         }
