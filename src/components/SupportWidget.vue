@@ -68,7 +68,7 @@ export default {
     }
   },
   methods: {
-    submit: async function() {
+    async submit() {
       this.error = false
       if (this.$refs.supportForm.validate()) {
         this.loading = true
