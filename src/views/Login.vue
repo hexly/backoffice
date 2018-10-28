@@ -55,12 +55,16 @@
           </v-card>
         </v-flex>
       </v-layout>
+      <div justify-right>
+        <SupportWidget />
+      </div>
     </v-container>
   </v-content>
 </template>
 
 <script>
 import tenantInfo from '@/tenant.js'
+import SupportWidget from '@/components/SupportWidget'
 import AUTHENTICATE_MUTATION from '../graphql/Authenticate.gql'
 import { UserActions, UserMutations } from '@/stores/UserStore'
 import { ClaimActions } from '@/stores/ClaimStore'
@@ -83,6 +87,9 @@ export default {
       version: VERSION
     }
   },
+  components: {
+    SupportWidget
+  },
   methods: {
     onLogin() {
       this.error = null
@@ -98,7 +105,14 @@ export default {
               memberId: null
             }
           },
-          update: async (store, { data: { authenticate: { jwtToken } } }) => {
+          update: async (
+            store,
+            {
+              data: {
+                authenticate: { jwtToken }
+              }
+            }
+          ) => {
             if (jwtToken) {
               this.$store.commit(UserMutations.SET_JWT, jwtToken)
               await this.$store.dispatch(UserActions.LOGIN_SUCCESS)

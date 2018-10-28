@@ -1,6 +1,5 @@
 import { apolloClient } from '@/vue-apollo'
 import PRINCIPAL_QUERY from '@/graphql/Principal.gql'
-import crisp from '@/plugins/crisp'
 
 export const UserActions = {
   LOGIN_SUCCESS: 'loginSuccess'
@@ -25,7 +24,6 @@ export const UserStore = {
     [UserMutations.AUTH_STATUS]: (state, status) => (state.authorized = status),
     [UserMutations.LOGIN_ERROR]: (state, err) => (state.loginError = err),
     [UserMutations.SET_PRINCIPAL]: (state, principal) => {
-      crisp.load(principal)()
       state.principal = principal
     }
   },
