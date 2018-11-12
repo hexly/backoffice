@@ -36,7 +36,7 @@ export default {
       variables() {
         return {
           rangeInput: {
-            sellerId: this.$store.state.user.principal.member.id,
+            sellerId: this.$store.state.user.principal.memberId,
             tenantId: process.env.VUE_APP_TENANT_ID,
             startDate: '2018-06-01',
             endDate: '2018-10-31',

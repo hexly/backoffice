@@ -56,7 +56,7 @@ const DejaVue = {
   }
 }
 
-const store = new Vuex.Store({
+export default new Vuex.Store({
   plugins: [DejaVue.plugin(Mutations.INIT, 'store')],
   modules: {
     user: UserStore,
@@ -86,5 +86,3 @@ const store = new Vuex.Store({
     [Mutations.INIT]: DejaVue.mutation('store', [axiosSetup, verifyPrincipal])
   }
 })
-
-export default store

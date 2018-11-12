@@ -130,7 +130,7 @@ export default {
       variables() {
         return {
           saleSearchInput: {
-            sellerId: this.$store.state.user.principal.member.id,
+            sellerId: this.$store.state.user.principal.memberId,
             tenantId: process.env.VUE_APP_TENANT_ID,
             query: null,
             endDate: this.endDate,

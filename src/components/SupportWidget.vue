@@ -30,7 +30,7 @@
 
 <script>
 import AddSupportTicket from '@/graphql/AddSupportTicket.gql'
-const { VUE_APP_TENANT_ID } = process.env
+const tenantId = ~~process.env.VUE_APP_TENANT_ID
 
 export default {
   name: 'SupportWidget',
@@ -54,17 +54,12 @@ export default {
     }
   },
   mounted() {
-    if (
-      this.$store.state.user.principal &&
-      this.$store.state.user.principal.member.name
-    ) {
-      this.name = this.$store.state.user.principal.member.name
+    const { principal } = this.$store.state.user
+    if (principal && principal.name) {
+      this.name = principal.name
     }
-    if (
-      this.$store.state.user.principal &&
-      this.$store.state.user.principal.username
-    ) {
-      this.email = this.$store.state.user.principal.username
+    if (principal && principal.username) {
+      this.email = principal.username
     }
   },
   methods: {
@@ -81,7 +76,7 @@ export default {
                 email: this.email,
                 message: this.message,
                 subject: this.subject,
-                tenantId: VUE_APP_TENANT_ID
+                tenantId
               }
             }
           })

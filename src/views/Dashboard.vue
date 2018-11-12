@@ -122,7 +122,7 @@ import { ADDRESS_BY_MEMBER_ID } from '@/graphql/Address.js'
 import tenantInfo from '@/tenant.js'
 import moment from 'moment'
 
-const { VUE_APP_TENANT_ID } = process.env
+const tenantId = ~~process.env.VUE_APP_TENANT_ID
 
 export default {
   name: 'dashboard',
@@ -177,7 +177,7 @@ export default {
       variables() {
         return {
           condition: {
-            memberId: this.$store.state.user.principal.member.id
+            memberId: this.$store.state.user.principal.memberId
           }
         }
       },
@@ -191,8 +191,8 @@ export default {
       variables() {
         return {
           teamInput: {
-            memberId: this.$store.state.user.principal.member.id,
-            tenantId: process.env.VUE_APP_TENANT_ID,
+            memberId: this.$store.state.user.principal.memberId,
+            tenantId,
             startDate: this.startDate,
             endDate: this.endDate,
             month: this.month,
@@ -233,7 +233,7 @@ export default {
       variables() {
         return {
           addressMemberId: {
-            memberId: this.$store.state.user.principal.member.id
+            memberId: this.$store.state.user.principal.memberId
           }
         }
       },
@@ -252,7 +252,7 @@ export default {
       variables() {
         return {
           leaderInput: {
-            tenantId: VUE_APP_TENANT_ID,
+            tenantId,
             month: this.month,
             year: this.year
           }
@@ -267,7 +267,7 @@ export default {
       variables() {
         return {
           leaderInput: {
-            tenantId: VUE_APP_TENANT_ID,
+            tenantId,
             month: this.month,
             year: this.year
           }

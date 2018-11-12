@@ -1,5 +1,5 @@
-query teamStats($teamInput: TeamStatsInput!) {
-  TeamStatsByLevel(input: $teamInput) {
+query teamStatsByLevel($teamInput: TeamStatsInput) {
+  teamStatsByLevel(input: $teamInput) {
     memberId
     tenantId
     personal
