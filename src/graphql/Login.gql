@@ -1,0 +1,14 @@
+query auth($creds: Credentials!) {
+  authenticate(input: $creds) {
+    token
+    success
+    principal {
+      role
+      username
+      displayName
+      identityId
+      memberId
+      permissions
+    }
+  }
+}

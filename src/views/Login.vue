@@ -66,10 +66,12 @@
 import tenantInfo from '@/tenant.js'
 import SupportWidget from '@/components/SupportWidget'
 import AUTHENTICATE_MUTATION from '../graphql/Authenticate.gql'
-import { UserActions, UserMutations } from '@/stores/UserStore'
+import { UserActions } from '@/stores/UserStore'
 import { ClaimActions } from '@/stores/ClaimStore'
 import { delay } from '@/utils/timer.js'
 import pathOr from 'rambda/lib/pathOr'
+
+const tenantId = ~~process.env.VUE_APP_TENANT_ID
 
 export default {
   data() {
@@ -91,41 +93,23 @@ export default {
     SupportWidget
   },
   methods: {
-    onLogin() {
+    async onLogin() {
       this.error = null
-      this.buttonLoading = true
       if (this.$refs.login.validate()) {
-        this.$apollo.mutate({
-          mutation: AUTHENTICATE_MUTATION,
-          variables: {
-            authInput: {
-              tenantId: process.env.VUE_APP_TENANT_ID,
-              username: this.form.email,
-              password: this.form.password,
-              memberId: null
-            }
-          },
-          update: async (
-            store,
-            {
-              data: {
-                authenticate: { jwtToken }
-              }
-            }
-          ) => {
-            if (jwtToken) {
-              this.$store.commit(UserMutations.SET_JWT, jwtToken)
-              await this.$store.dispatch(UserActions.LOGIN_SUCCESS)
-              this.$router.push('/dashboard')
-            } else {
-              this.onError('Invalid Username/Password.')
-            }
-            this.buttonLoading = false
-          }
+        this.buttonLoading = true
+
+        const { success } = await this.$store.dispatch(UserActions.LOGIN, {
+          username: this.form.email,
+          password: this.form.password,
+          tenantId
         })
+
+        this.buttonLoading = false
+        return success
+          ? this.$router.push('/dashboard')
+          : this.onError('Invalid Username/Password.')
       } else {
         this.onError('Invalid Username/Password.')
-        this.buttonLoading = false
       }
     },
     changeMode(type) {
