@@ -21,7 +21,6 @@ query getMonthlyStats(
       commissionableAmount
       commissionablePoints
       sponsorId
-      joinedOn
     }
   }
   firstLevelStats: allMemberMonthlyStats(condition: $firstLevelCondition) {
@@ -43,7 +42,6 @@ query getMonthlyStats(
       commissionableAmount
       commissionablePoints
       sponsorId
-      joinedOn
     }
   }
 }
