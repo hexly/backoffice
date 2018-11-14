@@ -3,7 +3,6 @@ import Vuex from 'vuex'
 import axios from 'axios'
 import { UserStore } from '@/stores/UserStore'
 import { ClaimStore } from '@/stores/ClaimStore'
-import TeamStore from '@/stores/TeamStore'
 const { VUE_APP_API_ENDPOINT, VUE_APP_TENANT_ID, VUE_APP_LANE } = process.env
 
 Vue.use(Vuex)
@@ -60,7 +59,6 @@ export default new Vuex.Store({
   plugins: [DejaVue.plugin(Mutations.INIT, 'store')],
   modules: {
     user: UserStore,
-    team: TeamStore,
     claim: ClaimStore
   },
   state: {

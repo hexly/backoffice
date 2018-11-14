@@ -137,7 +137,7 @@ export default {
     // Fetch one time token information
     try {
       const { token } = this.$route.params
-      const { data: { oneTimeToken: member }} = await this.$store.dispatch(
+      const { data: { oneTimeToken: member } } = await this.$store.dispatch(
         ClaimActions.GET_TOKEN,
         { token }
       )
@@ -158,7 +158,6 @@ export default {
   methods: {
     async onSubmit() {
       if (this.$refs.claim.validate()) {
-        
         const { token } = this.$route.params
         await this.$store.dispatch(ClaimActions.CREATE_ACCOUNT, {
           contactEmail: this.editMember.contactEmail,
