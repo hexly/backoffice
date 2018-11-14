@@ -28,7 +28,7 @@ const axiosSetup = hydratedState => {
 }
 
 const verifyPrincipal = async hydratedState => {
-  if (!hydratedState.user.principal || !hydratedState.user.principal.member) {
+  if (!hydratedState.user.principal || !hydratedState.user.principal) {
     localStorage.clear()
     window.location = '/'
   }

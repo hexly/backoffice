@@ -35,8 +35,9 @@ import { ClaimActions } from '@/stores/ClaimStore'
 
 export default {
   data() {
+    const { email } = this.$route.params
     return {
-      username: null,
+      username: email || null,
       password: null,
       confirmPassword: null,
       loading: true,
@@ -60,15 +61,10 @@ export default {
   methods: {
     async onSubmit() {
       if (this.$refs.claim.validate()) {
-        // Post to Reset Password
-        await this.$store.dispatch(ClaimActions.RESET_PASSWORD, {
-          token: this.$route.params.token,
-          credentials: {
-            username: this.username,
-            password: this.password,
-            confirmPassword: this.confirmPassword
-          }
-        })
+        const { token } = this.$route.params
+        const { confirmPassword, password, username } = this
+        const input = { confirmPassword, password, token, username }
+        await this.$store.dispatch(ClaimActions.RESET_PASSWORD, input)
         this.$router.push('/login')
       } else {
         console.log('Error in form')

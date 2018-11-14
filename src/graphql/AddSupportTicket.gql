@@ -1,5 +1,5 @@
-mutation TicketCreateThing($tc: TicketCreateInput!) {
-  ticketCreate(input: $tc) {
+mutation ticketCreate($input: TicketCreateInput!) {
+  ticketCreate(input: $input) {
     id
     short
   }

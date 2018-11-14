@@ -1,5 +1,0 @@
-mutation authenticate($authInput: AuthenticateInput!){ 
-	authenticate(input: $authInput) {
-    jwtToken 
-  }
-}

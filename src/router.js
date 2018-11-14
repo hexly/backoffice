@@ -29,7 +29,7 @@ export default new Router({
       beforeEnter: (_, __, next) => store.state.user.jwt ? next('/dashboard') : next()
     },
     {
-      path: '/account/reset/:token',
+      path: '/account/reset/:token/:email',
       name: 'password-rest',
       component: PasswordReset,
       beforeEnter: (_, __, next) => store.state.user.jwt ? next('/dashboard') : next()

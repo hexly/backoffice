@@ -29,16 +29,20 @@
 </template>
 
 <script>
+import { pathOr } from 'rambda'
+
 import AddSupportTicket from '@/graphql/AddSupportTicket.gql'
+
 const tenantId = ~~process.env.VUE_APP_TENANT_ID
 
 export default {
   name: 'SupportWidget',
   data() {
+    const member = pathOr({}, ['$store', 'state', 'user', 'principal'], this)
     return {
       alert: false,
-      name: '',
-      email: '',
+      name: member.displayName || '',
+      email: member.username || '',
       subject: '',
       message: '',
       success: false,
@@ -71,11 +75,11 @@ export default {
           const { data } = await this.$apollo.mutate({
             mutation: AddSupportTicket,
             variables: {
-              tc: {
+              input: {
                 name: this.name,
                 email: this.email,
-                message: this.message,
                 subject: this.subject,
+                message: this.message,
                 tenantId
               }
             }

@@ -65,7 +65,6 @@
 <script>
 import tenantInfo from '@/tenant.js'
 import SupportWidget from '@/components/SupportWidget'
-import AUTHENTICATE_MUTATION from '../graphql/Authenticate.gql'
 import { UserActions } from '@/stores/UserStore'
 import { ClaimActions } from '@/stores/ClaimStore'
 import { delay } from '@/utils/timer.js'
@@ -121,7 +120,11 @@ export default {
       this.buttonLoading = true
       this.error = null
       try {
-        await this.$store.dispatch(ClaimActions.CLAIM, this.form.email)
+        await this.$store.dispatch(ClaimActions.CLAIM, {
+          email: this.form.email,
+          tenantId,
+          type: 'claim'
+        })
         this.onSuccess(
           'Registrations email has been sent! Please check your email.'
         )
@@ -134,7 +137,11 @@ export default {
       this.error = null
       this.buttonLoading = true
       try {
-        await this.$store.dispatch(ClaimActions.RESET, this.form.email)
+        await this.$store.dispatch(ClaimActions.RESET, {
+          email: this.form.email,
+          tenantId,
+          type: 'reset'
+        })
         this.onSuccess(
           'Password reset email has been sent! Please check your email.'
         )
