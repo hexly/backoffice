@@ -87,7 +87,7 @@ export default {
       variables() {
         return {
           condition: {
-            memberId: this.$store.state.user.principal.member.id
+            memberId: this.$store.state.user.principal.memberId
           }
         }
       },
@@ -101,7 +101,7 @@ export default {
       variables() {
         return {
           teamInput: {
-            memberId: this.$store.state.user.principal.member.id,
+            memberId: this.$store.state.user.principal.memberId,
             tenantId: process.env.VUE_APP_TENANT_ID,
             startDate: this.startDate,
             endDate: this.endDate,

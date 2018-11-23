@@ -32,25 +32,25 @@ export const QUERY = gql`
   }
 `
 
-export const getTeamByMemberId = memberIdFn => ({
-  query: QUERY,
-  variables: function() {
-    const memberId = this[memberIdFn] || -1
-    return {
-      byTarget: {
-        memberId: memberId
-      },
-      bySponsor: {
-        sponsorId: memberId
+export const getTeamByMemberId = memberIdFn => {
+  if (!memberIdFn) return
+  return {
+    query: QUERY,
+    variables: function() {
+      const { principal: member } = this.$store.state.user
+      const memberId = this[memberIdFn] || member.memberId || -1
+      return {
+        byTarget: { memberId },
+        bySponsor: { sponsorId: memberId }
+      }
+    },
+    update({ target, team }) {
+      return {
+        target: target.nodes[0],
+        team: team.nodes
       }
     }
-  },
-  update({ target, team }) {
-    return {
-      target: target.nodes[0],
-      team: team.nodes
-    }
   }
-})
+}
 
 export default getTeamByMemberId

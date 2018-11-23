@@ -136,7 +136,7 @@ export default {
       variables() {
         return {
           condition: {
-            memberId: this.$store.state.user.principal.member.id
+            memberId: this.$store.state.user.principal.memberId
           }
         }
       },

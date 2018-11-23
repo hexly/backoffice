@@ -72,7 +72,7 @@ export default {
       variables() {
         return {
           addressMemberId: {
-            memberId: this.$store.state.user.principal.member.id
+            memberId: this.$store.state.user.principal.memberId
           }
         }
       },
@@ -97,7 +97,7 @@ export default {
               country: this.address.country,
               postalCode: this.address.postalCode,
               street2: this.address.street2 || '',
-              memberId: this.$store.state.user.principal.member.id
+              memberId: this.$store.state.user.principal.memberId
             }
           },
           update: (store, { data: { updateAddress } }) => {

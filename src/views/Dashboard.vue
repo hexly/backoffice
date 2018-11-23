@@ -58,16 +58,6 @@
         :color="ranks[5].color"
       />
     </v-container>
-    <div v-if="incentiveTrip">
-      <v-subheader>Incentive Trip</v-subheader>
-      <v-container fluid grid-list-xs>
-        <v-layout row wrap>
-          <v-flex>
-            <IncentiveTrip />
-          </v-flex>
-        </v-layout>
-      </v-container>
-    </div>
     <v-subheader>Leaderboards</v-subheader>
     <v-container fluid grid-list-xs>
       <v-layout row wrap>
@@ -107,29 +97,29 @@
 </template>
 
 <script>
-import DashCard from '@/components/DashboardCard.vue'
-import LeaderBoard from '@/components/Leaderboard.vue'
-import CompPlanLevel from '@/components/CompPlanLevel.vue'
-import MonthSelector from '@/components/MonthSelector.vue'
-import IncentiveTrip from '@/components/IncentiveTrip.vue'
-import IDENTITY_QUERY from '@/graphql/GetIdentity.gql'
 import TEAM_STATS_BY_LEVEL from '@/graphql/TeamStatsByLevel.gql'
 import {
   MONTHLY_SALES_LEADERBOARD,
   MONTHLY_FRONTLINE_LEADERBOARD
 } from '@/graphql/Leaderboard.js'
 import { ADDRESS_BY_MEMBER_ID } from '@/graphql/Address.js'
-import tenantInfo from '@/tenant.js'
-import moment from 'moment'
 
-const { VUE_APP_TENANT_ID } = process.env
+import DashCard from '@/components/DashboardCard.vue'
+import LeaderBoard from '@/components/Leaderboard.vue'
+import CompPlanLevel from '@/components/CompPlanLevel.vue'
+import MonthSelector from '@/components/MonthSelector.vue'
+import IDENTITY_QUERY from '@/graphql/GetIdentity.gql'
+
+import moment from 'moment'
+import { pathOr } from 'rambda'
+
+const tenantId = ~~process.env.VUE_APP_TENANT_ID
 
 export default {
   name: 'dashboard',
   components: {
     DashCard,
     MonthSelector,
-    IncentiveTrip,
     LeaderBoard,
     CompPlanLevel
   },
@@ -153,14 +143,14 @@ export default {
     endDate: moment()
       .endOf('month')
       .format('YYYY-MM-DD'),
-    incentiveTrip: tenantInfo.incentiveTrip,
     MonthlyFrontlineLeaders: [],
     MonthlySalesLeaders: [],
     address: null,
     showAddressDialog: false,
     team: {
       personal: {
-        qualified: 0
+        qualified: 0,
+        totalPoints: 0
       },
       firstLevel: {},
       secondLevel: {},
@@ -177,7 +167,7 @@ export default {
       variables() {
         return {
           condition: {
-            memberId: this.$store.state.user.principal.member.id
+            memberId: this.$store.state.user.principal.memberId
           }
         }
       },
@@ -191,8 +181,8 @@ export default {
       variables() {
         return {
           teamInput: {
-            memberId: this.$store.state.user.principal.member.id,
-            tenantId: process.env.VUE_APP_TENANT_ID,
+            memberId: this.$store.state.user.principal.memberId,
+            tenantId,
             startDate: this.startDate,
             endDate: this.endDate,
             month: this.month,
@@ -200,32 +190,32 @@ export default {
           }
         }
       },
-      update({ TeamStatsByLevel }) {
+      update({ teamStatsByLevel }) {
         const totalTeamAmount =
-          TeamStatsByLevel.personal.totalAmount +
-          TeamStatsByLevel.firstLevel.totalAmount +
-          TeamStatsByLevel.secondLevel.totalAmount +
-          TeamStatsByLevel.thirdLevel.totalAmount +
-          TeamStatsByLevel.fourthLevel.totalAmount
+          pathOr(0, ['personal', 'totalAmount'], teamStatsByLevel) +
+          pathOr(0, ['firstLevel', 'totalAmount'], teamStatsByLevel) +
+          pathOr(0, ['secondLevel', 'totalAmount'], teamStatsByLevel) +
+          pathOr(0, ['thirdLevel', 'totalAmount'], teamStatsByLevel) +
+          pathOr(0, ['fourthLevel', 'totalAmount'], teamStatsByLevel)
 
         const teamSize =
-          TeamStatsByLevel.firstLevel.size +
-          TeamStatsByLevel.secondLevel.size +
-          TeamStatsByLevel.thirdLevel.size +
-          TeamStatsByLevel.fourthLevel.size
+          pathOr(0, ['firstLevel', 'size'], teamStatsByLevel) +
+          pathOr(0, ['secondLevel', 'size'], teamStatsByLevel) +
+          pathOr(0, ['thirdLevel', 'size'], teamStatsByLevel) +
+          pathOr(0, ['fourthLevel', 'size'], teamStatsByLevel)
 
         // Calculate Rank
         let r = 0
-        if (TeamStatsByLevel.personal.totalPoints >= 60) {
+        if (pathOr(-1, ['personal', 'totalPoints'], teamStatsByLevel) >= 60) {
           r = 1
         }
         if (r >= 1) {
-          r += TeamStatsByLevel.personal.qualified
+          r += pathOr(0, ['personal', 'qualified'], teamStatsByLevel)
         }
 
         this.currentRank = this.ranks[r > 5 ? 5 : r]
         this.rankStyle.borderStyle = `#${this.currentRank.color}`
-        return { ...TeamStatsByLevel, totalTeamAmount, teamSize }
+        return { ...this.team, ...teamStatsByLevel, totalTeamAmount, teamSize }
       }
     },
     address: {
@@ -233,7 +223,7 @@ export default {
       variables() {
         return {
           addressMemberId: {
-            memberId: this.$store.state.user.principal.member.id
+            memberId: this.$store.state.user.principal.memberId
           }
         }
       },
@@ -252,7 +242,7 @@ export default {
       variables() {
         return {
           leaderInput: {
-            tenantId: VUE_APP_TENANT_ID,
+            tenantId,
             month: this.month,
             year: this.year
           }
@@ -267,7 +257,7 @@ export default {
       variables() {
         return {
           leaderInput: {
-            tenantId: VUE_APP_TENANT_ID,
+            tenantId,
             month: this.month,
             year: this.year
           }
@@ -281,29 +271,19 @@ export default {
   methods: {
     dateChanged({ date }) {
       const dateSplit = date.split('-')
-      this.month = dateSplit[1]
-      this.year = dateSplit[0]
+      this.month = parseInt(dateSplit[1])
+      this.year = parseInt(dateSplit[0])
       const monthDate = moment().set({ year: this.year, month: this.month })
       this.startDate = monthDate.startOf('month').format('YYYY-MM-DD')
       this.endDate = monthDate.endOf('month').format('YYYY-MM-DD')
     },
     calculatePercent(percent, qualified) {
-      if (
-        this.team.personal.qualified >= qualified &&
-        this.team.personal.totalPoints >= 60
-      ) {
-        return percent
-      }
-      return 0
+      const { qualified: _qualified, totalPoints } = this.team.personal
+      return _qualified >= qualified && totalPoints >= 60 ? percent : 0
     },
     calculateRank(qualified) {
-      if (
-        this.team.personal.qualified >= qualified &&
-        this.team.personal.totalPoints >= 60
-      ) {
-        return true
-      }
-      return false
+      const { qualified: _qualified, totalPoints } = this.team.personal
+      return _qualified >= qualified && totalPoints >= 60
     }
   },
   computed: {

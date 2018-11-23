@@ -1,7 +1,8 @@
 import { apolloClient } from '@/vue-apollo'
-import PRINCIPAL_QUERY from '@/graphql/Principal.gql'
+import LOGIN from '@/graphql/Login.gql'
 
 export const UserActions = {
+  LOGIN: 'login',
   LOGIN_SUCCESS: 'loginSuccess'
 }
 
@@ -14,36 +15,28 @@ export const UserMutations = {
 
 export const UserStore = {
   state: {
-    authorized: false,
     jwt: null,
     loginError: null,
     principal: null
   },
   mutations: {
     [UserMutations.SET_JWT]: (state, jwt) => (state.jwt = jwt),
-    [UserMutations.AUTH_STATUS]: (state, status) => (state.authorized = status),
     [UserMutations.LOGIN_ERROR]: (state, err) => (state.loginError = err),
     [UserMutations.SET_PRINCIPAL]: (state, principal) => {
       state.principal = principal
     }
   },
   actions: {
-    [UserActions.LOGIN_SUCCESS]: async ({ commit }) => {
-      commit(UserMutations.LOGIN_ERROR, null)
-      const {
-        data: { principal }
-      } = await apolloClient.query({
-        query: PRINCIPAL_QUERY
+    async [UserActions.LOGIN]({ commit }, creds) {
+      const { data } = await apolloClient.query({
+        query: LOGIN,
+        variables: { creds }
       })
-      if (principal) {
-        commit(UserMutations.AUTH_STATUS, true)
-        commit(UserMutations.SET_PRINCIPAL, principal)
-      } else {
-        commit(
-          UserMutations.LOGIN_ERROR,
-          'You do not have permissions to access this app.'
-        )
+      if (data.authenticate.success) {
+        commit(UserMutations.SET_JWT, data.authenticate.token)
+        commit(UserMutations.SET_PRINCIPAL, data.authenticate.principal)
       }
+      return data.authenticate
     }
   },
   getters: {

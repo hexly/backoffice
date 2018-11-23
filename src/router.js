@@ -20,49 +20,25 @@ export default new Router({
       path: '/login',
       name: 'login',
       component: Login,
-      beforeEnter: (to, from, next) => {
-        if (store.state.user.authorized) {
-          next('/dashboard')
-        } else {
-          next()
-        }
-      }
+      beforeEnter: (_, __, next) => store.state.user.jwt ? next('/dashboard') : next()
     },
     {
       path: '/account/claim/:token',
       name: 'account-claim',
       component: AccountClaim,
-      beforeEnter: (to, from, next) => {
-        if (store.state.user.authorized) {
-          next('/dashboard')
-        } else {
-          next()
-        }
-      }
+      beforeEnter: (_, __, next) => store.state.user.jwt ? next('/dashboard') : next()
     },
     {
-      path: '/account/reset/:token',
+      path: '/account/reset/:token/:email',
       name: 'password-rest',
       component: PasswordReset,
-      beforeEnter: (to, from, next) => {
-        if (store.state.user.authorized) {
-          next('/dashboard')
-        } else {
-          next()
-        }
-      }
+      beforeEnter: (_, __, next) => store.state.user.jwt ? next('/dashboard') : next()
     },
     {
       path: '/',
       name: 'backoffice',
       component: Backoffice,
-      beforeEnter: (to, from, next) => {
-        if (!store.state.user.authorized) {
-          next('/login')
-        } else {
-          next()
-        }
-      },
+      beforeEnter: (_, __, next) => !store.state.user.jwt ? next('/login') : next(),
       children: [
         {
           path: 'dashboard',

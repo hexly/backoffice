@@ -39,6 +39,8 @@ import MONTHLY_STATS_QUERY from '@/graphql/GetMonthlyStats.gql'
 import find from 'rambda/lib/find'
 import defaultTo from 'rambda/lib/defaultTo'
 
+const tenantId = ~~process.env.VUE_APP_TENANT_ID
+
 export default {
   name: 'Team',
   data: () => ({
@@ -74,8 +76,8 @@ export default {
     },
     dateChanged({ date }) {
       const dateSplit = date.split('-')
-      this.month = dateSplit[1]
-      this.year = dateSplit[0]
+      this.month = parseInt(dateSplit[1])
+      this.year = parseInt(dateSplit[0])
     }
   },
   apollo: {
@@ -85,11 +87,13 @@ export default {
       variables() {
         return {
           targetCondition: {
+            tenantId,
             sellerId: this.currentId,
             month: this.month,
             year: this.year
           },
           firstLevelCondition: {
+            tenantId,
             sponsorId: this.currentId,
             month: this.month,
             year: this.year
@@ -97,14 +101,16 @@ export default {
         }
       },
       update({ targetStats, firstLevelStats }) {
-        return targetStats.nodes.concat(firstLevelStats.nodes)
+        const result = targetStats.nodes.concat(firstLevelStats.nodes)
+
+        return result
       },
       fetchPolicy: 'cache-and-network'
     }
   },
   mounted() {
-    const { member } = this.$store.state.user.principal
-    this.currentId = member.id
+    const { principal: member } = this.$store.state.user
+    this.currentId = member.memberId
     this.lineage.push({ memberId: this.currentId, displayName: member.name })
   }
 }

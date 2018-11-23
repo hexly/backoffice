@@ -7,6 +7,7 @@ query getMonthlyStats(
       tenantId
       year
       month
+      joinedOn
       sellerId
       sellerPath
       teamSize
@@ -21,7 +22,6 @@ query getMonthlyStats(
       commissionableAmount
       commissionablePoints
       sponsorId
-      joinedOn
     }
   }
   firstLevelStats: allMemberMonthlyStats(condition: $firstLevelCondition) {
@@ -29,6 +29,7 @@ query getMonthlyStats(
       tenantId
       year
       month
+      joinedOn
       sellerId
       sellerPath
       teamSize
@@ -43,7 +44,6 @@ query getMonthlyStats(
       commissionableAmount
       commissionablePoints
       sponsorId
-      joinedOn
     }
   }
 }

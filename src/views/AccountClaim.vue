@@ -24,13 +24,13 @@
                   ></v-text-field>
                   <v-text-field
                     label="E-mail"
-                    v-model="editMember.contact_email"
+                    v-model="editMember.contactEmail"
                     :rules="requiredRule"
                     required
                   ></v-text-field>
                   <v-text-field
                     label="Display name"
-                    v-model="editMember.display_name"
+                    v-model="editMember.displayName"
                     :rules="requiredRule"
                     required
                   ></v-text-field>
@@ -42,7 +42,7 @@
                   ></v-text-field>
                   <v-text-field
                     label="username"
-                    v-model="editMember.username"
+                    v-model="editMember.contactEmail"
                     disabled
                   ></v-text-field>
                   <v-text-field
@@ -56,30 +56,29 @@
                     :append-icon-cb="() => (visible = !visible)"
                     :type="visible ? 'text' : 'password'"
                   ></v-text-field>
-                  <v-select
-                    v-model="editMember.legal_locale_id"
-                    label="Select your locale"
+                  <v-autocomplete
+                    v-model="editMember.legalLocaleId"
+                    label="Select Locale"
                     :rules="requiredRule"
                     :items="settings.legalLocales"
                     item-text="name"
                     item-value="id"
                   />
-                  <v-select
-                    v-model="editMember.language_id"
-                    label="Select your locale"
+                  <v-autocomplete
+                    v-model="editMember.languageId"
+                    label="Select Language"
                     :rules="requiredRule"
                     :items="settings.languages"
                     item-text="name"
                     item-value="id"
                   />
-                  <v-select
-                    v-model="editMember.timezone_id"
-                    label="Select your timezone"
+                  <v-autocomplete
+                    v-model="editMember.timezoneId"
+                    label="Select Timezone"
                     :rules="requiredRule"
                     :items="settings.timezones"
                     item-text="name"
                     item-value="id"
-                    autocomplete
                   />
                   <v-card-actions>
                     <v-spacer></v-spacer>
@@ -119,16 +118,15 @@ export default {
         v => (v && v.length > 8) || 'Password must be more than 8 characters'
       ],
       editMember: {
-        credential_id: null,
-        password: null,
-        member_id: null,
+        contactEmail: null,
+        displayName: null,
+        languageId: null,
+        legalLocaleId: null,
+        memberId: null,
         name: null,
+        password: null,
         slug: null,
-        display_name: null,
-        contact_email: null,
-        legal_locale_id: null,
-        language_id: null,
-        timezone_id: null,
+        timezoneId: null,
         username: null
       },
       settings: {},
@@ -138,16 +136,15 @@ export default {
   async beforeCreate() {
     // Fetch one time token information
     try {
-      const { data } = await this.$store.dispatch(
+      const { token } = this.$route.params
+      const { data: { oneTimeToken: member } } = await this.$store.dispatch(
         ClaimActions.GET_TOKEN,
-        this.$route.params.token
+        { token }
       )
-      const member = data.members[0]
       this.editMember = {
         ...member,
-        member_id: member.id,
-        username: data.username,
-        credential_id: data.credential_id
+        memberId: member.id,
+        username: member.contactEmail
       }
       this.loading = false
     } catch (err) {
@@ -161,10 +158,20 @@ export default {
   methods: {
     async onSubmit() {
       if (this.$refs.claim.validate()) {
-        // Post to create account
-        await this.$store.dispatch(ClaimActions.CONSUME_TOKEN, {
-          token: this.$route.params.token,
-          member: this.editMember
+        const { token } = this.$route.params
+        await this.$store.dispatch(ClaimActions.CREATE_ACCOUNT, {
+          contactEmail: this.editMember.contactEmail,
+          displayName: this.editMember.displayName,
+          languageId: this.editMember.languageId,
+          legalLocaleId: this.editMember.legalLocaleId,
+          memberId: this.editMember.memberId,
+          name: this.editMember.name,
+          password: this.editMember.password,
+          slug: this.editMember.slug,
+          timezoneId: this.editMember.timezoneId,
+          username: this.editMember.username,
+          simpleClaim: false,
+          token
         })
         this.$router.push('/login')
       } else {

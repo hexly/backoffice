@@ -3,7 +3,6 @@ import Vuex from 'vuex'
 import axios from 'axios'
 import { UserStore } from '@/stores/UserStore'
 import { ClaimStore } from '@/stores/ClaimStore'
-import TeamStore from '@/stores/TeamStore'
 const { VUE_APP_API_ENDPOINT, VUE_APP_TENANT_ID, VUE_APP_LANE } = process.env
 
 Vue.use(Vuex)
@@ -28,7 +27,7 @@ const axiosSetup = hydratedState => {
 }
 
 const verifyPrincipal = async hydratedState => {
-  if (!hydratedState.user.principal || !hydratedState.user.principal.member) {
+  if (!hydratedState.user.principal || !hydratedState.user.principal) {
     localStorage.clear()
     window.location = '/'
   }
@@ -56,11 +55,10 @@ const DejaVue = {
   }
 }
 
-const store = new Vuex.Store({
+export default new Vuex.Store({
   plugins: [DejaVue.plugin(Mutations.INIT, 'store')],
   modules: {
     user: UserStore,
-    team: TeamStore,
     claim: ClaimStore
   },
   state: {
@@ -86,5 +84,3 @@ const store = new Vuex.Store({
     [Mutations.INIT]: DejaVue.mutation('store', [axiosSetup, verifyPrincipal])
   }
 })
-
-export default store

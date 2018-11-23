@@ -25,8 +25,8 @@ export const apolloProvider = new VueApollo({
   defaultClient: apolloClient,
   errorHandler(err) {
     if (err.message.toString().indexOf(NETWORK_ERROR) > -1) {
-      localStorage.clear()
-      window.location = '/'
+      // localStorage.clear()
+      // window.location = '/'
     }
   }
 })

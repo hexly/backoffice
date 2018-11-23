@@ -94,6 +94,8 @@ import SEARCH_SALES_QUERY from '@/graphql/SearchSales.gql'
 import { map } from 'ramda'
 import moment from 'moment'
 
+const tenantId = ~~process.env.VUE_APP_TENANT_ID
+
 export default {
   components: {
     DateSelector
@@ -130,8 +132,8 @@ export default {
       variables() {
         return {
           saleSearchInput: {
-            sellerId: this.$store.state.user.principal.member.id,
-            tenantId: process.env.VUE_APP_TENANT_ID,
+            sellerId: this.$store.state.user.principal.memberId,
+            tenantId,
             query: null,
             endDate: this.endDate,
             startDate: this.startDate
