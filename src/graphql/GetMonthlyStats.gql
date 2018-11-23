@@ -7,6 +7,7 @@ query getMonthlyStats(
       tenantId
       year
       month
+      joinedOn
       sellerId
       sellerPath
       teamSize
@@ -28,6 +29,7 @@ query getMonthlyStats(
       tenantId
       year
       month
+      joinedOn
       sellerId
       sellerPath
       teamSize

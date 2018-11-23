@@ -101,7 +101,9 @@ export default {
         }
       },
       update({ targetStats, firstLevelStats }) {
-        return targetStats.nodes.concat(firstLevelStats.nodes)
+        const result = targetStats.nodes.concat(firstLevelStats.nodes)
+
+        return result
       },
       fetchPolicy: 'cache-and-network'
     }

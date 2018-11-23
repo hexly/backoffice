@@ -41,7 +41,7 @@ export const getTeamByMemberId = memberIdFn => {
       const memberId = this[memberIdFn] || member.memberId || -1
       return {
         byTarget: { memberId },
-        bySponsor: { memberId }
+        bySponsor: { sponsorId: memberId }
       }
     },
     update({ target, team }) {

@@ -190,32 +190,32 @@ export default {
           }
         }
       },
-      update({ TeamStatsByLevel }) {
+      update({ teamStatsByLevel }) {
         const totalTeamAmount =
-          pathOr(0, ['personal', 'totalAmount'], TeamStatsByLevel) +
-          pathOr(0, ['firstLevel', 'totalAmount'], TeamStatsByLevel) +
-          pathOr(0, ['secondLevel', 'totalAmount'], TeamStatsByLevel) +
-          pathOr(0, ['thirdLevel', 'totalAmount'], TeamStatsByLevel) +
-          pathOr(0, ['fourthLevel', 'totalAmount'], TeamStatsByLevel)
+          pathOr(0, ['personal', 'totalAmount'], teamStatsByLevel) +
+          pathOr(0, ['firstLevel', 'totalAmount'], teamStatsByLevel) +
+          pathOr(0, ['secondLevel', 'totalAmount'], teamStatsByLevel) +
+          pathOr(0, ['thirdLevel', 'totalAmount'], teamStatsByLevel) +
+          pathOr(0, ['fourthLevel', 'totalAmount'], teamStatsByLevel)
 
         const teamSize =
-          pathOr(0, ['firstLevel', 'size'], TeamStatsByLevel) +
-          pathOr(0, ['secondLevel', 'size'], TeamStatsByLevel) +
-          pathOr(0, ['thirdLevel', 'size'], TeamStatsByLevel) +
-          pathOr(0, ['fourthLevel', 'size'], TeamStatsByLevel)
+          pathOr(0, ['firstLevel', 'size'], teamStatsByLevel) +
+          pathOr(0, ['secondLevel', 'size'], teamStatsByLevel) +
+          pathOr(0, ['thirdLevel', 'size'], teamStatsByLevel) +
+          pathOr(0, ['fourthLevel', 'size'], teamStatsByLevel)
 
         // Calculate Rank
         let r = 0
-        if (pathOr(-1, ['personal', 'totalPoints'], TeamStatsByLevel) >= 60) {
+        if (pathOr(-1, ['personal', 'totalPoints'], teamStatsByLevel) >= 60) {
           r = 1
         }
         if (r >= 1) {
-          r += pathOr(0, ['personal', 'qualified'], TeamStatsByLevel)
+          r += pathOr(0, ['personal', 'qualified'], teamStatsByLevel)
         }
 
         this.currentRank = this.ranks[r > 5 ? 5 : r]
         this.rankStyle.borderStyle = `#${this.currentRank.color}`
-        return { ...this.team, ...TeamStatsByLevel, totalTeamAmount, teamSize }
+        return { ...this.team, ...teamStatsByLevel, totalTeamAmount, teamSize }
       }
     },
     address: {
@@ -279,9 +279,7 @@ export default {
     },
     calculatePercent(percent, qualified) {
       const { qualified: _qualified, totalPoints } = this.team.personal
-      return _qualified >= qualified && totalPoints >= 60
-        ? percent
-        : 0
+      return _qualified >= qualified && totalPoints >= 60 ? percent : 0
     },
     calculateRank(qualified) {
       const { qualified: _qualified, totalPoints } = this.team.personal
