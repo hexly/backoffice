@@ -23,3 +23,32 @@
 //
 // -- This is will overwrite an existing command --
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
+Cypress.Commands.add('login', (email, pass)=>{
+    cy.visit('')
+
+    if(email){
+        cy.typeIn('input[name="email"]', `${email}`)
+    }
+    if(pass){
+        cy.typeIn('input[name="password"]', `${pass}`)      
+    }
+
+    cy.contains('button', 'Login')
+        .click()
+})
+
+Cypress.Commands.add('typeIn', (selector, text)=>{
+    cy.get(`${selector}`)
+        .focus()
+        .clear()
+        .type(`${text}`)
+        .should('have.value', `${text}`)
+})
+
+Cypress.Commands.add('accessSidebar', (page)=>{
+    cy.get('.v-toolbar__side-icon').click()
+
+    cy.get(`a[href="${page}"]`).click()
+
+    cy.url().should('contain', `${page}`)
+})
