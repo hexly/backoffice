@@ -18,7 +18,7 @@
           </v-breadcrumbs>
         <div  v-if="!$apollo.queries.results.loading">
           <v-layout row wrap id="TeamMembers">
-            <v-flex lg4 v-for="i in results.team" :key="i.email">
+            <v-flex lg4 v-for="(i, index) in results.team" :key="index">
               <TeamCard :loading="$apollo.queries.stats.loading" @viewTeam="showTeam" :user="i" :actions="true" :stats="getStats(i)"/>
             </v-flex>
           </v-layout>
@@ -111,7 +111,7 @@ export default {
   mounted() {
     const { principal: member } = this.$store.state.user
     this.currentId = member.memberId
-    this.lineage.push({ memberId: this.currentId, displayName: member.name })
+    this.lineage.push({ memberId: this.currentId, displayName: member.displayName })
   }
 }
 </script>
