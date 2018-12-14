@@ -5,7 +5,7 @@
       <month-selector :year="year" :month="month" @date-changed="dateChanged"/>
       <div>
         <v-layout v-if="results.target" row wrap justify-center>
-          <TeamCard :loading="$apollo.queries.stats.loading" @viewTeam="showTeam" :user="results.target" :stats="getStats(results.target)"/>
+          <TeamCard :loading="$apollo.queries.stats.loading" @viewTeam="showTeam" :user="results.target" :stats="getStats(results.target)" id="MainCard"/>
         </v-layout>
         <v-breadcrumbs divider="/">
             <v-breadcrumbs-item
@@ -17,7 +17,7 @@
             </v-breadcrumbs-item>
           </v-breadcrumbs>
         <div  v-if="!$apollo.queries.results.loading">
-          <v-layout row wrap>
+          <v-layout row wrap id="TeamMembers">
             <v-flex lg4 v-for="i in results.team" :key="i.email">
               <TeamCard :loading="$apollo.queries.stats.loading" @viewTeam="showTeam" :user="i" :actions="true" :stats="getStats(i)"/>
             </v-flex>
@@ -36,8 +36,8 @@ import MonthSelector from '@/components/MonthSelector.vue'
 import TeamCard from '../components/TeamCard.vue'
 import getTeamByMemberId from '@/graphql/GetTeam'
 import MONTHLY_STATS_QUERY from '@/graphql/GetMonthlyStats.gql'
-import find from 'rambda/lib/find'
-import defaultTo from 'rambda/lib/defaultTo'
+import { find } from 'rambda/lib/find'
+import { defaultTo } from 'rambda/lib/defaultTo'
 
 const tenantId = ~~process.env.VUE_APP_TENANT_ID
 

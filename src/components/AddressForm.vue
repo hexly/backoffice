@@ -6,6 +6,7 @@
         v-model="address.name"
         :rules="requiredRule"
         required
+        id="AddressName"
       ></v-text-field>
       <v-text-field
         label="Street"

@@ -12,6 +12,7 @@
               label="Name"
               v-model="editMember.name"
               required
+              id="ProfileName"
             ></v-text-field>
             <v-text-field
               label="E-mail"

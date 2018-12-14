@@ -4,7 +4,7 @@ describe('Tests inputting information into profile page', ()=>{
     })
     it('should update Your Information', ()=>{
         cy.wait(2000)//give the page a chance to load, sometimes the tests run to quick and the page refreshes after changes are made
-        cy.typeIn('form[data-v-ced23842] input[aria-label="Name"]', 'Fred')
+        cy.typeIn('#ProfileName', 'Fred')
         
 
         cy.typeIn('input[aria-label="E-mail"]', Cypress.env('validEmail'))
@@ -25,7 +25,7 @@ describe('Tests inputting information into profile page', ()=>{
             Country: 'A Country'
             }
         }
-        cy.typeIn('div[class="flex xs6"]>div[data-v-ced23842] input[aria-label="Name"]', userInfo.address.Name)
+        cy.typeIn('#AddressName', userInfo.address.Name)
         cy.typeIn('input[aria-label="Street"]', userInfo.address.Street)
         cy.typeIn('input[aria-label="City"]', userInfo.address.City)
         cy.typeIn('input[aria-label="State/Province"]', userInfo.address.State)
@@ -33,5 +33,6 @@ describe('Tests inputting information into profile page', ()=>{
         cy.typeIn('input[aria-label="Country"]', userInfo.address.Country)
 
         cy.contains('button', 'Save Address').click()
+        cy.wait(1000)
     })
 })
