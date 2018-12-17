@@ -1,5 +1,6 @@
 mutation updateProfile($input: UpdateProfileInput!) {
   updateProfile(input: $input) {
-    clientMutationId
+    # clientMutationId
+    memberDetail{name}
   }
 }

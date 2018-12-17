@@ -5,34 +5,50 @@ describe('Test the team Page', ()=>{
         cy.login(Cypress.env('validEmail'), Cypress.env('validPass'))
         cy.accessSidebar('/team')
     })
-    it(`should access team members team`, function(done){
-        console.log(done)
-        return Promise.all(promises)
-            .then(done)
+    let teams = []
+    it(`should access team members team`, function(){
+        // console.log(done)
+        /* return Promise.all(promises)
+            .then(done) */
         cy.get('#TeamMembers').children().each((child, i, Arr)=>{
             console.log(child)
             console.log(Arr)
             cy.get(`#TeamMembers > div:nth-child(${i+1})`).contains('button','View Team')
 
-            cy.get(`#TeamMembers > div:nth-child(${i+1})`).contains('Team Size').invoke('text').as(`t.teams[${i}]`)
+            cy.get(`#TeamMembers > div:nth-child(${i+1})`).contains('Team Size').invoke('text').then((text)=>{
+                teams.push(text)
+            })//as(`t.teams[${i}]`)
             
             
         })
-        done()
     })
-    let total = 0
     it('should count the team sizes', function (){
-        
-        cy.log(this)
+        cy.log(teams)
+        let teamNum = teams.reduce((total, team)=>{
+            return total = total + parseInt(team.split(" ")[2])
+        }, 0)
+        cy.log(teamNum)
+        let num = []
+        context('stuff', ()=>{
+            it('should update Number, im hoping I can nest', ()=>{
+                setTimeout(()=>{
+                    num.push(1)
+                },1000)
+            })
+        })
+        num.push(2)
+        cy.wait(3000)
+        cy.log(num)
+        /* cy.log(this)
         cy.log(this.t0)
         cy.log(this.t1)
-        cy.log(this.t2)
-        total = parseInt(this.t0.split(" ")[2]) + parseInt(this.t1.split(" ")[2]) + parseInt(this.t2.split(" ")[2])
+        total = parseInt(this.t0.split(" ")[2]) + parseInt(this.t1.split(" ")[2]) + parseInt(this.t2.split(" ")[2]) */
     })
+
     it('should update the month date', function(){
-        cy.log(this.t0.split(" ")[2])
+        /* cy.log(this.t0.split(" ")[2])
         cy.log( this.t1.split(" ")[2])
-        cy.log( this.t2.split(" ")[2])
+        cy.log( this.t2.split(" ")[2]) */
         // cy.log(total)
         let date = new Date()
         cy.wait(2000)
