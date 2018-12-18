@@ -160,7 +160,7 @@ export default {
         return {
           ...sale,
           id: sale.saleId,
-          date: moment(sale.awardedDate).format('MM/DD/YYYY')
+          date: moment(sale.awardedDate, 'YYYY-MM-DD').format('MM/DD/YYYY')
         }
       }, this.sales)
     }
