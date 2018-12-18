@@ -8,11 +8,11 @@
           <v-subheader>Range</v-subheader>
           <v-container grid-list-md text-xs-center>
             <v-layout row wrap>
-              <v-flex xs12 sm6>
-                <date-selector :selectedDate="startDate" :label="'Select Start Date'" @date-changed="startDateChanged"/>
+              <v-flex xs12 sm4>
+                <date-selector :selectedDate="startDate" :label="'Select Start Date'" @date-changed="startDateChanged" @change="startDateChanged"/>
               </v-flex>
-              <v-flex xs12 sm6>
-                <date-selector :selectedDate="endDate" :label="'Select End Date'" @date-changed="endDateChanged"/>
+              <v-flex xs12 sm4>
+                <date-selector :selectedDate="endDate" :label="'Select End Date'" @date-changed="endDateChanged" @change="endDateChanged"/>
               </v-flex>
             </v-layout>
           </v-container>
@@ -27,16 +27,16 @@
         expand
         :loading="$apollo.queries.sales.loading"
       >
-        <template slot="items" slot-scope="props">
+        <template slot="items" slot-scope="props" >
           <tr @click="props.expanded = !props.expanded">
             <td><a>Details</a></td>
-            <td>{{ props.item.date }}</td>
-            <td>${{ props.item.total }}</td>
-            <td>{{ props.item.totalPoints }}</td>
-            <td>{{ props.item.commissionableAmount }}</td>
-            <td>{{ props.item.commissionablePoints }}</td>
-            <td>{{ props.item.displayName }}</td>
-            <td>{{ props.item.sellerEmail }}</td>
+            <td class="SaleDate">{{ props.item.date }}</td>
+            <td class="SaleTotal">${{ props.item.total }}</td>
+            <td class="TotalPoints">{{ props.item.totalPoints }}</td>
+            <td class=CommTotal>{{ props.item.commissionableAmount }}</td>
+            <td class="CommPoints">{{ props.item.commissionablePoints }}</td>
+            <td class="SellerName">{{ props.item.displayName }}</td>
+            <td class="SellerEmail">{{ props.item.sellerEmail }}</td>
           </tr>
         </template>
         <template slot="expand" slot-scope="props">

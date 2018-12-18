@@ -18,6 +18,7 @@
           v-model="date"
           :label="label"
           prepend-icon="event"
+          @change="parseDate"
           readonly
         ></v-text-field>
         <v-date-picker v-model="date" @input="updateDate"></v-date-picker>
@@ -28,6 +29,7 @@
 </template>
 
 <script>
+import moment from 'moment'
 export default {
   name: 'date-selector',
   data() {
@@ -43,7 +45,7 @@ export default {
   props: {
     selectedDate: {
       type: String,
-      default: new Date()
+      default: moment().format('YYYY-MM-DD')
     },
     label: {
       type: String,
@@ -58,8 +60,8 @@ export default {
       })
     },
     parseDate(d) {
-      console.log('parseDate', d)
-      return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`
+      this.date = d
+      this.updateDate()
     }
   }
 }

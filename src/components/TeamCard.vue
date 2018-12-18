@@ -6,10 +6,10 @@
           <div v-if="!loading">
             <div class="headline">{{user.name}}</div>
             <div>{{user.email}}</div>
-            <div>{{user.displayName}}</div>
+            <div class="display-name">{{user.displayName}}</div>
             <div>Date Joined: {{stats.joinedOn | formatDate}}</div>
-            <div>Team Size: {{stats.teamSize || 0}}</div>
-            <div>Front Line: {{stats.firstLevelSize || 0}}</div>
+            <div class="team-size">Team Size: {{stats.teamSize || 0}}</div>
+            <div class="front-line">Front Line: {{stats.firstLevelSize || 0}}</div>
             <!-- <div>Total Points: {{stats.totalPoints || 0}}</div>
             <div>Total Amount: {{stats.totalAmount || 0}}</div> -->
           </div>

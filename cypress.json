@@ -2,7 +2,7 @@
   "pluginsFile": "test/e2e/plugins/index.js",
   "baseUrl": "http://localhost:8080/",
   "env":{
-    "validEmail": "randy00@example.org",
+    "validEmail": "hglover@example.net",
     "validPass": "changeme",
     "invalidPass": "fakepass",
     "invalidEmail": "fake@example.com"

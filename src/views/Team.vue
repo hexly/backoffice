@@ -7,7 +7,7 @@
         <v-layout v-if="results.target" row wrap justify-center>
           <TeamCard :loading="$apollo.queries.stats.loading" @viewTeam="showTeam" :user="results.target" :stats="getStats(results.target)" id="MainCard"/>
         </v-layout>
-        <v-breadcrumbs divider="/">
+        <v-breadcrumbs divider="/" id="Lineage">
             <v-breadcrumbs-item
               v-for="(user, index) in lineage"
               :key="user.email"
