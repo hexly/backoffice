@@ -8,63 +8,48 @@
             <h2>Your Information</h2>
           </div>
           <v-form>
-            <v-text-field
-              label="Name"
-              v-model="editMember.name"
-              required
-            ></v-text-field>
-            <v-text-field
-              label="E-mail"
-              v-model="editMember.email"
-              required
-            ></v-text-field>
-            <v-text-field
-              label="Display name"
-              v-model="editMember.displayName"
-              required
-            ></v-text-field>
-            <!--
-              <v-text-field
-                name="password"
-                label="Enter your password"
-                hint="At least 8 characters"
-                v-model="password"
-                min="8"
-                :append-icon="visible ? 'visibility_off' : 'visibility'"
-                :append-icon-cb="() => (visible = !visible)"
-                :type="visible ? 'text' : 'password'"
-              ></v-text-field>
-            -->
+            <v-text-field label="Name" v-model="editMember.name" required></v-text-field>
+            <v-text-field label="E-mail" v-model="editMember.email" required></v-text-field>
+            <v-text-field label="Display name" v-model="editMember.displayName" required></v-text-field>
+            <!-- <v-text-field
+              name="password"
+              label="Enter your password"
+              hint="At least 8 characters"
+              v-model="password"
+              min="8"
+              :append-icon="visible ? 'visibility_off' : 'visibility'"
+              :append-icon-cb="() => (visible = !visible)"
+              :type="visible ? 'text' : 'password'"
+            ></v-text-field>-->
           </v-form>
-          <v-btn :disabled="saving" :loading="saving" color="success" @click="saveData()">Save Information</v-btn>
+          <v-btn
+            :disabled="saving"
+            :loading="saving"
+            color="success"
+            @click="saveData()"
+          >Save Information</v-btn>
           <h2>Your Address</h2>
           <AddressForm @addressSaved="snackbar = true"/>
         </v-flex>
         <v-flex xs6>
           <div class="mx-auto">
             <h2>Profile Image</h2>
-            <img class="image" :src="getAvatar"/>
+            <img class="image" :src="getAvatar">
             <form enctype="multipart/form-data" novalidate>
-                <input
-                  type="file"
-                  name="avatar"
-                  :disabled="isSaving"
-                  @change="filesChange($event.target.files)"
-                  accept="image/*"
-                />
-                <div v-if="isUploading">Uploading... please wait</div>
+              <input
+                type="file"
+                name="avatar"
+                :disabled="isSaving"
+                @change="filesChange($event.target.files)"
+                accept="image/*"
+              >
+              <div v-if="isUploading">Uploading... please wait</div>
             </form>
           </div>
         </v-flex>
       </v-layout>
     </v-container>
-    <v-snackbar
-      :timeout="6000"
-      :top="true"
-      :right="true"
-      v-model="snackbar"
-    >
-      Information Saved
+    <v-snackbar :timeout="6000" :top="true" :right="true" v-model="snackbar">Information Saved
       <v-btn flat color="pink" @click.native="snackbar = false">Close</v-btn>
     </v-snackbar>
   </div>
