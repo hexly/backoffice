@@ -3,40 +3,47 @@
     <v-form ref="addressForm" @submit.prevent="save()" lazy-validation>
       <v-text-field
         label="Name"
+        name="name"
         v-model="address.name"
         :rules="requiredRule"
         required
       ></v-text-field>
       <v-text-field
         label="Street"
+        name="Street"
         v-model="address.street"
         :rules="requiredRule"
         required
       ></v-text-field>
       <v-text-field
         label="Street 2"
+        name="Street 2"
         v-model="address.street2"
       ></v-text-field>
       <v-text-field
         label="City"
+        name="City"
         v-model="address.city"
         :rules="requiredRule"
         required
       ></v-text-field>
       <v-text-field
         label="State/Province"
+        name="State/Province"
         v-model="address.province"
         :rules="requiredRule"
         required
       ></v-text-field>
       <v-text-field
         label="Postal Code"
+        name="Postal Code"
         v-model="address.postalCode"
         :rules="requiredRule"
         required
       ></v-text-field>
       <v-text-field
         label="Country"
+        name="Country"
         v-model="address.country"
         :rules="requiredRule"
         required
