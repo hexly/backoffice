@@ -3,7 +3,11 @@ import Vuex from 'vuex'
 import axios from 'axios'
 import { UserStore } from '@/stores/UserStore'
 import { ClaimStore } from '@/stores/ClaimStore'
-const { VUE_APP_API_ENDPOINT, VUE_APP_TENANT_ID, VUE_APP_LANE } = process.env
+const {
+  VUE_APP_API_ENDPOINT = 'http://localhost:3000',
+  VUE_APP_TENANT_ID,
+  VUE_APP_LANE
+} = process.env
 
 Vue.use(Vuex)
 
@@ -19,7 +23,7 @@ export const Actions = {
 const axiosSetup = hydratedState => {
   const jwt = hydratedState && hydratedState.user && hydratedState.user.jwt
   axios.interceptors.request.use(config => {
-    if (jwt && config.url.indexOf(VUE_APP_API_ENDPOINT) > -1) {
+    if (jwt && config.url && config.url.indexOf(VUE_APP_API_ENDPOINT) > -1) {
       config.headers['Authorization'] = `Bearer ${jwt}`
     }
     return config
@@ -69,6 +73,7 @@ export default new Vuex.Store({
       localStorage.clear()
     },
     [Actions.AVATAR_UPLOAD]: async (context, { file }) => {
+      console.log('go')
       const { data } = await axios.get(
         `${VUE_APP_API_ENDPOINT}/storage/destinations/${VUE_APP_TENANT_ID}/cloudinary`,
         { params: { lane: VUE_APP_LANE } }
