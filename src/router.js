@@ -10,63 +10,67 @@ import Profile from './views/Profile.vue'
 import Assets from './views/Assets.vue'
 import Team from './views/Team.vue'
 import Sales from './views/Sales.vue'
+import PageNotFound from './views/PageNotFound.vue'
 
 Vue.use(Router)
 
 export default new Router({
   mode: 'history',
-  routes: [
-    {
-      path: '/login',
-      name: 'login',
-      component: Login,
-      beforeEnter: (_, __, next) => store.state.user.jwt ? next('/dashboard') : next()
+  routes: [{
+    path: '/login',
+    name: 'login',
+    component: Login,
+    beforeEnter: (_, __, next) => store.state.user.jwt ? next('/dashboard') : next()
+  },
+  {
+    path: '/account/claim/:token',
+    name: 'account-claim',
+    component: AccountClaim,
+    beforeEnter: (_, __, next) => store.state.user.jwt ? next('/dashboard') : next()
+  },
+  {
+    path: '/account/reset/:token/:email',
+    name: 'password-rest',
+    component: PasswordReset,
+    beforeEnter: (_, __, next) => store.state.user.jwt ? next('/dashboard') : next()
+  },
+  {
+    path: '/',
+    name: 'backoffice',
+    component: Backoffice,
+    beforeEnter: (_, __, next) => !store.state.user.jwt ? next('/login') : next(),
+    children: [{
+      path: 'dashboard',
+      alias: '',
+      name: 'dashboard',
+      component: Dashboard
     },
     {
-      path: '/account/claim/:token',
-      name: 'account-claim',
-      component: AccountClaim,
-      beforeEnter: (_, __, next) => store.state.user.jwt ? next('/dashboard') : next()
+      path: 'profile',
+      name: 'profile',
+      component: Profile
     },
     {
-      path: '/account/reset/:token/:email',
-      name: 'password-rest',
-      component: PasswordReset,
-      beforeEnter: (_, __, next) => store.state.user.jwt ? next('/dashboard') : next()
+      path: 'assets',
+      name: 'assets',
+      component: Assets
     },
     {
-      path: '/',
-      name: 'backoffice',
-      component: Backoffice,
-      beforeEnter: (_, __, next) => !store.state.user.jwt ? next('/login') : next(),
-      children: [
-        {
-          path: 'dashboard',
-          alias: '',
-          name: 'dashboard',
-          component: Dashboard
-        },
-        {
-          path: 'profile',
-          name: 'profile',
-          component: Profile
-        },
-        {
-          path: 'assets',
-          name: 'assets',
-          component: Assets
-        },
-        {
-          path: 'sales',
-          name: 'sales',
-          component: Sales
-        },
-        {
-          path: 'team',
-          name: 'team',
-          component: Team
-        }
-      ]
+      path: 'sales',
+      name: 'sales',
+      component: Sales
+    },
+    {
+      path: 'team',
+      name: 'team',
+      component: Team
+    },
+    {
+      path: '*',
+      name: 'PageNotFound',
+      component: PageNotFound
     }
+    ]
+  }
   ]
 })
