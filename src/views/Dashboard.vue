@@ -5,7 +5,7 @@
     <v-container fluid class="contain">
       <v-layout row wrap>
         <v-flex sm2>
-          <img class="image" :src="getAvatar" :style="{ borderColor: `#${currentRank.color}`}"/>
+          <img class="image" :src="getAvatar" :style="{ borderColor: `#${currentRank.color}`}">
         </v-flex>
         <v-flex sm6>
           <h3>Chakra: {{currentRank.name}}</h3>
@@ -14,8 +14,10 @@
             <li>Total Personal Points: {{team.personal.totalPoints}}</li>
             <li>Total Personal Amount: {{team.personal.totalAmount}}</li>
             <li>Total Personal Sales: {{team.personal.sales}}</li>
-            <li>Personal Recruites: {{team.personal.recruited}}</li>
-            <li><hr/></li>
+            <li>Personal Recruits: {{team.personal.recruited}}</li>
+            <li>
+              <hr>
+            </li>
             <li>Family Size: {{team.teamSize}}</li>
             <li>Total Family Points: {{team.totalTeamAmount}}</li>
           </ul>
@@ -25,11 +27,10 @@
           <div class="chakra guru" :class="{'active': calculateRank(2)}"></div>
           <div class="chakra sage" :class="{'active': calculateRank(3)}"></div>
           <div class="chakra master" :class="{'active': calculateRank(4)}"></div>
-
         </v-flex>
         <v-spacer/>
       </v-layout>
-        <CompPlanLevel
+      <CompPlanLevel
         :level="team.firstLevel"
         levelName="One"
         :percent="calculatePercent(.1, 1)"
@@ -69,27 +70,15 @@
         </v-flex>
       </v-layout>
     </v-container>
-    <v-dialog
-      v-model="showAddressDialog"
-      max-width="290"
-      persistent
-    >
+    <v-dialog v-model="showAddressDialog" max-width="290" persistent>
       <v-card>
         <v-card-title class="headline">We need your address</v-card-title>
 
-        <v-card-text>
-          Welcome Back to your backoffice. Since last time you were here we've added the ability to input your address. Please go to your profile page and update your address!
-        </v-card-text>
+        <v-card-text>Welcome Back to your backoffice. Since last time you were here we've added the ability to input your address. Please go to your profile page and update your address!</v-card-text>
 
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn
-            color="green darken-1"
-            flat="flat"
-            @click="$router.push('/profile')"
-          >
-            Profile Page
-          </v-btn>
+          <v-btn color="green darken-1" flat="flat" @click="$router.push('/profile')">Profile Page</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -320,7 +309,7 @@ ul li {
   height: 67px;
   display: inline-block;
   filter: grayscale(100%) opacity(50%);
-  background-image: url('../../public/img/css_sprites.png');
+  background-image: url("../../public/img/css_sprites.png");
 }
 
 .ambassador {
