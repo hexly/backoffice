@@ -24,7 +24,9 @@ const axiosSetup = hydratedState => {
   const jwt = hydratedState && hydratedState.user && hydratedState.user.jwt
   axios.interceptors.request.use(config => {
     if (jwt && config.url && config.url.indexOf(VUE_APP_API_ENDPOINT) > -1) {
-      config.headers['Authorization'] = `Bearer ${jwt}`
+      config.headers = config.headers || {}
+      config.headers.common = config.headers.common || {}
+      config.headers.common['Authorization'] = `Bearer ${jwt}`
     }
     return config
   })
