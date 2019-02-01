@@ -14,7 +14,7 @@
             <li>Total Personal Points: {{team.personal.totalPoints}}</li>
             <li>Total Personal Amount: {{team.personal.totalAmount}}</li>
             <li>Total Personal Sales: {{team.personal.sales}}</li>
-            <li>Personal Recruites: {{team.personal.recruited}}</li>
+            <li>Personal Recruits: {{team.personal.recruited}}</li>
             <li><hr/></li>
             <li>Family Size: {{team.teamSize}}</li>
             <li>Total Family Points: {{team.totalTeamAmount}}</li>
