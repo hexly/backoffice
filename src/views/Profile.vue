@@ -11,6 +11,12 @@
             <v-text-field label="Name" v-model="editMember.name" required></v-text-field>
             <v-text-field label="E-mail" v-model="editMember.email" required></v-text-field>
             <v-text-field label="Display name" v-model="editMember.displayName" required></v-text-field>
+            <v-text-field
+              label="Slug / Store Name"
+              v-model="editMember.slug"
+              required
+              :disabled="!!originalSlug"
+            ></v-text-field>
             <!-- <v-text-field
               name="password"
               label="Enter your password"
@@ -56,10 +62,10 @@
 </template>
 
 <script>
-import AddressForm from '@/components/AddressForm.vue'
-import IDENTITY_QUERY from '@/graphql/GetIdentity.gql'
-import UPDATE_PROFILE from '@/graphql/UpdateProfile.gql'
-import { Actions } from '@/store'
+import AddressForm from "@/components/AddressForm.vue";
+import IDENTITY_QUERY from "@/graphql/GetIdentity.gql";
+import UPDATE_PROFILE from "@/graphql/MemberPartialUpdate.gql";
+import { Actions } from "@/store";
 
 export default {
   components: {
@@ -67,52 +73,55 @@ export default {
   },
   data: () => ({
     visible: false,
-    password: '',
-    newPassword: '',
+    password: "",
+    newPassword: "",
     snackbar: false,
     uploadFileName: null,
     isUploading: false,
     isSaving: false,
     editMember: {
-      id: '',
-      name: '',
-      displayName: '',
-      email: '',
-      profileUrl: ''
+      id: "",
+      name: "",
+      displayName: "",
+      email: "",
+      profileUrl: "",
+      slug: ""
     },
+    originalSlug: undefined,
     saving: false
   }),
   methods: {
     async filesChange(files) {
-      const file = files[0]
-      this.isSaving = true
-      this.isUploading = true
+      const file = files[0];
+      this.isSaving = true;
+      this.isUploading = true;
       const { data } = await this.$store.dispatch(Actions.AVATAR_UPLOAD, {
         file
-      })
-      this.isFalse = false
-      this.isUploading = false
-      this.editMember.profileUrl = data.secure_url
-      this.saveData()
+      });
+      this.isFalse = false;
+      this.isUploading = false;
+      this.editMember.profileUrl = data.secure_url;
+      this.saveData();
     },
     saveData() {
-      this.saving = true
+      this.saving = true;
       this.$apollo.mutate({
         mutation: UPDATE_PROFILE,
         variables: {
           input: {
-            memberId: this.editMember.memberId,
+            id: this.editMember.memberId,
             name: this.editMember.name,
             displayName: this.editMember.displayName,
             contactEmail: this.editMember.email,
-            profileUrl: this.editMember.profileUrl
+            profileUrl: this.editMember.profileUrl,
+            slug: !this.originalSlug ? this.editMember.slug : this.originalSlug
           }
         },
         update: (store, response) => {
-          this.saving = false
-          this.snackbar = true
+          this.saving = false;
+          this.snackbar = true;
         }
-      })
+      });
     }
   },
   apollo: {
@@ -123,12 +132,13 @@ export default {
           condition: {
             memberId: this.$store.state.user.principal.memberId
           }
-        }
+        };
       },
       update({ allIdentities }) {
-        const editMember = allIdentities.nodes[0]
-        this.editMember = { ...editMember }
-        return editMember
+        const editMember = allIdentities.nodes[0];
+        this.editMember = { ...editMember };
+        this.originalSlug = this.editMember.slug;
+        return editMember;
       }
     }
   },
@@ -136,11 +146,11 @@ export default {
     getAvatar() {
       return (
         this.editMember.profileUrl ||
-        'http://res.cloudinary.com/hexly/image/upload/dev/1001/avatar/undefined.jpg'
-      )
+        "http://res.cloudinary.com/hexly/image/upload/dev/1001/avatar/undefined.jpg"
+      );
     }
   }
-}
+};
 </script>
 
 <style scoped>
