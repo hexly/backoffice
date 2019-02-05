@@ -40,13 +40,13 @@ export default {
     }
   },
   methods: {
-    formatCurrency(total) {
+    formatCurrency (total) {
       return total.toLocaleString('us-EN', {
         style: 'currency',
         currency: 'USD'
       })
     },
-    scaleImage(image) {
+    scaleImage (image) {
       if (image) {
         return image.replace('/image/upload', '/image/upload/w_80')
       }

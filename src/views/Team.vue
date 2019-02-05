@@ -60,21 +60,21 @@ export default {
     MonthSelector
   },
   methods: {
-    showTeam(user) {
+    showTeam (user) {
       this.lineage.push(user)
       this.currentId = user.memberId
     },
-    updateLineage(user, index) {
+    updateLineage (user, index) {
       this.lineage = this.lineage.slice(0, index + 1)
       this.currentId = user.memberId
     },
-    getStats(target) {
+    getStats (target) {
       return defaultTo(
         {},
         find(_ => _.sellerId === target.memberId, this.stats)
       )
     },
-    dateChanged({ date }) {
+    dateChanged ({ date }) {
       const dateSplit = date.split('-')
       this.month = parseInt(dateSplit[1])
       this.year = parseInt(dateSplit[0])
@@ -84,7 +84,7 @@ export default {
     results: getTeamByMemberId('currentId'),
     stats: {
       query: MONTHLY_STATS_QUERY,
-      variables() {
+      variables () {
         return {
           targetCondition: {
             tenantId,
@@ -100,7 +100,7 @@ export default {
           }
         }
       },
-      update({ targetStats, firstLevelStats }) {
+      update ({ targetStats, firstLevelStats }) {
         const result = targetStats.nodes.concat(firstLevelStats.nodes)
 
         return result
@@ -108,7 +108,7 @@ export default {
       fetchPolicy: 'cache-and-network'
     }
   },
-  mounted() {
+  mounted () {
     const { principal: member } = this.$store.state.user
     this.currentId = member.memberId
     this.lineage.push({ memberId: this.currentId, displayName: member.displayName })

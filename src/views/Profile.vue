@@ -83,7 +83,7 @@ export default {
     saving: false
   }),
   methods: {
-    async filesChange(files) {
+    async filesChange (files) {
       const file = files[0]
       this.isSaving = true
       this.isUploading = true
@@ -95,7 +95,7 @@ export default {
       this.editMember.profileUrl = data.secure_url
       this.saveData()
     },
-    saveData() {
+    saveData () {
       this.saving = true
       this.$apollo.mutate({
         mutation: UPDATE_PROFILE,
@@ -118,14 +118,14 @@ export default {
   apollo: {
     member: {
       query: IDENTITY_QUERY,
-      variables() {
+      variables () {
         return {
           condition: {
             memberId: this.$store.state.user.principal.memberId
           }
         }
       },
-      update({ allIdentities }) {
+      update ({ allIdentities }) {
         const editMember = allIdentities.nodes[0]
         this.editMember = { ...editMember }
         return editMember
@@ -133,7 +133,7 @@ export default {
     }
   },
   computed: {
-    getAvatar() {
+    getAvatar () {
       return (
         this.editMember.profileUrl ||
         'http://res.cloudinary.com/hexly/image/upload/dev/1001/avatar/undefined.jpg'

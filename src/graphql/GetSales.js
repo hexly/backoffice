@@ -19,14 +19,14 @@ const SALES_QUERY = gql`
 export default v => {
   return {
     query: SALES_QUERY,
-    variables() {
+    variables () {
       return {
         saleCondition: {
           ...v
         }
       }
     },
-    update({ allSales }) {
+    update ({ allSales }) {
       return allSales.nodes
     }
   }

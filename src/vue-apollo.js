@@ -23,7 +23,7 @@ export const apolloClient = createApolloClient(options)
 // Create vue apollo provider
 export const apolloProvider = new VueApollo({
   defaultClient: apolloClient,
-  errorHandler(err) {
+  errorHandler (err) {
     if (err.message.toString().indexOf(NETWORK_ERROR) > -1) {
       // localStorage.clear()
       // window.location = '/'

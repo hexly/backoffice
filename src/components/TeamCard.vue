@@ -52,25 +52,25 @@ export default {
     loading: Boolean
   },
   filters: {
-    formatDate(value) {
+    formatDate (value) {
       const joinedDate = new Date(value)
       return `${joinedDate.getMonth() +
         1}/${joinedDate.getDate()}/${joinedDate.getFullYear()}`
     }
   },
   methods: {
-    viewTeam() {
+    viewTeam () {
       this.$emit('viewTeam', this.user)
     }
   },
   computed: {
-    getAvatar() {
+    getAvatar () {
       return (
         (this.user && this.user.profileUrl) ||
         'http://res.cloudinary.com/hexly/image/upload/dev/1001/avatar/undefined.jpg'
       )
     },
-    isQualified() {
+    isQualified () {
       let joined = new Date(this.stats.joinedOn)
       let today = new Date()
       joined = `${joined.getFullYear()}-${joined.getMonth()}`

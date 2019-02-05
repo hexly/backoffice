@@ -3,44 +3,46 @@
     <v-container fluid class="contain">
       <v-layout row wrap>
         <v-flex xs3>
-          <img class="image" :src="getAvatar" />
+          <img class="image" :src="getAvatar">
         </v-flex>
         <v-flex xs6>
           <h1>{{member.displayName}}</h1>
-          <hr/>
+          <hr>
           <h3>Current Level: Ambassador</h3>
           <ul>
             <li>Qualified First Level: {{team.personal.qualified}}</li>
             <li>Total Personal Points: {{team.personal.totalPoints}}</li>
             <li>Total Personal Amount: {{team.personal.totalAmount}}</li>
-            <li><hr/></li>
+            <li>
+              <hr>
+            </li>
             <li>Team Size: {{team.teamSize}}</li>
             <li>Total Team Points: {{team.totalTeamAmount}}</li>
           </ul>
         </v-flex>
         <v-spacer/>
       </v-layout>
-      <CompPlanLevel 
-        :level="team.firstLevel" 
-        levelName="One" 
+      <CompPlanLevel
+        :level="team.firstLevel"
+        levelName="One"
         :percent="calculatePercent(.1, 1)"
         notes="If you have 1 active* person in your first level you will receive 10% of your First Level Commissionable Points"
       />
-      <CompPlanLevel 
-        :level="team.secondLevel" 
-        levelName="Two" 
+      <CompPlanLevel
+        :level="team.secondLevel"
+        levelName="Two"
         :percent="calculatePercent(.05, 2)"
         notes="If you have 2 active* person in your first level you will receive 5% of your Fourth Level Commissionable Points"
       />
-      <CompPlanLevel 
-        :level="team.thirdLevel" 
-        levelName="Three" 
+      <CompPlanLevel
+        :level="team.thirdLevel"
+        levelName="Three"
         :percent="calculatePercent(.05, 3)"
         notes="If you have 3 active* person in your first level you will receive 5% of your Third Level Commissionable Points"
       />
-      <CompPlanLevel 
-        :level="team.fourthLevel" 
-        levelName="Fourth" 
+      <CompPlanLevel
+        :level="team.fourthLevel"
+        levelName="Fourth"
         :percent="calculatePercent(.1, 4)"
         notes="If you have 4 active* person in your first level you will receive 10% of your Fourth Level Commissionable Points"
       />
@@ -53,7 +55,6 @@ import CompPlanLevel from '@/components/CompPlanLevel.vue'
 import IDENTITY_QUERY from '@/graphql/GetIdentity.gql'
 import TEAM_STATS_BY_LEVEL from '@/graphql/TeamStatsByLevel.gql'
 import moment from 'moment'
-const { VUE_APP_TENANT_ID } = process.env
 
 export default {
   components: {
@@ -84,21 +85,21 @@ export default {
   apollo: {
     member: {
       query: IDENTITY_QUERY,
-      variables() {
+      variables () {
         return {
           condition: {
             memberId: this.$store.state.user.principal.memberId
           }
         }
       },
-      update({ allIdentities }) {
+      update ({ allIdentities }) {
         const member = allIdentities.nodes[0]
         return member
       }
     },
     team: {
       query: TEAM_STATS_BY_LEVEL,
-      variables() {
+      variables () {
         return {
           teamInput: {
             memberId: this.$store.state.user.principal.memberId,
@@ -110,7 +111,7 @@ export default {
           }
         }
       },
-      update({ TeamStatsByLevel }) {
+      update ({ TeamStatsByLevel }) {
         const totalTeamAmount =
           TeamStatsByLevel.personal.totalAmount +
           TeamStatsByLevel.firstLevel.totalAmount +
@@ -129,7 +130,7 @@ export default {
     }
   },
   methods: {
-    calculatePercent(percent, qualified) {
+    calculatePercent (percent, qualified) {
       if (this.team.personal.qualified >= qualified) {
         return percent
       }
@@ -137,7 +138,7 @@ export default {
     }
   },
   computed: {
-    getAvatar() {
+    getAvatar () {
       return (
         this.member.profileUrl ||
         'http://res.cloudinary.com/hexly/image/upload/dev/1001/avatar/undefined.jpg'
