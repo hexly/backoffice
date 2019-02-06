@@ -7,16 +7,18 @@
           <div class="mx-auto">
             <h2>Your Information</h2>
           </div>
-          <v-form>
+          <v-form ref="informationForm">
             <v-text-field label="Name" v-model="editMember.name" required></v-text-field>
-            <v-text-field label="E-mail" v-model="editMember.email" required></v-text-field>
+            <v-text-field label="E-mail" v-model="editMember.contactEmail" required></v-text-field>
             <v-text-field label="Display name" v-model="editMember.displayName" required></v-text-field>
             <v-text-field
               label="Slug / Store Name"
               v-model="editMember.slug"
+              :rules="slugRule"
               required
-              :disabled="!!originalSlug"
+              :disabled="!originalSlug"
             ></v-text-field>
+            {{slugPreview + editMember.slug}}
             <!-- <v-text-field
               name="password"
               label="Enter your password"
@@ -55,7 +57,8 @@
         </v-flex>
       </v-layout>
     </v-container>
-    <v-snackbar :timeout="6000" :top="true" :right="true" v-model="snackbar">Information Saved
+    <v-snackbar :timeout="6000" :top="true" :right="true" v-model="snackbar">
+      {{snackbarMsg}}
       <v-btn flat color="pink" @click.native="snackbar = false">Close</v-btn>
     </v-snackbar>
   </div>
@@ -63,8 +66,10 @@
 
 <script>
 import AddressForm from "@/components/AddressForm.vue";
-import IDENTITY_QUERY from "@/graphql/GetIdentity.gql";
+import GET_MEMBERS from "@/graphql/GetMembers.gql";
 import UPDATE_PROFILE from "@/graphql/MemberPartialUpdate.gql";
+import CHECK_IF_UNIQUE_SLUG from "@/graphql/Slug.gql";
+import Rules from "./Rules.js";
 import { Actions } from "@/store";
 
 export default {
@@ -76,9 +81,13 @@ export default {
     password: "",
     newPassword: "",
     snackbar: false,
+    snackbarMsg: "",
     uploadFileName: null,
     isUploading: false,
     isSaving: false,
+    slugIsUnique: true,
+    slugRule: Rules.slugRule,
+    slugPreview: "mygreenhorizen.com/store/",
     editMember: {
       id: "",
       name: "",
@@ -103,39 +112,70 @@ export default {
       this.editMember.profileUrl = data.secure_url;
       this.saveData();
     },
-    saveData() {
-      this.saving = true;
-      this.$apollo.mutate({
-        mutation: UPDATE_PROFILE,
-        variables: {
-          input: {
-            id: this.editMember.memberId,
-            name: this.editMember.name,
-            displayName: this.editMember.displayName,
-            contactEmail: this.editMember.email,
-            profileUrl: this.editMember.profileUrl,
-            slug: !this.originalSlug ? this.editMember.slug : this.originalSlug
+    async saveData() {
+      const formIsValid = this.$refs.informationForm.validate();
+      if (formIsValid) {
+        // Slug uniqueness query
+        const { data } = await this.$apollo.query({
+          query: CHECK_IF_UNIQUE_SLUG,
+          variables: {
+            input: {
+              slugs: [this.editMember.slug]
+            }
           }
-        },
-        update: (store, response) => {
-          this.saving = false;
-          this.snackbar = true;
+        });
+        const { membersBySlugs } = data;
+        if (membersBySlugs.length > 0) {
+          membersBySlugs.forEach(element => {
+            if (element.id != this.editMember.id) {
+              this.slugIsUnique = false;
+              this.snackbarMsg = "Chosen store name is unavailable!";
+              this.snackbar = true;
+            }
+          });
         }
-      });
+        if (this.slugIsUnique) {
+          this.saving = true;
+          this.editMember.slug = this.editMember.slug.toLowerCase();
+          this.$apollo.mutate({
+            mutation: UPDATE_PROFILE,
+            variables: {
+              input: {
+                id: this.editMember.id,
+                name: this.editMember.name,
+                displayName: this.editMember.displayName,
+                contactEmail: this.editMember.email,
+                profileUrl: this.editMember.profileUrl,
+                slug: !this.originalSlug
+                  ? this.editMember.slug
+                  : this.originalSlug
+              }
+            },
+            update: (store, response) => {
+              this.saving = false;
+              this.snackbarMsg = "Information Saved";
+              this.snackbar = true;
+            }
+          });
+        }
+      } else {
+        this.snackbarMsg = "One or more fields were filled out incorrectly";
+        this.snackbar = true;
+      }
     }
   },
   apollo: {
     member: {
-      query: IDENTITY_QUERY,
+      query: GET_MEMBERS,
       variables() {
         return {
-          condition: {
-            memberId: this.$store.state.user.principal.memberId
+          input: {
+            ids: this.$store.state.user.principal.memberId
           }
         };
       },
-      update({ allIdentities }) {
-        const editMember = allIdentities.nodes[0];
+      update({ members }) {
+        const editMember = members.nodes[0];
         this.editMember = { ...editMember };
         this.originalSlug = this.editMember.slug;
         return editMember;

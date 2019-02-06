@@ -1,0 +1,5 @@
+query Slugs($input: SlugsInput!) {
+  membersBySlugs(input: $input) {
+    id
+  }
+}
