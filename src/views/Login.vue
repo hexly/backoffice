@@ -108,6 +108,7 @@
 </template>
 
 <script>
+
 /* global VERSION */
 import tenantInfo from '@/tenant.js'
 import { UserActions } from '@/stores/UserStore'
@@ -115,7 +116,7 @@ import { ClaimActions } from '@/stores/ClaimStore'
 import { delay } from '@/utils/timer.js'
 import pathOr from 'rambda/lib/pathOr'
 
-const tenantId = ~~process.env.VUE_APP_TENANT_ID
+const tenantId = ~~process.env.VUE_APP_TENANT_ID;
 
 export default {
   data() {
@@ -131,11 +132,11 @@ export default {
       success: null,
       buttonLoading: false,
       version: VERSION
-    }
+    };
   },
   methods: {
     async onLogin() {
-      this.error = null
+      this.error = null;
       if (this.$refs.login.validate()) {
         this.buttonLoading = true
 
@@ -151,68 +152,68 @@ export default {
           ? this.$router.push(returnTo || '/dashboard')
           : this.onError('Invalid Username/Password.')
       } else {
-        this.onError('Invalid Username/Password.')
+        this.onError('Invalid Username/Password.');
       }
     },
     changeMode(type) {
-      this.error = null
-      this.success = null
-      this.type = type
+      this.error = null;
+      this.success = null;
+      this.type = type;
     },
     async onRegister() {
-      this.buttonLoading = true
-      this.error = null
+      this.buttonLoading = true;
+      this.error = null;
       try {
         await this.$store.dispatch(ClaimActions.CLAIM, {
           email: this.form.email,
           tenantId,
           type: 'claim'
-        })
+        });
         this.onSuccess(
           'Registrations email has been sent! Please check your email.'
-        )
+        );
       } catch (error) {
-        this.onError(error)
+        this.onError(error);
       }
-      this.buttonLoading = false
+      this.buttonLoading = false;
     },
     async onReset() {
-      this.error = null
-      this.buttonLoading = true
+      this.error = null;
+      this.buttonLoading = true;
       try {
         await this.$store.dispatch(ClaimActions.RESET, {
           email: this.form.email,
           tenantId,
           type: 'reset'
-        })
+        });
         this.onSuccess(
           'Password reset email has been sent! Please check your email.'
-        )
+        );
       } catch (error) {
-        this.onError(error)
+        this.onError(error);
       }
-      this.buttonLoading = false
+      this.buttonLoading = false;
     },
     async onSuccess(message) {
-      this.success = message
-      await delay(7000)
-      this.success = null
-      this.type = 'login'
+      this.success = message;
+      await delay(7000);
+      this.success = null;
+      this.type = 'login';
     },
     onError(errorMessage) {
       if (typeof errorMessage === 'string') {
-        this.error = errorMessage
+        this.error = errorMessage;
       } else {
-        const errors = pathOr({}, 'response.data.errors', errorMessage)
+        const errors = pathOr({}, 'response.data.errors', errorMessage);
         this.error = pathOr(
           'There seems to be a problem. Please try again later or contact customer support.',
           ['message'],
           errors[0]
-        )
+        );
       }
     }
   }
-}
+};
 </script>
 
 <style scoped>

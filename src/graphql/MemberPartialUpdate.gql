@@ -1,0 +1,5 @@
+mutation updateMemberSubset($input: MemberInfoInputSubset!) {
+  updateMemberSubset(input: $input) {
+      id
+  }
+}
