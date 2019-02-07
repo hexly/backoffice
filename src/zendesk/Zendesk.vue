@@ -60,7 +60,7 @@ export default {
         update: (store, { data = {} }) => {
           const { supportUserCommand: { metadata } } = data
           if (metadata && metadata.token) {
-            const url = `https://d3v-hexly.zendesk.com/access/jwt?jwt=${metadata.token}`
+            const url = `${process.env.VUE_APP_ZENDESK_BASE_URL}/access/jwt?jwt=${metadata.token}`
             window.open(url, '_blank')
           } else {
             console.warn('Failed to get response from GraphQL')
