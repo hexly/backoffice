@@ -27,7 +27,7 @@ export const UserStore = {
     }
   },
   actions: {
-    async [UserActions.LOGIN]({ commit }, creds) {
+    async [UserActions.LOGIN] ({ commit }, creds) {
       const { data } = await apolloClient.query({
         query: LOGIN,
         variables: { creds }

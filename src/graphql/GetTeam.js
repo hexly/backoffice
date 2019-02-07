@@ -36,7 +36,7 @@ export const getTeamByMemberId = memberIdFn => {
   if (!memberIdFn) return
   return {
     query: QUERY,
-    variables: function() {
+    variables: function () {
       const { principal: member } = this.$store.state.user
       const memberId = this[memberIdFn] || member.memberId || -1
       return {
@@ -44,7 +44,7 @@ export const getTeamByMemberId = memberIdFn => {
         bySponsor: { sponsorId: memberId }
       }
     },
-    update({ target, team }) {
+    update ({ target, team }) {
       return {
         target: target.nodes[0],
         team: team.nodes

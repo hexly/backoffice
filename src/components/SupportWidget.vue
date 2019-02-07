@@ -59,7 +59,7 @@ const tenantId = ~~process.env.VUE_APP_TENANT_ID
 
 export default {
   name: 'SupportWidget',
-  data() {
+  data () {
     const member = pathOr({}, ['$store', 'state', 'user', 'principal'], this)
     return {
       alert: false,
@@ -76,7 +76,7 @@ export default {
       emailRule: [
         v => !!v || 'E-mail is required',
         v =>
-          /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(v) ||
+          /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(v) ||
           'E-mail must be valid'
       ]
     }
@@ -84,7 +84,7 @@ export default {
   apollo: {
     categories: getCategories()
   },
-  mounted() {
+  mounted () {
     const { principal } = this.$store.state.user
     if (principal && principal.name) {
       this.name = principal.name
@@ -94,7 +94,7 @@ export default {
     }
   },
   methods: {
-    async submit() {
+    async submit () {
       this.error = false
       if (this.$refs.supportForm.validate()) {
         this.loading = true
@@ -112,9 +112,9 @@ export default {
               }
             }
           })
-          this.success = `Your support ticket has been created. Your ticket number is ${
-            data.ticketCreate.short
-          }. For future reference please keep this ticket number and respond by email as necessary.`
+          this.success = `Your support ticket has been created. Your ticket number is ` +
+            data.ticketCreate.short +
+            `. For future reference please keep this ticket number and respond by email as necessary.`
           this.loading = false
         } catch (err) {
           console.log('got an error', err)

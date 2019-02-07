@@ -13,7 +13,7 @@ const QUERY = gql`
 export default () => {
   return {
     query: QUERY,
-    update({ ticketCategories }) {
+    update ({ ticketCategories }) {
       return ticketCategories
     }
   }

@@ -57,7 +57,7 @@
 import { ADDRESS_BY_MEMBER_ID, UPDATE_ADDRESS } from '@/graphql/Address.js'
 export default {
   name: 'AddressForm',
-  data() {
+  data () {
     return {
       address: {
         id: null,
@@ -76,20 +76,20 @@ export default {
   apollo: {
     address: {
       query: ADDRESS_BY_MEMBER_ID,
-      variables() {
+      variables () {
         return {
           addressMemberId: {
             memberId: this.$store.state.user.principal.memberId
           }
         }
       },
-      update({ addressByMemberOrTenant }) {
+      update ({ addressByMemberOrTenant }) {
         return Object.assign({}, addressByMemberOrTenant[0])
       }
     }
   },
   methods: {
-    save() {
+    save () {
       if (this.$refs.addressForm.validate()) {
         this.saving = true
         this.$apollo.mutate({
