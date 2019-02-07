@@ -3,12 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "start": "node tenants.js && vue-cli-service serve --open",
-    "serve": "node tenants.js && vue-cli-service serve --open",
+    "start": "node tenants.js && vue-cli-service serve --open --fix",
+    "serve": "node tenants.js && vue-cli-service serve --open --fix",
     "build": "vue-cli-service build",
     "test": "vue-cli-service test",
     "e2e": "vue-cli-service e2e",
-    "lint": "vue-cli-service lint",
+    "lint": "vue-cli-service lint --fix",
     "e2e:open": "vue-cli-service e2e:open"
   },
   "dependencies": {
@@ -45,19 +45,22 @@
     "register-service-worker": "^1.0.0",
     "sass-loader": "^6.0.6",
     "sha1": "^1.1.1",
-    "subscriptions-transport-ws": "^0.9.5",
-    "vue": "^2.5.16",
+    "subscriptions-transport-ws": "^0.9.15",
+    "vue": "2.5.18",
     "vue-apollo": "^3.0.0-beta.19",
     "vue-chartkick": "^0.2.1",
     "vue-cli-plugin-apollo": "^0.6.1",
     "vue-router": "^3.0.1",
-    "vue-template-compiler": "^2.5.16",
-    "vuetify": "^1.0.10",
+    "vue-template-compiler": "2.5.18",
+    "vuetify": "^1.5.0",
     "vuex": "^3.0.1"
   },
   "browserslist": [
     "> 1%",
     "last 2 versions",
     "not ie <= 8"
-  ]
+  ],
+  "devDependencies": {
+    "lt": "^0.3.3"
+  }
 }

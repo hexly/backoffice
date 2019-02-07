@@ -20,7 +20,7 @@ Vue.config.productionTip = false
 // At some point in the future we will want to use it
 // and properly leverage it but for now, its just annoying
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.getRegistrations().then(function(registrations) {
+  navigator.serviceWorker.getRegistrations().then(registrations => {
     for (let registration of registrations) {
       registration.unregister()
     }

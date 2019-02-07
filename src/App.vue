@@ -6,7 +6,7 @@
 
 <script>
 export default {
-  data() {
+  data () {
     return {
       tenant: process.env.VUE_APP_TENANT_ID
     }

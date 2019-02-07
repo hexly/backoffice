@@ -103,20 +103,18 @@
           </v-card>
         </v-flex>
       </v-layout>
-      <div justify-right>
-        <SupportWidget/>
-      </div>
     </v-container>
   </v-content>
 </template>
 
 <script>
-import tenantInfo from "@/tenant.js";
-import SupportWidget from "@/components/SupportWidget";
-import { UserActions } from "@/stores/UserStore";
-import { ClaimActions } from "@/stores/ClaimStore";
-import { delay } from "@/utils/timer.js";
-import pathOr from "rambda/lib/pathOr";
+
+/* global VERSION */
+import tenantInfo from '@/tenant.js'
+import { UserActions } from '@/stores/UserStore'
+import { ClaimActions } from '@/stores/ClaimStore'
+import { delay } from '@/utils/timer.js'
+import pathOr from 'rambda/lib/pathOr'
 
 const tenantId = ~~process.env.VUE_APP_TENANT_ID;
 
@@ -124,52 +122,37 @@ export default {
   data() {
     return {
       form: {
-        email: "",
-        password: ""
+        email: '',
+        password: ''
       },
       title: tenantInfo.name,
       logoPath: tenantInfo.logoPath,
-      type: "login",
+      type: 'login',
       error: null,
       success: null,
       buttonLoading: false,
       version: VERSION
     };
   },
-  components: {
-    SupportWidget
-  },
   methods: {
     async onLogin() {
       this.error = null;
       if (this.$refs.login.validate()) {
-        this.buttonLoading = true;
-        console.log("got to button loading!");
-        this.$store
-          .dispatch(UserActions.LOGIN, {
-            username: this.form.email,
-            password: this.form.password,
-            tenantId
-          })
-          .then(response => {
-            const { success } = response;
-            this.buttonLoading = false;
-            return success
-              ? this.$router.push("/dashboard")
-              : this.onError("Invalid Username/Password.");
-            return response;
-          })
-          .catch(error => {
-            this.buttonLoading = false;
-            console.log(
-              `error.message (type ${typeof error.message}):`,
-              error.message
-            );
-            alert(error.message);
-          });
-        // console.log("success:", success);
+        this.buttonLoading = true
+
+        const { success } = await this.$store.dispatch(UserActions.LOGIN, {
+          username: this.form.email,
+          password: this.form.password,
+          tenantId
+        })
+
+        this.buttonLoading = false
+        const { returnTo } = (this.$route.query || {})
+        return success
+          ? this.$router.push(returnTo || '/dashboard')
+          : this.onError('Invalid Username/Password.')
       } else {
-        this.onError("Invalid Username/Password.");
+        this.onError('Invalid Username/Password.');
       }
     },
     changeMode(type) {
@@ -184,10 +167,10 @@ export default {
         await this.$store.dispatch(ClaimActions.CLAIM, {
           email: this.form.email,
           tenantId,
-          type: "claim"
+          type: 'claim'
         });
         this.onSuccess(
-          "Registrations email has been sent! Please check your email."
+          'Registrations email has been sent! Please check your email.'
         );
       } catch (error) {
         this.onError(error);
@@ -201,10 +184,10 @@ export default {
         await this.$store.dispatch(ClaimActions.RESET, {
           email: this.form.email,
           tenantId,
-          type: "reset"
+          type: 'reset'
         });
         this.onSuccess(
-          "Password reset email has been sent! Please check your email."
+          'Password reset email has been sent! Please check your email.'
         );
       } catch (error) {
         this.onError(error);
@@ -215,16 +198,16 @@ export default {
       this.success = message;
       await delay(7000);
       this.success = null;
-      this.type = "login";
+      this.type = 'login';
     },
     onError(errorMessage) {
-      if (typeof errorMessage === "string") {
+      if (typeof errorMessage === 'string') {
         this.error = errorMessage;
       } else {
-        const errors = pathOr({}, "response.data.errors", errorMessage);
+        const errors = pathOr({}, 'response.data.errors', errorMessage);
         this.error = pathOr(
-          "There seems to be a problem. Please try again later or contact customer support.",
-          ["message"],
+          'There seems to be a problem. Please try again later or contact customer support.',
+          ['message'],
           errors[0]
         );
       }

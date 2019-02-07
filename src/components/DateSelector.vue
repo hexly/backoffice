@@ -30,14 +30,14 @@
 <script>
 export default {
   name: 'date-selector',
-  data() {
+  data () {
     return {
       date: null,
       menu: false,
       modal: false
     }
   },
-  mounted() {
+  mounted () {
     this.date = this.selectedDate
   },
   props: {
@@ -51,13 +51,13 @@ export default {
     }
   },
   methods: {
-    updateDate() {
+    updateDate () {
       this.$refs.menu.save(this.date)
       this.$emit('date-changed', {
         date: this.date
       })
     },
-    parseDate(d) {
+    parseDate (d) {
       console.log('parseDate', d)
       return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`
     }
