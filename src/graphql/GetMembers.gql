@@ -1,0 +1,14 @@
+query Member($input: MemberSearchCondition!) {
+  members(condition: $input) {
+    nodes {
+      id
+      tenantId
+      name
+      displayName
+      mrn
+      slug
+      contactEmail
+      profileUrl
+    }
+  }
+}

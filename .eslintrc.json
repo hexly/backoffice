@@ -1,0 +1,20 @@
+{
+  "parserOptions": {
+    "ecmaVersion": 2018,
+    "sourceType": "module"
+  },
+  "extends": ["plugin:vue/essential", "@vue/standard"],
+  "rules": {
+    "indent": ["error", 2],
+    "linebreak-style": ["error", "unix"],
+    "prefer-spread": "warn",
+    "semi": "off",
+    "prefer-arrow-callback": "warn",
+    "space-before-function-paren": "off"
+  },
+  "env": {
+    "jest": true,
+    "es6": true,
+    "node": true
+  }
+}

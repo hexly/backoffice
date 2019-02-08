@@ -34,7 +34,7 @@ import tenantInfo from '@/tenant.js'
 import { ClaimActions } from '@/stores/ClaimStore'
 
 export default {
-  data() {
+  data () {
     const { email } = this.$route.params
     return {
       username: email || null,
@@ -59,7 +59,7 @@ export default {
     }
   },
   methods: {
-    async onSubmit() {
+    async onSubmit () {
       if (this.$refs.claim.validate()) {
         const { token } = this.$route.params
         const { confirmPassword, password, username } = this

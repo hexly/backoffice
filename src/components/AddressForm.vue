@@ -3,6 +3,7 @@
     <v-form ref="addressForm" @submit.prevent="save()" lazy-validation>
       <v-text-field
         label="Name"
+        name="name"
         v-model="address.name"
         :rules="requiredRule"
         required
@@ -10,34 +11,40 @@
       ></v-text-field>
       <v-text-field
         label="Street"
+        name="Street"
         v-model="address.street"
         :rules="requiredRule"
         required
       ></v-text-field>
       <v-text-field
         label="Street 2"
+        name="Street 2"
         v-model="address.street2"
       ></v-text-field>
       <v-text-field
         label="City"
+        name="City"
         v-model="address.city"
         :rules="requiredRule"
         required
       ></v-text-field>
       <v-text-field
         label="State/Province"
+        name="State/Province"
         v-model="address.province"
         :rules="requiredRule"
         required
       ></v-text-field>
       <v-text-field
         label="Postal Code"
+        name="Postal Code"
         v-model="address.postalCode"
         :rules="requiredRule"
         required
       ></v-text-field>
       <v-text-field
         label="Country"
+        name="Country"
         v-model="address.country"
         :rules="requiredRule"
         required
@@ -51,7 +58,7 @@
 import { ADDRESS_BY_MEMBER_ID, UPDATE_ADDRESS } from '@/graphql/Address.js'
 export default {
   name: 'AddressForm',
-  data() {
+  data () {
     return {
       address: {
         id: null,
@@ -70,20 +77,20 @@ export default {
   apollo: {
     address: {
       query: ADDRESS_BY_MEMBER_ID,
-      variables() {
+      variables () {
         return {
           addressMemberId: {
             memberId: this.$store.state.user.principal.memberId
           }
         }
       },
-      update({ addressByMemberOrTenant }) {
+      update ({ addressByMemberOrTenant }) {
         return Object.assign({}, addressByMemberOrTenant[0])
       }
     }
   },
   methods: {
-    save() {
+    save () {
       if (this.$refs.addressForm.validate()) {
         this.saving = true
         this.$apollo.mutate({

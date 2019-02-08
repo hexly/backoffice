@@ -100,7 +100,7 @@ import { ClaimActions } from '@/stores/ClaimStore'
 import getLocalSettings from '@/graphql/GetLocalSettings'
 
 export default {
-  data() {
+  data () {
     return {
       loading: true,
       visible: false,
@@ -133,7 +133,7 @@ export default {
       logoPath: tenantInfo.logoPath
     }
   },
-  async beforeCreate() {
+  async beforeCreate () {
     // Fetch one time token information
     try {
       const { token } = this.$route.params
@@ -156,7 +156,7 @@ export default {
     settings: getLocalSettings()
   },
   methods: {
-    async onSubmit() {
+    async onSubmit () {
       if (this.$refs.claim.validate()) {
         const { token } = this.$route.params
         await this.$store.dispatch(ClaimActions.CREATE_ACCOUNT, {

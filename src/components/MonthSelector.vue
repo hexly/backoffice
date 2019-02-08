@@ -39,14 +39,14 @@
 <script>
 export default {
   name: 'month-selector',
-  data() {
+  data () {
     return {
       date: null,
       menu: false,
       modal: false
     }
   },
-  mounted() {
+  mounted () {
     this.date = `${this.year}-${this.month}`
   },
   props: {
@@ -60,7 +60,7 @@ export default {
     }
   },
   methods: {
-    updateDate() {
+    updateDate () {
       this.$refs.menu.save(this.date)
       this.$emit('date-changed', {
         date: this.date

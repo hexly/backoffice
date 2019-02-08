@@ -4,7 +4,7 @@ import { InMemoryCache } from 'apollo-cache-inmemory'
 import { setContext } from 'apollo-link-context'
 import store from '@/store'
 
-function getAuth() {
+function getAuth () {
   // get the authentication token from local storage if it exists
   const token = store.state.user.jwt
   // return the headers to the context so httpLink can read them
@@ -12,7 +12,7 @@ function getAuth() {
 }
 
 // Create the apollo client
-export default function createApolloClient({
+export default function createApolloClient ({
   ssr,
   base,
   endpoints,

@@ -31,7 +31,7 @@ const LOCALE_QUERY = gql`
 export default () => {
   return {
     query: LOCALE_QUERY,
-    update({ allLegalLocales, allTimezones, allLanguages }) {
+    update ({ allLegalLocales, allTimezones, allLanguages }) {
       return {
         legalLocales: allLegalLocales.nodes,
         timezones: allTimezones.nodes,

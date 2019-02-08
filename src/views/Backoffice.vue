@@ -1,14 +1,8 @@
 <template>
   <div>
-    <v-navigation-drawer
-      fixed
-      v-model="drawer"
-      app
-      temporary
-      clipped
-    >
+    <v-navigation-drawer fixed v-model="drawer" app temporary clipped>
       <div class="text-xs-center">
-        <img :src="logoPath" class="logo" />
+        <img :src="logoPath" class="logo">
       </div>
       <v-divider></v-divider>
       <v-list dense>
@@ -35,7 +29,7 @@
           <v-list-tile-content>
             <v-list-tile-title>Assets</v-list-tile-title>
           </v-list-tile-content>
-        </v-list-tile> -->
+        </v-list-tile>-->
         <v-list-tile to="/sales">
           <v-list-tile-action>
             <v-icon>shopping_basket</v-icon>
@@ -74,10 +68,7 @@
     </v-toolbar>
     <v-content>
       <v-container fluid class="main">
-        <router-view />
-        <div justify-right>
-          <SupportWidget />
-        </div>
+        <router-view/>
       </v-container>
     </v-content>
   </div>
@@ -86,16 +77,12 @@
 <script>
 import tenantInfo from '@/tenant.js'
 import { Actions } from '@/store'
-import SupportWidget from '@/components/SupportWidget'
 
 export default {
   data: () => ({
     drawer: null,
     logoPath: tenantInfo.logoPath
   }),
-  components: {
-    SupportWidget
-  },
   props: {
     source: String
   },

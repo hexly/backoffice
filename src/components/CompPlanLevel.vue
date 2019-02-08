@@ -56,7 +56,7 @@ export default {
   props: {
     level: {
       type: Object,
-      default() {
+      default () {
         return { size: 0 }
       }
     },

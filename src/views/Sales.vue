@@ -100,7 +100,7 @@ export default {
   components: {
     DateSelector
   },
-  data() {
+  data () {
     return {
       startDate: moment()
         .startOf('week')
@@ -129,7 +129,7 @@ export default {
   apollo: {
     sales: {
       query: SEARCH_SALES_QUERY,
-      variables() {
+      variables () {
         return {
           saleSearchInput: {
             sellerId: this.$store.state.user.principal.memberId,
@@ -141,21 +141,21 @@ export default {
         }
       },
       debounce: 500,
-      update({ searchSalesBySellerId }) {
+      update ({ searchSalesBySellerId }) {
         return searchSalesBySellerId
       }
     }
   },
   methods: {
-    startDateChanged({ date }) {
+    startDateChanged ({ date }) {
       this.startDate = date
     },
-    endDateChanged({ date }) {
+    endDateChanged ({ date }) {
       this.endDate = date
     }
   },
   computed: {
-    items() {
+    items () {
       return map(sale => {
         return {
           ...sale,
