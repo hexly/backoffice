@@ -85,7 +85,7 @@
 
             <v-tab-item value="address">
               <h2>Your Address</h2>
-              <AddressForm @addressSaved="snackbar = true"/>
+              <AddressForm @addressSnackBarEmit="addressSnackBarUpdate"/>
             </v-tab-item>
           </v-tabs>
         </v-flex>
@@ -235,6 +235,10 @@ export default {
     },
     saveDate(date) {
       this.$refs.menu.save(date);
+    },
+    addressSnackBarUpdate(e) {
+      this.snackbarMsg = e;
+      this.snackbar = true;
     }
   },
   apollo: {
