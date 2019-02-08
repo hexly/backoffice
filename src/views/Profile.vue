@@ -48,7 +48,8 @@
                 >
                   <v-text-field
                     slot="activator"
-                    v-model="editMember.dateOfBirth"
+                    :rules="birthdateRule"
+                    v-model="editMember.birthdate"
                     label="Date of Birth"
                     prepend-icon="event"
                     readonly
@@ -56,7 +57,7 @@
                   <v-date-picker
                     ref="picker"
                     color="green lighten-1"
-                    v-model="editMember.dateOfBirth"
+                    v-model="editMember.birthdate"
                     :max="new Date().toISOString().substr(0, 10)"
                     min="1950-01-01"
                     @change="saveDate"
@@ -133,6 +134,7 @@ export default {
     snackbar: false,
     snackbarMsg: "",
     slugRule: Rules.slugRule,
+    birthdateRule: Rules.birthdateRule,
     uploadFileName: null,
     isUploading: false,
     isSaving: false,
@@ -145,7 +147,7 @@ export default {
       email: "",
       profileUrl: "",
       slug: "",
-      dateOfBirth: ""
+      birthdate: ""
     },
     originalSlug: undefined,
     saving: false
@@ -213,7 +215,8 @@ export default {
                   displayName: this.editMember.displayName,
                   contactEmail: this.editMember.email,
                   profileUrl: this.editMember.profileUrl,
-                  slug: sentSlug
+                  slug: sentSlug,
+                  birthday: this.editMember.birthdate
                 }
               },
               update: (store, response) => {
@@ -245,21 +248,26 @@ export default {
         };
       },
       update({ members }) {
-        const editMember = members.nodes[0];
-        this.editMember = { ...editMember };
-        const receivedSlugIsValid = /^[a-zA-Z0-9]+(?:-[a-z0-9]+)*$/.exec(
-          this.editMember.slug
-        );
-        console.log({ receivedSlugIsValid });
-        if (receivedSlugIsValid) {
-          console.log(receivedSlugIsValid[0]);
-          this.originalSlug = receivedSlugIsValid[0];
-        } else {
-          console.log("receivedSlugIsValid not a valid slug");
-          this.originalSlug = this.editMember.slug = null;
-        }
+        // If graphql query succeeds
+        if (members) {
+          const editMember = members.nodes[0];
+          this.editMember = { ...editMember };
 
-        return editMember;
+          const receivedSlugIsValid = /^[a-zA-Z0-9]+(?:-[a-z0-9]+)*$/.exec(
+            this.editMember.slug
+          );
+          if (receivedSlugIsValid) {
+            this.originalSlug = receivedSlugIsValid[0];
+          } else {
+            console.log("receivedSlugIsValid not a valid slug");
+            this.originalSlug = this.editMember.slug = null;
+          }
+
+          return editMember;
+        } else {
+          this.snackbarMsg = "Could not retrieve profile data";
+          this.snackbar = true;
+        }
       }
     }
   },

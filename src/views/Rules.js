@@ -1,6 +1,6 @@
 export default {
   slugRule: [
-    v => !!v || 'Field is required',
+    v => !!v || 'Field is required and cannot be changed once submitted',
     v =>
       (v && /^[a-zA-Z0-9]+(?:-[a-z0-9]+)*$/.test(v)) ||
       'Store name must not have spaces or special characters',
@@ -10,5 +10,8 @@ export default {
         'Store name must be between 4 and 20 characters'
       )
     }
+  ],
+  birthdateRule: [
+    v => !!v || 'Field is required'
   ]
 }
