@@ -106,9 +106,9 @@
         </v-flex>
       </v-layout>
     </v-container>
-    <v-snackbar :timeout="6000" :top="true" :right="true" v-model="snackbar">
-      {{snackbarMsg}}
-      <v-btn flat color="pink" @click.native="snackbar = false">Close</v-btn>
+    <v-snackbar :timeout="6000" :top="true" :right="false" color="red" v-model="snackbar">
+      <div style="color: white;">{{snackbarMsg}}</div>
+      <v-btn flat color="white" @click.native="snackbar = false">Close</v-btn>
     </v-snackbar>
   </div>
 </template>
@@ -170,51 +170,60 @@ export default {
     async saveData() {
       this.slugIsUnique = true; // reset to default state
       const formIsValid = this.$refs.informationForm.validate();
+      let response;
       if (formIsValid) {
         // Slug uniqueness query
-        const { data = {} } = await this.$apollo.query({
-          query: CHECK_IF_UNIQUE_SLUG,
-          variables: {
-            input: {
-              slugs: [this.editMember.slug]
-            }
-          }
-        });
-
-        const { membersBySlugs = [] } = data;
-        this.slugErrors = [];
-        if (membersBySlugs.find(e => e.id !== this.memberId)) {
-          this.slugIsUnique = false;
-          this.snackbarMsg = "Chosen store name is unavailable!";
-          this.snackbar = true;
-          this.slugErrors.push(
-            `The store name ${this.editMember.slug} is unavailable`
-          );
-        }
-        if (this.slugIsUnique) {
-          this.saving = true;
-          const sentSlug = !this.originalSlug
-            ? this.editMember.slug
-            : this.originalSlug;
-          this.$apollo.mutate({
-            mutation: UPDATE_PROFILE,
+        try {
+          response = await this.$apollo.query({
+            query: CHECK_IF_UNIQUE_SLUG,
             variables: {
               input: {
-                id: this.editMember.id,
-                name: this.editMember.name,
-                displayName: this.editMember.displayName,
-                contactEmail: this.editMember.email,
-                profileUrl: this.editMember.profileUrl,
-                slug: sentSlug
+                slugs: [this.editMember.slug]
               }
-            },
-            update: (store, response) => {
-              this.saving = false;
-              this.snackbarMsg = "Information Saved";
-              this.snackbar = true;
-              this.originalSlug = this.editMember.slug;
             }
           });
+        } catch (err) {
+          console.log({ err });
+          this.snackbarMsg = err.message;
+          this.snackbar = true;
+        }
+
+        if (response) {
+          const { membersBySlugs = [] } = response.data;
+          this.slugErrors = [];
+          if (membersBySlugs.find(e => e.id !== this.memberId)) {
+            this.slugIsUnique = false;
+            this.snackbarMsg = "Chosen store name is unavailable!";
+            this.snackbar = true;
+            this.slugErrors.push(
+              `The store name ${this.editMember.slug} is unavailable`
+            );
+          }
+          if (this.slugIsUnique) {
+            this.saving = true;
+            const sentSlug = !this.originalSlug
+              ? this.editMember.slug
+              : this.originalSlug;
+            this.$apollo.mutate({
+              mutation: UPDATE_PROFILE,
+              variables: {
+                input: {
+                  id: this.editMember.id,
+                  name: this.editMember.name,
+                  displayName: this.editMember.displayName,
+                  contactEmail: this.editMember.email,
+                  profileUrl: this.editMember.profileUrl,
+                  slug: sentSlug
+                }
+              },
+              update: (store, response) => {
+                this.saving = false;
+                this.snackbarMsg = "Information Saved";
+                this.snackbar = true;
+                this.originalSlug = this.editMember.slug;
+              }
+            });
+          }
         }
       } else {
         this.snackbarMsg = "One or more fields were filled out incorrectly";
