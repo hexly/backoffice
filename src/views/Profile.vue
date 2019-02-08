@@ -35,6 +35,34 @@
                   persistent-hint
                   :hint="`https://www.mygreenhorizen.com/store/${editMember.slug || '{your_store_name}'}`"
                 ></v-text-field>
+                <v-menu
+                  ref="menu"
+                  v-model="menu"
+                  :close-on-content-click="false"
+                  :nudge-right="40"
+                  lazy
+                  transition="scale-transition"
+                  offset-y
+                  full-width
+                  min-width="290px"
+                >
+                  <v-text-field
+                    slot="activator"
+                    v-model="editMember.dateOfBirth"
+                    label="Date of Birth"
+                    prepend-icon="event"
+                    readonly
+                  ></v-text-field>
+                  <v-date-picker
+                    ref="picker"
+                    color="green lighten-1"
+                    v-model="editMember.dateOfBirth"
+                    :max="new Date().toISOString().substr(0, 10)"
+                    min="1950-01-01"
+                    @change="saveDate"
+                  ></v-date-picker>
+                </v-menu>
+
                 <!-- <v-text-field
                   name="password"
                   label="Enter your password"
@@ -86,23 +114,24 @@
 </template>
 
 <script>
-import AddressForm from '@/components/AddressForm.vue';
-import GET_MEMBERS from '@/graphql/GetMembers.gql';
-import UPDATE_PROFILE from '@/graphql/MemberPartialUpdate.gql';
-import CHECK_IF_UNIQUE_SLUG from '@/graphql/Slug.gql';
-import Rules from './Rules.js';
-import { Actions } from '@/store';
+import AddressForm from "@/components/AddressForm.vue";
+import GET_MEMBERS from "@/graphql/GetMembers.gql";
+import UPDATE_PROFILE from "@/graphql/MemberPartialUpdate.gql";
+import CHECK_IF_UNIQUE_SLUG from "@/graphql/Slug.gql";
+import Rules from "./Rules.js";
+import { Actions } from "@/store";
 
 export default {
   components: {
     AddressForm
   },
   data: () => ({
+    menu: false,
     visible: false,
-    password: '',
-    newPassword: '',
+    password: "",
+    newPassword: "",
     snackbar: false,
-    snackbarMsg: '',
+    snackbarMsg: "",
     slugRule: Rules.slugRule,
     uploadFileName: null,
     isUploading: false,
@@ -110,12 +139,13 @@ export default {
     slugIsUnique: true,
     slugErrors: [],
     editMember: {
-      id: '',
-      name: '',
-      displayName: '',
-      email: '',
-      profileUrl: '',
-      slug: ''
+      id: "",
+      name: "",
+      displayName: "",
+      email: "",
+      profileUrl: "",
+      slug: "",
+      dateOfBirth: ""
     },
     originalSlug: undefined,
     saving: false
@@ -134,10 +164,11 @@ export default {
       this.saveData();
     },
     slugChanged() {
-      this.slugErrors = []
-      this.editMember.slug = this.editMember.slug.toLowerCase()
+      this.slugErrors = [];
+      this.editMember.slug = this.editMember.slug.toLowerCase();
     },
     async saveData() {
+      this.slugIsUnique = true; // reset to default state
       const formIsValid = this.$refs.informationForm.validate();
       if (formIsValid) {
         // Slug uniqueness query
@@ -151,18 +182,20 @@ export default {
         });
 
         const { membersBySlugs = [] } = data;
-        this.slugErrors = []
+        this.slugErrors = [];
         if (membersBySlugs.find(e => e.id !== this.memberId)) {
           this.slugIsUnique = false;
-          this.snackbarMsg = 'Chosen store name is unavailable!';
+          this.snackbarMsg = "Chosen store name is unavailable!";
           this.snackbar = true;
-          this.slugErrors.push(`The store name ${this.editMember.slug} is unavailable`)
+          this.slugErrors.push(
+            `The store name ${this.editMember.slug} is unavailable`
+          );
         }
         if (this.slugIsUnique) {
           this.saving = true;
           const sentSlug = !this.originalSlug
             ? this.editMember.slug
-            : this.originalSlug
+            : this.originalSlug;
           this.$apollo.mutate({
             mutation: UPDATE_PROFILE,
             variables: {
@@ -177,16 +210,19 @@ export default {
             },
             update: (store, response) => {
               this.saving = false;
-              this.snackbarMsg = 'Information Saved';
+              this.snackbarMsg = "Information Saved";
               this.snackbar = true;
               this.originalSlug = this.editMember.slug;
             }
           });
         }
       } else {
-        this.snackbarMsg = 'One or more fields were filled out incorrectly';
+        this.snackbarMsg = "One or more fields were filled out incorrectly";
         this.snackbar = true;
       }
+    },
+    saveDate(date) {
+      this.$refs.menu.save(date);
     }
   },
   apollo: {
@@ -202,23 +238,35 @@ export default {
       update({ members }) {
         const editMember = members.nodes[0];
         this.editMember = { ...editMember };
-        this.originalSlug = this.editMember.slug;
-
-        const form = this.$refs.informationForm
-        form.resetValidation && form.resetValidation()
+        const receivedSlugIsValid = /^[a-zA-Z0-9]+(?:-[a-z0-9]+)*$/.exec(
+          this.editMember.slug
+        );
+        console.log({ receivedSlugIsValid });
+        if (receivedSlugIsValid) {
+          console.log(receivedSlugIsValid[0]);
+          this.originalSlug = receivedSlugIsValid[0];
+        } else {
+          console.log("receivedSlugIsValid not a valid slug");
+          this.originalSlug = this.editMember.slug = null;
+        }
 
         return editMember;
       }
     }
   },
+  watch: {
+    menu(val) {
+      val && this.$nextTick(() => (this.$refs.picker.activePicker = "YEAR"));
+    }
+  },
   computed: {
     memberId() {
-      return this.$store.state.user.principal.memberId
+      return this.$store.state.user.principal.memberId;
     },
     getAvatar() {
       return (
         this.editMember.profileUrl ||
-        'http://res.cloudinary.com/hexly/image/upload/dev/1001/avatar/undefined.jpg'
+        "http://res.cloudinary.com/hexly/image/upload/dev/1001/avatar/undefined.jpg"
       );
     }
   }
