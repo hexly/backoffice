@@ -35,16 +35,13 @@
                   persistent-hint
                   :hint="`https://www.mygreenhorizen.com/store/${editMember.slug || '{your_store_name}'}`"
                 ></v-text-field>
-                <v-menu
-                  ref="menu"
-                  v-model="menu"
-                  :close-on-content-click="false"
-                  :nudge-right="40"
+                <v-dialog
+                  ref="dialog"
+                  v-model="modal"
+                  :return-value.sync="editMember.birthdate"
                   lazy
-                  transition="scale-transition"
-                  offset-y
                   full-width
-                  min-width="290px"
+                  width="290px"
                 >
                   <v-text-field
                     slot="activator"
@@ -58,11 +55,12 @@
                     ref="picker"
                     color="green lighten-1"
                     v-model="editMember.birthdate"
+                    reactive="true"
                     :max="new Date().toISOString().substr(0, 10)"
                     min="1950-01-01"
                     @change="saveDate"
                   ></v-date-picker>
-                </v-menu>
+                </v-dialog>
 
                 <!-- <v-text-field
                   name="password"
@@ -79,7 +77,7 @@
                 :disabled="saving"
                 :loading="saving"
                 color="success"
-                @click="saveData()"
+                @click="saveData"
               >Save Information</v-btn>
             </v-tab-item>
 
@@ -127,7 +125,7 @@ export default {
     AddressForm
   },
   data: () => ({
-    menu: false,
+    modal: false,
     visible: false,
     password: "",
     newPassword: "",
@@ -234,7 +232,7 @@ export default {
       }
     },
     saveDate(date) {
-      this.$refs.menu.save(date);
+      this.$refs.dialog.save(date);
     },
     addressSnackBarUpdate(e) {
       this.snackbarMsg = e;
@@ -276,7 +274,7 @@ export default {
     }
   },
   watch: {
-    menu(val) {
+    modal(val) {
       val && this.$nextTick(() => (this.$refs.picker.activePicker = "YEAR"));
     }
   },
