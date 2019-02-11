@@ -58,7 +58,7 @@ export default {
         v => /^[\d]+(?:-[\d]+)*$/.test(v) || "Field can only be digits"
       ],
       saving: false
-    };
+    }
   },
   apollo: {
     address: {
