@@ -37,7 +37,7 @@
 </template>
 
 <script>
-import { ADDRESS_BY_MEMBER_ID, UPDATE_ADDRESS } from "@/graphql/Address.js";
+import { ADDRESS_BY_MEMBER_ID, UPDATE_ADDRESS } from '@/graphql/Address.js';
 export default {
   name: 'AddressForm',
   data() {
