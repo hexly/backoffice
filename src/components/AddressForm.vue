@@ -39,7 +39,7 @@
 <script>
 import { ADDRESS_BY_MEMBER_ID, UPDATE_ADDRESS } from "@/graphql/Address.js";
 export default {
-  name: "addressForm",
+  name: 'AddressForm',
   data() {
     return {
       address: {
@@ -55,7 +55,7 @@ export default {
       requiredRule: [v => !!v || "Field is required"],
       digitsOnlyRule: [
         v => !!v || "Field is required",
-        v => /^[0-9]+(?:-[0-9]+)*$/.test(v) || "Field can only be digits"
+        v => /^[\d]+(?:-[\d]+)*$/.test(v) || "Field can only be digits"
       ],
       saving: false
     };

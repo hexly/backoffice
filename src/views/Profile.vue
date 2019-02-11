@@ -55,8 +55,8 @@
                     ref="picker"
                     color="green lighten-1"
                     v-model="editMember.birthdate"
-                    reactive="true"
-                    :max="new Date().toISOString().substr(0, 10)"
+                    :reactive="true"
+                    :max="moment().format('YYYY-MM-DD')"
                     min="1950-01-01"
                     @change="saveDate"
                   ></v-date-picker>
@@ -119,6 +119,8 @@ import UPDATE_PROFILE from "@/graphql/MemberPartialUpdate.gql";
 import CHECK_IF_UNIQUE_SLUG from "@/graphql/Slug.gql";
 import Rules from "./Rules.js";
 import { Actions } from "@/store";
+var moment = require("moment");
+const dateTest = moment(new Date());
 
 export default {
   components: {
@@ -126,6 +128,7 @@ export default {
   },
   data: () => ({
     modal: false,
+    moment,
     visible: false,
     password: "",
     newPassword: "",
