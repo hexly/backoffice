@@ -181,12 +181,13 @@ export default {
             query: CHECK_IF_UNIQUE_SLUG,
             variables: {
               input: {
+                tenantId: this.tenantId,
                 slugs: [this.editMember.slug]
               }
             }
           });
         } catch (err) {
-          console.log({ err });
+          console.log('error checking slugs', { err });
           this.snackbarMsg = err.message;
           this.snackbar = true;
         }
@@ -250,7 +251,7 @@ export default {
           input: {
             ids: [this.memberId]
           }
-        };
+        }
       },
       update({ members }) {
         // If graphql query succeeds
@@ -285,6 +286,9 @@ export default {
     memberId() {
       return this.$store.state.user.principal.memberId;
     },
+    tenantId() {
+      return this.$store.state.user.principal.tenantId || ~~process.env.VUE_APP_TENANT_ID;
+    },
     getAvatar() {
       return (
         this.editMember.profileUrl ||
@@ -292,7 +296,7 @@ export default {
       );
     }
   }
-};
+}
 </script>
 
 <style scoped>
