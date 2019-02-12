@@ -137,7 +137,8 @@ export default {
   methods: {
     async onLogin() {
       this.error = null;
-      if (this.$refs.login.validate()) {
+      try {
+        this.$refs.login.validate()
         this.buttonLoading = true
 
         const { success } = await this.$store.dispatch(UserActions.LOGIN, {
@@ -151,8 +152,9 @@ export default {
         return success
           ? this.$router.push(returnTo || '/dashboard')
           : this.onError('Invalid Username/Password.')
-      } else {
-        this.onError('Invalid Username/Password.');
+      } catch (error) {
+        this.buttonLoading = false
+        this.onError(error.message);
       }
     },
     changeMode(type) {

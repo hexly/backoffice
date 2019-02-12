@@ -80,14 +80,14 @@ export default {
     }
   },
   methods: {
-    save() {
+    async save() {
       if (this.$refs.addressForm.validate()) {
         this.saving = true;
         const ProfileObject = this.$parent.$parent.$parent.$parent.$parent;
 
         let response;
         try {
-          response = this.$apollo.mutate({
+          response = await this.$apollo.mutate({
             mutation: UPDATE_ADDRESS,
             variables: {
               addressInput: {
