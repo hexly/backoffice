@@ -55,7 +55,7 @@
       <v-toolbar-items>
         <v-menu offset-y>
           <v-btn flat slot="activator">{{displayName}}</v-btn>
-          <v-list>
+          <v-list style="cursor: pointer;">
             <v-list-tile>
               <v-list-tile-title>Settings</v-list-tile-title>
             </v-list-tile>
@@ -75,8 +75,8 @@
 </template>
 
 <script>
-import tenantInfo from '@/tenant.js'
-import { Actions } from '@/store'
+import tenantInfo from "@/tenant.js";
+import { Actions } from "@/store";
 
 export default {
   data: () => ({
@@ -88,16 +88,16 @@ export default {
   },
   computed: {
     displayName() {
-      return this.$store.getters.displayName
+      return this.$store.getters.displayName;
     }
   },
   methods: {
     async logout() {
-      await this.$store.dispatch(Actions.LOGOUT)
-      this.$router.go('/login')
+      await this.$store.dispatch(Actions.LOGOUT);
+      this.$router.go("/login");
     }
   }
-}
+};
 </script>
 
 <style scoped>

@@ -35,6 +35,33 @@
                   persistent-hint
                   :hint="`https://www.mygreenhorizen.com/store/${editMember.slug || '{your_store_name}'}`"
                 ></v-text-field>
+                <v-dialog
+                  ref="dialog"
+                  v-model="modal"
+                  :return-value.sync="editMember.birthdate"
+                  lazy
+                  full-width
+                  width="290px"
+                >
+                  <v-text-field
+                    slot="activator"
+                    :rules="birthdateRule"
+                    v-model="editMember.birthdate"
+                    label="Date of Birth"
+                    prepend-icon="event"
+                    readonly
+                  ></v-text-field>
+                  <v-date-picker
+                    ref="picker"
+                    color="green lighten-1"
+                    v-model="editMember.birthdate"
+                    :reactive="true"
+                    :max="moment().format('YYYY-MM-DD')"
+                    min="1950-01-01"
+                    @change="saveDate"
+                  ></v-date-picker>
+                </v-dialog>
+
                 <!-- <v-text-field
                   name="password"
                   label="Enter your password"
@@ -50,13 +77,13 @@
                 :disabled="saving"
                 :loading="saving"
                 color="success"
-                @click="saveData()"
+                @click="saveData"
               >Save Information</v-btn>
             </v-tab-item>
 
             <v-tab-item value="address">
               <h2>Your Address</h2>
-              <AddressForm @addressSaved="snackbar = true"/>
+              <AddressForm @addressSnackBarEmit="addressSnackBarUpdate"/>
             </v-tab-item>
           </v-tabs>
         </v-flex>
@@ -78,44 +105,50 @@
         </v-flex>
       </v-layout>
     </v-container>
-    <v-snackbar :timeout="6000" :top="true" :right="true" v-model="snackbar">
-      {{snackbarMsg}}
-      <v-btn flat color="pink" @click.native="snackbar = false">Close</v-btn>
+    <v-snackbar :timeout="6000" :top="true" :right="false" color="red" v-model="snackbar">
+      <div style="color: white;">{{snackbarMsg}}</div>
+      <v-btn flat color="white" @click.native="snackbar = false">Close</v-btn>
     </v-snackbar>
   </div>
 </template>
 
 <script>
-import AddressForm from '@/components/AddressForm.vue';
-import GET_MEMBERS from '@/graphql/GetMembers.gql';
-import UPDATE_PROFILE from '@/graphql/MemberPartialUpdate.gql';
-import CHECK_IF_UNIQUE_SLUG from '@/graphql/Slug.gql';
-import Rules from './Rules.js';
-import { Actions } from '@/store';
+import AddressForm from "@/components/AddressForm.vue";
+import GET_MEMBERS from "@/graphql/GetMembers.gql";
+import UPDATE_PROFILE from "@/graphql/MemberPartialUpdate.gql";
+import CHECK_IF_UNIQUE_SLUG from "@/graphql/Slug.gql";
+import Rules from "./Rules.js";
+import { Actions } from "@/store";
+var moment = require("moment");
+const dateTest = moment(new Date());
 
 export default {
   components: {
     AddressForm
   },
   data: () => ({
+    modal: false,
+    moment,
     visible: false,
-    password: '',
-    newPassword: '',
+    password: "",
+    newPassword: "",
     snackbar: false,
-    snackbarMsg: '',
+    snackbarMsg: "",
     slugRule: Rules.slugRule,
+    birthdateRule: Rules.birthdateRule,
     uploadFileName: null,
     isUploading: false,
     isSaving: false,
     slugIsUnique: true,
     slugErrors: [],
     editMember: {
-      id: '',
-      name: '',
-      displayName: '',
-      email: '',
-      profileUrl: '',
-      slug: ''
+      id: "",
+      name: "",
+      displayName: "",
+      email: "",
+      profileUrl: "",
+      slug: "",
+      birthdate: ""
     },
     originalSlug: undefined,
     saving: false
@@ -134,59 +167,79 @@ export default {
       this.saveData();
     },
     slugChanged() {
-      this.slugErrors = []
-      this.editMember.slug = this.editMember.slug.toLowerCase()
+      this.slugErrors = [];
+      this.editMember.slug = this.editMember.slug.toLowerCase();
     },
     async saveData() {
+      this.slugIsUnique = true; // reset to default state
       const formIsValid = this.$refs.informationForm.validate();
+      let response;
       if (formIsValid) {
         // Slug uniqueness query
-        const { data = {} } = await this.$apollo.query({
-          query: CHECK_IF_UNIQUE_SLUG,
-          variables: {
-            input: {
-              slugs: [this.editMember.slug]
-            }
-          }
-        });
-
-        const { membersBySlugs = [] } = data;
-        this.slugErrors = []
-        if (membersBySlugs.find(e => e.id !== this.memberId)) {
-          this.slugIsUnique = false;
-          this.snackbarMsg = 'Chosen store name is unavailable!';
-          this.snackbar = true;
-          this.slugErrors.push(`The store name ${this.editMember.slug} is unavailable`)
-        }
-        if (this.slugIsUnique) {
-          this.saving = true;
-          const sentSlug = !this.originalSlug
-            ? this.editMember.slug
-            : this.originalSlug
-          this.$apollo.mutate({
-            mutation: UPDATE_PROFILE,
+        try {
+          response = await this.$apollo.query({
+            query: CHECK_IF_UNIQUE_SLUG,
             variables: {
               input: {
-                id: this.editMember.id,
-                name: this.editMember.name,
-                displayName: this.editMember.displayName,
-                contactEmail: this.editMember.email,
-                profileUrl: this.editMember.profileUrl,
-                slug: sentSlug
+                slugs: [this.editMember.slug]
               }
-            },
-            update: (store, response) => {
-              this.saving = false;
-              this.snackbarMsg = 'Information Saved';
-              this.snackbar = true;
-              this.originalSlug = this.editMember.slug;
             }
           });
+        } catch (err) {
+          console.log({ err });
+          this.snackbarMsg = err.message;
+          this.snackbar = true;
+        }
+
+        if (response) {
+          const { membersBySlugs = [] } = response.data;
+          this.slugErrors = [];
+          if (membersBySlugs.find(e => e.id !== this.memberId)) {
+            this.slugIsUnique = false;
+            this.snackbarMsg = "Chosen store name is unavailable!";
+            this.snackbar = true;
+            this.slugErrors.push(
+              `The store name ${this.editMember.slug} is unavailable`
+            );
+          }
+          if (this.slugIsUnique) {
+            this.saving = true;
+            const sentSlug = !this.originalSlug
+              ? this.editMember.slug
+              : this.originalSlug;
+            this.$apollo.mutate({
+              mutation: UPDATE_PROFILE,
+              variables: {
+                input: {
+                  id: this.editMember.id,
+                  name: this.editMember.name,
+                  displayName: this.editMember.displayName,
+                  contactEmail: this.editMember.email,
+                  profileUrl: this.editMember.profileUrl,
+                  slug: sentSlug,
+                  birthday: this.editMember.birthdate
+                }
+              },
+              update: (store, response) => {
+                this.saving = false;
+                this.snackbarMsg = "Information Saved";
+                this.snackbar = true;
+                this.originalSlug = this.editMember.slug;
+              }
+            });
+          }
         }
       } else {
-        this.snackbarMsg = 'One or more fields were filled out incorrectly';
+        this.snackbarMsg = "One or more fields were filled out incorrectly";
         this.snackbar = true;
       }
+    },
+    saveDate(date) {
+      this.$refs.dialog.save(date);
+    },
+    addressSnackBarUpdate(e) {
+      this.snackbarMsg = e;
+      this.snackbar = true;
     }
   },
   apollo: {
@@ -200,25 +253,42 @@ export default {
         };
       },
       update({ members }) {
-        const editMember = members.nodes[0];
-        this.editMember = { ...editMember };
-        this.originalSlug = this.editMember.slug;
+        // If graphql query succeeds
+        if (members) {
+          const editMember = members.nodes[0];
+          this.editMember = { ...editMember };
 
-        const form = this.$refs.informationForm
-        form.resetValidation && form.resetValidation()
+          const receivedSlugIsValid = /^[a-zA-Z0-9]+(?:-[a-z0-9]+)*$/.exec(
+            this.editMember.slug
+          );
+          if (receivedSlugIsValid) {
+            this.originalSlug = receivedSlugIsValid[0];
+          } else {
+            console.log("receivedSlugIsValid not a valid slug");
+            this.originalSlug = this.editMember.slug = null;
+          }
 
-        return editMember;
+          return editMember;
+        } else {
+          this.snackbarMsg = "Could not retrieve profile data";
+          this.snackbar = true;
+        }
       }
+    }
+  },
+  watch: {
+    modal(val) {
+      val && this.$nextTick(() => (this.$refs.picker.activePicker = "YEAR"));
     }
   },
   computed: {
     memberId() {
-      return this.$store.state.user.principal.memberId
+      return this.$store.state.user.principal.memberId;
     },
     getAvatar() {
       return (
         this.editMember.profileUrl ||
-        'http://res.cloudinary.com/hexly/image/upload/dev/1001/avatar/undefined.jpg'
+        "http://res.cloudinary.com/hexly/image/upload/dev/1001/avatar/undefined.jpg"
       );
     }
   }
