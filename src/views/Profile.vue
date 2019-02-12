@@ -258,14 +258,12 @@ export default {
           const editMember = members.nodes[0];
           this.editMember = { ...editMember };
 
-          const receivedSlugIsValid = /^[a-zA-Z0-9]+(?:-[a-z0-9]+)*$/.exec(
-            this.editMember.slug
-          );
-          if (receivedSlugIsValid) {
-            this.originalSlug = receivedSlugIsValid[0];
-          } else {
-            console.log("receivedSlugIsValid not a valid slug");
+          const isInvalid = /[^a-z0-9_]/gi.test(this.editMember.slug)
+          if (isInvalid) {
+            console.log("invalid slug found");
             this.originalSlug = this.editMember.slug = null;
+          } else {
+            this.originalSlug = this.editMember.slug;
           }
 
           return editMember;
