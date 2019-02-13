@@ -105,7 +105,14 @@
         </v-flex>
       </v-layout>
     </v-container>
-    <v-snackbar :timeout="6000" :top="true" :right="false" color="red" v-model="snackbar">
+    <v-snackbar
+      :timeout="6000"
+      :top="true"
+      :right="false"
+      :color="snackBarColor"
+      v-model="snackbar"
+      :multi-line="true"
+    >
       <div style="color: white;">{{snackbarMsg}}</div>
       <v-btn flat color="white" @click.native="snackbar = false">Close</v-btn>
     </v-snackbar>
@@ -120,7 +127,8 @@ import CHECK_IF_UNIQUE_SLUG from "@/graphql/Slug.gql";
 import Rules from "./Rules.js";
 import { Actions } from "@/store";
 var moment = require("moment");
-const dateTest = moment(new Date());
+const ERROR_COLOR = 'red',
+  SUCCESS_COLOR = 'purple';
 
 export default {
   components: {
@@ -134,6 +142,7 @@ export default {
     newPassword: "",
     snackbar: false,
     snackbarMsg: "",
+    snackBarColor: null,
     slugRule: Rules.slugRule,
     birthdateRule: Rules.birthdateRule,
     uploadFileName: null,
@@ -155,16 +164,29 @@ export default {
   }),
   methods: {
     async filesChange(files) {
-      const file = files[0];
-      this.isSaving = true;
-      this.isUploading = true;
-      const { data } = await this.$store.dispatch(Actions.AVATAR_UPLOAD, {
-        file
-      });
-      this.isFalse = false;
-      this.isUploading = false;
-      this.editMember.profileUrl = data.secure_url;
-      this.saveData();
+      try {
+        const file = files[0];
+        this.isSaving = true;
+        this.isUploading = true;
+        const { data } = await this.$store.dispatch(Actions.AVATAR_UPLOAD, {
+          file
+        });
+        this.isFalse = false;
+        this.isUploading = false;
+        this.isSaving = false;
+        this.snackBarColor = SUCCESS_COLOR;
+        this.editMember.profileUrl = data.secure_url;
+        this.saveData();
+      } catch (err) {
+        this.isFalse = false;
+        this.isUploading = false;
+        this.isSaving = false;
+        console.log('error uploading file', { err });
+        this.snackbarMsg = 'Error uploading file';
+        this.snackBarColor = ERROR_COLOR;
+        this.snackbar = true;
+      }
+
     },
     slugChanged() {
       this.slugErrors = [];
@@ -188,7 +210,8 @@ export default {
           });
         } catch (err) {
           console.log('error checking slugs', { err });
-          this.snackbarMsg = err.message;
+          this.snackbarMsg = 'Unable to save profile data';
+          this.snackBarColor = ERROR_COLOR;
           this.snackbar = true;
         }
 
@@ -197,6 +220,7 @@ export default {
           this.slugErrors = [];
           if (membersBySlugs.find(e => e.id !== this.memberId)) {
             this.slugIsUnique = false;
+            this.snackBarColor = ERROR_COLOR;
             this.snackbarMsg = "Chosen store name is unavailable!";
             this.snackbar = true;
             this.slugErrors.push(
@@ -208,30 +232,40 @@ export default {
             const sentSlug = !this.originalSlug
               ? this.editMember.slug
               : this.originalSlug;
-            this.$apollo.mutate({
-              mutation: UPDATE_PROFILE,
-              variables: {
-                input: {
-                  id: this.editMember.id,
-                  name: this.editMember.name,
-                  displayName: this.editMember.displayName,
-                  contactEmail: this.editMember.email,
-                  profileUrl: this.editMember.profileUrl,
-                  slug: sentSlug,
-                  birthday: this.editMember.birthdate
+            try {
+              await this.$apollo.mutate({
+                mutation: UPDATE_PROFILE,
+                variables: {
+                  input: {
+                    id: this.editMember.id,
+                    name: this.editMember.name,
+                    displayName: this.editMember.displayName,
+                    contactEmail: this.editMember.email,
+                    profileUrl: this.editMember.profileUrl,
+                    slug: sentSlug,
+                    birthday: this.editMember.birthdate
+                  }
+                },
+                update: (store, response) => {
+                  this.saving = false;
+                  this.snackBarColor = SUCCESS_COLOR;
+                  this.snackbarMsg = "Information Saved";
+                  this.snackbar = true;
+                  this.originalSlug = this.editMember.slug;
                 }
-              },
-              update: (store, response) => {
-                this.saving = false;
-                this.snackbarMsg = "Information Saved";
-                this.snackbar = true;
-                this.originalSlug = this.editMember.slug;
-              }
-            });
+              });
+            } catch (err) {
+              console.log({ err });
+
+              this.snackbarMsg = "Profile update was unsuccessful";
+              this.snackBarColor = ERROR_COLOR;
+              this.snackbar = true;
+            }
           }
         }
       } else {
         this.snackbarMsg = "One or more fields were filled out incorrectly";
+        this.snackBarColor = ERROR_COLOR;
         this.snackbar = true;
       }
     },
@@ -240,6 +274,7 @@ export default {
     },
     addressSnackBarUpdate(e) {
       this.snackbarMsg = e;
+      this.snackBarColor = ERROR_COLOR;
       this.snackbar = true;
     }
   },
@@ -272,6 +307,7 @@ export default {
           return editMember;
         } else {
           this.snackbarMsg = "Could not retrieve profile data";
+          this.snackBarColor = ERROR_COLOR;
           this.snackbar = true;
         }
       }
