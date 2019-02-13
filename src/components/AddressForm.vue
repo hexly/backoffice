@@ -42,8 +42,6 @@ export default {
   name: 'AddressForm',
   data() {
     return {
-      ERROR_COLOR: 'red',
-      SUCCESS_COLOR: 'purple',
       address: {
         id: null,
         name: null,
