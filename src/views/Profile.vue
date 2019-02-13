@@ -83,7 +83,10 @@
 
             <v-tab-item value="address">
               <h2>Your Address</h2>
-              <AddressForm @addressSnackBarEmit="addressSnackBarUpdate"/>
+              <AddressForm
+                @addressSnackBarEmitSuccess="addressSnackBarEmitSuccess"
+                @addressSnackBarEmitError="addressSnackBarEmitError"
+              />
             </v-tab-item>
           </v-tabs>
         </v-flex>
@@ -127,8 +130,10 @@ import CHECK_IF_UNIQUE_SLUG from "@/graphql/Slug.gql";
 import Rules from "./Rules.js";
 import { Actions } from "@/store";
 var moment = require("moment");
+
 const ERROR_COLOR = 'red',
-  SUCCESS_COLOR = 'purple';
+  SUCCESS_COLOR = 'purple'
+
 
 export default {
   components: {
@@ -256,7 +261,7 @@ export default {
               });
             } catch (err) {
               console.log({ err });
-
+              this.saving = false;
               this.snackbarMsg = "Profile update was unsuccessful";
               this.snackBarColor = ERROR_COLOR;
               this.snackbar = true;
@@ -272,7 +277,13 @@ export default {
     saveDate(date) {
       this.$refs.dialog.save(date);
     },
-    addressSnackBarUpdate(e) {
+    addressSnackBarEmitSuccess(e) {
+
+      this.snackbarMsg = e;
+      this.snackBarColor = SUCCESS_COLOR;
+      this.snackbar = true;
+    },
+    addressSnackBarEmitError(e) {
       this.snackbarMsg = e;
       this.snackBarColor = ERROR_COLOR;
       this.snackbar = true;
