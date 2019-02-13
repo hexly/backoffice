@@ -56,9 +56,9 @@
         <v-menu offset-y>
           <v-btn flat slot="activator">{{displayName}}</v-btn>
           <v-list style="cursor: pointer;">
-            <v-list-tile>
+            <!-- <v-list-tile>
               <v-list-tile-title>Settings</v-list-tile-title>
-            </v-list-tile>
+            </v-list-tile>-->
             <v-list-tile>
               <v-list-tile-title @click="logout">Log Out</v-list-tile-title>
             </v-list-tile>
