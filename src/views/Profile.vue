@@ -261,7 +261,7 @@ export default {
               });
             } catch (err) {
               console.log({ err });
-              this.saving = false;
+              this.saving = false
               this.snackbarMsg = "Profile update was unsuccessful";
               this.snackBarColor = ERROR_COLOR;
               this.snackbar = true;
@@ -279,9 +279,9 @@ export default {
     },
     addressSnackBarEmitSuccess(e) {
 
-      this.snackbarMsg = e;
-      this.snackBarColor = SUCCESS_COLOR;
-      this.snackbar = true;
+      this.snackbarMsg = e
+      this.snackBarColor = SUCCESS_COLOR
+      this.snackbar = true
     },
     addressSnackBarEmitError(e) {
       this.snackbarMsg = e;
