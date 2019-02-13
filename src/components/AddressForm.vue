@@ -42,6 +42,8 @@ export default {
   name: 'AddressForm',
   data() {
     return {
+      ERROR_COLOR: 'red',
+      SUCCESS_COLOR: 'purple',
       address: {
         id: null,
         name: null,
@@ -105,21 +107,21 @@ export default {
             update: (store, { data: { updateAddress } }) => {
               this.saving = false;
               this.address = updateAddress;
-              this.$emit("addressSnackBarEmit", "Address successfully updated");
+              this.$emit("addressSnackBarEmitSuccess", "Address successfully updated");
             }
           });
         } catch (err) {
           console.log({ err });
           this.saving = false;
           this.$emit(
-            "addressSnackBarEmit",
+            "addressSnackBarEmitError",
             "Unable to save address information"
           );
         }
       } else {
         this.saving = false;
         this.$emit(
-          "addressSnackBarEmit",
+          "addressSnackBarEmitError",
           "One or more fields were filled out incorrectly"
         );
       }
