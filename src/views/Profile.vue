@@ -280,7 +280,7 @@ export default {
     addressSnackBarEmitSuccess(e) {
 
       this.snackbarMsg = e;
-      this.snackBarColor = SUCCESS_COLOR;
+      this.snackBarColor = SUCCESS_COLOR
       this.snackbar = true;
     },
     addressSnackBarEmitError(e) {
