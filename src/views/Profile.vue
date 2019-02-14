@@ -1,13 +1,24 @@
 <template>
   <div class="profile">
     <h1>Your Profile</h1>
-    <v-container grid-list-md text-xs-center>
-      <v-layout row wrap>
+    <v-container
+      grid-list-md
+      text-xs-center
+    >
+      <v-layout
+        row
+        wrap
+      >
         <v-flex xs6>
           <div class="mx-auto">
             <h2>Your Information</h2>
           </div>
-          <v-tabs centered color="green" dark icons-and-text>
+          <v-tabs
+            centered
+            color="green"
+            dark
+            icons-and-text
+          >
             <v-tabs-slider color="purple"></v-tabs-slider>
 
             <v-tab href="#profile">Profile
@@ -20,9 +31,21 @@
 
             <v-tab-item value="profile">
               <v-form ref="informationForm">
-                <v-text-field label="Name" v-model="editMember.name" required></v-text-field>
-                <v-text-field label="E-mail" v-model="editMember.contactEmail" required></v-text-field>
-                <v-text-field label="Display name" v-model="editMember.displayName" required></v-text-field>
+                <v-text-field
+                  label="Name"
+                  v-model="editMember.name"
+                  required
+                ></v-text-field>
+                <v-text-field
+                  label="E-mail"
+                  v-model="editMember.contactEmail"
+                  required
+                ></v-text-field>
+                <v-text-field
+                  label="Display name"
+                  v-model="editMember.displayName"
+                  required
+                ></v-text-field>
                 <v-text-field
                   label="Slug / Store Name"
                   class="mb-3"
@@ -46,7 +69,7 @@
                   <v-text-field
                     slot="activator"
                     :rules="birthdateRule"
-                    v-model="editMember.birthdate"
+                    v-model="editMember.formattedDate"
                     label="Date of Birth"
                     prepend-icon="event"
                     readonly
@@ -57,7 +80,7 @@
                     v-model="editMember.birthdate"
                     :reactive="true"
                     :max="moment().format('YYYY-MM-DD')"
-                    min="1950-01-01"
+                    min="1900-01-01"
                     @change="saveDate"
                   ></v-date-picker>
                 </v-dialog>
@@ -93,8 +116,14 @@
         <v-flex xs6>
           <div class="mx-auto">
             <h2>Profile Image</h2>
-            <img class="image" :src="getAvatar">
-            <form enctype="multipart/form-data" novalidate>
+            <img
+              class="image"
+              :src="getAvatar"
+            >
+            <form
+              enctype="multipart/form-data"
+              novalidate
+            >
               <input
                 type="file"
                 name="avatar"
@@ -117,7 +146,11 @@
       :multi-line="true"
     >
       <div style="color: white;">{{snackbarMsg}}</div>
-      <v-btn flat color="white" @click.native="snackbar = false">Close</v-btn>
+      <v-btn
+        flat
+        color="white"
+        @click.native="snackbar = false"
+      >Close</v-btn>
     </v-snackbar>
   </div>
 </template>
@@ -162,12 +195,20 @@ export default {
       email: "",
       profileUrl: "",
       slug: "",
-      birthdate: ""
+      birthdate: "",
+      formattedDate: ""
     },
     originalSlug: undefined,
     saving: false
   }),
   methods: {
+    formatDate: date => {
+      if (!date)
+        return null
+
+      const fDate = moment(date).format("MMMM Do, YYYY")
+      return fDate
+    },
     async filesChange(files) {
       try {
         const file = files[0];
@@ -327,9 +368,15 @@ export default {
   watch: {
     modal(val) {
       val && this.$nextTick(() => (this.$refs.picker.activePicker = "YEAR"));
+    },
+    birthdate(val) {
+      this.editMember.formattedDate = this.formatDate(val)
     }
   },
   computed: {
+    birthdate() {
+      return this.editMember.birthdate
+    },
     memberId() {
       return this.$store.state.user.principal.memberId;
     },
