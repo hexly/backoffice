@@ -208,7 +208,7 @@ export default {
       },
       debounce: 500,
       update({ searchSalesBySellerId }) {
-        this.loading = false;
+        this.loading = false
         return searchSalesBySellerId
       }
     }
