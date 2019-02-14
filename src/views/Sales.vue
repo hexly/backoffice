@@ -215,7 +215,7 @@ export default {
   },
   methods: {
     startDateChanged(date) {
-      this.$refs.dialogStart.save(date);
+      this.$refs.dialogStart.save(date)
     },
     endDateChanged(date) {
       this.$refs.dialogEnd.save(date);
