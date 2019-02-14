@@ -22,7 +22,7 @@
                   label="'Select Start Date'"
                   prepend-icon="event"
                   readonly
-                ></v-text-field>
+                />
                 <v-date-picker
                   ref="pickerStart"
                   color="blue-grey"
