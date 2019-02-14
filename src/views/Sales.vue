@@ -218,7 +218,7 @@ export default {
       this.$refs.dialogStart.save(date)
     },
     endDateChanged(date) {
-      this.$refs.dialogEnd.save(date);
+      this.$refs.dialogEnd.save(date)
     }
   },
   computed: {
