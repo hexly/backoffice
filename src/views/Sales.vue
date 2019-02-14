@@ -6,8 +6,16 @@
         <v-card-title class="headline font-weight-regular blue-grey white--text">Search</v-card-title>
         <v-card-text>
           <v-subheader>Range</v-subheader>
-          <v-container grid-list-md text-xs-center>
-            <v-layout row align-center justify-space-around wrap>
+          <v-container
+            grid-list-md
+            text-xs-center
+          >
+            <v-layout
+              row
+              align-center
+              justify-space-around
+              wrap
+            >
               <v-dialog
                 ref="dialogStart"
                 v-model="modalStart"
@@ -67,7 +75,10 @@
         expand
         :loading="loading"
       >
-        <template slot="items" slot-scope="props">
+        <template
+          slot="items"
+          slot-scope="props"
+        >
           <tr @click="props.expanded = !props.expanded">
             <td>
               <a>Details</a>
@@ -81,7 +92,10 @@
             <td>{{ props.item.sellerEmail }}</td>
           </tr>
         </template>
-        <template slot="expand" slot-scope="props">
+        <template
+          slot="expand"
+          slot-scope="props"
+        >
           <div class="pa-3 sale-details">
             <v-container fluid>
               <v-layout>
@@ -119,7 +133,9 @@
                     <li
                       v-for="line in props.item.lineItems"
                       :key="line.id"
-                    >{{line.name}} ({{line.total}})</li>
+                    >
+                      {{line.name}} ({{line.total}})
+                    </li>
                   </ul>
                 </v-flex>
               </v-layout>
@@ -176,8 +192,6 @@ export default {
     sales: {
       query: SEARCH_SALES_QUERY,
       variables() {
-        console.log('apollo SEARCH_SALES_QUERY called');
-
         return {
           saleSearchInput: {
             sellerId: this.$store.state.user.principal.memberId,
@@ -190,7 +204,6 @@ export default {
       },
       error(err) {
         this.loading = false;
-        console.log(this.loading);
         console.log({ err });
       },
       debounce: 500,
@@ -211,11 +224,11 @@ export default {
   computed: {
     items() {
       return map(sale => {
-        // return {
-        //   ...sale,
-        //   id: sale.saleId,
-        //   date: moment(sale.awardedDate, 'YYYY-MM-DD').format('MM/DD/YYYY')
-        // }
+        return {
+          ...sale,
+          id: sale.saleId,
+          date: moment(sale.awardedDate, 'YYYY-MM-DD').format('MM/DD/YYYY')
+        }
       }, this.sales)
     }
   }
