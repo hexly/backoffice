@@ -7,13 +7,53 @@
         <v-card-text>
           <v-subheader>Range</v-subheader>
           <v-container grid-list-md text-xs-center>
-            <v-layout row wrap>
-              <v-flex xs12 sm6>
-                <date-selector :selectedDate="startDate" :label="'Select Start Date'" @date-changed="startDateChanged"/>
-              </v-flex>
-              <v-flex xs12 sm6>
-                <date-selector :selectedDate="endDate" :label="'Select End Date'" @date-changed="endDateChanged"/>
-              </v-flex>
+            <v-layout row align-center justify-space-around wrap>
+              <v-dialog
+                ref="dialogStart"
+                v-model="modalStart"
+                :return-value.sync="startDate"
+                lazy
+                full-width
+                width="290px"
+              >
+                <v-text-field
+                  slot="activator"
+                  v-model="startDate"
+                  label="'Select Start Date'"
+                  prepend-icon="event"
+                  readonly
+                ></v-text-field>
+                <v-date-picker
+                  ref="pickerStart"
+                  color="blue-grey"
+                  v-model="startDate"
+                  :reactive="true"
+                  @change="startDateChanged"
+                />
+              </v-dialog>
+              <v-dialog
+                ref="dialogEnd"
+                v-model="modalEnd"
+                :return-value.sync="endDate"
+                lazy
+                full-width
+                width="290px"
+              >
+                <v-text-field
+                  slot="activator"
+                  v-model="endDate"
+                  label="'Select Start Date'"
+                  prepend-icon="event"
+                  readonly
+                ></v-text-field>
+                <v-date-picker
+                  ref="pickerEnd"
+                  color="blue-grey"
+                  v-model="endDate"
+                  :reactive="true"
+                  @change="endDateChanged"
+                />
+              </v-dialog>
             </v-layout>
           </v-container>
         </v-card-text>
@@ -25,11 +65,13 @@
         class="elevation-1"
         item-key="id"
         expand
-        :loading="$apollo.queries.sales.loading"
+        :loading="loading"
       >
         <template slot="items" slot-scope="props">
           <tr @click="props.expanded = !props.expanded">
-            <td><a>Details</a></td>
+            <td>
+              <a>Details</a>
+            </td>
             <td>{{ props.item.date }}</td>
             <td>${{ props.item.total }}</td>
             <td>{{ props.item.totalPoints }}</td>
@@ -74,9 +116,10 @@
                 <v-flex xs12>
                   <h4>Line Items</h4>
                   <ul>
-                    <li v-for="line in props.item.lineItems" :key="line.id">
-                      {{line.name}} ({{line.total}})
-                    </li>
+                    <li
+                      v-for="line in props.item.lineItems"
+                      :key="line.id"
+                    >{{line.name}} ({{line.total}})</li>
                   </ul>
                 </v-flex>
               </v-layout>
@@ -100,8 +143,11 @@ export default {
   components: {
     DateSelector
   },
-  data () {
+  data() {
     return {
+      loading: true,
+      modalStart: false,
+      modalEnd: false,
       startDate: moment()
         .startOf('week')
         .format('YYYY-MM-DD'),
@@ -129,7 +175,9 @@ export default {
   apollo: {
     sales: {
       query: SEARCH_SALES_QUERY,
-      variables () {
+      variables() {
+        console.log('apollo SEARCH_SALES_QUERY called');
+
         return {
           saleSearchInput: {
             sellerId: this.$store.state.user.principal.memberId,
@@ -140,28 +188,34 @@ export default {
           }
         }
       },
+      error(err) {
+        this.loading = false;
+        console.log(this.loading);
+        console.log({ err });
+      },
       debounce: 500,
-      update ({ searchSalesBySellerId }) {
+      update({ searchSalesBySellerId }) {
+        this.loading = false;
         return searchSalesBySellerId
       }
     }
   },
   methods: {
-    startDateChanged ({ date }) {
-      this.startDate = date
+    startDateChanged(date) {
+      this.$refs.dialogStart.save(date);
     },
-    endDateChanged ({ date }) {
-      this.endDate = date
+    endDateChanged(date) {
+      this.$refs.dialogEnd.save(date);
     }
   },
   computed: {
-    items () {
+    items() {
       return map(sale => {
-        return {
-          ...sale,
-          id: sale.saleId,
-          date: moment(sale.awardedDate, 'YYYY-MM-DD').format('MM/DD/YYYY')
-        }
+        // return {
+        //   ...sale,
+        //   id: sale.saleId,
+        //   date: moment(sale.awardedDate, 'YYYY-MM-DD').format('MM/DD/YYYY')
+        // }
       }, this.sales)
     }
   }
