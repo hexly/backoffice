@@ -203,12 +203,12 @@ export default {
         }
       },
       error(err) {
-        this.loading = false;
-        console.log({ err });
+        this.loading = false
+        console.error({ err })
       },
       debounce: 500,
       update({ searchSalesBySellerId }) {
-        this.loading = false;
+        this.loading = false
         return searchSalesBySellerId
       }
     }
