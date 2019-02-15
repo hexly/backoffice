@@ -34,11 +34,11 @@ export default {
       const current = moment(currentVersion)
       const newVersion = moment(json.buildTime)
       if (current.isValid() && current.isBefore(newVersion)) {
-        console.log('version outdated');
+        console.warn('version outdated');
         this.newVersionAvailable = true
         clearInterval(this.appVersionInterval)
       } else {
-        console.log(`version up to date setting timeout to ${INTERVAL_VAL / SECONDS_IN_MS / MIN_IN_SECONDS} minutes to check for new version`);
+        console.warn(`version up to date setting timeout to ${INTERVAL_VAL / SECONDS_IN_MS / MIN_IN_SECONDS} minutes to check for new version`);
 
         this.appVersionInterval = setTimeout(this.checkAppVersion, INTERVAL_VAL) // Check for the app version every 30 minutes
       }
