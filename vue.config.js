@@ -5,7 +5,6 @@ const fs = require('fs')
 const moment = require('moment')
 const path = './src/build.info.json'
 const buildTime = moment().toISOString()
-const now = new Date()
 
 module.exports = {
   lintOnSave: true,
