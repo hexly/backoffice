@@ -2,6 +2,7 @@
   <div>
     <v-form ref="addressForm" @submit.prevent="save()" lazy-validation>
       <v-text-field
+<<<<<<< HEAD
         label="Name"
         name="name"
         v-model="address.name"
@@ -10,24 +11,16 @@
         id="AddressName"
       ></v-text-field>
       <v-text-field
+=======
+>>>>>>> 8c0da57c1ea23344b4cd776bb177898e63cc8ceb
         label="Street"
         name="Street"
         v-model="address.street"
         :rules="requiredRule"
         required
       ></v-text-field>
-      <v-text-field
-        label="Street 2"
-        name="Street 2"
-        v-model="address.street2"
-      ></v-text-field>
-      <v-text-field
-        label="City"
-        name="City"
-        v-model="address.city"
-        :rules="requiredRule"
-        required
-      ></v-text-field>
+      <v-text-field label="Street 2" name="Street 2" v-model="address.street2"></v-text-field>
+      <v-text-field label="City" name="City" v-model="address.city" :rules="requiredRule" required></v-text-field>
       <v-text-field
         label="State/Province"
         name="State/Province"
@@ -39,7 +32,7 @@
         label="Postal Code"
         name="Postal Code"
         v-model="address.postalCode"
-        :rules="requiredRule"
+        :rules="digitsOnlyRule"
         required
       ></v-text-field>
       <v-text-field
@@ -55,10 +48,10 @@
 </template>
 
 <script>
-import { ADDRESS_BY_MEMBER_ID, UPDATE_ADDRESS } from '@/graphql/Address.js'
+import { ADDRESS_BY_MEMBER_ID, UPDATE_ADDRESS } from '@/graphql/Address.js';
 export default {
   name: 'AddressForm',
-  data () {
+  data() {
     return {
       address: {
         id: null,
@@ -70,50 +63,76 @@ export default {
         postalCode: null,
         street2: null
       },
-      requiredRule: [v => !!v || 'Field is required'],
+      requiredRule: [v => !!v || "Field is required"],
+      digitsOnlyRule: [
+        v => !!v || "Field is required",
+        v => /^[\d]+(?:-[\d]+)*$/.test(v) || "Field can only be digits"
+      ],
       saving: false
     }
   },
   apollo: {
     address: {
       query: ADDRESS_BY_MEMBER_ID,
-      variables () {
+      variables() {
         return {
           addressMemberId: {
             memberId: this.$store.state.user.principal.memberId
           }
-        }
+        };
       },
-      update ({ addressByMemberOrTenant }) {
-        return Object.assign({}, addressByMemberOrTenant[0])
+      update({ addressByMemberOrTenant }) {
+        if (addressByMemberOrTenant) {
+          return Object.assign({}, addressByMemberOrTenant[0]);
+        } else {
+          console.log("No address info found");
+        }
       }
     }
   },
   methods: {
-    save () {
+    async save() {
       if (this.$refs.addressForm.validate()) {
-        this.saving = true
-        this.$apollo.mutate({
-          mutation: UPDATE_ADDRESS,
-          variables: {
-            addressInput: {
-              id: this.address.id,
-              name: this.address.name,
-              street: this.address.street,
-              city: this.address.city,
-              province: this.address.province,
-              country: this.address.country,
-              postalCode: this.address.postalCode,
-              street2: this.address.street2 || '',
-              memberId: this.$store.state.user.principal.memberId
+        this.saving = true;
+        const ProfileObject = this.$parent.$parent.$parent.$parent.$parent;
+
+        let response;
+        try {
+          response = await this.$apollo.mutate({
+            mutation: UPDATE_ADDRESS,
+            variables: {
+              addressInput: {
+                id: this.address.id,
+                name: ProfileObject.editMember.name,
+                street: this.address.street,
+                city: this.address.city,
+                province: this.address.province,
+                country: this.address.country,
+                postalCode: this.address.postalCode,
+                street2: this.address.street2 || "",
+                memberId: this.$store.state.user.principal.memberId
+              }
+            },
+            update: (store, { data: { updateAddress } }) => {
+              this.saving = false;
+              this.address = updateAddress;
+              this.$emit("addressSnackBarEmitSuccess", "Address successfully updated");
             }
-          },
-          update: (store, { data: { updateAddress } }) => {
-            this.saving = false
-            this.address = updateAddress
-            this.$emit('addressSaved')
-          }
-        })
+          });
+        } catch (err) {
+          console.log({ err });
+          this.saving = false;
+          this.$emit(
+            "addressSnackBarEmitError",
+            "Unable to save address information"
+          );
+        }
+      } else {
+        this.saving = false;
+        this.$emit(
+          "addressSnackBarEmitError",
+          "One or more fields were filled out incorrectly"
+        );
       }
     }
   }

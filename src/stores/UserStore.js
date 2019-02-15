@@ -1,5 +1,6 @@
 import { apolloClient } from '@/vue-apollo'
 import LOGIN from '@/graphql/Login.gql'
+import _ from 'lodash'
 
 export const UserActions = {
   LOGIN: 'login',
@@ -27,16 +28,27 @@ export const UserStore = {
     }
   },
   actions: {
-    async [UserActions.LOGIN] ({ commit }, creds) {
-      const { data } = await apolloClient.query({
-        query: LOGIN,
-        variables: { creds }
+    async [UserActions.LOGIN]({ commit }, creds) {
+      const response = await apolloClient.mutate({
+        mutation: LOGIN,
+        variables: { creds },
+        fetchPolicy: 'no-cache'
       })
-      if (data.authenticate.success) {
-        commit(UserMutations.SET_JWT, data.authenticate.token)
-        commit(UserMutations.SET_PRINCIPAL, data.authenticate.principal)
+      const { success, token, principal, reason } = _.get(
+        response,
+        'data.login',
+        {}
+      )
+      if (success) {
+        principal.displayName = _.get(
+          principal,
+          'member.displayName',
+          '<Unknown Name>'
+        )
+        commit(UserMutations.SET_JWT, token)
+        commit(UserMutations.SET_PRINCIPAL, principal)
       }
-      return data.authenticate
+      return { success, token, principal, reason }
     }
   },
   getters: {

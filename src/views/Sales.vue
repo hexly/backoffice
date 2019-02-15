@@ -6,6 +6,7 @@
         <v-card-title class="headline font-weight-regular blue-grey white--text">Search</v-card-title>
         <v-card-text>
           <v-subheader>Range</v-subheader>
+<<<<<<< HEAD
           <v-container grid-list-md text-xs-center>
             <v-layout row wrap>
               <v-flex xs12 sm4>
@@ -14,6 +15,64 @@
               <v-flex xs12 sm4>
                 <date-selector :selectedDate="endDate" :label="'Select End Date'" @date-changed="endDateChanged" @change="endDateChanged"/>
               </v-flex>
+=======
+          <v-container
+            grid-list-md
+            text-xs-center
+          >
+            <v-layout
+              row
+              align-center
+              justify-space-around
+              wrap
+            >
+              <v-dialog
+                ref="dialogStart"
+                v-model="modalStart"
+                :return-value.sync="startDate"
+                lazy
+                full-width
+                width="290px"
+              >
+                <v-text-field
+                  slot="activator"
+                  v-model="startDate"
+                  label="'Select Start Date'"
+                  prepend-icon="event"
+                  readonly
+                />
+                <v-date-picker
+                  ref="pickerStart"
+                  color="blue-grey"
+                  v-model="startDate"
+                  :reactive="true"
+                  @change="startDateChanged"
+                />
+              </v-dialog>
+              <v-dialog
+                ref="dialogEnd"
+                v-model="modalEnd"
+                :return-value.sync="endDate"
+                lazy
+                full-width
+                width="290px"
+              >
+                <v-text-field
+                  slot="activator"
+                  v-model="endDate"
+                  label="'Select Start Date'"
+                  prepend-icon="event"
+                  readonly
+                />
+                <v-date-picker
+                  ref="pickerEnd"
+                  color="blue-grey"
+                  v-model="endDate"
+                  :reactive="true"
+                  @change="endDateChanged"
+                />
+              </v-dialog>
+>>>>>>> 8c0da57c1ea23344b4cd776bb177898e63cc8ceb
             </v-layout>
           </v-container>
         </v-card-text>
@@ -25,8 +84,9 @@
         class="elevation-1"
         item-key="id"
         expand
-        :loading="$apollo.queries.sales.loading"
+        :loading="loading"
       >
+<<<<<<< HEAD
         <template slot="items" slot-scope="props" >
           <tr @click="props.expanded = !props.expanded">
             <td><a>Details</a></td>
@@ -37,9 +97,29 @@
             <td class="CommPoints">{{ props.item.commissionablePoints }}</td>
             <td class="SellerName">{{ props.item.displayName }}</td>
             <td class="SellerEmail">{{ props.item.sellerEmail }}</td>
+=======
+        <template
+          slot="items"
+          slot-scope="props"
+        >
+          <tr @click="props.expanded = !props.expanded">
+            <td>
+              <a>Details</a>
+            </td>
+            <td>{{ props.item.date }}</td>
+            <td>${{ props.item.total }}</td>
+            <td>{{ props.item.totalPoints }}</td>
+            <td>{{ props.item.commissionableAmount }}</td>
+            <td>{{ props.item.commissionablePoints }}</td>
+            <td>{{ props.item.displayName }}</td>
+            <td>{{ props.item.sellerEmail }}</td>
+>>>>>>> 8c0da57c1ea23344b4cd776bb177898e63cc8ceb
           </tr>
         </template>
-        <template slot="expand" slot-scope="props">
+        <template
+          slot="expand"
+          slot-scope="props"
+        >
           <div class="pa-3 sale-details">
             <v-container fluid>
               <v-layout>
@@ -74,7 +154,10 @@
                 <v-flex xs12>
                   <h4>Line Items</h4>
                   <ul>
-                    <li v-for="line in props.item.lineItems" :key="line.id">
+                    <li
+                      v-for="line in props.item.lineItems"
+                      :key="line.id"
+                    >
                       {{line.name}} ({{line.total}})
                     </li>
                   </ul>
@@ -100,8 +183,11 @@ export default {
   components: {
     DateSelector
   },
-  data () {
+  data() {
     return {
+      loading: true,
+      modalStart: false,
+      modalEnd: false,
       startDate: moment()
         .startOf('week')
         .format('YYYY-MM-DD'),
@@ -129,7 +215,7 @@ export default {
   apollo: {
     sales: {
       query: SEARCH_SALES_QUERY,
-      variables () {
+      variables() {
         return {
           saleSearchInput: {
             sellerId: this.$store.state.user.principal.memberId,
@@ -140,22 +226,27 @@ export default {
           }
         }
       },
+      error(err) {
+        this.loading = false
+        console.error({ err })
+      },
       debounce: 500,
-      update ({ searchSalesBySellerId }) {
+      update({ searchSalesBySellerId }) {
+        this.loading = false
         return searchSalesBySellerId
       }
     }
   },
   methods: {
-    startDateChanged ({ date }) {
-      this.startDate = date
+    startDateChanged(date) {
+      this.$refs.dialogStart.save(date)
     },
-    endDateChanged ({ date }) {
-      this.endDate = date
+    endDateChanged(date) {
+      this.$refs.dialogEnd.save(date)
     }
   },
   computed: {
-    items () {
+    items() {
       return map(sale => {
         return {
           ...sale,
