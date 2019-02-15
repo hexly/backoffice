@@ -1,0 +1,4 @@
+export VUE_APP_LANE=dev
+export VUE_APP_TENANT_ID=1004
+export VUE_APP_ZENDESK_WIDGET_URL=https://static.zdassets.com/ekr/snippet.js?key=d854b7d0-0ef3-4c8a-b66f-a3b0f313513a
+export VUE_APP_ZENDESK_BASE_URL=https://d3v-hexly.zendesk.com/
