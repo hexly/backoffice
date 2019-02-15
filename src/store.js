@@ -76,15 +76,19 @@ export default new Vuex.Store({
     },
     [Actions.AVATAR_UPLOAD]: async (context, { file }) => {
       console.log('go')
-      const { data } = await axios.get(
-        `${VUE_APP_API_ENDPOINT}/storage/destinations/${VUE_APP_TENANT_ID}/cloudinary`,
-        { params: { lane: VUE_APP_LANE } }
-      )
+      try {
+        const { data } = await axios.get(
+          `${VUE_APP_API_ENDPOINT}/storage/destinations/${VUE_APP_TENANT_ID}/cloudinary`,
+          { params: { lane: VUE_APP_LANE } }
+        )
 
-      const formData = new FormData()
-      formData.set('file', file)
-      Object.keys(data.fields).forEach(f => formData.set([f], data.fields[f]))
-      return axios.post(data.url, formData)
+        const formData = new FormData()
+        formData.set('file', file)
+        Object.keys(data.fields).forEach(f => formData.set([f], data.fields[f]))
+        return axios.post(data.url, formData)
+      } catch (error) {
+        console.log({ error })
+      }
     }
   },
   mutations: {

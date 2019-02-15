@@ -1,11 +1,25 @@
 <template>
   <div class="dashboard">
     <h1>Welcome To Your Backoffice {{member.displayName}}!</h1>
-    <month-selector :year="year" :month="month" @date-changed="dateChanged"/>
-    <v-container fluid class="contain">
-      <v-layout row wrap>
+    <month-selector
+      :year="year"
+      :month="month"
+      @date-changed="dateChanged"
+    />
+    <v-container
+      fluid
+      class="contain"
+    >
+      <v-layout
+        row
+        wrap
+      >
         <v-flex sm2>
-          <img class="image" :src="getAvatar" :style="{ borderColor: `#${currentRank.color}`}"/>
+          <img
+            class="image"
+            :src="getAvatar"
+            :style="{ borderColor: `#${currentRank.color}`}"
+          />
         </v-flex>
         <v-flex sm6>
           <h3>Chakra: {{currentRank.name}}</h3>
@@ -15,21 +29,38 @@
             <li>Total Personal Amount: {{team.personal.totalAmount}}</li>
             <li>Total Personal Sales: {{team.personal.sales}}</li>
             <li>Personal Recruits: {{team.personal.recruited}}</li>
-            <li><hr/></li>
+            <li>
+              <hr />
+            </li>
             <li>Family Size: {{team.teamSize}}</li>
             <li>Total Family Points: {{team.totalTeamAmount}}</li>
           </ul>
 
-          <div class="chakra ambassador" :class="{'active': team.personal.totalPoints >= 60}"></div>
-          <div class="chakra guide" :class="{'active': calculateRank(1)}"></div>
-          <div class="chakra guru" :class="{'active': calculateRank(2)}"></div>
-          <div class="chakra sage" :class="{'active': calculateRank(3)}"></div>
-          <div class="chakra master" :class="{'active': calculateRank(4)}"></div>
+          <div
+            class="chakra ambassador"
+            :class="{'active': team.personal.totalPoints >= 60}"
+          ></div>
+          <div
+            class="chakra guide"
+            :class="{'active': calculateRank(1)}"
+          ></div>
+          <div
+            class="chakra guru"
+            :class="{'active': calculateRank(2)}"
+          ></div>
+          <div
+            class="chakra sage"
+            :class="{'active': calculateRank(3)}"
+          ></div>
+          <div
+            class="chakra master"
+            :class="{'active': calculateRank(4)}"
+          ></div>
 
         </v-flex>
-        <v-spacer/>
+        <v-spacer />
       </v-layout>
-        <CompPlanLevel
+      <CompPlanLevel
         :level="team.firstLevel"
         levelName="One"
         :percent="calculatePercent(.1, 1)"
@@ -59,13 +90,32 @@
       />
     </v-container>
     <v-subheader>Leaderboards</v-subheader>
-    <v-container fluid grid-list-xs>
-      <v-layout row wrap>
-        <v-flex sm6 pa-3>
-          <LeaderBoard :leaders="MonthlySalesLeaders" title="Top Sellers" :showTotal="false"/>
+    <v-container
+      fluid
+      grid-list-xs
+    >
+      <v-layout
+        row
+        wrap
+      >
+        <v-flex
+          sm6
+          pa-3
+        >
+          <LeaderBoard
+            :leaders="MonthlySalesLeaders"
+            title="Top Sellers"
+            :showTotal="false"
+          />
         </v-flex>
-        <v-flex sm6 pa-3>
-          <LeaderBoard :leaders="MonthlyFrontlineLeaders" title="Top Recruiters"/>
+        <v-flex
+          sm6
+          pa-3
+        >
+          <LeaderBoard
+            :leaders="MonthlyFrontlineLeaders"
+            title="Top Recruiters"
+          />
         </v-flex>
       </v-layout>
     </v-container>
@@ -164,21 +214,21 @@ export default {
   apollo: {
     member: {
       query: IDENTITY_QUERY,
-      variables () {
+      variables() {
         return {
           condition: {
             memberId: this.$store.state.user.principal.memberId
           }
         }
       },
-      update ({ allIdentities }) {
+      update({ allIdentities }) {
         const member = allIdentities.nodes[0]
         return member
       }
     },
     team: {
       query: TEAM_STATS_BY_LEVEL,
-      variables () {
+      variables() {
         return {
           teamInput: {
             memberId: this.$store.state.user.principal.memberId,
@@ -190,7 +240,7 @@ export default {
           }
         }
       },
-      update ({ teamStatsByLevel }) {
+      update({ teamStatsByLevel }) {
         const totalTeamAmount =
           pathOr(0, ['personal', 'totalAmount'], teamStatsByLevel) +
           pathOr(0, ['firstLevel', 'totalAmount'], teamStatsByLevel) +
@@ -220,14 +270,14 @@ export default {
     },
     address: {
       query: ADDRESS_BY_MEMBER_ID,
-      variables () {
+      variables() {
         return {
           addressMemberId: {
             memberId: this.$store.state.user.principal.memberId
           }
         }
       },
-      update ({ addressByMemberOrTenant }) {
+      update({ addressByMemberOrTenant }) {
         const a = addressByMemberOrTenant[0]
         this.showAddressDialog = false
         if (!a) {
@@ -239,37 +289,39 @@ export default {
     },
     MonthlySalesLeaders: {
       query: MONTHLY_SALES_LEADERBOARD,
-      variables () {
+      variables() {
         return {
           leaderInput: {
             tenantId,
             month: this.month,
-            year: this.year
+            year: this.year,
+            omitTagIds: [8]
           }
         }
       },
-      update ({ monthlySalesLeaderboard }) {
+      update({ monthlySalesLeaderboard }) {
         return monthlySalesLeaderboard
       }
     },
     MonthlyFrontlineLeaders: {
       query: MONTHLY_FRONTLINE_LEADERBOARD,
-      variables () {
+      variables() {
         return {
           leaderInput: {
             tenantId,
             month: this.month,
-            year: this.year
+            year: this.year,
+            omitTagIds: [8]
           }
         }
       },
-      update ({ monthlyFrontlineLeaderboard }) {
+      update({ monthlyFrontlineLeaderboard }) {
         return monthlyFrontlineLeaderboard
       }
     }
   },
   methods: {
-    dateChanged ({ date }) {
+    dateChanged({ date }) {
       const dateSplit = date.split('-')
       this.month = parseInt(dateSplit[1])
       this.year = parseInt(dateSplit[0])
@@ -277,17 +329,17 @@ export default {
       this.startDate = monthDate.startOf('month').format('YYYY-MM-DD')
       this.endDate = monthDate.endOf('month').format('YYYY-MM-DD')
     },
-    calculatePercent (percent, qualified) {
+    calculatePercent(percent, qualified) {
       const { qualified: _qualified, totalPoints } = this.team.personal
       return _qualified >= qualified && totalPoints >= 60 ? percent : 0
     },
-    calculateRank (qualified) {
+    calculateRank(qualified) {
       const { qualified: _qualified, totalPoints } = this.team.personal
       return _qualified >= qualified && totalPoints >= 60
     }
   },
   computed: {
-    getAvatar () {
+    getAvatar() {
       let image =
         'http://res.cloudinary.com/hexly/image/upload/dev/1001/avatar/undefined.jpg'
       if (this.member.profileUrl) {
@@ -320,7 +372,7 @@ ul li {
   height: 67px;
   display: inline-block;
   filter: grayscale(100%) opacity(50%);
-  background-image: url('../../public/img/css_sprites.png');
+  background-image: url("../../public/img/css_sprites.png");
 }
 
 .ambassador {
