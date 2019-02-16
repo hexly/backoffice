@@ -1,12 +1,17 @@
 import Vue from 'vue'
 import Vuetify from 'vuetify'
-import App from './App.vue'
-import router from './router'
-import store from './store'
+import 'vuetify/dist/vuetify.min.css'
+
 import Chartkick from 'chartkick'
 import VueChartkick from 'vue-chartkick'
 import 'chart.js'
-import 'vuetify/dist/vuetify.min.css'
+
+import _ from 'lodash'
+
+import App from './App.vue'
+import router from './router'
+import store from './store'
+
 import { apolloProvider } from './vue-apollo'
 
 try {
@@ -33,6 +38,47 @@ if ('serviceWorker' in navigator) {
     }
   })
 }
+
+window.zE &&
+  window.zE('webWidget:on', 'open', () => {
+    console.log('The widget has been opened!', store)
+
+    const principal = _.get(store, 'state.user.principal', {})
+    if (principal) {
+      const {
+        displayName,
+        memberId,
+        identityId,
+        username,
+        contactEmail
+      } = principal
+
+      const name = displayName
+      const email = contactEmail || username
+
+      window.zE('webWidget', 'identify', {
+        name: displayName,
+        email,
+        memberId,
+        identityId
+      })
+      window.zE('webWidget', 'prefill', {
+        name: {
+          value: name,
+          readOnly: true // optional
+        },
+        email: {
+          value: email,
+          readOnly: true // optional
+          // },
+          // phone: {
+          //   value: '61431909749',
+          //   readOnly: true // optional
+        }
+      })
+      console.log({ displayName, memberId, identityId, username, contactEmail })
+    }
+  })
 
 new Vue({
   provide: apolloProvider.provide(),
