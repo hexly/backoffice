@@ -209,7 +209,7 @@ export default {
       const fDate = moment(date).format("MMMM Do, YYYY")
       return fDate
     },
-    async filesChange(files) {
+    async filesChange (files) {
       try {
         const file = files[0];
         this.isSaving = true;
@@ -234,11 +234,11 @@ export default {
       }
 
     },
-    slugChanged() {
+    slugChanged () {
       this.slugErrors = [];
       this.editMember.slug = this.editMember.slug.toLowerCase();
     },
-    async saveData() {
+    async saveData () {
       this.slugIsUnique = true; // reset to default state
       const formIsValid = this.$refs.informationForm.validate();
       let response;
@@ -258,7 +258,7 @@ export default {
           console.log('error checking slugs', { err });
           this.snackbarMsg = 'Unable to save profile data';
           this.snackBarColor = ERROR_COLOR;
-          this.snackbar = true;
+          this.snackbar = true
         }
 
         if (response) {
@@ -315,16 +315,16 @@ export default {
         this.snackbar = true;
       }
     },
-    saveDate(date) {
+    saveDate (date) {
       this.$refs.dialog.save(date);
     },
-    addressSnackBarEmitSuccess(e) {
+    addressSnackBarEmitSuccess (e) {
 
       this.snackbarMsg = e
       this.snackBarColor = SUCCESS_COLOR
       this.snackbar = true
     },
-    addressSnackBarEmitError(e) {
+    addressSnackBarEmitError (e) {
       this.snackbarMsg = e;
       this.snackBarColor = ERROR_COLOR;
       this.snackbar = true;
@@ -333,14 +333,14 @@ export default {
   apollo: {
     member: {
       query: GET_MEMBERS,
-      variables() {
+      variables () {
         return {
           input: {
             ids: [this.memberId]
           }
         }
       },
-      update({ members }) {
+      update ({ members }) {
         // If graphql query succeeds
         if (members) {
           const editMember = members.nodes[0];
@@ -364,24 +364,24 @@ export default {
     }
   },
   watch: {
-    modal(val) {
+    modal (val) {
       val && this.$nextTick(() => (this.$refs.picker.activePicker = "YEAR"));
     },
-    birthdate(val) {
+    birthdate (val) {
       this.editMember.formattedDate = this.formatDate(val)
     }
   },
   computed: {
-    birthdate() {
+    birthdate () {
       return this.editMember.birthdate
     },
-    memberId() {
+    memberId () {
       return this.$store.state.user.principal.memberId;
     },
-    tenantId() {
+    tenantId () {
       return this.$store.state.user.principal.tenantId || ~~process.env.VUE_APP_TENANT_ID;
     },
-    getAvatar() {
+    getAvatar () {
       return (
         this.editMember.profileUrl ||
         "http://res.cloudinary.com/hexly/image/upload/dev/1001/avatar/undefined.jpg"

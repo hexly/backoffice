@@ -214,21 +214,21 @@ export default {
   apollo: {
     member: {
       query: IDENTITY_QUERY,
-      variables() {
+      variables () {
         return {
           condition: {
             memberId: this.$store.state.user.principal.memberId
           }
         }
       },
-      update({ allIdentities }) {
+      update ({ allIdentities }) {
         const member = allIdentities.nodes[0]
         return member
       }
     },
     team: {
       query: TEAM_STATS_BY_LEVEL,
-      variables() {
+      variables () {
         return {
           teamInput: {
             memberId: this.$store.state.user.principal.memberId,
@@ -240,7 +240,7 @@ export default {
           }
         }
       },
-      update({ teamStatsByLevel }) {
+      update ({ teamStatsByLevel }) {
         const totalTeamAmount =
           pathOr(0, ['personal', 'totalAmount'], teamStatsByLevel) +
           pathOr(0, ['firstLevel', 'totalAmount'], teamStatsByLevel) +
@@ -270,14 +270,14 @@ export default {
     },
     address: {
       query: ADDRESS_BY_MEMBER_ID,
-      variables() {
+      variables () {
         return {
           addressMemberId: {
             memberId: this.$store.state.user.principal.memberId
           }
         }
       },
-      update({ addressByMemberOrTenant }) {
+      update ({ addressByMemberOrTenant }) {
         const a = addressByMemberOrTenant[0]
         this.showAddressDialog = false
         if (!a) {
@@ -289,7 +289,7 @@ export default {
     },
     MonthlySalesLeaders: {
       query: MONTHLY_SALES_LEADERBOARD,
-      variables() {
+      variables () {
         return {
           leaderInput: {
             tenantId,
@@ -299,13 +299,13 @@ export default {
           }
         }
       },
-      update({ monthlySalesLeaderboard }) {
+      update ({ monthlySalesLeaderboard }) {
         return monthlySalesLeaderboard
       }
     },
     MonthlyFrontlineLeaders: {
       query: MONTHLY_FRONTLINE_LEADERBOARD,
-      variables() {
+      variables () {
         return {
           leaderInput: {
             tenantId,
@@ -315,13 +315,13 @@ export default {
           }
         }
       },
-      update({ monthlyFrontlineLeaderboard }) {
+      update ({ monthlyFrontlineLeaderboard }) {
         return monthlyFrontlineLeaderboard
       }
     }
   },
   methods: {
-    dateChanged({ date }) {
+    dateChanged ({ date }) {
       const dateSplit = date.split('-')
       this.month = parseInt(dateSplit[1])
       this.year = parseInt(dateSplit[0])
@@ -329,17 +329,17 @@ export default {
       this.startDate = monthDate.startOf('month').format('YYYY-MM-DD')
       this.endDate = monthDate.endOf('month').format('YYYY-MM-DD')
     },
-    calculatePercent(percent, qualified) {
+    calculatePercent (percent, qualified) {
       const { qualified: _qualified, totalPoints } = this.team.personal
       return _qualified >= qualified && totalPoints >= 60 ? percent : 0
     },
-    calculateRank(qualified) {
+    calculateRank (qualified) {
       const { qualified: _qualified, totalPoints } = this.team.personal
       return _qualified >= qualified && totalPoints >= 60
     }
   },
   computed: {
-    getAvatar() {
+    getAvatar () {
       let image =
         'http://res.cloudinary.com/hexly/image/upload/dev/1001/avatar/undefined.jpg'
       if (this.member.profileUrl) {

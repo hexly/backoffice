@@ -16,16 +16,16 @@ const DAY_IN_HOURS = 24,
 
 const INTERVAL_VAL = 30 * MIN_IN_SECONDS * SECONDS_IN_MS // 30 MIN
 export default {
-  data() {
+  data () {
     return {
       tenant: process.env.VUE_APP_TENANT_ID
     }
   },
-  mounted() {
+  mounted () {
     this.checkAppVersion()
   },
   methods: {
-    async checkAppVersion() {
+    async checkAppVersion () {
       const response = await fetch('/manifest.json')
       const json = await response.json()
 
