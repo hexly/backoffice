@@ -1,14 +1,15 @@
-query auth($creds: Credentials!) {
-  authenticate(input: $creds) {
+mutation auth($creds: Credentials!) {
+  login(input: $creds) {
     token
     success
+    reason
     principal {
-      role
       username
-      displayName
       identityId
       memberId
-      permissions
+      member {
+        displayName
+      }
     }
   }
 }

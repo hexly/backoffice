@@ -8,9 +8,10 @@
     "indent": ["error", 2],
     "linebreak-style": ["error", "unix"],
     "prefer-spread": "warn",
-    "semi": "off",
+    "semi": "error",
     "prefer-arrow-callback": "warn",
-    "space-before-function-paren": "off"
+    "space-before-function-paren": "off",
+    "no-debugger": "off"
   },
   "env": {
     "jest": true,

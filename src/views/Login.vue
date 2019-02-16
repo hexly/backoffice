@@ -168,7 +168,8 @@ import pathOr from 'rambda/lib/pathOr'
 const tenantId = ~~process.env.VUE_APP_TENANT_ID
 
 export default {
-  data() {
+  name: 'Foobar',
+  data () {
     return {
       form: {
         email: '',
@@ -181,11 +182,11 @@ export default {
       success: null,
       buttonLoading: false,
       version: VERSION
-    };
+    }
   },
   methods: {
-    async onLogin() {
-      this.error = null;
+    async onLogin () {
+      this.error = null
       try {
         this.$refs.login.validate()
         this.buttonLoading = true
@@ -203,68 +204,68 @@ export default {
           : this.onError('Invalid Username/Password.')
       } catch (error) {
         this.buttonLoading = false
-        this.onError(error.message);
+        this.onError(error.message)
       }
     },
-    changeMode(type) {
-      this.error = null;
-      this.success = null;
-      this.type = type;
+    changeMode (type) {
+      this.error = null
+      this.success = null
+      this.type = type
     },
-    async onRegister() {
-      this.buttonLoading = true;
-      this.error = null;
+    async onRegister () {
+      this.buttonLoading = true
+      this.error = null
       try {
         await this.$store.dispatch(ClaimActions.CLAIM, {
           email: this.form.email,
           tenantId,
           type: 'claim'
-        });
+        })
         this.onSuccess(
           'Registrations email has been sent! Please check your email.'
-        );
+        )
       } catch (error) {
-        this.onError(error);
+        this.onError(error)
       }
-      this.buttonLoading = false;
+      this.buttonLoading = false
     },
-    async onReset() {
-      this.error = null;
-      this.buttonLoading = true;
+    async onReset () {
+      this.error = null
+      this.buttonLoading = true
       try {
         await this.$store.dispatch(ClaimActions.RESET, {
           email: this.form.email,
           tenantId,
           type: 'reset'
-        });
+        })
         this.onSuccess(
           'Password reset email has been sent! Please check your email.'
-        );
+        )
       } catch (error) {
-        this.onError(error);
+        this.onError(error)
       }
-      this.buttonLoading = false;
+      this.buttonLoading = false
     },
-    async onSuccess(message) {
-      this.success = message;
-      await delay(7000);
-      this.success = null;
-      this.type = 'login';
+    async onSuccess (message) {
+      this.success = message
+      await delay(7000)
+      this.success = null
+      this.type = 'login'
     },
-    onError(errorMessage) {
+    onError (errorMessage) {
       if (typeof errorMessage === 'string') {
-        this.error = errorMessage;
+        this.error = errorMessage
       } else {
-        const errors = pathOr({}, 'response.data.errors', errorMessage);
+        const errors = pathOr({}, 'response.data.errors', errorMessage)
         this.error = pathOr(
           'There seems to be a problem. Please try again later or contact customer support.',
           ['message'],
           errors[0]
-        );
+        )
       }
     }
   }
-};
+}
 </script>
 
 <style scoped>
