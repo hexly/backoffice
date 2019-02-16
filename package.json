@@ -63,6 +63,7 @@
     "not ie <= 8"
   ],
   "devDependencies": {
+    "generate-json-file-webpack-plugin": "0.0.3",
     "lt": "^0.3.3"
   }
 }

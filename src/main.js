@@ -14,6 +14,13 @@ import store from './store'
 
 import { apolloProvider } from './vue-apollo'
 
+try {
+  const mf = require('./build.info.json')
+  window.$version = mf.buildTime
+} catch (err) {
+  console.warn('Failed to load build.info.json', err)
+}
+
 Vue.use(VueChartkick, {
   Chartkick
 })

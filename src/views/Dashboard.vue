@@ -1,11 +1,25 @@
 <template>
   <div class="dashboard">
     <h1>Welcome To Your Backoffice {{member.displayName}}!</h1>
-    <month-selector :year="year" :month="month" @date-changed="dateChanged"/>
-    <v-container fluid class="contain">
-      <v-layout row wrap>
+    <month-selector
+      :year="year"
+      :month="month"
+      @date-changed="dateChanged"
+    />
+    <v-container
+      fluid
+      class="contain"
+    >
+      <v-layout
+        row
+        wrap
+      >
         <v-flex sm2>
-          <img class="image" :src="getAvatar" :style="{ borderColor: `#${currentRank.color}`}"/>
+          <img
+            class="image"
+            :src="getAvatar"
+            :style="{ borderColor: `#${currentRank.color}`}"
+          />
         </v-flex>
         <v-flex sm6>
           <h3>Chakra: {{currentRank.name}}</h3>
@@ -15,21 +29,38 @@
             <li>Total Personal Amount: {{team.personal.totalAmount}}</li>
             <li>Total Personal Sales: {{team.personal.sales}}</li>
             <li>Personal Recruits: {{team.personal.recruited}}</li>
-            <li><hr/></li>
+            <li>
+              <hr />
+            </li>
             <li>Family Size: {{team.teamSize}}</li>
             <li>Total Family Points: {{team.totalTeamAmount}}</li>
           </ul>
 
-          <div class="chakra ambassador" :class="{'active': team.personal.totalPoints >= 60}"></div>
-          <div class="chakra guide" :class="{'active': calculateRank(1)}"></div>
-          <div class="chakra guru" :class="{'active': calculateRank(2)}"></div>
-          <div class="chakra sage" :class="{'active': calculateRank(3)}"></div>
-          <div class="chakra master" :class="{'active': calculateRank(4)}"></div>
+          <div
+            class="chakra ambassador"
+            :class="{'active': team.personal.totalPoints >= 60}"
+          ></div>
+          <div
+            class="chakra guide"
+            :class="{'active': calculateRank(1)}"
+          ></div>
+          <div
+            class="chakra guru"
+            :class="{'active': calculateRank(2)}"
+          ></div>
+          <div
+            class="chakra sage"
+            :class="{'active': calculateRank(3)}"
+          ></div>
+          <div
+            class="chakra master"
+            :class="{'active': calculateRank(4)}"
+          ></div>
 
         </v-flex>
-        <v-spacer/>
+        <v-spacer />
       </v-layout>
-        <CompPlanLevel
+      <CompPlanLevel
         :level="team.firstLevel"
         levelName="One"
         :percent="calculatePercent(.1, 1)"
@@ -59,13 +90,32 @@
       />
     </v-container>
     <v-subheader>Leaderboards</v-subheader>
-    <v-container fluid grid-list-xs>
-      <v-layout row wrap>
-        <v-flex sm6 pa-3>
-          <LeaderBoard :leaders="MonthlySalesLeaders" title="Top Sellers" :showTotal="false"/>
+    <v-container
+      fluid
+      grid-list-xs
+    >
+      <v-layout
+        row
+        wrap
+      >
+        <v-flex
+          sm6
+          pa-3
+        >
+          <LeaderBoard
+            :leaders="MonthlySalesLeaders"
+            title="Top Sellers"
+            :showTotal="false"
+          />
         </v-flex>
-        <v-flex sm6 pa-3>
-          <LeaderBoard :leaders="MonthlyFrontlineLeaders" title="Top Recruiters"/>
+        <v-flex
+          sm6
+          pa-3
+        >
+          <LeaderBoard
+            :leaders="MonthlyFrontlineLeaders"
+            title="Top Recruiters"
+          />
         </v-flex>
       </v-layout>
     </v-container>
@@ -244,7 +294,8 @@ export default {
           leaderInput: {
             tenantId,
             month: this.month,
-            year: this.year
+            year: this.year,
+            omitTagIds: [8]
           }
         }
       },
@@ -259,7 +310,8 @@ export default {
           leaderInput: {
             tenantId,
             month: this.month,
-            year: this.year
+            year: this.year,
+            omitTagIds: [8]
           }
         }
       },
@@ -320,7 +372,7 @@ ul li {
   height: 67px;
   display: inline-block;
   filter: grayscale(100%) opacity(50%);
-  background-image: url('../../public/img/css_sprites.png');
+  background-image: url("../../public/img/css_sprites.png");
 }
 
 .ambassador {
