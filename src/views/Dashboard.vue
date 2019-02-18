@@ -136,7 +136,7 @@
           <v-btn
             color="green darken-1"
             flat="flat"
-            @click="$router.push('/profile')"
+            @click="$router.push('/profile#address')"
           >
             Profile Page
           </v-btn>

@@ -21,11 +21,11 @@
           >
             <v-tabs-slider color="purple"></v-tabs-slider>
 
-            <v-tab href="#profile">Profile
+            <v-tab to="#profile">Profile
               <v-icon>portrait</v-icon>
             </v-tab>
 
-            <v-tab href="#address">Address
+            <v-tab to="#address">Address
               <v-icon>house</v-icon>
             </v-tab>
 
