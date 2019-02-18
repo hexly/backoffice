@@ -3,7 +3,9 @@
     <div class="version">v. {{version}}</div>
     <v-container
       fluid
-      fill-height
+      align-center
+      justify-center
+      style="display:flex;height: 95%;"
     >
       <v-layout
         align-center
