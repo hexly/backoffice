@@ -158,7 +158,7 @@ import DashCard from '@/components/DashboardCard.vue'
 import LeaderBoard from '@/components/Leaderboard.vue'
 import CompPlanLevel from '@/components/CompPlanLevel.vue'
 import MonthSelector from '@/components/MonthSelector.vue'
-import IDENTITY_QUERY from '@/graphql/GetIdentity.gql'
+import GET_MEMBERS from "@/graphql/GetMembers.gql";
 
 import moment from 'moment'
 import { pathOr } from 'rambda'
@@ -213,16 +213,16 @@ export default {
   }),
   apollo: {
     member: {
-      query: IDENTITY_QUERY,
+      query: GET_MEMBERS,
       variables () {
         return {
-          condition: {
-            memberId: this.$store.state.user.principal.memberId
+          input: {
+            ids: [this.$store.state.user.principal.memberId]
           }
         }
       },
-      update ({ allIdentities }) {
-        const member = allIdentities.nodes[0]
+      update ({ members }) {
+        const member = members.nodes[0]
         return member
       }
     },

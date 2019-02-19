@@ -1,9 +1,18 @@
 <template>
   <div class="comp-plan">
-    <v-container fluid class="contain">
-      <v-layout row wrap>
+    <v-container
+      fluid
+      class="contain"
+    >
+      <v-layout
+        row
+        wrap
+      >
         <v-flex xs3>
-          <img class="image" :src="getAvatar">
+          <img
+            class="image"
+            :src="getAvatar"
+          >
         </v-flex>
         <v-flex xs6>
           <h1>{{member.displayName}}</h1>
@@ -20,7 +29,7 @@
             <li>Total Team Points: {{team.totalTeamAmount}}</li>
           </ul>
         </v-flex>
-        <v-spacer/>
+        <v-spacer />
       </v-layout>
       <CompPlanLevel
         :level="team.firstLevel"
@@ -52,7 +61,7 @@
 
 <script>
 import CompPlanLevel from '@/components/CompPlanLevel.vue'
-import IDENTITY_QUERY from '@/graphql/GetIdentity.gql'
+import GET_MEMBERS from "@/graphql/GetMembers.gql";
 import TEAM_STATS_BY_LEVEL from '@/graphql/TeamStatsByLevel.gql'
 import moment from 'moment'
 
@@ -84,16 +93,16 @@ export default {
   }),
   apollo: {
     member: {
-      query: IDENTITY_QUERY,
+      query: GET_MEMBERS,
       variables () {
         return {
-          condition: {
-            memberId: this.$store.state.user.principal.memberId
+          input: {
+            ids: [this.$store.state.user.principal.memberId]
           }
         }
       },
-      update ({ allIdentities }) {
-        const member = allIdentities.nodes[0]
+      update ({ members }) {
+        const member = members.nodes[0]
         return member
       }
     },
