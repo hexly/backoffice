@@ -24,7 +24,7 @@
         <v-breadcrumbs divider="/">
           <v-breadcrumbs-item
             v-for="(user, index) in lineage"
-            :key="user.email"
+            :key="user.contactEmail"
             :disabled="index === (lineage.length - 1)"
           >
             <span @click="updateLineage(user, index)">{{user.displayName}}</span>
@@ -98,10 +98,9 @@ export default {
     },
     updateLineage (user, index) {
       this.lineage = this.lineage.slice(0, index + 1)
-      this.currentId = user.id
+      this.currentId = user.memberId
     },
     getStats (target) {
-      console.log({ target })
       return defaultTo(
         {},
         find(_ => _.sellerId === target.id, this.stats)
@@ -135,7 +134,6 @@ export default {
       },
       update ({ targetStats, firstLevelStats }) {
         const result = targetStats.nodes.concat(firstLevelStats.nodes)
-        console.log({ result })
         return result
       },
       fetchPolicy: 'cache-and-network'

@@ -100,8 +100,6 @@ export default {
       )
     },
     isQualified () {
-      console.log(this);
-
       let joined = new Date(this.stats.joinedOn)
       let today = new Date()
       joined = `${joined.getFullYear()}-${joined.getMonth()}`
