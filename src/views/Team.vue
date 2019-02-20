@@ -94,11 +94,11 @@ export default {
   methods: {
     showTeam (user) {
       this.lineage.push(user)
-      this.currentId = user.id
+      this.currentId = user.id || user.memberId
     },
     updateLineage (user, index) {
       this.lineage = this.lineage.slice(0, index + 1)
-      this.currentId = user.memberId
+      this.currentId = user.memberId || user.id
     },
     getStats (target) {
       return defaultTo(
