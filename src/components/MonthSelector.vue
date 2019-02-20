@@ -58,7 +58,6 @@ export default {
       date: null,
       formattedDate: null,
       menu: false,
-      modal: false,
       maxDate: moment().format(),
       moment
     }
