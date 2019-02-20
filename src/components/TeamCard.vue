@@ -1,11 +1,14 @@
 <template>
   <v-card class="team-card">
-    <v-container fluid grid-list-lg>
+    <v-container
+      fluid
+      grid-list-lg
+    >
       <v-layout row>
         <v-flex xs7>
           <div v-if="!loading">
             <div class="headline">{{user.name}}</div>
-            <div>{{user.email}}</div>
+            <div>{{user.contactEmail}}</div>
             <div>{{user.displayName}}</div>
             <div>Date Joined: {{stats.joinedOn | formatDate}}</div>
             <div>Team Size: {{stats.teamSize || 0}}</div>
@@ -14,7 +17,12 @@
             <div>Total Amount: {{stats.totalAmount || 0}}</div> -->
           </div>
           <div v-if="loading">
-            <v-progress-circular indeterminate :size="50" :width="5" color="black"></v-progress-circular>
+            <v-progress-circular
+              indeterminate
+              :size="50"
+              :width="5"
+              color="black"
+            ></v-progress-circular>
           </div>
         </v-flex>
         <v-flex xs5>
@@ -27,14 +35,35 @@
         </v-flex>
       </v-layout>
     </v-container>
-          <div width=100%>
-            <v-card-actions v-if="actions">
-              <v-btn flat color="blue" block @click="viewTeam">View Team</v-btn>
-              <v-btn flat color="white" block disabled></v-btn>
-              <v-btn flat color="green" block v-if="isQualified">qualified</v-btn>
-              <v-btn flat color= white block disabled v-else>unqaulified</v-btn>
-            </v-card-actions>
-          </div>
+    <div width=100%>
+      <v-card-actions v-if="actions">
+        <v-btn
+          flat
+          color="blue"
+          block
+          @click="viewTeam"
+        >View Team</v-btn>
+        <v-btn
+          flat
+          color="white"
+          block
+          disabled
+        ></v-btn>
+        <v-btn
+          flat
+          color="green"
+          block
+          v-if="isQualified"
+        >qualified</v-btn>
+        <v-btn
+          flat
+          color=white
+          block
+          disabled
+          v-else
+        >unqualified</v-btn>
+      </v-card-actions>
+    </div>
   </v-card>
 
 </template>
