@@ -341,6 +341,7 @@ export default {
         if (members) {
           const editMember = members.nodes[0]
           this.editMember = { ...editMember }
+          this.editMember.formattedDate = this.formatDate(this.editMember.birthdate)
 
           const isInvalid = /[^a-z0-9_]/gi.test(this.editMember.slug)
           if (isInvalid) {

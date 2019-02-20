@@ -9,10 +9,8 @@
 
 <script>
 import moment from 'moment'
-const DAY_IN_HOURS = 24,
-  HOUR_IN_MIN = 60,
-  MIN_IN_SECONDS = 60,
-  SECONDS_IN_MS = 1000
+const MIN_IN_SECONDS = 60
+const SECONDS_IN_MS = 1000
 
 const INTERVAL_VAL = 30 * MIN_IN_SECONDS * SECONDS_IN_MS // 30 MIN
 export default {
@@ -34,11 +32,11 @@ export default {
       const current = moment(currentVersion)
       const newVersion = moment(json.buildTime)
       if (current.isValid() && current.isBefore(newVersion)) {
-        console.warn('version outdated');
+        console.warn('version outdated')
         this.newVersionAvailable = true
         clearInterval(this.appVersionInterval)
       } else {
-        console.warn(`version up to date setting timeout to ${INTERVAL_VAL / SECONDS_IN_MS / MIN_IN_SECONDS} minutes to check for new version`);
+        console.warn(`version up to date setting timeout to ${INTERVAL_VAL / SECONDS_IN_MS / MIN_IN_SECONDS} minutes to check for new version`)
 
         this.appVersionInterval = setTimeout(this.checkAppVersion, INTERVAL_VAL) // Check for the app version every 30 minutes
       }
