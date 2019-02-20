@@ -1,6 +1,9 @@
 <template>
   <div>
-    <v-flex xs11 sm5>
+    <v-flex
+      xs11
+      sm5
+    >
       <v-menu
         ref="menu"
         :close-on-content-click="false"
@@ -16,7 +19,7 @@
       >
         <v-text-field
           slot="activator"
-          v-model="date"
+          v-model="formattedDate"
           label="Choose Month"
           prepend-icon="event"
           readonly
@@ -24,12 +27,21 @@
         <v-date-picker
           v-model="date"
           type="month"
+          :max="maxDate"
           no-title
           scrollable
         >
           <v-spacer></v-spacer>
-          <v-btn flat color="primary" @click="menu = false">Cancel</v-btn>
-          <v-btn flat color="primary" @click="updateDate">OK</v-btn>
+          <v-btn
+            flat
+            color="primary"
+            @click="menu = false"
+          >Cancel</v-btn>
+          <v-btn
+            flat
+            color="primary"
+            @click="updateDate"
+          >OK</v-btn>
         </v-date-picker>
       </v-menu>
     </v-flex>
@@ -37,17 +49,22 @@
 </template>
 
 <script>
+import moment from 'moment'
+
 export default {
   name: 'month-selector',
   data () {
     return {
       date: null,
+      formattedDate: null,
       menu: false,
-      modal: false
+      maxDate: moment().format(),
+      moment
     }
   },
   mounted () {
     this.date = `${this.year}-${this.month}`
+    this.formattedDate = moment(this.date).format('MMMM YYYY')
   },
   props: {
     month: {
@@ -62,6 +79,7 @@ export default {
   methods: {
     updateDate () {
       this.$refs.menu.save(this.date)
+      this.formattedDate = moment(this.date).format('MMMM YYYY')
       this.$emit('date-changed', {
         date: this.date
       })
