@@ -97,7 +97,6 @@ export default {
       this.currentId = user.id || user.memberId
     },
     updateLineage (user, index) {
-      console.log('updateLineage:', { user }, { index })
       this.lineage = this.lineage.slice(0, index + 1)
       this.currentId = user.memberId || user.id
     },
