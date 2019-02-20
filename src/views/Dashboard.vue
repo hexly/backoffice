@@ -158,7 +158,7 @@ import DashCard from '@/components/DashboardCard.vue'
 import LeaderBoard from '@/components/Leaderboard.vue'
 import CompPlanLevel from '@/components/CompPlanLevel.vue'
 import MonthSelector from '@/components/MonthSelector.vue'
-import GET_MEMBERS from "@/graphql/GetMembers.gql";
+import GET_MEMBERS from '@/graphql/GetMembers.gql'
 
 import moment from 'moment'
 import { pathOr } from 'rambda'
