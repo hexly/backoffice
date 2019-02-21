@@ -2,30 +2,30 @@ import gql from 'graphql-tag'
 
 export const QUERY = gql`
   query TeamByMemberId(
-    $bySponsor: IdentityCondition!
-    $byTarget: IdentityCondition!
+    $bySponsor: MemberSearchCondition!
+    $byTarget: MemberSearchCondition!
   ) {
-    target: allIdentities(condition: $byTarget) {
+    target: members(condition: $byTarget) {
       nodes {
-        memberId
+        id
         tenantId
         name
         displayName
         mrn
         slug
-        email
+        contactEmail
         profileUrl
       }
     }
-    team: allIdentities(condition: $bySponsor) {
+    team: members(condition: $bySponsor) {
       nodes {
-        memberId
+        id
         tenantId
         name
         displayName
         mrn
         slug
-        email
+        contactEmail
         profileUrl
       }
     }
@@ -40,8 +40,8 @@ export const getTeamByMemberId = memberIdFn => {
       const { principal: member } = this.$store.state.user
       const memberId = this[memberIdFn] || member.memberId || -1
       return {
-        byTarget: { memberId },
-        bySponsor: { sponsorId: memberId }
+        byTarget: { ids: [memberId] },
+        bySponsor: { sponsorIds: [memberId] }
       }
     },
     update ({ target, team }) {

@@ -75,7 +75,6 @@ export default new Vuex.Store({
       localStorage.clear()
     },
     [Actions.AVATAR_UPLOAD]: async (context, { file }) => {
-      console.log('go')
       try {
         const { data } = await axios.get(
           `${VUE_APP_API_ENDPOINT}/storage/destinations/${VUE_APP_TENANT_ID}/cloudinary`,
