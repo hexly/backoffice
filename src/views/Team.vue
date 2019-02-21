@@ -112,7 +112,6 @@ export default {
       const dateSplit = date.split('-')
       this.month = parseInt(dateSplit[1])
       this.year = parseInt(dateSplit[0])
-      // this.showTeam(this.currentId)
     }
   },
   apollo: {
