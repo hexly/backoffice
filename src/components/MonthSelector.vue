@@ -28,6 +28,7 @@
           v-model="date"
           type="month"
           :max="maxDate"
+          :min="minDate"
           no-title
           scrollable
         >
@@ -74,6 +75,10 @@ export default {
     year: {
       type: [Number, String],
       default: new Date().getFullYear()
+    },
+    minDate: {
+      type: [Number, String],
+      default: null
     }
   },
   methods: {

@@ -5,6 +5,7 @@
       <month-selector
         :year="year"
         :month="month"
+        :minDate="minDate"
         @date-changed="dateChanged"
       />
       <div>
@@ -81,6 +82,7 @@ export default {
     currentId: undefined,
     month: new Date().getMonth() + 1,
     year: new Date().getFullYear(),
+    minDate: null,
     results: {
       target: undefined,
       team: []
@@ -133,6 +135,9 @@ export default {
         }
       },
       update ({ targetStats, firstLevelStats }) {
+        if (targetStats.nodes.length > 0) {
+          this.minDate = targetStats.nodes[0].joinedOn
+        }
         const result = targetStats.nodes.concat(firstLevelStats.nodes)
         return result
       },
