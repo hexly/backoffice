@@ -10,11 +10,16 @@
             <div class="headline">{{user.name}}</div>
             <div>{{user.contactEmail}}</div>
             <div>{{user.displayName}}</div>
-            <div>Date Joined: {{stats.joinedOn | formatDate}}</div>
-            <div>Team Size: {{stats.teamSize || 0}}</div>
-            <div>Front Line: {{stats.firstLevelSize || 0}}</div>
-            <!-- <div>Total Points: {{stats.totalPoints || 0}}</div>
-            <div>Total Amount: {{stats.totalAmount || 0}}</div> -->
+            <div v-if="stats.joinedOn">
+              <div>Date Joined: {{stats.joinedOn | formatDate}}</div>
+              <div>Team Size: {{stats.teamSize || 0}}</div>
+              <div>Front Line: {{stats.firstLevelSize || 0}}</div>
+              <!-- <div>Total Points: {{stats.totalPoints || 0}}</div>
+              <div>Total Amount: {{stats.totalAmount || 0}}</div> -->
+            </div>
+            <div v-else>
+              User data not available for selected timeframe
+            </div>
           </div>
           <div v-if="loading">
             <v-progress-circular

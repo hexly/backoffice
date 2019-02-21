@@ -39,6 +39,7 @@ export const getTeamByMemberId = memberIdFn => {
     variables: function () {
       const { principal: member } = this.$store.state.user
       const memberId = this[memberIdFn] || member.memberId || -1
+      console.log('query', memberId)
       return {
         byTarget: { ids: [memberId] },
         bySponsor: { sponsorIds: [memberId] }

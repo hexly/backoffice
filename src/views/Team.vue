@@ -5,6 +5,7 @@
       <month-selector
         :year="year"
         :month="month"
+        :minDate="minDate"
         @date-changed="dateChanged"
       />
       <div>
@@ -81,6 +82,7 @@ export default {
     currentId: undefined,
     month: new Date().getMonth() + 1,
     year: new Date().getFullYear(),
+    minDate: null,
     results: {
       target: undefined,
       team: []
@@ -110,6 +112,7 @@ export default {
       const dateSplit = date.split('-')
       this.month = parseInt(dateSplit[1])
       this.year = parseInt(dateSplit[0])
+      // this.showTeam(this.currentId)
     }
   },
   apollo: {
@@ -133,6 +136,10 @@ export default {
         }
       },
       update ({ targetStats, firstLevelStats }) {
+        console.log({ targetStats })
+        if (targetStats.nodes.length > 0) {
+          this.minDate = targetStats.nodes[0].joinedOn
+        }
         const result = targetStats.nodes.concat(firstLevelStats.nodes)
         return result
       },
