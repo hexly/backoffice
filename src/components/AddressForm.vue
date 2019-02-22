@@ -41,9 +41,11 @@
       <v-text-field
         label="Country"
         name="Country"
-        v-model="address.country"
+        :v-model="address.country"
         :rules="requiredRule"
         required
+        value="USA"
+        disabled
       ></v-text-field>
       <v-btn
         :disabled="saving"
@@ -78,6 +80,9 @@ export default {
       ],
       saving: false
     }
+  },
+  mounted () {
+    console.log('Mounted called', this)
   },
   apollo: {
     address: {
@@ -114,7 +119,7 @@ export default {
                 street: this.address.street,
                 city: this.address.city,
                 province: this.address.province,
-                country: this.address.country,
+                country: this.address.country || 'US',
                 postalCode: this.address.postalCode,
                 street2: this.address.street2 || '',
                 memberId: this.$store.state.user.principal.memberId
