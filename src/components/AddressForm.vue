@@ -41,11 +41,10 @@
       <v-select
         label="Country"
         name="Country"
-        :v-model="address.country"
+        v-model="address.country"
         :rules="requiredRule"
         required
         :items="SELECT_ITEMS"
-        :value="address.country"
       ></v-select>
       <v-btn
         :disabled="saving"
@@ -60,13 +59,11 @@
 <script>
 import { ADDRESS_BY_MEMBER_ID, UPDATE_ADDRESS } from '@/graphql/Address.js'
 
-const SELECT_ITEMS = [{ text: 'United States of America', value: 'US' }]
-
 export default {
   name: 'AddressForm',
   data () {
     return {
-      SELECT_ITEMS,
+      SELECT_ITEMS: [{ text: 'United States of America', value: 'US' }],
       address: {
         id: null,
         name: null,
@@ -114,6 +111,7 @@ export default {
         const ProfileObject = this.$parent.$parent.$parent.$parent.$parent
 
         try {
+          console.log(this.address.country)
           await this.$apollo.mutate({
             mutation: UPDATE_ADDRESS,
             variables: {
@@ -123,7 +121,7 @@ export default {
                 street: this.address.street,
                 city: this.address.city,
                 province: this.address.province,
-                country: this.address.country,
+                country: this.address.country || 'US',
                 postalCode: this.address.postalCode,
                 street2: this.address.street2 || '',
                 memberId: this.$store.state.user.principal.memberId
