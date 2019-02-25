@@ -10,6 +10,7 @@ import Profile from './views/Profile.vue'
 import Assets from './views/Assets.vue'
 import Team from './views/Team.vue'
 import Sales from './views/Sales.vue'
+import Redirect from './views/Redirect.vue'
 import Zendesk from './zendesk/Zendesk.vue'
 import ZendeskRoot from './zendesk/root.vue'
 
@@ -92,6 +93,16 @@ export default new Router({
           component: Team
         }
       ]
+    },
+    {
+      path: '*',
+      name: 'Backoffice Redirect',
+      component: Redirect,
+      beforeEnter: (_, __, next) => {
+        return !store.state.user.jwt
+          ? next('/login?returnTo=' + encodeURI('/'))
+          : next('/dashboard')
+      }
     }
   ]
 })

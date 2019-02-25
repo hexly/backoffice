@@ -2,29 +2,62 @@
   <v-flex xs12>
     <div class="team">
       <h1 v-bind:target="currentId">Team</h1>
-      <month-selector :year="year" :month="month" @date-changed="dateChanged"/>
+      <month-selector
+        :year="year"
+        :month="month"
+        :minDate="minDate"
+        @date-changed="dateChanged"
+      />
       <div>
-        <v-layout v-if="results.target" row wrap justify-center>
-          <TeamCard :loading="$apollo.queries.stats.loading" @viewTeam="showTeam" :user="results.target" :stats="getStats(results.target)" id="MainCard"/>
+        <v-layout
+          v-if="results.target"
+          row
+          wrap
+          justify-center
+        >
+          <TeamCard
+            :loading="$apollo.queries.stats.loading"
+            @viewTeam="showTeam"
+            :user="results.target"
+            :stats="getStats(results.target)"
+          />
         </v-layout>
-        <v-breadcrumbs divider="/" id="Lineage">
-            <v-breadcrumbs-item
-              v-for="(user, index) in lineage"
-              :key="user.email"
-              :disabled="index === (lineage.length - 1)"
+        <v-breadcrumbs divider="/">
+          <v-breadcrumbs-item
+            v-for="(user, index) in lineage"
+            :key="user.contactEmail"
+            :disabled="index === (lineage.length - 1)"
+          >
+            <span @click="updateLineage(user, index)">{{user.displayName}}</span>
+          </v-breadcrumbs-item>
+        </v-breadcrumbs>
+        <div v-if="!$apollo.queries.results.loading">
+          <v-layout
+            row
+            wrap
+          >
+            <v-flex
+              lg4
+              v-for="(i, index) in results.team"
+              :key="index"
             >
-              <span @click="updateLineage(user, index)">{{user.displayName}}</span>
-            </v-breadcrumbs-item>
-          </v-breadcrumbs>
-        <div  v-if="!$apollo.queries.results.loading">
-          <v-layout row wrap id="TeamMembers">
-            <v-flex lg4 v-for="(i, index) in results.team" :key="index">
-              <TeamCard :loading="$apollo.queries.stats.loading" @viewTeam="showTeam" :user="i" :actions="true" :stats="getStats(i)"/>
+              <TeamCard
+                :loading="$apollo.queries.stats.loading"
+                @viewTeam="showTeam"
+                :user="i"
+                :actions="true"
+                :stats="getStats(i)"
+              />
             </v-flex>
           </v-layout>
         </div>
         <div v-if="$apollo.queries.results.loading">
-          <v-progress-circular indeterminate :size="70" :width="7" color="black"></v-progress-circular>
+          <v-progress-circular
+            indeterminate
+            :size="70"
+            :width="7"
+            color="black"
+          ></v-progress-circular>
         </div>
       </div>
     </div>
@@ -49,6 +82,7 @@ export default {
     currentId: undefined,
     month: new Date().getMonth() + 1,
     year: new Date().getFullYear(),
+    minDate: null,
     results: {
       target: undefined,
       team: []
@@ -62,16 +96,16 @@ export default {
   methods: {
     showTeam (user) {
       this.lineage.push(user)
-      this.currentId = user.memberId
+      this.currentId = user.id || user.memberId
     },
     updateLineage (user, index) {
       this.lineage = this.lineage.slice(0, index + 1)
-      this.currentId = user.memberId
+      this.currentId = user.memberId || user.id
     },
     getStats (target) {
       return defaultTo(
         {},
-        find(_ => _.sellerId === target.memberId, this.stats)
+        find(_ => _.sellerId === target.id, this.stats)
       )
     },
     dateChanged ({ date }) {
@@ -101,8 +135,10 @@ export default {
         }
       },
       update ({ targetStats, firstLevelStats }) {
+        if (targetStats.nodes.length > 0) {
+          this.minDate = targetStats.nodes[0].joinedOn
+        }
         const result = targetStats.nodes.concat(firstLevelStats.nodes)
-
         return result
       },
       fetchPolicy: 'cache-and-network'

@@ -1,11 +1,20 @@
 <template>
   <v-card>
-    <v-toolbar color="cyan" dark>
+    <v-toolbar
+      color="cyan"
+      dark
+    >
       <v-toolbar-title>{{title}}</v-toolbar-title>
     </v-toolbar>
     <v-list two-line>
-      <div v-for="item in leaders" :key="item.contactEmail">
-        <v-list-tile :key="item.name" avatar >
+      <div
+        v-for="item in leaders"
+        :key="item.contactEmail"
+      >
+        <v-list-tile
+          :key="item.name"
+          avatar
+        >
           <v-list-tile-avatar>
             <img :src="scaleImage(item.profileUrl)">
           </v-list-tile-avatar>

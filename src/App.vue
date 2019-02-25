@@ -1,14 +1,45 @@
 <template>
-  <v-app id="backoffice" :class="'tenant-' + tenant">
-    <router-view/>
+  <v-app
+    id="backoffice"
+    :class="'tenant-' + tenant"
+  >
+    <router-view />
   </v-app>
 </template>
 
 <script>
+import moment from 'moment'
+const MIN_IN_SECONDS = 60
+const SECONDS_IN_MS = 1000
+
+const INTERVAL_VAL = 30 * MIN_IN_SECONDS * SECONDS_IN_MS // 30 MIN
 export default {
   data () {
     return {
       tenant: process.env.VUE_APP_TENANT_ID
+    }
+  },
+  mounted () {
+    this.checkAppVersion()
+  },
+  methods: {
+    async checkAppVersion () {
+      const response = await fetch('/manifest.json')
+      const json = await response.json()
+
+      this.newVersion = json.buildTime
+      const currentVersion = window.$version
+      const current = moment(currentVersion)
+      const newVersion = moment(json.buildTime)
+      if (current.isValid() && current.isBefore(newVersion)) {
+        console.warn('version outdated')
+        this.newVersionAvailable = true
+        clearInterval(this.appVersionInterval)
+      } else {
+        console.warn(`version up to date setting timeout to ${INTERVAL_VAL / SECONDS_IN_MS / MIN_IN_SECONDS} minutes to check for new version`)
+
+        this.appVersionInterval = setTimeout(this.checkAppVersion, INTERVAL_VAL) // Check for the app version every 30 minutes
+      }
     }
   }
 }
@@ -16,7 +47,7 @@ export default {
 
 <style>
 #app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
+  font-family: "Avenir", Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;

@@ -75,8 +75,8 @@
 </template>
 
 <script>
-import tenantInfo from "@/tenant.js";
-import { Actions } from "@/store";
+import tenantInfo from '@/tenant.js'
+import { Actions } from '@/store'
 
 export default {
   data: () => ({
@@ -88,16 +88,16 @@ export default {
   },
   computed: {
     displayName() {
-      return this.$store.getters.displayName;
+      return this.$store.getters.displayName
     }
   },
   methods: {
     async logout() {
-      await this.$store.dispatch(Actions.LOGOUT);
-      this.$router.go("/login");
+      await this.$store.dispatch(Actions.LOGOUT)
+      this.$router.go('/login')
     }
   }
-};
+}
 </script>
 
 <style scoped>

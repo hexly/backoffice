@@ -75,18 +75,6 @@
         expand
         :loading="loading"
       >
-<<<<<<< HEAD
-        <template slot="items" slot-scope="props" >
-          <tr @click="props.expanded = !props.expanded">
-            <td><a>Details</a></td>
-            <td class="SaleDate">{{ props.item.date }}</td>
-            <td class="SaleTotal">${{ props.item.total }}</td>
-            <td class="TotalPoints">{{ props.item.totalPoints }}</td>
-            <td class=CommTotal>{{ props.item.commissionableAmount }}</td>
-            <td class="CommPoints">{{ props.item.commissionablePoints }}</td>
-            <td class="SellerName">{{ props.item.displayName }}</td>
-            <td class="SellerEmail">{{ props.item.sellerEmail }}</td>
-=======
         <template
           slot="items"
           slot-scope="props"
@@ -102,7 +90,6 @@
             <td>{{ props.item.commissionablePoints }}</td>
             <td>{{ props.item.displayName }}</td>
             <td>{{ props.item.sellerEmail }}</td>
->>>>>>> 8c0da57c1ea23344b4cd776bb177898e63cc8ceb
           </tr>
         </template>
         <template

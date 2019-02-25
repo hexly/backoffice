@@ -17,6 +17,12 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
+# Build Version
+src/build.info.json
+
+# Package Lock
+package-lock.json
+
 # Editor directories and files
 .idea
 .vscode
