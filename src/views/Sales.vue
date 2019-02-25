@@ -6,16 +6,6 @@
         <v-card-title class="headline font-weight-regular blue-grey white--text">Search</v-card-title>
         <v-card-text>
           <v-subheader>Range</v-subheader>
-<<<<<<< HEAD
-          <v-container grid-list-md text-xs-center>
-            <v-layout row wrap>
-              <v-flex xs12 sm4>
-                <date-selector :selectedDate="startDate" :label="'Select Start Date'" @date-changed="startDateChanged" @change="startDateChanged"/>
-              </v-flex>
-              <v-flex xs12 sm4>
-                <date-selector :selectedDate="endDate" :label="'Select End Date'" @date-changed="endDateChanged" @change="endDateChanged"/>
-              </v-flex>
-=======
           <v-container
             grid-list-md
             text-xs-center
@@ -72,7 +62,6 @@
                   @change="endDateChanged"
                 />
               </v-dialog>
->>>>>>> 8c0da57c1ea23344b4cd776bb177898e63cc8ceb
             </v-layout>
           </v-container>
         </v-card-text>

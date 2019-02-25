@@ -2,17 +2,6 @@
   <div>
     <v-form ref="addressForm" @submit.prevent="save()" lazy-validation>
       <v-text-field
-<<<<<<< HEAD
-        label="Name"
-        name="name"
-        v-model="address.name"
-        :rules="requiredRule"
-        required
-        id="AddressName"
-      ></v-text-field>
-      <v-text-field
-=======
->>>>>>> 8c0da57c1ea23344b4cd776bb177898e63cc8ceb
         label="Street"
         name="Street"
         v-model="address.street"
