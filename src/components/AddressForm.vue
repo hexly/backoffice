@@ -82,9 +82,6 @@ export default {
       saving: false
     }
   },
-  mounted () {
-    console.log('Mounted called', this)
-  },
   apollo: {
     address: {
       query: ADDRESS_BY_MEMBER_ID,
@@ -99,7 +96,7 @@ export default {
         if (addressByMemberOrTenant) {
           return Object.assign({}, addressByMemberOrTenant[0])
         } else {
-          console.log('No address info found')
+          console.error('No address info found')
         }
       }
     }
@@ -111,7 +108,6 @@ export default {
         const ProfileObject = this.$parent.$parent.$parent.$parent.$parent
 
         try {
-          console.log(this.address.country)
           await this.$apollo.mutate({
             mutation: UPDATE_ADDRESS,
             variables: {
