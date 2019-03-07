@@ -46,6 +46,14 @@
             <v-list-tile-title>Team</v-list-tile-title>
           </v-list-tile-content>
         </v-list-tile>
+        <v-list-tile :to="'/impersonate/' + jwt">
+          <v-list-tile-action>
+            <v-icon>people_outline</v-icon>
+          </v-list-tile-action>
+          <v-list-tile-content>
+            <v-list-tile-title>Impersonate</v-list-tile-title>
+          </v-list-tile-content>
+        </v-list-tile>
       </v-list>
     </v-navigation-drawer>
     <v-toolbar color="black" dark fixed app>
@@ -81,7 +89,8 @@ import { Actions } from '@/store'
 export default {
   data: () => ({
     drawer: null,
-    logoPath: tenantInfo.logoPath
+    logoPath: tenantInfo.logoPath,
+    jwt: null
   }),
   props: {
     source: String
@@ -96,6 +105,10 @@ export default {
       await this.$store.dispatch(Actions.LOGOUT)
       this.$router.go('/login')
     }
+  },
+  mounted () {
+    this.jwt = this.$store.state.user.jwt
+    console.log(this.jwt)
   }
 }
 </script>
