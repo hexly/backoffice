@@ -215,6 +215,7 @@ export default {
     member: {
       query: GET_MEMBERS,
       variables () {
+        console.log(this.$store.state.user.principal.memberId)
         return {
           input: {
             ids: [this.$store.state.user.principal.memberId]
@@ -273,7 +274,8 @@ export default {
       variables () {
         return {
           addressMemberId: {
-            memberId: this.$store.state.user.principal.memberId
+            memberId: this.$store.state.user.principal.memberId,
+            tenantId
           }
         }
       },

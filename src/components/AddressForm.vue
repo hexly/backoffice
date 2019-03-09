@@ -59,6 +59,8 @@
 <script>
 import { ADDRESS_BY_MEMBER_ID, UPDATE_ADDRESS } from '@/graphql/Address.js'
 
+const tenantId = ~~process.env.VUE_APP_TENANT_ID
+
 export default {
   name: 'AddressForm',
   data () {
@@ -88,7 +90,8 @@ export default {
       variables () {
         return {
           addressMemberId: {
-            memberId: this.$store.state.user.principal.memberId
+            memberId: this.$store.state.user.principal.memberId,
+            tenantId
           }
         }
       },
