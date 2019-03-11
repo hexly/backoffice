@@ -62,11 +62,14 @@
       <v-spacer></v-spacer>
       <v-toolbar-items>
         <v-menu offset-y>
-          <v-btn flat slot="activator">{{displayName}}</v-btn>
+          <v-btn flat slot="activator">{{user.isImpersonating ? impersonationPrefix + user.principal.member.displayName : user.principal.member.displayName}}</v-btn>
           <v-list style="cursor: pointer;">
             <!-- <v-list-tile>
               <v-list-tile-title>Settings</v-list-tile-title>
             </v-list-tile>-->
+            <v-list-tile v-if="user.isImpersonating">
+              <v-list-tile-title @click="impersonationReturn">Return to {{user.previousPrincipal.member.displayName}}</v-list-tile-title>
+            </v-list-tile>
             <v-list-tile>
               <v-list-tile-title @click="logout">Log Out</v-list-tile-title>
             </v-list-tile>
@@ -85,9 +88,14 @@
 <script>
 import tenantInfo from '@/tenant.js'
 import { Actions } from '@/store'
+import { UserMutations } from '@/stores/UserStore'
+import { mapState, mapMutations } from 'vuex'
+
+const impersonationPrefix = 'Impersonation of '
 
 export default {
   data: () => ({
+    impersonationPrefix,
     drawer: null,
     logoPath: tenantInfo.logoPath,
     jwt: null
@@ -96,19 +104,19 @@ export default {
     source: String
   },
   computed: {
-    displayName() {
-      return this.$store.getters.displayName
-    }
+    ...mapState({
+      user: state => state.user
+    })
   },
   methods: {
     async logout() {
       await this.$store.dispatch(Actions.LOGOUT)
       this.$router.go('/login')
-    }
+    },
+    ...mapMutations([UserMutations.IMPERSONATION_RETURN])
   },
   mounted () {
     this.jwt = this.$store.state.user.jwt
-    console.log(this.jwt)
   }
 }
 </script>

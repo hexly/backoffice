@@ -34,7 +34,8 @@
 <script>
 
 import gql from 'graphql-tag'
-import { UserActions, UserMutations } from '@/stores/UserStore'
+import { UserMutations } from '@/stores/UserStore'
+import { mapMutations, mapState } from 'vuex'
 
 const IMPERSONATE_MUTATION = gql`
 mutation Impersonate($input: IamImpersonationRequest!) {
@@ -58,14 +59,18 @@ export default {
   name: 'ImpersonatePrompt',
   data () {
     return {
+      ...mapState({
+        user: state => state.user
+      }),
       locked: false,
       form: {
-        token: this.$route.params.token || '',
+        token: this.$route.params.token,
         pin: ''
       }
     }
   },
   methods: {
+    ...mapMutations([UserMutations.SET_JWT, UserMutations.SET_PRINCIPAL, UserMutations.TOGGLE_IMPERSONATION]),
     async onSubmit () {
       this.locked = true
       const { token, pin: temporaryPin } = this.form
@@ -91,8 +96,9 @@ export default {
         //   tenantId
         // }
 
-        this.$store.commit(UserMutations.SET_JWT, jwtToken)
-        this.$store.commit(UserMutations.SET_PRINCIPAL, principal)
+        this.setJwt(jwtToken)
+        this.setPrincipal(principal)
+        this.toggleImpersonation()
         // await this.$store.dispatch(UserActions.LOGIN_SUCCESS, legacy)
         this.$router.push('/dashboard')
       } catch (err) {
