@@ -176,7 +176,6 @@ export default {
     CompPlanLevel
   },
   data: () => ({
-    console,
     ranks: {
       0: { name: 'Unqualified', color: 'FFFFFF' },
       1: { name: 'Zen Ambassador', color: 'E53A37' },
