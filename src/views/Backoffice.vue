@@ -116,7 +116,6 @@ export default {
     ...mapMutations([UserMutations.IMPERSONATION_RETURN])
   },
   mounted () {
-    console.log(this.$store)
     this.jwt = this.$store.state.user.jwt
   }
 }
