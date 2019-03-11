@@ -46,7 +46,7 @@
             <v-list-tile-title>Team</v-list-tile-title>
           </v-list-tile-content>
         </v-list-tile>
-        <v-list-tile :to="'/impersonate/' + jwt">
+        <v-list-tile v-if="!user.isImpersonating" :to="'/impersonate/' + jwt">
           <v-list-tile-action>
             <v-icon>people_outline</v-icon>
           </v-list-tile-action>
@@ -68,9 +68,9 @@
               <v-list-tile-title>Settings</v-list-tile-title>
             </v-list-tile>-->
             <v-list-tile v-if="user.isImpersonating">
-              <v-list-tile-title @click="impersonationReturn">Return to {{user.previousPrincipal.member.displayName}}</v-list-tile-title>
+              <v-list-tile-title @click="impersonationReturn">End Impersonation</v-list-tile-title>
             </v-list-tile>
-            <v-list-tile>
+            <v-list-tile v-if="!user.isImpersonating">
               <v-list-tile-title @click="logout">Log Out</v-list-tile-title>
             </v-list-tile>
           </v-list>
@@ -91,7 +91,7 @@ import { Actions } from '@/store'
 import { UserMutations } from '@/stores/UserStore'
 import { mapState, mapMutations } from 'vuex'
 
-const impersonationPrefix = 'Impersonation of '
+const impersonationPrefix = 'Impersonating '
 
 export default {
   data: () => ({
