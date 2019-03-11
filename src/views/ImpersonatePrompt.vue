@@ -70,7 +70,7 @@ export default {
     }
   },
   methods: {
-    ...mapMutations([UserMutations.SET_JWT, UserMutations.SET_PRINCIPAL]),
+    ...mapMutations([UserMutations.SET_JWT, UserMutations.SET_PRINCIPAL, UserMutations.TOGGLE_IMPERSONATION]),
     async onSubmit () {
       this.locked = true
       const { token, pin: temporaryPin } = this.form
@@ -82,8 +82,6 @@ export default {
           }
         })
         const { principal, token: jwtToken } = result.data.iamImpersonate
-
-        console.log({principal}, {result})
 
         // const { member, memberId, username, identityId, permissionIds } = principal
         // const { displayName, tenantId } = member
@@ -100,7 +98,7 @@ export default {
 
         this.setJwt(jwtToken)
         this.setPrincipal(principal)
-        console.log(this.$store.state)
+        this.toggleImpersonation()
         // await this.$store.dispatch(UserActions.LOGIN_SUCCESS, legacy)
         this.$router.push('/dashboard')
       } catch (err) {

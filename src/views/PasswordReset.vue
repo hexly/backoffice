@@ -67,7 +67,7 @@ export default {
         await this.$store.dispatch(ClaimActions.RESET_PASSWORD, input)
         this.$router.push('/login')
       } else {
-        console.log('Error in form')
+        console.error('Error in form')
       }
     }
   }

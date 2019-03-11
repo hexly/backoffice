@@ -1,6 +1,6 @@
 <template>
   <div class="dashboard">
-    <h1>Welcome To Your Backoffice {{member.displayName}}!</h1>
+    <h1>Welcome To Your Backoffice {{user.principal.member.displayName}}!</h1>
     <month-selector
       :year="year"
       :month="month"
@@ -162,6 +162,8 @@ import GET_MEMBERS from '@/graphql/GetMembers.gql'
 
 import moment from 'moment'
 import { pathOr } from 'rambda'
+import { mapMutations, mapState } from 'vuex'
+import { UserMutations } from '@/stores/UserStore'
 
 const tenantId = ~~process.env.VUE_APP_TENANT_ID
 
@@ -174,6 +176,7 @@ export default {
     CompPlanLevel
   },
   data: () => ({
+    console,
     ranks: {
       0: { name: 'Unqualified', color: 'FFFFFF' },
       1: { name: 'Zen Ambassador', color: 'E53A37' },
@@ -208,14 +211,12 @@ export default {
       fourthLevel: {},
       teamSize: 0,
       totalTeamAmount: 0
-    },
-    member: {}
+    }
   }),
   apollo: {
     member: {
       query: GET_MEMBERS,
       variables () {
-        console.log(this.$store.state.user.principal.memberId)
         return {
           input: {
             ids: [this.$store.state.user.principal.memberId]
@@ -223,8 +224,7 @@ export default {
         }
       },
       update ({ members }) {
-        const member = members.nodes[0]
-        return member
+        this.memberQuery(members.nodes[0])
       }
     },
     team: {
@@ -338,14 +338,18 @@ export default {
     calculateRank (qualified) {
       const { qualified: _qualified, totalPoints } = this.team.personal
       return _qualified >= qualified && totalPoints >= 60
-    }
+    },
+    ...mapMutations([UserMutations.MEMBER_QUERY])
   },
   computed: {
+    ...mapState({
+      user: state => state.user
+    }),
     getAvatar () {
       let image =
         'http://res.cloudinary.com/hexly/image/upload/dev/1001/avatar/undefined.jpg'
-      if (this.member.profileUrl) {
-        image = this.member.profileUrl.replace(
+      if (this.user.principal.profileUrl) {
+        image = this.user.principal.profileUrl.replace(
           '/image/upload',
           '/image/upload/w_190,h_190'
         )

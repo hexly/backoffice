@@ -9,6 +9,8 @@ const {
   VUE_APP_LANE
 } = process.env
 
+console.log({UserStore})
+
 Vue.use(Vuex)
 
 export const Mutations = {
