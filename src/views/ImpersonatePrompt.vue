@@ -64,7 +64,7 @@ export default {
       }),
       locked: false,
       form: {
-        token: this.$route.params.token,
+        token: this.$route.params.token || '',
         pin: ''
       }
     }
