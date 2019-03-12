@@ -21,6 +21,7 @@
             </v-toolbar>
             <v-card-text>
               <router-view />
+              <ImpersonatePrompt />
             </v-card-text>
           </v-card>
         </v-flex>
@@ -30,8 +31,13 @@
 </template>
 
 <script>
+import ImpersonatePrompt from '@/views/ImpersonatePrompt.vue'
+
 export default {
-  name: 'ImpersonateFrame'
+  name: 'ImpersonateFrame',
+  components: {
+    ImpersonatePrompt
+  }
 }
 </script>
 
