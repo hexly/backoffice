@@ -11,7 +11,6 @@ import Assets from './views/Assets.vue'
 import Team from './views/Team.vue'
 import Sales from './views/Sales.vue'
 import Impersonate from './views/Impersonate.vue'
-import ImpersonatePrompt from './views/ImpersonatePrompt.vue'
 import Redirect from './views/Redirect.vue'
 import Zendesk from './zendesk/Zendesk.vue'
 import ZendeskRoot from './zendesk/root.vue'
@@ -22,17 +21,9 @@ export default new Router({
   mode: 'history',
   routes: [
     {
-      path: '/impersonate',
+      path: '/impersonate/:token',
       name: 'impersonate',
-      component: Impersonate,
-      children: [
-        {
-          path: ':token',
-          alias: '',
-          name: 'token',
-          component: ImpersonatePrompt
-        }
-      ]
+      component: Impersonate
     },
     {
       path: '/login',

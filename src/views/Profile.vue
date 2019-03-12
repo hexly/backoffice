@@ -225,7 +225,7 @@ export default {
         this.isFalse = false
         this.isUploading = false
         this.isSaving = false
-        console.log('error uploading file', { err })
+        console.error('error uploading file', { err })
         this.snackbarMsg = 'Error uploading file'
         this.snackBarColor = ERROR_COLOR
         this.snackbar = true
@@ -252,7 +252,7 @@ export default {
             }
           })
         } catch (err) {
-          console.log('error checking slugs', { err })
+          console.error('error checking slugs', { err })
           this.snackbarMsg = 'Unable to save profile data'
           this.snackBarColor = ERROR_COLOR
           this.snackbar = true
@@ -298,7 +298,7 @@ export default {
                 }
               })
             } catch (err) {
-              console.log({ err })
+              console.error({ err })
               this.saving = false
               this.snackbarMsg = 'Profile update was unsuccessful'
               this.snackBarColor = ERROR_COLOR
@@ -345,7 +345,7 @@ export default {
 
           const isInvalid = /[^a-z0-9_]/gi.test(this.editMember.slug)
           if (isInvalid) {
-            console.log('invalid slug found')
+            console.error('invalid slug found')
             this.originalSlug = this.editMember.slug = null
           } else {
             this.originalSlug = this.editMember.slug
