@@ -11,20 +11,45 @@ export const UserMutations = {
   SET_JWT: 'setJwt',
   AUTH_STATUS: 'authStatus',
   LOGIN_ERROR: 'setLoginError',
-  SET_PRINCIPAL: 'setPrincipal'
+  SET_PRINCIPAL: 'setPrincipal',
+  TOGGLE_IMPERSONATION: 'toggleImpersonation',
+  IMPERSONATION_RETURN: 'impersonationReturn',
+  MEMBER_QUERY: 'memberQuery'
 }
 
 export const UserStore = {
   state: {
     jwt: null,
+    previousJwt: null,
     loginError: null,
-    principal: null
+    principal: null,
+    isImpersonating: false,
+    previousPrincipal: null
   },
   mutations: {
-    [UserMutations.SET_JWT]: (state, jwt) => (state.jwt = jwt),
+    [UserMutations.SET_JWT]: (state, jwt) => {
+      state.previousJwt = state.jwt
+      state.jwt = jwt
+    },
     [UserMutations.LOGIN_ERROR]: (state, err) => (state.loginError = err),
     [UserMutations.SET_PRINCIPAL]: (state, principal) => {
+      state.previousPrincipal = state.principal
       state.principal = principal
+    },
+    [UserMutations.TOGGLE_IMPERSONATION]: (state) => {
+      state.isImpersonating = !state.isImpersonating
+    },
+    [UserMutations.IMPERSONATION_RETURN]: (state) => {
+      state.principal = state.previousPrincipal
+      state.jwt = state.previousJwt
+      state.isImpersonating = false
+      state.previousPrincipal = state.previousJwt = null
+    },
+    [UserMutations.MEMBER_QUERY]: (state, member) => {
+      state.principal = {
+        ...state.principal,
+        ...member
+      }
     }
   },
   actions: {

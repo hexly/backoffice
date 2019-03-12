@@ -38,13 +38,14 @@
         :rules="digitsOnlyRule"
         required
       ></v-text-field>
-      <v-text-field
+      <v-select
         label="Country"
         name="Country"
         v-model="address.country"
         :rules="requiredRule"
         required
-      ></v-text-field>
+        :items="SELECT_ITEMS"
+      ></v-select>
       <v-btn
         :disabled="saving"
         :loading="saving"
@@ -57,10 +58,14 @@
 
 <script>
 import { ADDRESS_BY_MEMBER_ID, UPDATE_ADDRESS } from '@/graphql/Address.js'
+
+const tenantId = ~~process.env.VUE_APP_TENANT_ID
+
 export default {
   name: 'AddressForm',
   data () {
     return {
+      SELECT_ITEMS: [{ text: 'United States of America', value: 'US' }],
       address: {
         id: null,
         name: null,
@@ -85,7 +90,8 @@ export default {
       variables () {
         return {
           addressMemberId: {
-            memberId: this.$store.state.user.principal.memberId
+            memberId: this.$store.state.user.principal.memberId,
+            tenantId
           }
         }
       },
@@ -93,7 +99,7 @@ export default {
         if (addressByMemberOrTenant) {
           return Object.assign({}, addressByMemberOrTenant[0])
         } else {
-          console.log('No address info found')
+          console.error('No address info found')
         }
       }
     }
@@ -114,7 +120,7 @@ export default {
                 street: this.address.street,
                 city: this.address.city,
                 province: this.address.province,
-                country: this.address.country,
+                country: this.address.country || 'US',
                 postalCode: this.address.postalCode,
                 street2: this.address.street2 || '',
                 memberId: this.$store.state.user.principal.memberId
@@ -127,7 +133,7 @@ export default {
             }
           })
         } catch (err) {
-          console.log({ err })
+          console.error({ err })
           this.saving = false
           this.$emit(
             'addressSnackBarEmitError',

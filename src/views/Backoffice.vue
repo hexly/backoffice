@@ -46,6 +46,14 @@
             <v-list-tile-title>Team</v-list-tile-title>
           </v-list-tile-content>
         </v-list-tile>
+        <v-list-tile v-if="!user.isImpersonating" :to="'/impersonate/' + jwt">
+          <v-list-tile-action>
+            <v-icon>people_outline</v-icon>
+          </v-list-tile-action>
+          <v-list-tile-content>
+            <v-list-tile-title>Impersonate</v-list-tile-title>
+          </v-list-tile-content>
+        </v-list-tile>
       </v-list>
     </v-navigation-drawer>
     <v-toolbar color="black" dark fixed app>
@@ -54,12 +62,15 @@
       <v-spacer></v-spacer>
       <v-toolbar-items>
         <v-menu offset-y>
-          <v-btn flat slot="activator">{{displayName}}</v-btn>
+          <v-btn flat slot="activator">{{user.isImpersonating ? impersonationPrefix + user.principal.member.displayName : user.principal.member.displayName}}</v-btn>
           <v-list style="cursor: pointer;">
             <!-- <v-list-tile>
               <v-list-tile-title>Settings</v-list-tile-title>
             </v-list-tile>-->
-            <v-list-tile>
+            <v-list-tile v-if="user.isImpersonating">
+              <v-list-tile-title @click="impersonationReturn">End Impersonation</v-list-tile-title>
+            </v-list-tile>
+            <v-list-tile v-if="!user.isImpersonating">
               <v-list-tile-title @click="logout">Log Out</v-list-tile-title>
             </v-list-tile>
           </v-list>
@@ -77,25 +88,35 @@
 <script>
 import tenantInfo from '@/tenant.js'
 import { Actions } from '@/store'
+import { UserMutations } from '@/stores/UserStore'
+import { mapState, mapMutations } from 'vuex'
+
+const impersonationPrefix = 'Impersonating '
 
 export default {
   data: () => ({
+    impersonationPrefix,
     drawer: null,
-    logoPath: tenantInfo.logoPath
+    logoPath: tenantInfo.logoPath,
+    jwt: null
   }),
   props: {
     source: String
   },
   computed: {
-    displayName() {
-      return this.$store.getters.displayName
-    }
+    ...mapState({
+      user: state => state.user
+    })
   },
   methods: {
     async logout() {
       await this.$store.dispatch(Actions.LOGOUT)
       this.$router.go('/login')
-    }
+    },
+    ...mapMutations([UserMutations.IMPERSONATION_RETURN])
+  },
+  mounted () {
+    this.jwt = this.$store.state.user.jwt
   }
 }
 </script>
