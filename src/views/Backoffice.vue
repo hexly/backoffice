@@ -60,7 +60,7 @@
               <v-list-tile-title>Settings</v-list-tile-title>
             </v-list-tile>-->
             <v-list-tile v-if="user.isImpersonating">
-              <v-list-tile-title @click="impersonationReturn">End Impersonation</v-list-tile-title>
+              <v-list-tile-title @click="logout">End Impersonation</v-list-tile-title>
             </v-list-tile>
             <v-list-tile v-if="!user.isImpersonating">
               <v-list-tile-title @click="logout">Log Out</v-list-tile-title>
@@ -80,8 +80,7 @@
 <script>
 import tenantInfo from '@/tenant.js'
 import { Actions } from '@/store'
-import { UserMutations } from '@/stores/UserStore'
-import { mapState, mapMutations } from 'vuex'
+import { mapState } from 'vuex'
 
 const impersonationPrefix = 'Impersonating '
 
@@ -104,8 +103,7 @@ export default {
     async logout() {
       await this.$store.dispatch(Actions.LOGOUT)
       this.$router.go('/login')
-    },
-    ...mapMutations([UserMutations.IMPERSONATION_RETURN])
+    }
   },
   mounted () {
     this.jwt = this.$store.state.user.jwt
