@@ -21,7 +21,8 @@ export const UserStore = {
     jwt: null,
     loginError: null,
     principal: null,
-    isImpersonating: false
+    isImpersonating: false,
+    version: 2
   },
   mutations: {
     [UserMutations.SET_JWT]: (state, jwt) => {
@@ -31,7 +32,7 @@ export const UserStore = {
     [UserMutations.SET_PRINCIPAL]: (state, principal) => {
       state.principal = principal
     },
-    [UserMutations.TOGGLE_IMPERSONATION]: (state) => {
+    [UserMutations.TOGGLE_IMPERSONATION]: state => {
       state.isImpersonating = !state.isImpersonating
     },
     [UserMutations.MEMBER_QUERY]: (state, member) => {

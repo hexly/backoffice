@@ -53,10 +53,16 @@ const DejaVue = {
       if (Array.isArray(setup)) {
         setup.forEach(s => s(hydratedState))
       }
-      if (typeof setup === 'function') {
-        setup(hydratedState)
+      if (
+        hydratedState &&
+        hydratedState.user &&
+        hydratedState.user.version >= 2
+      ) {
+        if (typeof setup === 'function') {
+          setup(hydratedState)
+        }
+        state = Object.assign(state, hydratedState)
       }
-      state = Object.assign(state, hydratedState)
     }
   }
 }
