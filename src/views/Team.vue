@@ -69,8 +69,6 @@ import MonthSelector from '@/components/MonthSelector.vue'
 import TeamCard from '../components/TeamCard.vue'
 import getTeamByMemberId from '@/graphql/GetTeam'
 import MONTHLY_STATS_QUERY from '@/graphql/GetMonthlyStats.gql'
-import find from 'rambda/lib/find'
-import defaultTo from 'rambda/lib/defaultTo'
 
 const tenantId = ~~process.env.VUE_APP_TENANT_ID
 
@@ -103,10 +101,7 @@ export default {
       this.currentId = user.memberId || user.id
     },
     getStats (target) {
-      return defaultTo(
-        {},
-        find(_ => _.sellerId === target.id, this.stats)
-      )
+      return this.stats.find(_ => _ && target && _.sellerId === target.id) || {}
     },
     dateChanged ({ date }) {
       const dateSplit = date.split('-')
