@@ -1,5 +1,5 @@
-query Slugs($input: SlugsInput!) {
-  membersBySlugs(input: $input) {
+query Slugs($input: SlugInput!) {
+  findMemberBySlug(input: $input) {
     id
   }
 }
