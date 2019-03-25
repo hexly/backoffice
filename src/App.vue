@@ -3,6 +3,14 @@
     id="backoffice"
     :class="'tenant-' + tenant"
   >
+    <v-snackbar
+      :timeout="0"
+      top
+      v-model="newVersionAvailable"
+    >
+      New Version Available!
+      <v-btn @click="update">Update</v-btn>
+    </v-snackbar>
     <router-view />
   </v-app>
 </template>
@@ -40,6 +48,9 @@ export default {
 
         this.appVersionInterval = setTimeout(this.checkAppVersion, INTERVAL_VAL) // Check for the app version every 30 minutes
       }
+    },
+    update() {
+      location.reload(true)
     }
   }
 }
