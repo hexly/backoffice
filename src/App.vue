@@ -5,11 +5,12 @@
   >
     <v-snackbar
       :timeout="0"
-      top
+      bottom
+      right
       v-model="newVersionAvailable"
     >
       New Version Available!
-      <v-btn @click="update">Update</v-btn>
+      <v-btn flat @click="update">Click to update</v-btn>
     </v-snackbar>
     <router-view />
   </v-app>
@@ -24,7 +25,8 @@ const INTERVAL_VAL = 30 * MIN_IN_SECONDS * SECONDS_IN_MS // 30 MIN
 export default {
   data () {
     return {
-      tenant: process.env.VUE_APP_TENANT_ID
+      tenant: process.env.VUE_APP_TENANT_ID,
+      newVersionAvailable: false
     }
   },
   mounted () {
