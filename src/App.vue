@@ -3,6 +3,15 @@
     id="backoffice"
     :class="'tenant-' + tenant"
   >
+    <v-snackbar
+      :timeout="0"
+      bottom
+      right
+      v-model="newVersionAvailable"
+    >
+      New Version Available!
+      <v-btn flat @click="update">Click to update</v-btn>
+    </v-snackbar>
     <router-view />
   </v-app>
 </template>
@@ -16,7 +25,8 @@ const INTERVAL_VAL = 30 * MIN_IN_SECONDS * SECONDS_IN_MS // 30 MIN
 export default {
   data () {
     return {
-      tenant: process.env.VUE_APP_TENANT_ID
+      tenant: process.env.VUE_APP_TENANT_ID,
+      newVersionAvailable: false
     }
   },
   mounted () {
@@ -32,7 +42,6 @@ export default {
       const current = moment(currentVersion)
       const newVersion = moment(json.buildTime)
       if (current.isValid() && current.isBefore(newVersion)) {
-        console.warn('version outdated')
         this.newVersionAvailable = true
         clearInterval(this.appVersionInterval)
       } else {
@@ -40,6 +49,9 @@ export default {
 
         this.appVersionInterval = setTimeout(this.checkAppVersion, INTERVAL_VAL) // Check for the app version every 30 minutes
       }
+    },
+    update() {
+      location.reload(true)
     }
   }
 }
