@@ -32,7 +32,6 @@ export default {
       const current = moment(currentVersion)
       const newVersion = moment(json.buildTime)
       if (current.isValid() && current.isBefore(newVersion)) {
-        console.warn('version outdated')
         this.newVersionAvailable = true
         clearInterval(this.appVersionInterval)
       } else {

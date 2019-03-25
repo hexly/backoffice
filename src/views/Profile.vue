@@ -247,7 +247,7 @@ export default {
             variables: {
               input: {
                 tenantId: this.tenantId,
-                slugs: [this.editMember.slug]
+                slug: this.editMember.slug
               }
             }
           })
@@ -259,9 +259,9 @@ export default {
         }
 
         if (response) {
-          const { membersBySlugs = [] } = response.data
+          const { findMemberBySlug } = response.data
           this.slugErrors = []
-          if (membersBySlugs.find(e => e.id !== this.memberId)) {
+          if (findMemberBySlug.id !== this.memberId) {
             this.slugIsUnique = false
             this.snackBarColor = ERROR_COLOR
             this.snackbarMsg = 'Chosen store name is unavailable!'
