@@ -11,6 +11,19 @@ const {
 
 Vue.use(Vuex)
 
+axios.interceptors.request.use(config => {
+  // We want to be pulling this from the source of all truth.
+  // We dont want to just get the jwt on startup
+  const dehydratedState = localStorage.getItem('store')
+  if (dehydratedState && config.url && config.url.indexOf(VUE_APP_API_ENDPOINT) > -1) {
+    const hydratedState = JSON.parse(dehydratedState)
+    config.headers = config.headers || {}
+    config.headers.common = config.headers.common || {}
+    config.headers.common['Authorization'] = `Bearer ${hydratedState.user.jwt}`
+  }
+  return config
+})
+
 export const Mutations = {
   INIT: 'storeInit'
 }
@@ -18,18 +31,6 @@ export const Mutations = {
 export const Actions = {
   LOGOUT: 'logout',
   AVATAR_UPLOAD: 'avatarUpload'
-}
-
-const axiosSetup = hydratedState => {
-  const jwt = hydratedState && hydratedState.user && hydratedState.user.jwt
-  axios.interceptors.request.use(config => {
-    if (jwt && config.url && config.url.indexOf(VUE_APP_API_ENDPOINT) > -1) {
-      config.headers = config.headers || {}
-      config.headers.common = config.headers.common || {}
-      config.headers.common['Authorization'] = `Bearer ${jwt}`
-    }
-    return config
-  })
 }
 
 const verifyPrincipal = async hydratedState => {
@@ -97,6 +98,6 @@ export default new Vuex.Store({
     }
   },
   mutations: {
-    [Mutations.INIT]: DejaVue.mutation('store', [axiosSetup, verifyPrincipal])
+    [Mutations.INIT]: DejaVue.mutation('store', [verifyPrincipal])
   }
 })
