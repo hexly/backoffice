@@ -1,6 +1,9 @@
 <template>
   <v-content>
     <v-container fluid fill-height>
+      <v-alert type="warning" v-if="error">
+        {{error}}
+      </v-alert>
       <v-layout align-center justify-center>
         <v-flex xs12 sm8 md8>
           <v-card class="elevation-12">
@@ -80,6 +83,20 @@
                     item-text="name"
                     item-value="id"
                   />
+                  <v-flex xs12>
+                    <v-checkbox v-model="agreement.affiliate" :rules="requiredRule">
+                      <div slot="label">
+                        I agree to the terms in the <a @click="accept('affiliate')" target="_blank" href="/Consultant_Agreement_(March_2018).pdf">Independent Contractor Agreement</a>
+                      </div>
+                    </v-checkbox>
+                  </v-flex>
+                  <v-flex xs12>
+                    <v-checkbox v-model="agreement.policies" :rules="requiredRule">
+                      <div slot="label">
+                        I agree to all the <a @click="accept('policies')" target="_blank" href="/Policies_and_Procedures_(April_2018).pdf">Policies and Procedures</a>
+                      </div>
+                    </v-checkbox>
+                  </v-flex>
                   <v-card-actions>
                     <v-spacer></v-spacer>
                     <v-btn type="submit" color="deep-purple" dark>Create Account</v-btn>
@@ -95,9 +112,14 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex'
 import tenantInfo from '@/tenant.js'
 import { ClaimActions } from '@/stores/ClaimStore'
+import { UserMutations } from '@/stores/UserStore'
+import { Actions } from '@/Members/Store'
 import getLocalSettings from '@/graphql/GetLocalSettings'
+import { encrypt } from '@/utils/EncryptionService'
+import moment from 'moment'
 
 export default {
   data () {
@@ -117,6 +139,14 @@ export default {
         v => !!v || 'Field is required',
         v => (v && v.length > 8) || 'Password must be more than 8 characters'
       ],
+      taxInfo: {
+        encrypted: null,
+        entityName: null
+      },
+      agreement: {
+        affiliate: false,
+        policies: false
+      },
       editMember: {
         contactEmail: null,
         displayName: null,
@@ -156,24 +186,55 @@ export default {
     settings: getLocalSettings()
   },
   methods: {
+    ...UserMutations({
+      setJwt: UserMutations.SET_JWT
+    }),
+    ...mapActions({
+      createAccount: ClaimActions.CREATE_ACCOUNT,
+      upsertAttribute: Actions.SET_ATTRIBUTE
+    }),
+    accept(value) {
+      this[value] = moment.utc()
+    },
     async onSubmit () {
       if (this.$refs.claim.validate()) {
-        const { token } = this.$route.params
-        await this.$store.dispatch(ClaimActions.CREATE_ACCOUNT, {
-          contactEmail: this.editMember.contactEmail,
-          displayName: this.editMember.displayName,
-          languageId: this.editMember.languageId,
-          legalLocaleId: this.editMember.legalLocaleId,
-          memberId: this.editMember.memberId,
-          name: this.editMember.name,
-          password: this.editMember.password,
-          slug: this.editMember.slug,
-          timezoneId: this.editMember.timezoneId,
-          username: this.editMember.username,
-          simpleClaim: false,
-          token
-        })
-        this.$router.push('/login')
+        this.loading = true
+        // Encrypt info
+        try {
+          const { data } = await encrypt('Getting Ip Address')
+          const ipAddress = data.ip
+          const { token } = this.$route.params
+          const { consumeOneTimeToken } = await this.createAccount({
+            contactEmail: this.editMember.contactEmail,
+            displayName: this.editMember.displayName,
+            languageId: this.editMember.languageId,
+            legalLocaleId: this.editMember.legalLocaleId,
+            memberId: this.editMember.memberId,
+            name: this.editMember.name,
+            password: this.editMember.password,
+            slug: this.editMember.slug,
+            timezoneId: this.editMember.timezoneId,
+            username: this.editMember.username,
+            simpleClaim: false,
+            token
+          })
+          if (consumeOneTimeToken && consumeOneTimeToken !== 'done') {
+            this.setJwt(consumeOneTimeToken)
+
+            this.upsertAttribute({
+              key: 'affiliate-agreement',
+              value: {
+                affiliate: this.affiliate,
+                policies: this.policies,
+                ip: ipAddress
+              }
+            })
+            this.$router.push('/login')
+          }
+        } catch (e) {
+          this.error = e
+          this.loading = false
+        }
       } else {
         console.log('Error in form')
       }

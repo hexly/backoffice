@@ -3,6 +3,8 @@ import Vuex from 'vuex'
 import axios from 'axios'
 import { UserStore } from '@/stores/UserStore'
 import { ClaimStore } from '@/stores/ClaimStore'
+import MemberStore from '@/Members/Store'
+
 const {
   VUE_APP_API_ENDPOINT = 'http://localhost:3000',
   VUE_APP_TENANT_ID,
@@ -72,7 +74,8 @@ export default new Vuex.Store({
   plugins: [DejaVue.plugin(Mutations.INIT, 'store')],
   modules: {
     user: UserStore,
-    claim: ClaimStore
+    claim: ClaimStore,
+    member: MemberStore
   },
   state: {
     locale: 'en-us'
