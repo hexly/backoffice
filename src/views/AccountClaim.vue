@@ -119,7 +119,7 @@
 import { mapActions, mapMutations } from 'vuex'
 import tenantInfo from '@/tenant.js'
 import { ClaimActions } from '@/stores/ClaimStore'
-import { UserMutations } from '@/stores/UserStore'
+import { UserMutations, UserActions } from '@/stores/UserStore'
 import { Actions } from '@/Members/Store'
 import getLocalSettings from '@/graphql/GetLocalSettings'
 import { encrypt } from '@/utils/EncryptionService'
@@ -193,7 +193,8 @@ export default {
     }),
     ...mapActions({
       createAccount: ClaimActions.CREATE_ACCOUNT,
-      upsertAttribute: Actions.SET_ATTRIBUTE
+      upsertAttribute: Actions.SET_ATTRIBUTE,
+      login: UserActions.LOGIN
     }),
     accept(value) {
       this[value] = moment.utc()
@@ -202,14 +203,11 @@ export default {
       if (this.$refs.claim.validate()) {
         this.loading = true
         // Encrypt info
-        console.log('Attempting to create user')
         try {
-          console.log('trying to create user')
           const { data } = await encrypt('Getting Ip Address')
-          console.log({ data })
           const ipAddress = data.ip
           const { token } = this.$route.params
-          const { consumeOneTimeToken } = await this.createAccount({
+          const { data: { consumeOneTimeToken } } = await this.createAccount({
             contactEmail: this.editMember.contactEmail,
             displayName: this.editMember.displayName,
             languageId: this.editMember.languageId,
@@ -225,7 +223,6 @@ export default {
           })
           if (consumeOneTimeToken && consumeOneTimeToken !== 'done') {
             this.setJwt(consumeOneTimeToken)
-
             await this.upsertAttribute({
               key: 'affiliate-agreement',
               value: {
@@ -233,6 +230,11 @@ export default {
                 policies: this.policies,
                 ip: ipAddress
               }
+            })
+            await this.login({
+              username: this.editMember.username,
+              password: this.editMember.password,
+              tenantId: ~~process.env.VUE_APP_TENANT_ID
             })
             this.$router.push('/dashboard')
           }

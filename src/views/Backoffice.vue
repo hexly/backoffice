@@ -105,7 +105,8 @@ export default {
       this.$router.go('/login')
     }
   },
-  mounted () {
+  async mounted () {
+    await this.get
     this.jwt = this.$store.state.user.jwt
   }
 }
