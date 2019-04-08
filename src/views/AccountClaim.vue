@@ -84,14 +84,18 @@
                     item-value="id"
                   />
                   <v-flex xs12>
-                    <v-checkbox v-model="agreement.affiliate" :rules="requiredRule">
+                    <v-checkbox v-model="agreement.affiliate" :rules="requiredRule" :readonly="!affiliate"
+                      :persistent-hint="!affiliate" hint="please read the agreement before agreeing"
+                    >
                       <div slot="label">
                         I agree to the terms in the <a @click="accept('affiliate')" target="_blank" href="/Consultant_Agreement_(March_2018).pdf">Independent Contractor Agreement</a>
                       </div>
                     </v-checkbox>
                   </v-flex>
                   <v-flex xs12>
-                    <v-checkbox v-model="agreement.policies" :rules="requiredRule">
+                    <v-checkbox v-model="agreement.policies" :rules="requiredRule" :readonly="!policies"
+                      :persistent-hint="!policies" hint="please read the policies and procedures before agreeing"
+                    >
                       <div slot="label">
                         I agree to all the <a @click="accept('policies')" target="_blank" href="/Policies_and_Procedures_(April_2018).pdf">Policies and Procedures</a>
                       </div>
@@ -112,7 +116,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions, mapMutations } from 'vuex'
 import tenantInfo from '@/tenant.js'
 import { ClaimActions } from '@/stores/ClaimStore'
 import { UserMutations } from '@/stores/UserStore'
@@ -139,10 +143,8 @@ export default {
         v => !!v || 'Field is required',
         v => (v && v.length > 8) || 'Password must be more than 8 characters'
       ],
-      taxInfo: {
-        encrypted: null,
-        entityName: null
-      },
+      affiliate: null,
+      policies: null,
       agreement: {
         affiliate: false,
         policies: false
@@ -186,7 +188,7 @@ export default {
     settings: getLocalSettings()
   },
   methods: {
-    ...UserMutations({
+    ...mapMutations({
       setJwt: UserMutations.SET_JWT
     }),
     ...mapActions({
@@ -200,8 +202,11 @@ export default {
       if (this.$refs.claim.validate()) {
         this.loading = true
         // Encrypt info
+        console.log('Attempting to create user')
         try {
+          console.log('trying to create user')
           const { data } = await encrypt('Getting Ip Address')
+          console.log({ data })
           const ipAddress = data.ip
           const { token } = this.$route.params
           const { consumeOneTimeToken } = await this.createAccount({
@@ -221,7 +226,7 @@ export default {
           if (consumeOneTimeToken && consumeOneTimeToken !== 'done') {
             this.setJwt(consumeOneTimeToken)
 
-            this.upsertAttribute({
+            await this.upsertAttribute({
               key: 'affiliate-agreement',
               value: {
                 affiliate: this.affiliate,
@@ -229,9 +234,10 @@ export default {
                 ip: ipAddress
               }
             })
-            this.$router.push('/login')
+            this.$router.push('/dashboard')
           }
         } catch (e) {
+          console.log({e})
           this.error = e
           this.loading = false
         }
