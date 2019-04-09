@@ -2,7 +2,8 @@ import * as Member from './Service'
 
 export const Actions = {
   ATTRIBUTE: 'memberGetAttribute',
-  SET_ATTRIBUTE: 'memberSetAttribute'
+  SET_ATTRIBUTE: 'memberSetAttribute',
+  GET_ATTRIBUTES: 'memberGetAttributes'
 }
 
 export const Mutations = {
@@ -18,8 +19,10 @@ export default {
   },
   actions: {
     [Actions.ATTRIBUTE]: (_, payload) =>
-      Member.getMemberAttributes(payload),
+      Member.getMemberAttribute(payload),
     [Actions.SET_ATTRIBUTE]: (_, payload) =>
-      Member.setMemberAttribtues(payload)
+      Member.setMemberAttributes(payload),
+    [Actions.GET_ATTRIBUTES]: (_, payload) =>
+      Member.getMemberAttributes(payload)
   }
 }
