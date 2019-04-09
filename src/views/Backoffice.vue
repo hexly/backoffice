@@ -137,7 +137,6 @@ export default {
     }
   },
   async mounted () {
-    console.log(this.user)
     const { data } = await this.getAttributes({
       key: ['affiliate-agreement', 'entity-details'],
       accessMode: 'ALL',
