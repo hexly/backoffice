@@ -1,40 +1,71 @@
 <template>
   <div class="profile">
-    <h1>Your Profile</h1>
     <v-container
       grid-list-md
       text-xs-center
     >
-      <v-layout
-        row
-        wrap
+      <v-tabs
+        centered
+        color="green"
+        dark
+        icons-and-text
       >
-        <v-flex xs6>
-          <div class="mx-auto">
-            <h2>Your Information</h2>
-          </div>
-          <v-tabs
-            centered
-            color="green"
-            dark
-            icons-and-text
+        <v-tabs-slider color="purple"></v-tabs-slider>
+
+        <v-tab to="#profile">Profile
+          <v-icon>portrait</v-icon>
+        </v-tab>
+
+        <v-tab to="#address">Address
+          <v-badge
+            v-model="alert.address"
+            left
+            color="red"
           >
-            <v-tabs-slider color="purple"></v-tabs-slider>
+            <template slot="badge">
+              <span>!</span>
+            </template>
+            <v-icon>house</v-icon>
+          </v-badge>
+        </v-tab>
 
-            <v-tab to="#profile">Profile
-              <v-icon>portrait</v-icon>
-            </v-tab>
+        <v-tab to="#legal">Legal
+          <v-icon>business</v-icon>
+        </v-tab>
 
-            <v-tab to="#address">Address
-              <v-badge v-model="alert.address" left color="red">
-                <template slot="badge">
-                  <span>!</span>
-                </template>
-                <v-icon>house</v-icon>
-              </v-badge>
-            </v-tab>
-
-            <v-tab-item value="profile">
+        <v-tab-item value="profile">
+          <v-layout
+            row
+            wrap
+          >
+            <v-flex
+              xs12
+              sm6
+            >
+              <div class="mx-auto">
+                <img
+                  class="image"
+                  :src="getAvatar"
+                >
+                <form
+                  enctype="multipart/form-data"
+                  novalidate
+                >
+                  <input
+                    type="file"
+                    name="avatar"
+                    :disabled="isSaving"
+                    @change="filesChange($event.target.files)"
+                    accept="image/*"
+                  >
+                  <div v-if="isUploading">Uploading... please wait</div>
+                </form>
+              </div>
+            </v-flex>
+            <v-flex
+              xs12
+              sm6
+            >
               <PersonalForm
                 ref="personal"
                 :modal="modal"
@@ -47,41 +78,21 @@
                 :slugChanged="slugChanged"
                 :saving="saving"
               />
-            </v-tab-item>
+            </v-flex>
+          </v-layout>
+        </v-tab-item>
 
-            <v-tab-item value="address">
-              <h2>Your Address</h2>
-              <AddressForm
-                @addressSnackBarEmitSuccess="addressSnackBarEmitSuccess"
-                @addressSnackBarEmitError="addressSnackBarEmitError"
-                @hasAddress="checkAlert"
-              />
-            </v-tab-item>
-          </v-tabs>
-        </v-flex>
-        <v-flex xs6>
-          <div class="mx-auto">
-            <h2>Profile Image</h2>
-            <img
-              class="image"
-              :src="getAvatar"
-            >
-            <form
-              enctype="multipart/form-data"
-              novalidate
-            >
-              <input
-                type="file"
-                name="avatar"
-                :disabled="isSaving"
-                @change="filesChange($event.target.files)"
-                accept="image/*"
-              >
-              <div v-if="isUploading">Uploading... please wait</div>
-            </form>
-          </div>
-        </v-flex>
-      </v-layout>
+        <v-tab-item value="address">
+          <AddressForm
+            @addressSnackBarEmitSuccess="addressSnackBarEmitSuccess"
+            @addressSnackBarEmitError="addressSnackBarEmitError"
+            @hasAddress="checkAlert"
+          />
+        </v-tab-item>
+        <v-tab-item value="legal">
+          <LegalForm :value="legal" />
+        </v-tab-item>
+      </v-tabs>
     </v-container>
     <v-snackbar
       :timeout="6000"
@@ -103,6 +114,7 @@
 
 <script>
 import PersonalForm from '@/profile/Personal.vue'
+import LegalForm from '@/profile/Legal.vue'
 import AddressForm from '@/components/AddressForm.vue'
 import GET_MEMBERS from '@/graphql/GetMembers.gql'
 import UPDATE_PROFILE from '@/graphql/MemberPartialUpdate.gql'
@@ -117,7 +129,8 @@ const SUCCESS_COLOR = 'purple'
 export default {
   components: {
     PersonalForm,
-    AddressForm
+    AddressForm,
+    LegalForm
   },
   data: () => ({
     modal: false,
@@ -145,6 +158,22 @@ export default {
       birthdate: '',
       formattedDate: ''
     },
+    legal: {
+      agreement: {
+        affiliate: false,
+        policies: false
+      },
+      clicked: {
+        affiliate: null,
+        policies: null
+      },
+      initial: {
+        affiliate: null,
+        policies: null,
+        entity: null
+      },
+      entity: {}
+    },
     originalSlug: undefined,
     saving: false,
     alert: {
@@ -152,7 +181,7 @@ export default {
     }
   }),
   methods: {
-    checkAlert(value) {
+    checkAlert (value) {
       this.alert[value.type] = !value.isSet
     },
     formatDate: date => {
