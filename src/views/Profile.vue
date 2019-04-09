@@ -26,7 +26,12 @@
             </v-tab>
 
             <v-tab to="#address">Address
-              <v-icon>house</v-icon>
+              <v-badge v-model="alert.address" left color="red">
+                <template slot="badge">
+                  <span>!</span>
+                </template>
+                <v-icon>house</v-icon>
+              </v-badge>
             </v-tab>
 
             <v-tab-item value="profile">
@@ -109,6 +114,7 @@
               <AddressForm
                 @addressSnackBarEmitSuccess="addressSnackBarEmitSuccess"
                 @addressSnackBarEmitError="addressSnackBarEmitError"
+                @hasAddress="checkAlert"
               />
             </v-tab-item>
           </v-tabs>
@@ -198,9 +204,15 @@ export default {
       formattedDate: ''
     },
     originalSlug: undefined,
-    saving: false
+    saving: false,
+    alert: {
+      address: false
+    }
   }),
   methods: {
+    checkAlert(value) {
+      this.alert[value.type] = !value.isSet
+    },
     formatDate: date => {
       if (!date) { return null }
 

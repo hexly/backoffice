@@ -21,3 +21,14 @@ export const SET_MEMBER_ATTRIBUTE = gql`
     }
   }
 `
+
+export const GET_MEMBER_ATTRIBUTES = gql`
+  query getMemberAttributes($input: GetMemberAttributesInput!) {
+    getMemberAttributes(input: $input) {
+      key
+      value
+      memberId
+      id
+    }
+  }
+`

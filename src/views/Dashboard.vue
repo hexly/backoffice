@@ -119,30 +119,6 @@
         </v-flex>
       </v-layout>
     </v-container>
-    <v-dialog
-      v-model="showAddressDialog"
-      max-width="290"
-      persistent
-    >
-      <v-card>
-        <v-card-title class="headline">We need your address</v-card-title>
-
-        <v-card-text>
-          Welcome Back to your backoffice. Since last time you were here we've added the ability to input your address. Please go to your profile page and update your address!
-        </v-card-text>
-
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn
-            color="green darken-1"
-            flat="flat"
-            @click="$router.push('/profile#address')"
-          >
-            Profile Page
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
   </div>
 </template>
 
@@ -164,6 +140,7 @@ import moment from 'moment'
 import { pathOr } from 'rambda'
 import { mapMutations, mapState } from 'vuex'
 import { UserMutations } from '@/stores/UserStore'
+import { Mutations } from '@/store'
 
 const tenantId = ~~process.env.VUE_APP_TENANT_ID
 
@@ -198,7 +175,6 @@ export default {
     MonthlyFrontlineLeaders: [],
     MonthlySalesLeaders: [],
     address: null,
-    showAddressDialog: false,
     team: {
       personal: {
         qualified: 0,
@@ -280,9 +256,9 @@ export default {
       },
       update ({ addressByMemberOrTenant }) {
         const a = addressByMemberOrTenant[0]
-        this.showAddressDialog = false
+        this.setGate(false)
         if (!a) {
-          this.showAddressDialog = true
+          this.setGate(true)
         }
         return Object.assign({}, a)
       },
@@ -338,7 +314,7 @@ export default {
       const { qualified: _qualified, totalPoints } = this.team.personal
       return _qualified >= qualified && totalPoints >= 60
     },
-    ...mapMutations([UserMutations.MEMBER_QUERY])
+    ...mapMutations([UserMutations.MEMBER_QUERY, Mutations.SET_GATE])
   },
   computed: {
     ...mapState({
