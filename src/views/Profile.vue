@@ -167,7 +167,9 @@ import GET_MEMBERS from '@/graphql/GetMembers.gql'
 import UPDATE_PROFILE from '@/graphql/MemberPartialUpdate.gql'
 import CHECK_IF_UNIQUE_SLUG from '@/graphql/Slug.gql'
 import Rules from './Rules.js'
-import { Actions } from '@/store'
+import { Actions, Mutations } from '@/store'
+import { mapMutations } from 'vuex'
+
 var moment = require('moment')
 
 const ERROR_COLOR = 'red'
@@ -210,8 +212,12 @@ export default {
     }
   }),
   methods: {
+    ...mapMutations([Mutations.SET_GATE]),
     checkAlert(value) {
       this.alert[value.type] = !value.isSet
+      if (!this.alert.address && !this.alert.legal) {
+        this.setGate(false)
+      }
     },
     formatDate: date => {
       if (!date) { return null }

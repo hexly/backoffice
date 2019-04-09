@@ -256,7 +256,6 @@ export default {
       },
       update ({ addressByMemberOrTenant }) {
         const a = addressByMemberOrTenant[0]
-        this.setGate(false)
         if (!a) {
           this.setGate(true)
         }
