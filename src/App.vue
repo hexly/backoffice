@@ -10,7 +10,10 @@
       v-model="newVersionAvailable"
     >
       New Version Available!
-      <v-btn flat @click="update">Click to update</v-btn>
+      <v-btn
+        flat
+        @click="update"
+      >Click to update</v-btn>
     </v-snackbar>
     <router-view />
   </v-app>
@@ -50,7 +53,7 @@ export default {
         this.appVersionInterval = setTimeout(this.checkAppVersion, INTERVAL_VAL) // Check for the app version every 30 minutes
       }
     },
-    update() {
+    update () {
       location.reload(true)
     }
   }

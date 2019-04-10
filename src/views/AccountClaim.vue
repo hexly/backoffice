@@ -1,24 +1,58 @@
 <template>
   <v-content>
-    <v-container fluid fill-height>
-      <v-alert type="warning" v-if="error">
+    <v-container
+      fluid
+      fill-height
+    >
+      <v-alert
+        type="warning"
+        v-if="error"
+      >
         {{error}}
       </v-alert>
-      <v-layout align-center justify-center>
-        <v-flex xs12 sm8 md8>
+      <v-layout
+        align-center
+        justify-center
+      >
+        <v-flex
+          xs12
+          sm8
+          md8
+        >
           <v-card class="elevation-12">
-            <v-toolbar dark color="black">
+            <v-toolbar
+              dark
+              color="black"
+            >
               <v-toolbar-title>Account Creation</v-toolbar-title>
             </v-toolbar>
             <v-card-text>
-              <img class="logo" :src="logoPath"/>
-              <div class="center" v-if="loading">
-                <v-progress-circular indeterminate :size="70" :width="7" color="black"></v-progress-circular>
+              <img
+                class="logo"
+                :src="logoPath"
+              />
+              <div
+                class="center"
+                v-if="loading"
+              >
+                <v-progress-circular
+                  indeterminate
+                  :size="70"
+                  :width="7"
+                  color="black"
+                ></v-progress-circular>
                 <p>We are reteiving your information, please hold.</p>
               </div>
-              <div class="center" v-if="!loading">
+              <div
+                class="center"
+                v-if="!loading"
+              >
                 <p>Welcome! Please fill out the following information to setup your account.</p>
-                <v-form ref="claim" @submit.prevent="onSubmit" lazy-validation>
+                <v-form
+                  ref="claim"
+                  @submit.prevent="onSubmit"
+                  lazy-validation
+                >
                   <v-text-field
                     label="Name"
                     v-model="editMember.name"
@@ -84,26 +118,46 @@
                     item-value="id"
                   />
                   <v-flex xs12>
-                    <v-checkbox v-model="agreement.affiliate" :rules="requiredRule" :readonly="!affiliate"
-                      :persistent-hint="!affiliate" hint="please read the agreement before agreeing"
+                    <v-checkbox
+                      v-model="agreement.affiliate"
+                      :rules="requiredRule"
+                      :readonly="!affiliate"
+                      :persistent-hint="!affiliate"
+                      hint="Note: You must read the agreement before agreeing"
                     >
                       <div slot="label">
-                        I agree to the terms in the <a @click="accept('affiliate')" target="_blank" href="/Consultant_Agreement_(March_2018).pdf">Independent Contractor Agreement</a>
+                        I agree to the terms in the <a
+                          @click="accept('affiliate')"
+                          target="_blank"
+                          href="/Consultant_Agreement_(March_2018).pdf"
+                        >Independent Contractor Agreement</a>
                       </div>
                     </v-checkbox>
                   </v-flex>
                   <v-flex xs12>
-                    <v-checkbox v-model="agreement.policies" :rules="requiredRule" :readonly="!policies"
-                      :persistent-hint="!policies" hint="please read the policies and procedures before agreeing"
+                    <v-checkbox
+                      v-model="agreement.policies"
+                      :rules="requiredRule"
+                      :readonly="!policies"
+                      :persistent-hint="!policies"
+                      hint="Note: You must read the policies and procedures before agreeing"
                     >
                       <div slot="label">
-                        I agree to all the <a @click="accept('policies')" target="_blank" href="/Policies_and_Procedures_(April_2018).pdf">Policies and Procedures</a>
+                        I agree to all the <a
+                          @click="accept('policies')"
+                          target="_blank"
+                          href="/Policies_and_Procedures_(April_2018).pdf"
+                        >Policies and Procedures</a>
                       </div>
                     </v-checkbox>
                   </v-flex>
                   <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn type="submit" color="deep-purple" dark>Create Account</v-btn>
+                    <v-btn
+                      type="submit"
+                      color="deep-purple"
+                      dark
+                    >Create Account</v-btn>
                   </v-card-actions>
                 </v-form>
               </div>
@@ -196,7 +250,7 @@ export default {
       upsertAttribute: Actions.SET_ATTRIBUTE,
       login: UserActions.LOGIN
     }),
-    accept(value) {
+    accept (value) {
       this[value] = moment.utc()
     },
     async onSubmit () {
@@ -204,8 +258,13 @@ export default {
         this.loading = true
         // Encrypt info
         try {
-          const { data } = await encrypt('Getting Ip Address')
-          const ipAddress = data.ip
+          const encryptedAffiliate = await encrypt({
+            plainText: '',
+            metadata: {
+              affiliate: this.affiliate,
+              policies: this.policies
+            }
+          })
           const { token } = this.$route.params
           const { data: { consumeOneTimeToken } } = await this.createAccount({
             contactEmail: this.editMember.contactEmail,
@@ -224,12 +283,10 @@ export default {
           if (consumeOneTimeToken && consumeOneTimeToken !== 'done') {
             this.setJwt(consumeOneTimeToken)
             await this.upsertAttribute({
+              private: true,
               key: 'affiliate-agreement',
-              value: {
-                affiliate: this.affiliate,
-                policies: this.policies,
-                ip: ipAddress
-              }
+              value: encryptedAffiliate.payload,
+              signature: encryptedAffiliate.signature
             })
             await this.login({
               username: this.editMember.username,
@@ -239,7 +296,7 @@ export default {
             this.$router.push('/dashboard')
           }
         } catch (e) {
-          console.log({e})
+          console.warn('Failed saving', { e })
           this.error = e
           this.loading = false
         }

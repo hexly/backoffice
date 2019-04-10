@@ -12,13 +12,15 @@ export const getMemberAttribute = (input) => {
 export const setMemberAttributes = (payload) => {
   return apolloClient.mutate({
     mutation: SET_MEMBER_ATTRIBUTE,
-    variables: { input: payload }
+    variables: { input: payload },
+    fetchPolicy: 'no-cache'
   })
 }
 
 export const getMemberAttributes = (payload) => {
   return apolloClient.query({
     query: GET_MEMBER_ATTRIBUTES,
-    variables: { input: payload }
+    variables: { input: payload },
+    fetchPolicy: 'no-cache'
   })
 }

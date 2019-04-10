@@ -1,147 +1,116 @@
 <template>
   <div class="profile">
-    <h1>Your Profile</h1>
     <v-container
       grid-list-md
       text-xs-center
     >
-      <v-layout
-        row
-        wrap
+      <v-tabs
+        centered
+        color="green"
+        dark
+        icons-and-text
       >
-        <v-flex xs6>
-          <div class="mx-auto">
-            <h2>Your Information</h2>
-          </div>
-          <v-tabs
-            centered
-            color="green"
-            dark
-            icons-and-text
+        <v-tabs-slider color="purple"></v-tabs-slider>
+
+        <v-tab to="#profile">Profile
+          <v-badge
+            v-model="alert.birthday"
+            left
+            color="red"
           >
-            <v-tabs-slider color="purple"></v-tabs-slider>
+            <template slot="badge">
+              <span>!</span>
+            </template>
+            <v-icon>portrait</v-icon>
+          </v-badge>
+        </v-tab>
 
-            <v-tab to="#profile">Profile
-              <v-icon>portrait</v-icon>
-            </v-tab>
+        <v-tab to="#address">Address
+          <v-badge
+            v-model="alert.address"
+            left
+            color="red"
+          >
+            <template slot="badge">
+              <span>!</span>
+            </template>
+            <v-icon>house</v-icon>
+          </v-badge>
+        </v-tab>
 
-            <v-tab to="#address">Address
-              <v-badge v-model="alert.address" left color="red">
-                <template slot="badge">
-                  <span>!</span>
-                </template>
-                <v-icon>house</v-icon>
-              </v-badge>
-            </v-tab>
+        <v-tab to="#legal">Legal
+          <v-badge
+            v-model="alert.legal"
+            left
+            color="red"
+          >
+            <template slot="badge">
+              <span>!</span>
+            </template>
+            <v-icon>business</v-icon>
+          </v-badge>
+        </v-tab>
 
-            <v-tab-item value="profile">
-              <v-form ref="informationForm">
-                <v-text-field
-                  label="Name"
-                  v-model="editMember.name"
-                  required
-                ></v-text-field>
-                <v-text-field
-                  label="E-mail"
-                  v-model="editMember.contactEmail"
-                  required
-                ></v-text-field>
-                <v-text-field
-                  label="Display name"
-                  v-model="editMember.displayName"
-                  required
-                ></v-text-field>
-                <v-text-field
-                  label="Slug / Store Name"
-                  class="mb-3"
-                  v-model="editMember.slug"
-                  @keyup="slugChanged"
-                  :rules="slugRule"
-                  :error-messages="slugErrors"
-                  required
-                  :disabled="!!originalSlug"
-                  persistent-hint
-                  :hint="`https://www.mygreenhorizen.com/store/${editMember.slug || '{your_store_name}'}`"
-                ></v-text-field>
-                <v-dialog
-                  ref="dialog"
-                  v-model="modal"
-                  :return-value.sync="editMember.birthdate"
-                  lazy
-                  full-width
-                  width="290px"
+        <v-tab-item value="profile">
+          <v-layout
+            row
+            wrap
+          >
+            <v-flex
+              xs12
+              sm6
+            >
+              <div class="mx-auto">
+                <img
+                  class="image"
+                  :src="getAvatar"
                 >
-                  <v-text-field
-                    slot="activator"
-                    :rules="birthdateRule"
-                    v-model="editMember.formattedDate"
-                    label="Date of Birth"
-                    prepend-icon="event"
-                    readonly
-                  ></v-text-field>
-                  <v-date-picker
-                    ref="picker"
-                    color="green lighten-1"
-                    v-model="editMember.birthdate"
-                    :reactive="true"
-                    :max="moment().format('YYYY-MM-DD')"
-                    min="1900-01-01"
-                    @change="saveDate"
-                  ></v-date-picker>
-                </v-dialog>
-
-                <!-- <v-text-field
-                  name="password"
-                  label="Enter your password"
-                  hint="At least 8 characters"
-                  v-model="password"
-                  min="8"
-                  :append-icon="visible ? 'visibility_off' : 'visibility'"
-                  :append-icon-cb="() => (visible = !visible)"
-                  :type="visible ? 'text' : 'password'"
-                ></v-text-field>-->
-              </v-form>
-              <v-btn
-                :disabled="saving"
-                :loading="saving"
-                color="success"
-                @click="saveData"
-              >Save Information</v-btn>
-            </v-tab-item>
-
-            <v-tab-item value="address">
-              <h2>Your Address</h2>
-              <AddressForm
-                @addressSnackBarEmitSuccess="addressSnackBarEmitSuccess"
-                @addressSnackBarEmitError="addressSnackBarEmitError"
-                @hasAddress="checkAlert"
+                <form
+                  enctype="multipart/form-data"
+                  novalidate
+                >
+                  <input
+                    type="file"
+                    name="avatar"
+                    :disabled="isSaving"
+                    @change="filesChange($event.target.files)"
+                    accept="image/*"
+                  >
+                  <div v-if="isUploading">Uploading... please wait</div>
+                </form>
+              </div>
+            </v-flex>
+            <v-flex
+              xs12
+              sm6
+            >
+              <PersonalForm
+                ref="personal"
+                :modal="modal"
+                :slugIsUnique="slugIsUnique"
+                :slugErrors="slugErrors"
+                :originalSlug="originalSlug"
+                :value="editMember"
+                :saveData="saveData"
+                :slugChanged="slugChanged"
+                :saving="saving"
+                @hasBirthday="checkAlert"
               />
-            </v-tab-item>
-          </v-tabs>
-        </v-flex>
-        <v-flex xs6>
-          <div class="mx-auto">
-            <h2>Profile Image</h2>
-            <img
-              class="image"
-              :src="getAvatar"
-            >
-            <form
-              enctype="multipart/form-data"
-              novalidate
-            >
-              <input
-                type="file"
-                name="avatar"
-                :disabled="isSaving"
-                @change="filesChange($event.target.files)"
-                accept="image/*"
-              >
-              <div v-if="isUploading">Uploading... please wait</div>
-            </form>
-          </div>
-        </v-flex>
-      </v-layout>
+            </v-flex>
+          </v-layout>
+        </v-tab-item>
+
+        <v-tab-item value="address">
+          <AddressForm
+            @addressSnackBarEmitSuccess="addressSnackBarEmitSuccess"
+            @addressSnackBarEmitError="addressSnackBarEmitError"
+            @hasAddress="checkAlert"
+          />
+        </v-tab-item>
+        <v-tab-item value="legal">
+          <LegalForm @hasLegal="checkAlert" :value="legal" />
+        </v-tab-item>
+      </v-tabs>
     </v-container>
     <v-snackbar
       :timeout="6000"
@@ -162,6 +131,8 @@
 </template>
 
 <script>
+import PersonalForm from '@/profile/Personal.vue'
+import LegalForm from '@/profile/Legal.vue'
 import AddressForm from '@/components/AddressForm.vue'
 import GET_MEMBERS from '@/graphql/GetMembers.gql'
 import UPDATE_PROFILE from '@/graphql/MemberPartialUpdate.gql'
@@ -177,7 +148,9 @@ const SUCCESS_COLOR = 'purple'
 
 export default {
   components: {
-    AddressForm
+    PersonalForm,
+    AddressForm,
+    LegalForm
   },
   data: () => ({
     modal: false,
@@ -205,15 +178,33 @@ export default {
       birthdate: '',
       formattedDate: ''
     },
+    legal: {
+      agreement: {
+        affiliate: false,
+        policies: false
+      },
+      clicked: {
+        affiliate: null,
+        policies: null
+      },
+      initial: {
+        affiliate: null,
+        policies: null,
+        entity: null
+      },
+      entity: {}
+    },
     originalSlug: undefined,
     saving: false,
     alert: {
-      address: false
+      address: false,
+      birthday: false,
+      legal: false
     }
   }),
   methods: {
     ...mapMutations([Mutations.SET_GATE]),
-    checkAlert(value) {
+    checkAlert (value) {
       this.alert[value.type] = !value.isSet
       if (!this.alert.address && !this.alert.legal) {
         this.setGate(false)
@@ -255,7 +246,7 @@ export default {
     },
     async saveData () {
       this.slugIsUnique = true // reset to default state
-      const formIsValid = this.$refs.informationForm.validate()
+      const formIsValid = this.$refs.personal.$refs.informationForm.validate()
       let response
       if (formIsValid) {
         // Slug uniqueness query
@@ -330,9 +321,7 @@ export default {
         this.snackbar = true
       }
     },
-    saveDate (date) {
-      this.$refs.dialog.save(date)
-    },
+
     addressSnackBarEmitSuccess (e) {
       this.snackbarMsg = e
       this.snackBarColor = SUCCESS_COLOR
@@ -359,7 +348,11 @@ export default {
         if (members) {
           const editMember = members.nodes[0]
           this.editMember = { ...editMember }
-          this.editMember.formattedDate = this.formatDate(this.editMember.birthdate)
+          if (this.editMember.birthdate) {
+            this.editMember.formattedDate = this.formatDate(this.editMember.birthdate)
+          } else {
+            this.checkAlert({ type: 'birthday', isSet: false })
+          }
 
           const isInvalid = /[^a-z0-9_]/gi.test(this.editMember.slug)
           if (isInvalid) {
