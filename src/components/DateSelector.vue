@@ -58,7 +58,6 @@ export default {
       })
     },
     parseDate (d) {
-      console.log('parseDate', d)
       return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`
     }
   }

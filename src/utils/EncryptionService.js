@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const ENDPOINT = process.env.VUE_APP_ENCRYPTION_ENDPOINT || 'localhost:3000'
+const ENDPOINT = process.env.VUE_APP_ENCRYPTION_ENDPOINT || 'https://eaas.dev.hexly.cloud/encrypt'
 
 export const encrypt = payload => {
   if (ENDPOINT.indexOf('localhost') > -1) {
@@ -20,5 +20,12 @@ export const encrypt = payload => {
       })
     })
   }
-  return axios.post(ENDPOINT, payload).then(res => res.data)
+  return axios.post(ENDPOINT, {
+    ...payload,
+    key: 'green-horizen'
+  }).then(res => {
+    return res.data
+  }).catch(err => {
+    console.warn(err)
+  })
 }
