@@ -3,6 +3,8 @@ import Vuex from 'vuex'
 import axios from 'axios'
 import { UserStore } from '@/stores/UserStore'
 import { ClaimStore } from '@/stores/ClaimStore'
+import MemberStore from '@/Members/Store'
+
 const {
   VUE_APP_API_ENDPOINT = 'http://localhost:3000',
   VUE_APP_TENANT_ID,
@@ -25,7 +27,8 @@ axios.interceptors.request.use(config => {
 })
 
 export const Mutations = {
-  INIT: 'storeInit'
+  INIT: 'storeInit',
+  SET_GATE: 'setGate'
 }
 
 export const Actions = {
@@ -72,10 +75,12 @@ export default new Vuex.Store({
   plugins: [DejaVue.plugin(Mutations.INIT, 'store')],
   modules: {
     user: UserStore,
-    claim: ClaimStore
+    claim: ClaimStore,
+    member: MemberStore
   },
   state: {
-    locale: 'en-us'
+    locale: 'en-us',
+    showGate: false
   },
   actions: {
     [Actions.LOGOUT]: () => {
@@ -98,6 +103,9 @@ export default new Vuex.Store({
     }
   },
   mutations: {
-    [Mutations.INIT]: DejaVue.mutation('store', [verifyPrincipal])
+    [Mutations.INIT]: DejaVue.mutation('store', [verifyPrincipal]),
+    [Mutations.SET_GATE]: (state, show) => {
+      state.showGate = show
+    }
   }
 })

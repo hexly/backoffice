@@ -27,7 +27,7 @@
                 <v-text-field
                   slot="activator"
                   v-model="startDate"
-                  label="'Select Start Date'"
+                  label="Select Start Date"
                   prepend-icon="event"
                   readonly
                 />
@@ -50,7 +50,7 @@
                 <v-text-field
                   slot="activator"
                   v-model="endDate"
-                  label="'Select Start Date'"
+                  label="Select End Date"
                   prepend-icon="event"
                   readonly
                 />
@@ -165,10 +165,10 @@ export default {
       modalStart: false,
       modalEnd: false,
       startDate: moment()
-        .startOf('week')
+        .startOf('month')
         .format('YYYY-MM-DD'),
       endDate: moment()
-        .endOf('week')
+        .endOf('month')
         .format('YYYY-MM-DD'),
       headers: [
         {

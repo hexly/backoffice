@@ -74,13 +74,37 @@
         <router-view/>
       </v-container>
     </v-content>
+    <v-dialog
+      v-model="showGateDialog"
+      max-width="290"
+      persistent
+    >
+      <v-card>
+        <v-card-title class="headline">We need more information!</v-card-title>
+        <v-card-text>
+          Hey There! There is some more infomation we need to collect from you before you can continue to use your backoffice.
+          Please go to your profile page to provide us with your info!
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn
+            color="green darken-1"
+            flat="flat"
+            @click="$router.push('/profile#address')"
+          >
+            Go To Profile Page
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
 <script>
 import tenantInfo from '@/tenant.js'
-import { Actions } from '@/store'
-import { mapState } from 'vuex'
+import { Actions, Mutations } from '@/store'
+import { Actions as MemberActions } from '@/Members/Store'
+import { mapState, mapActions, mapMutations } from 'vuex'
 
 const impersonationPrefix = 'Impersonating '
 
@@ -88,25 +112,39 @@ export default {
   data: () => ({
     impersonationPrefix,
     drawer: null,
-    logoPath: tenantInfo.logoPath,
-    jwt: null
+    logoPath: tenantInfo.logoPath
   }),
   props: {
     source: String
   },
   computed: {
     ...mapState({
-      user: state => state.user
-    })
+      user: state => state.user,
+      showGate: state => state.showGate
+    }),
+    showGateDialog() {
+      return this.showGate && this.$route.path.indexOf('profile') === -1
+    }
   },
   methods: {
+    ...mapMutations([Mutations.SET_GATE]),
+    ...mapActions({
+      getAttributes: MemberActions.GET_ATTRIBUTES
+    }),
     async logout() {
       await this.$store.dispatch(Actions.LOGOUT)
       this.$router.go('/login')
     }
   },
-  mounted () {
-    this.jwt = this.$store.state.user.jwt
+  async mounted () {
+    const { data } = await this.getAttributes({
+      key: ['affiliate-agreement', 'entity-details'],
+      accessMode: 'ALL',
+      memberId: this.user.principal.memberId
+    })
+    if (data.getMemberAttributes.length < 2) {
+      this.setGate(true)
+    }
   }
 }
 </script>

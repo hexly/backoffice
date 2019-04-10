@@ -56,7 +56,7 @@
     "vue-cli-plugin-apollo": "^0.6.1",
     "vue-router": "^3.0.1",
     "vue-template-compiler": "2.5.18",
-    "vuetify": "^1.5.0",
+    "vuetify": "^1.5.10",
     "vuex": "^3.0.1"
   },
   "browserslist": [

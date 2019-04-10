@@ -17,7 +17,7 @@ export const QUERY = gql`
         profileUrl
       }
     }
-    team: members(condition: $bySponsor) {
+    team: members(first: 100, condition: $bySponsor) {
       nodes {
         id
         tenantId
