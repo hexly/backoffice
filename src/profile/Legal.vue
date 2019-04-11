@@ -1,113 +1,104 @@
 <template>
   <div class="legal-form">
     <div>
-      <p>Please use this section to manage your legal and compliance details. If you need assistance,
+      <p>
+        Please use this section to manage your legal and compliance details. If you need assistance,
         please contact support.
       </p>
-      <v-form
-        ref="legalForm"
-        @submit.prevent="save"
-        lazy-validation
-      >
-      <v-layout row wrap>
-        <v-flex xs12 sm4>
-          <v-radio-group
-            class="radios"
-            v-model="value.entity.type"
-            :mandatory="false"
-            row
-            :disabled="redacted"
-            xs12
-            md4
+      <v-form ref="legalForm" @submit.prevent="save" lazy-validation>
+        <v-layout row wrap>
+          <v-flex xs12 sm4>
+            <v-radio-group
+              class="radios"
+              v-model="value.entity.type"
+              :mandatory="false"
+              row
+              :disabled="redacted"
+              xs12
+              md4
+            >
+              <v-radio label="Individual" value="ssn"></v-radio>
+              <v-radio label="Business" value="ein"></v-radio>
+            </v-radio-group>
+          </v-flex>
+          <v-flex xs12 :sm4="value.entity.type === 'ein'" :sm8="value.entity.type === 'ssn'">
+            <v-text-field
+              :label="value.entity.type.toUpperCase()"
+              :value="value.entity.identifier"
+              required
+              :disabled="redacted"
+              v-if="redacted"
+            />
+            <v-text-field
+              v-if="value.entity.type && !redacted"
+              :label="value.entity.type.toUpperCase()"
+              v-model="value.entity.identifier"
+              :mask="value.entity.type === 'ssn' ? '###-##-####' : '##-#######'"
+              hint="This data is stored encrypted and used only for tax purposes"
+              :append-icon="visible ? 'visibility_off' : 'visibility'"
+              :append-icon-cb="() => (visible = !visible)"
+              :type="visible ? 'text' : 'password'"
+              persistent-hint
+              required
+            />
+          </v-flex>
+          <v-flex xs12 sm4>
+            <v-text-field
+              label="Business / Entity Name"
+              v-if="value.entity.type === 'ein'"
+              v-model="value.entity.name"
+              persistent-hint
+              required
+            ></v-text-field>
+          </v-flex>
+        </v-layout>
+        <v-flex xs12>
+          <v-checkbox
+            v-model="value.agreement.affiliate"
+            :rules="requiredRule"
+            :readonly="!value.clicked.affiliate"
+            :persistent-hint="!value.clicked.affiliate"
+            :disabled="agreed"
+            hint="Note: You must read the agreement before agreeing"
           >
-            <v-radio
-              label="Individual"
-              value="ssn"
-            ></v-radio>
-            <v-radio
-              label="Business"
-              value="ein"
-            ></v-radio>
-          </v-radio-group>
+            <div slot="label">
+              I agree to the terms in the
+              <a
+                @click="accept('affiliate')"
+                target="_blank"
+                href="/Consultant_Agreement_(March_2018).pdf"
+              >Independent Contractor Agreement</a>
+            </div>
+          </v-checkbox>
         </v-flex>
-        <v-flex xs12
-          :sm4="value.entity.type === 'ein'"
-          :sm8="value.entity.type === 'ssn'">
-          <v-text-field
-            :label="value.entity.type.toUpperCase()"
-            :value="value.entity.identifier"
-            required
-            :disabled="redacted"
-            v-if="redacted"
-          />
-          <v-text-field
-            v-if="value.entity.type && !redacted"
-            :label="value.entity.type.toUpperCase()"
-            v-model="value.entity.identifier"
-            :mask="value.entity.type === 'ssn' ? '###-##-####' : '##-#######'"
-            hint="This data is stored encrypted and used only for tax purposes"
-            :append-icon="visible ? 'visibility_off' : 'visibility'"
-            :append-icon-cb="() => (visible = !visible)"
-            :type="visible ? 'text' : 'password'"
-            persistent-hint
-            required
-          />
+        <v-flex xs12>
+          <v-checkbox
+            v-model="value.agreement.policies"
+            :rules="requiredRule"
+            :readonly="!value.clicked.policies"
+            :persistent-hint="!value.clicked.policies"
+            :disabled="agreed"
+            hint="Note: You must read the policies and procedures before agreeing"
+          >
+            <div slot="label">
+              I agree to all the
+              <a
+                @click="accept('policies')"
+                target="_blank"
+                href="/Policies_and_Procedures_(April_2018).pdf"
+              >Policies and Procedures</a>
+            </div>
+          </v-checkbox>
         </v-flex>
-        <v-flex xs12 sm4>
-          <v-text-field
-            label="Business / Entity Name"
-            v-if="value.entity.type === 'ein'"
-            v-model="value.entity.name"
-            persistent-hint
-            required
-          ></v-text-field>
+        <br>
+        <v-flex xs12>
+          <v-btn
+            :disabled="saving || (redacted && agreed)"
+            :loading="saving"
+            color="success"
+            type="submit"
+          >Save Legal Details</v-btn>
         </v-flex>
-      </v-layout>
-      <v-flex xs12>
-        <v-checkbox
-          v-model="value.agreement.affiliate"
-          :rules="requiredRule"
-          :readonly="!value.clicked.affiliate"
-          :persistent-hint="!value.clicked.affiliate"
-          :disabled="agreed"
-          hint="Note: You must read the agreement before agreeing"
-        >
-          <div slot="label">
-            I agree to the terms in the <a
-              @click="accept('affiliate')"
-              target="_blank"
-              href="/Consultant_Agreement_(March_2018).pdf"
-            >Independent Contractor Agreement</a>
-          </div>
-        </v-checkbox>
-      </v-flex>
-      <v-flex xs12>
-        <v-checkbox
-          v-model="value.agreement.policies"
-          :rules="requiredRule"
-          :readonly="!value.clicked.policies"
-          :persistent-hint="!value.clicked.policies"
-          :disabled="agreed"
-          hint="Note: You must read the policies and procedures before agreeing"
-        >
-          <div slot="label">
-            I agree to all the <a
-              @click="accept('policies')"
-              target="_blank"
-              href="/Policies_and_Procedures_(April_2018).pdf"
-            >Policies and Procedures</a>
-          </div>
-        </v-checkbox>
-      </v-flex>
-      <br />
-      <v-flex xs12>
-        <v-btn
-        :disabled="saving || (redacted && agreed)"
-        :loading="saving"
-        color="success"
-        type="submit"
-        >Save Legal Details</v-btn>
-      </v-flex>
       </v-form>
     </div>
   </div>
@@ -136,7 +127,7 @@ export default {
       requiredRule: [v => !!v || 'Field is required']
     }
   },
-  mounted() {
+  mounted () {
     this.load()
   },
   methods: {
@@ -144,7 +135,7 @@ export default {
       upsertAttribute: Actions.SET_ATTRIBUTE,
       getAttributes: Actions.GET_ATTRIBUTES
     }),
-    async load() {
+    async load () {
       const { data } = await this.getAttributes({
         key: ['affiliate-agreement', 'entity-details'],
         accessMode: 'ALL',
@@ -203,7 +194,7 @@ export default {
         metadata.name = entity.name
         metadata.masked = `**-*****${plainText.slice(-2)}`
       }
-      const encryptedDetails = await encrypt({ plainText, metadata })
+      const encryptedDetails = await encrypt({ plainText, metadata }, 'tax-entity')
       const result = await this.upsertAttribute({
         private: true,
         key: 'entity-details',
