@@ -1,58 +1,22 @@
 <template>
   <v-content>
-    <v-container
-      fluid
-      fill-height
-    >
-      <v-alert
-        type="warning"
-        v-if="error"
-      >
-        {{error}}
-      </v-alert>
-      <v-layout
-        align-center
-        justify-center
-      >
-        <v-flex
-          xs12
-          sm8
-          md8
-        >
+    <v-container fluid fill-height>
+      <v-alert type="warning" v-if="error">{{error}}</v-alert>
+      <v-layout align-center justify-center>
+        <v-flex xs12 sm8 md8>
           <v-card class="elevation-12">
-            <v-toolbar
-              dark
-              color="black"
-            >
+            <v-toolbar dark color="black">
               <v-toolbar-title>Account Creation</v-toolbar-title>
             </v-toolbar>
             <v-card-text>
-              <img
-                class="logo"
-                :src="logoPath"
-              />
-              <div
-                class="center"
-                v-if="loading"
-              >
-                <v-progress-circular
-                  indeterminate
-                  :size="70"
-                  :width="7"
-                  color="black"
-                ></v-progress-circular>
+              <img class="logo" :src="logoPath">
+              <div class="center" v-if="loading">
+                <v-progress-circular indeterminate :size="70" :width="7" color="black"></v-progress-circular>
                 <p>We are reteiving your information, please hold.</p>
               </div>
-              <div
-                class="center"
-                v-if="!loading"
-              >
+              <div class="center" v-if="!loading">
                 <p>Welcome! Please fill out the following information to setup your account.</p>
-                <v-form
-                  ref="claim"
-                  @submit.prevent="onSubmit"
-                  lazy-validation
-                >
+                <v-form ref="claim" @submit.prevent="onSubmit" lazy-validation>
                   <v-text-field
                     label="Name"
                     v-model="editMember.name"
@@ -77,11 +41,7 @@
                     :rules="slugRule"
                     required
                   ></v-text-field>
-                  <v-text-field
-                    label="username"
-                    v-model="editMember.contactEmail"
-                    disabled
-                  ></v-text-field>
+                  <v-text-field label="username" v-model="editMember.contactEmail" disabled></v-text-field>
                   <v-text-field
                     name="password"
                     label="Enter your password"
@@ -126,7 +86,8 @@
                       hint="Note: You must read the agreement before agreeing"
                     >
                       <div slot="label">
-                        I agree to the terms in the <a
+                        I agree to the terms in the
+                        <a
                           @click="accept('affiliate')"
                           target="_blank"
                           href="/Consultant_Agreement_(March_2018).pdf"
@@ -143,7 +104,8 @@
                       hint="Note: You must read the policies and procedures before agreeing"
                     >
                       <div slot="label">
-                        I agree to all the <a
+                        I agree to all the
+                        <a
                           @click="accept('policies')"
                           target="_blank"
                           href="/Policies_and_Procedures_(April_2018).pdf"
@@ -153,11 +115,7 @@
                   </v-flex>
                   <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn
-                      type="submit"
-                      color="deep-purple"
-                      dark
-                    >Create Account</v-btn>
+                    <v-btn type="submit" color="deep-purple" dark>Create Account</v-btn>
                   </v-card-actions>
                 </v-form>
               </div>
@@ -259,7 +217,7 @@ export default {
         // Encrypt info
         try {
           const encryptedAffiliate = await encrypt({
-            plainText: '',
+            plainText: 'on-register',
             metadata: {
               affiliate: this.affiliate,
               policies: this.policies
