@@ -2,7 +2,7 @@
   <div>
     <v-form ref="informationForm">
       <v-text-field
-        label="Name"
+        label="Legal Name"
         v-model="value.name"
         required
       ></v-text-field>
@@ -12,7 +12,7 @@
         required
       ></v-text-field>
       <v-text-field
-        label="Display name"
+        label="Display Name"
         v-model="value.displayName"
         required
       ></v-text-field>

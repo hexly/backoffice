@@ -206,7 +206,7 @@ export default {
     },
     async savePolicies () {
       const { value: { clicked } } = this
-      const encryptedAgreements = await encrypt({ plainText: '⬆️⬆️⬇️⬇️⬅️➡️⬅️➡️🅱️🅰️', metadata: clicked })
+      const encryptedAgreements = await encrypt({ plainText: 'on-legal', metadata: clicked })
       const result = await this.upsertAttribute({
         private: true,
         key: 'affiliate-agreement',
