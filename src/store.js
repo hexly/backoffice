@@ -3,6 +3,8 @@ import Vuex from 'vuex'
 import axios from 'axios'
 import { UserStore } from '@/stores/UserStore'
 import { ClaimStore } from '@/stores/ClaimStore'
+import MemberStore from '@/Members/Store'
+
 const {
   VUE_APP_API_ENDPOINT = 'http://localhost:3000',
   VUE_APP_TENANT_ID,
@@ -11,25 +13,27 @@ const {
 
 Vue.use(Vuex)
 
+axios.interceptors.request.use(config => {
+  // We want to be pulling this from the source of all truth.
+  // We dont want to just get the jwt on startup
+  const dehydratedState = localStorage.getItem('store')
+  if (dehydratedState && config.url && config.url.indexOf(VUE_APP_API_ENDPOINT) > -1) {
+    const hydratedState = JSON.parse(dehydratedState)
+    config.headers = config.headers || {}
+    config.headers.common = config.headers.common || {}
+    config.headers.common['Authorization'] = `Bearer ${hydratedState.user.jwt}`
+  }
+  return config
+})
+
 export const Mutations = {
-  INIT: 'storeInit'
+  INIT: 'storeInit',
+  SET_GATE: 'setGate'
 }
 
 export const Actions = {
   LOGOUT: 'logout',
   AVATAR_UPLOAD: 'avatarUpload'
-}
-
-const axiosSetup = hydratedState => {
-  const jwt = hydratedState && hydratedState.user && hydratedState.user.jwt
-  axios.interceptors.request.use(config => {
-    if (jwt && config.url && config.url.indexOf(VUE_APP_API_ENDPOINT) > -1) {
-      config.headers = config.headers || {}
-      config.headers.common = config.headers.common || {}
-      config.headers.common['Authorization'] = `Bearer ${jwt}`
-    }
-    return config
-  })
 }
 
 const verifyPrincipal = async hydratedState => {
@@ -71,10 +75,12 @@ export default new Vuex.Store({
   plugins: [DejaVue.plugin(Mutations.INIT, 'store')],
   modules: {
     user: UserStore,
-    claim: ClaimStore
+    claim: ClaimStore,
+    member: MemberStore
   },
   state: {
-    locale: 'en-us'
+    locale: 'en-us',
+    showGate: false
   },
   actions: {
     [Actions.LOGOUT]: () => {
@@ -97,6 +103,9 @@ export default new Vuex.Store({
     }
   },
   mutations: {
-    [Mutations.INIT]: DejaVue.mutation('store', [axiosSetup, verifyPrincipal])
+    [Mutations.INIT]: DejaVue.mutation('store', [verifyPrincipal]),
+    [Mutations.SET_GATE]: (state, show) => {
+      state.showGate = show
+    }
   }
 })
