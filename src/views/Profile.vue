@@ -270,7 +270,7 @@ export default {
         if (response) {
           const { findMemberBySlug } = response.data
           this.slugErrors = []
-          if (findMemberBySlug.id !== this.memberId) {
+          if (findMemberBySlug && findMemberBySlug.id !== this.memberId) {
             this.slugIsUnique = false
             this.snackBarColor = ERROR_COLOR
             this.snackbarMsg = 'Chosen store name is unavailable!'
