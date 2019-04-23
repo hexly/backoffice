@@ -41,8 +41,6 @@ if ('serviceWorker' in navigator) {
 
 window.zE &&
   window.zE('webWidget:on', 'open', () => {
-    console.log('The widget has been opened!', store)
-
     const principal = _.get(store, 'state.user.principal', {})
     if (principal) {
       const {
@@ -76,7 +74,6 @@ window.zE &&
           //   readOnly: true // optional
         }
       })
-      console.log({ displayName, memberId, identityId, username, contactEmail })
     }
   })
 

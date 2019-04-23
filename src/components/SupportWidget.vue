@@ -117,7 +117,7 @@ export default {
             `. For future reference please keep this ticket number and respond by email as necessary.`
           this.loading = false
         } catch (err) {
-          console.log('got an error', err)
+          console.error('got an error', err)
           this.loading = false
           this.error = err
         }
