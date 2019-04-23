@@ -192,7 +192,7 @@ export default {
       }
       this.loading = false
     } catch (err) {
-      console.log('ERROR getting token', err)
+      console.error('ERROR getting token', err)
       this.$router.push('/login')
     }
   },
@@ -259,7 +259,7 @@ export default {
           this.loading = false
         }
       } else {
-        console.log('Error in form')
+        console.error('Error in form')
       }
     }
   }

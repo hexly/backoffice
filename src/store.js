@@ -98,7 +98,7 @@ export default new Vuex.Store({
         Object.keys(data.fields).forEach(f => formData.set([f], data.fields[f]))
         return axios.post(data.url, formData)
       } catch (error) {
-        console.log({ error })
+        console.error({ error })
       }
     }
   },

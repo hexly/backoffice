@@ -16,6 +16,18 @@ export const UserMutations = {
   MEMBER_QUERY: 'memberQuery'
 }
 
+const parseLegacyPrincipal = (principal) => {
+  const updated = {
+    ...principal
+  }
+  updated.displayName = _.get(
+    principal,
+    'member.displayName',
+    '<Unknown Name>'
+  )
+  return updated
+}
+
 export const UserStore = {
   state: {
     jwt: null,
@@ -25,6 +37,10 @@ export const UserStore = {
     version: 2
   },
   mutations: {
+    'storeInit': (state, a, b, c) => {
+      // TODO: check state for principal / jwt; if exists, fetch JWT and set the principal again...
+      // if call fails, logout / dump state / whatever we do on logout
+    },
     [UserMutations.SET_JWT]: (state, jwt) => {
       state.jwt = jwt
     },
@@ -49,17 +65,13 @@ export const UserStore = {
         variables: { creds },
         fetchPolicy: 'no-cache'
       })
-      const { success, token, principal, reason } = _.get(
+      let { success, token, principal, reason } = _.get(
         response,
         'data.login',
         {}
       )
       if (success) {
-        principal.displayName = _.get(
-          principal,
-          'member.displayName',
-          '<Unknown Name>'
-        )
+        principal = parseLegacyPrincipal(principal)
         commit(UserMutations.SET_JWT, token)
         commit(UserMutations.SET_PRINCIPAL, principal)
       }
