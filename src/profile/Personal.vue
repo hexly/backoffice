@@ -28,31 +28,12 @@
         persistent-hint
         :hint="`https://www.mygreenhorizen.com/store/${value.slug || '{your_store_name}'}`"
       ></v-text-field>
-      <v-dialog
-        ref="dialog"
-        :return-value.sync="value.birthdate"
-        lazy
-        full-width
-        width="290px"
-      >
-        <v-text-field
-          slot="activator"
-          :rules="birthdateRule"
-          v-model="value.formattedDate"
-          label="Date of Birth"
-          prepend-icon="event"
-          readonly
-        ></v-text-field>
-        <v-date-picker
-          ref="picker"
-          color="green lighten-1"
-          v-model="value.birthdate"
-          :reactive="true"
-          :max="moment().format('YYYY-MM-DD')"
-          min="1900-01-01"
-          @change="saveDate"
-        ></v-date-picker>
-      </v-dialog>
+      <v-text-field
+        v-model="value.birthdate"
+        label="Date of Birth"
+        placeholder="MM/DD/YYYY"
+        :rules="birthdateRule"
+      ></v-text-field>
 
       <!-- <v-text-field
                   name="password"
@@ -102,13 +83,9 @@ export default {
     return {
       moment,
       slugRule: Rules.slugRule,
-      birthdateRule: Rules.birthdateRule
-    }
-  },
-  methods: {
-    saveDate(date) {
-      this.$refs.dialog.save(date)
-      this.$emit('hasBirthday', { type: 'birthday', isSet: true })
+      birthdateRule: [
+        v => moment(v).isValid() || 'Birthday Must Be in MM/DD/YYYY Format'
+      ]
     }
   }
 }
