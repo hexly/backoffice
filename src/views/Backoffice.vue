@@ -59,11 +59,11 @@
             <!-- <v-list-tile>
               <v-list-tile-title>Settings</v-list-tile-title>
             </v-list-tile>-->
-            <v-list-tile v-if="user.isImpersonating">
-              <v-list-tile-title @click="logout">End Impersonation</v-list-tile-title>
+            <v-list-tile @click="logout" v-if="user.isImpersonating">
+              <v-list-tile-title >End Impersonation</v-list-tile-title>
             </v-list-tile>
-            <v-list-tile v-if="!user.isImpersonating">
-              <v-list-tile-title @click="logout">Log Out</v-list-tile-title>
+            <v-list-tile @click="logout" v-if="!user.isImpersonating">
+              <v-list-tile-title>Log Out</v-list-tile-title>
             </v-list-tile>
           </v-list>
         </v-menu>
