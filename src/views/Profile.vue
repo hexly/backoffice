@@ -233,7 +233,6 @@ export default {
         this.snackBarColor = SUCCESS_COLOR
         this.snackbarMsg = 'Profile Successfully Saved'
         this.snackbar = true
-        // this.saveData()
       } catch (err) {
         this.isFalse = false
         this.isUploading = false
