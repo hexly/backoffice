@@ -217,12 +217,23 @@ export default {
         const { data } = await this.$store.dispatch(Actions.AVATAR_UPLOAD, {
           file
         })
+        this.editMember.profileUrl = data.secure_url
+        await this.$apollo.mutate({
+          mutation: UPDATE_PROFILE,
+          variables: {
+            input: {
+              id: this.editMember.id,
+              profileUrl: this.editMember.profileUrl
+            }
+          }
+        })
         this.isFalse = false
         this.isUploading = false
         this.isSaving = false
         this.snackBarColor = SUCCESS_COLOR
-        this.editMember.profileUrl = data.secure_url
-        this.saveData()
+        this.snackbarMsg = 'Profile Successfully Saved'
+        this.snackbar = true
+        // this.saveData()
       } catch (err) {
         this.isFalse = false
         this.isUploading = false
@@ -320,7 +331,6 @@ export default {
                     name: this.editMember.name,
                     displayName: this.editMember.displayName,
                     contactEmail: this.editMember.email,
-                    profileUrl: this.editMember.profileUrl,
                     slug: sentSlug,
                     birthday: this.editMember.birthdate
                   }
