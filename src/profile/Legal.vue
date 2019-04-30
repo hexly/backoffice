@@ -44,6 +44,7 @@
           </v-flex>
           <v-flex xs12 sm4>
             <v-text-field
+              :disabled="agreed"
               label="Business / Entity Name"
               v-if="value.entity.type === 'ein'"
               v-model="value.entity.name"
@@ -55,16 +56,16 @@
         <v-flex xs12>
           <v-checkbox
             v-model="value.agreement.affiliate"
-            :rules="requiredRule"
-            :readonly="!value.clicked.affiliate"
+            :rules="requiredPolicyRule"
             :persistent-hint="!value.clicked.affiliate"
-            :disabled="agreed"
+            :disabled="agreed || !value.clicked.affiliate"
             hint="Note: You must read the agreement before agreeing"
           >
-            <div slot="label">
+            <div :disabled="false" slot="label">
               I agree to the terms in the
               <a
-                @click="accept('affiliate')"
+                class="doc-links"
+                @click.capture="accept('affiliate')"
                 target="_blank"
                 href="/Consultant_Agreement_(March_2018).pdf"
               >Independent Contractor Agreement</a>
@@ -74,16 +75,16 @@
         <v-flex xs12>
           <v-checkbox
             v-model="value.agreement.policies"
-            :rules="requiredRule"
-            :readonly="!value.clicked.policies"
+            :rules="requiredPolicyRule"
             :persistent-hint="!value.clicked.policies"
-            :disabled="agreed"
+            :disabled="agreed || !value.clicked.policies"
             hint="Note: You must read the policies and procedures before agreeing"
           >
-            <div slot="label">
+            <div :disabled="false" slot="label">
               I agree to all the
               <a
-                @click="accept('policies')"
+                class="doc-links"
+                @click.capture="accept('policies')"
                 target="_blank"
                 href="/Policies_and_Procedures_(April_2018).pdf"
               >Policies and Procedures</a>
@@ -124,7 +125,8 @@ export default {
       agreed: false,
       redacted: false,
       saving: false,
-      requiredRule: [v => !!v || 'Field is required']
+      requiredRule: [v => !!v || 'Field is required'],
+      requiredPolicyRule: [v => !!v || 'Note: You must read the policies and procedures before agreeing']
     }
   },
   mounted () {
@@ -160,7 +162,9 @@ export default {
       })
     },
     accept (value) {
-      this.value.clicked[value] = moment.utc()
+      if (!this.agreed) {
+        this.value.clicked[value] = moment.utc()
+      }
     },
     async save () {
       this.saving = true
@@ -225,6 +229,10 @@ export default {
 </script>
 
 <style scoped>
+.doc-links {
+  pointer-events: all;
+}
+
 .legal-form p {
   margin: 15px 3px;
   text-align: left;
