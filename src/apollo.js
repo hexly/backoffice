@@ -1,5 +1,5 @@
 import { ApolloClient } from 'apollo-client'
-import { HttpLink } from 'apollo-link-http'
+import { BatchHttpLink } from 'apollo-link-batch-http'
 import { InMemoryCache } from 'apollo-cache-inmemory'
 import { setContext } from 'apollo-link-context'
 import store from '@/store'
@@ -18,7 +18,7 @@ export default function createApolloClient ({
   endpoints,
   persisting
 }) {
-  let httpLink = new HttpLink({
+  let httpLink = new BatchHttpLink({
     // You should use an absolute URL here
     uri: base + endpoints.graphql
     // fetch: customFetch

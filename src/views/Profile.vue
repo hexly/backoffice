@@ -175,8 +175,7 @@ export default {
       email: '',
       profileUrl: '',
       slug: '',
-      birthdate: '',
-      formattedDate: ''
+      birthdate: ''
     },
     legal: {
       agreement: {
@@ -210,12 +209,6 @@ export default {
         this.setGate(false)
       }
     },
-    formatDate: date => {
-      if (!date) { return null }
-
-      const fDate = moment(date).format('MMMM Do, YYYY')
-      return fDate
-    },
     async filesChange (files) {
       try {
         const file = files[0]
@@ -224,18 +217,62 @@ export default {
         const { data } = await this.$store.dispatch(Actions.AVATAR_UPLOAD, {
           file
         })
+        this.editMember.profileUrl = data.secure_url
+        await this.$apollo.mutate({
+          mutation: UPDATE_PROFILE,
+          variables: {
+            input: {
+              id: this.editMember.id,
+              profileUrl: this.editMember.profileUrl
+            }
+          }
+        })
         this.isFalse = false
         this.isUploading = false
         this.isSaving = false
         this.snackBarColor = SUCCESS_COLOR
-        this.editMember.profileUrl = data.secure_url
-        this.saveData()
+        this.snackbarMsg = 'Profile Successfully Saved'
+        this.snackbar = true
       } catch (err) {
         this.isFalse = false
         this.isUploading = false
         this.isSaving = false
         console.error('error uploading file', { err })
         this.snackbarMsg = 'Error uploading file'
+        this.snackBarColor = ERROR_COLOR
+        this.snackbar = true
+      }
+    },
+    async getMembers() {
+      const membersResult = await this.$apollo.query({
+        fetchPolicy: 'network-only',
+        query: GET_MEMBERS,
+        variables: {
+          input: {
+            ids: [this.memberId]
+          }
+        }
+      })
+      // If graphql query succeeds
+      if (membersResult) {
+        const { members } = membersResult.data
+        const editMember = members.nodes[0]
+        this.editMember = { ...editMember }
+        if (this.editMember.birthdate) {
+          this.editMember.birthdate = moment(this.editMember.birthdate).format('MM/DD/YYYY')
+        } else {
+          this.checkAlert({ type: 'birthday', isSet: false })
+        }
+
+        const isInvalid = /[^a-z0-9_]/gi.test(this.editMember.slug)
+        if (isInvalid) {
+          console.error('invalid slug found')
+          this.originalSlug = this.editMember.slug = null
+        } else {
+          this.originalSlug = this.editMember.slug
+        }
+      } else {
+        this.snackbarMsg = 'Could not retrieve profile data'
         this.snackBarColor = ERROR_COLOR
         this.snackbar = true
       }
@@ -270,7 +307,7 @@ export default {
         if (response) {
           const { findMemberBySlug } = response.data
           this.slugErrors = []
-          if (findMemberBySlug.id !== this.memberId) {
+          if (findMemberBySlug && findMemberBySlug.id !== this.memberId) {
             this.slugIsUnique = false
             this.snackBarColor = ERROR_COLOR
             this.snackbarMsg = 'Chosen store name is unavailable!'
@@ -293,19 +330,17 @@ export default {
                     name: this.editMember.name,
                     displayName: this.editMember.displayName,
                     contactEmail: this.editMember.email,
-                    profileUrl: this.editMember.profileUrl,
                     slug: sentSlug,
                     birthday: this.editMember.birthdate
                   }
-                },
-                update: (store, response) => {
-                  this.saving = false
-                  this.snackBarColor = SUCCESS_COLOR
-                  this.snackbarMsg = 'Information Saved'
-                  this.snackbar = true
-                  this.originalSlug = this.editMember.slug
                 }
               })
+              this.saving = false
+              this.snackBarColor = SUCCESS_COLOR
+              this.snackbarMsg = 'Information Saved'
+              this.snackbar = true
+              this.originalSlug = this.editMember.slug
+              this.getMembers()
             } catch (err) {
               console.error({ err })
               this.saving = false
@@ -321,7 +356,6 @@ export default {
         this.snackbar = true
       }
     },
-
     addressSnackBarEmitSuccess (e) {
       this.snackbarMsg = e
       this.snackBarColor = SUCCESS_COLOR
@@ -333,50 +367,12 @@ export default {
       this.snackbar = true
     }
   },
-  apollo: {
-    member: {
-      query: GET_MEMBERS,
-      variables () {
-        return {
-          input: {
-            ids: [this.memberId]
-          }
-        }
-      },
-      update ({ members }) {
-        // If graphql query succeeds
-        if (members) {
-          const editMember = members.nodes[0]
-          this.editMember = { ...editMember }
-          if (this.editMember.birthdate) {
-            this.editMember.formattedDate = this.formatDate(this.editMember.birthdate)
-          } else {
-            this.checkAlert({ type: 'birthday', isSet: false })
-          }
-
-          const isInvalid = /[^a-z0-9_]/gi.test(this.editMember.slug)
-          if (isInvalid) {
-            console.error('invalid slug found')
-            this.originalSlug = this.editMember.slug = null
-          } else {
-            this.originalSlug = this.editMember.slug
-          }
-
-          return editMember
-        } else {
-          this.snackbarMsg = 'Could not retrieve profile data'
-          this.snackBarColor = ERROR_COLOR
-          this.snackbar = true
-        }
-      }
-    }
+  mounted() {
+    this.getMembers()
   },
   watch: {
     modal (val) {
       val && this.$nextTick(() => (this.$refs.picker.activePicker = 'YEAR'))
-    },
-    birthdate (val) {
-      this.editMember.formattedDate = this.formatDate(val)
     }
   },
   computed: {
