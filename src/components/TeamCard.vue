@@ -74,6 +74,8 @@
 </template>
 
 <script>
+import tenantInfo from '@/tenant.js'
+
 export default {
   name: 'TeamCard',
   data: () => ({
@@ -101,7 +103,7 @@ export default {
     getAvatar () {
       return (
         (this.user && this.user.profileUrl) ||
-        'http://res.cloudinary.com/hexly/image/upload/dev/1001/avatar/undefined.jpg'
+        tenantInfo.placeholder
       )
     },
     isQualified () {

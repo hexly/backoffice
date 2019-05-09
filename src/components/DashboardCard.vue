@@ -1,10 +1,10 @@
 <template>
-  <v-card :color="`${color} darken-${darken}`" class="white--text" :style="{overflow: 'hidden'}">
+  <v-card :color="`${color} darken-${darken}`" :style="{overflow: 'hidden'}">
     <v-card-title primary-title>
       <div>
         <span v-if="!loading" class="display-2">{{display}}</span>
         <span v-if="loading" class="display-2">
-          <v-progress-circular indeterminate :size="30" :width="3" color="white"></v-progress-circular>
+          <v-progress-circular indeterminate :size="30" :width="3" color="black"></v-progress-circular>
         </span>
         <p class="subheading">{{subheading}}</p>
       </div>
@@ -30,7 +30,6 @@ export default {
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 v-card {
   overflow: hidden;

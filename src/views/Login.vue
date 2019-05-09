@@ -1,6 +1,5 @@
 <template>
   <v-content>
-    <div class="version">v. {{version}}</div>
     <v-container
       fluid
       align-center
@@ -17,16 +16,10 @@
           md8
         >
           <v-card class="elevation-12">
-            <v-toolbar
-              dark
-              color="black"
-            >
-              <v-toolbar-title>{{title}} Login</v-toolbar-title>
-            </v-toolbar>
             <v-card-text>
               <img
                 class="logo"
-                :src="logoPath"
+                :src="logoLoginPath"
               >
               <h2
                 class="error"
@@ -161,7 +154,6 @@
 <script>
 
 /* global VERSION */
-import tenantInfo from '@/tenant.js'
 import { UserActions } from '@/stores/UserStore'
 import { ClaimActions } from '@/stores/ClaimStore'
 import { delay } from '@/utils/timer.js'
@@ -177,8 +169,6 @@ export default {
         email: '',
         password: ''
       },
-      title: tenantInfo.name,
-      logoPath: tenantInfo.logoPath,
       type: 'login',
       error: null,
       success: null,
@@ -271,14 +261,10 @@ export default {
 </script>
 
 <style scoped>
-.box-card {
-  width: 480px;
-  margin: auto;
-}
 
 .logo {
   width: 100%;
-  max-width: 250px;
+  max-width: 450px;
   margin: auto;
   display: block;
 }
