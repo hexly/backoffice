@@ -127,8 +127,7 @@ export default {
       return this.showGate && this.$route.path.indexOf('profile') === -1
     },
     getAvatar () {
-      let image =
-        'http://res.cloudinary.com/hexly/image/upload/dev/1001/avatar/undefined.jpg'
+      let image = this.$tenantInfo.placeholder
       if (this.user.principal.profileUrl) {
         image = this.user.principal.profileUrl.replace(
           '/image/upload',

@@ -55,10 +55,11 @@
           <v-layout
             row
             wrap
+            justify-space-around
           >
             <v-flex
               xs12
-              sm6
+              sm3
             >
               <div class="mx-auto">
                 <img
@@ -387,8 +388,7 @@ export default {
     },
     getAvatar () {
       return (
-        this.editMember.profileUrl ||
-        'http://res.cloudinary.com/hexly/image/upload/dev/1001/avatar/undefined.jpg'
+        this.editMember.profileUrl || this.$tenantInfo.placeholder
       )
     }
   }
