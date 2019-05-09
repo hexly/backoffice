@@ -19,7 +19,7 @@
             <v-card-text>
               <img
                 class="logo"
-                :src="logoLoginPath"
+                :src="$tenantInfo.logoLoginPath"
               >
               <h2
                 class="error"
