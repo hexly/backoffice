@@ -2,7 +2,7 @@
   <div>
     <v-navigation-drawer fixed v-model="drawer" app temporary clipped>
       <div class="text-xs-center">
-        <img :src="logoPath" class="logo">
+        <img :src="$tenantInfo.logoPath" class="logo">
       </div>
       <v-divider></v-divider>
       <v-list dense>
@@ -48,13 +48,16 @@
         </v-list-tile>
       </v-list>
     </v-navigation-drawer>
-    <v-toolbar color="black" dark fixed app>
+    <v-toolbar :color="$tenantInfo.secondaryColor" dark fixed app>
       <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
       <v-toolbar-title>Backoffice</v-toolbar-title>
       <v-spacer></v-spacer>
       <v-toolbar-items>
         <v-menu offset-y>
-          <v-btn flat slot="activator">{{user.isImpersonating ? impersonationPrefix + user.principal.member.displayName : user.principal.member.displayName}}</v-btn>
+          <v-btn flat slot="activator">
+            {{user.isImpersonating ? impersonationPrefix + user.principal.member.displayName : user.principal.member.displayName}}
+            <img class="avatar" :src="getAvatar" />
+          </v-btn>
           <v-list style="cursor: pointer;">
             <!-- <v-list-tile>
               <v-list-tile-title>Settings</v-list-tile-title>
@@ -90,7 +93,7 @@
           <v-btn
             color="green darken-1"
             flat="flat"
-            @click="$router.push('/profile#address')"
+            @click="$router.push('/profile')"
           >
             Go To Profile Page
           </v-btn>
@@ -101,7 +104,6 @@
 </template>
 
 <script>
-import tenantInfo from '@/tenant.js'
 import { Actions, Mutations } from '@/store'
 import { Actions as MemberActions } from '@/Members/Store'
 import { mapState, mapActions, mapMutations } from 'vuex'
@@ -111,8 +113,7 @@ const impersonationPrefix = 'Impersonating '
 export default {
   data: () => ({
     impersonationPrefix,
-    drawer: null,
-    logoPath: tenantInfo.logoPath
+    drawer: null
   }),
   props: {
     source: String
@@ -124,6 +125,17 @@ export default {
     }),
     showGateDialog() {
       return this.showGate && this.$route.path.indexOf('profile') === -1
+    },
+    getAvatar () {
+      let image =
+        'http://res.cloudinary.com/hexly/image/upload/dev/1001/avatar/undefined.jpg'
+      if (this.user.principal.profileUrl) {
+        image = this.user.principal.profileUrl.replace(
+          '/image/upload',
+          '/image/upload/w_190,h_190'
+        )
+      }
+      return image
     }
   },
   methods: {
@@ -150,17 +162,23 @@ export default {
 </script>
 
 <style scoped>
+.avatar{
+  width: 50px;
+  border-radius: 100px;
+  margin-left: 12px;
+}
+
 .main {
-  padding: 25px;
-  margin: 50px auto;
+  margin: auto;
   background-color: #fafafa;
   box-shadow: 1px 2px 6px -2px #000;
   min-height: calc(100vh - 164px);
 }
+
 .logo {
   width: 100%;
-  max-width: 250px;
-  margin: auto;
+  max-width: 100px;
+  margin: 50px auto;
   display: block;
 }
 </style>

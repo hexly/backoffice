@@ -13,19 +13,15 @@
             <div class="mono name">{{level.size}}</div>
           </div>
           <div class="flex xs3 text-xs-left">
-            <div class="header grey--text text--darken-1">Total Points</div>
+            <div class="header grey--text text--darken-1">Points</div>
             <div class="mono default">{{level.totalPoints}}</div>
-          </div>
-          <div class="flex xs3 text-xs-left">
-            <div class="header grey--text text--darken-1">Total Amount</div>
-            <div class="mono default">{{level.totalAmount}}</div>
           </div>
           <div class="flex xs3 text-xs-left">
             <div class="header grey--text text--darken-1">Recruited</div>
             <div class="mono default">{{level.recruited}}</div>
           </div>
           <div class="flex xs3 text-xs-left">
-            <div class="header grey--text text--darken-1">Total Sales</div>
+            <div class="header grey--text text--darken-1">Sales</div>
             <div class="mono default">{{level.sales}}</div>
           </div>
           <!-- <div class="flex xs3 text-xs-right">

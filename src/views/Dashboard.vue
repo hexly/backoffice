@@ -1,65 +1,94 @@
 <template>
   <div class="dashboard">
-    <h1>Welcome To Your Backoffice {{user.principal.member.displayName}}!</h1>
-    <month-selector
-      :year="year"
-      :month="month"
-      @date-changed="dateChanged"
-    />
-    <v-container
-      fluid
-      class="contain"
-    >
-      <v-layout
-        row
-        wrap
-      >
-        <v-flex sm2>
-          <img
-            class="image"
-            :src="getAvatar"
-            :style="{ borderColor: `#${currentRank.color}`}"
+    <v-layout row wrap justify-space-between="">
+        <v-flex xs12 sm6>
+          <h1>Dashboard</h1>
+        </v-flex>
+        <v-flex xs12 sm3 md2>
+          <month-selector
+            :year="year"
+            :month="month"
+            @date-changed="dateChanged"
           />
         </v-flex>
-        <v-flex sm6>
-          <h3>Chakra: {{currentRank.name}}</h3>
-          <ul>
-            <li>Qualified First Level: {{team.personal.qualified}}</li>
-            <li>Total Personal Points: {{team.personal.totalPoints}}</li>
-            <li>Total Personal Amount: {{team.personal.totalAmount}}</li>
-            <li>Total Personal Sales: {{team.personal.sales}}</li>
-            <li>Personal Recruits: {{team.personal.recruited}}</li>
-            <li>
-              <hr />
-            </li>
-            <li>Family Size: {{team.teamSize}}</li>
-            <li>Total Family Points: {{team.totalTeamAmount}}</li>
-          </ul>
-
-          <div
-            class="chakra ambassador"
-            :class="{'active': team.personal.totalPoints >= 60}"
-          ></div>
-          <div
-            class="chakra guide"
-            :class="{'active': calculateRank(1)}"
-          ></div>
-          <div
-            class="chakra guru"
-            :class="{'active': calculateRank(2)}"
-          ></div>
-          <div
-            class="chakra sage"
-            :class="{'active': calculateRank(3)}"
-          ></div>
-          <div
-            class="chakra master"
-            :class="{'active': calculateRank(4)}"
-          ></div>
-
+    </v-layout>
+    <v-container fluid class="contain">
+      <v-subheader>Rank</v-subheader>
+      <h2>{{currentRank.name}}</h2>
+      <div class="text-xs-center">
+        <div
+          class="chakra ambassador"
+          :class="{'active': team.personal.totalPoints >= 60}"
+        ></div>
+        <div
+          class="chakra guide"
+          :class="{'active': calculateRank(1)}"
+        ></div>
+        <div
+          class="chakra guru"
+          :class="{'active': calculateRank(2)}"
+        ></div>
+        <div
+          class="chakra sage"
+          :class="{'active': calculateRank(3)}"
+        ></div>
+        <div
+          class="chakra master"
+          :class="{'active': calculateRank(4)}"
+        ></div>
+      </div>
+      <v-subheader>Personal Stats</v-subheader>
+      <v-layout row wrap justify-center>
+        <v-flex xs12 sm4 md4 lg3 class="pa-3">
+          <DashCard
+            color="white"
+            darken="1"
+            :display="team.personal.sales"
+            subheading="Monthly Sales"
+            icon="shopping_basket"
+          />
         </v-flex>
-        <v-spacer />
+        <v-flex xs12 sm4 md4 lg3 class="pa-3">
+          <DashCard
+            color="white"
+            darken="1"
+            :display="team.personal.qualified"
+            subheading="Qualified First Level"
+            icon="how_to_reg"
+          />
+        </v-flex>
+        <v-flex xs12 sm4 md4 lg3 class="pa-3">
+          <DashCard
+            color="white"
+            darken="1"
+            :display="team.personal.totalPoints.toFixed(2)"
+            subheading="Monthly Points"
+            icon="group_work"
+          />
+        </v-flex>
+        </v-layout>
+      <v-subheader>Family Stats</v-subheader>
+      <v-layout row wrap justify-center>
+        <v-flex xs12 sm4 md4 lg3 class="pa-3">
+          <DashCard
+            color="white"
+            darken="1"
+            :display="team.teamSize"
+            subheading="Size"
+            icon="group"
+          />
+        </v-flex>
+        <v-flex xs12 sm4 md4 lg3 class="pa-3">
+          <DashCard
+            color="white"
+            darken="1"
+            :display="team.totalTeamAmount.toFixed(2)"
+            subheading="Points"
+            icon="group_work"
+          />
+        </v-flex>
       </v-layout>
+      <v-subheader>Plan</v-subheader>
       <CompPlanLevel
         :level="team.firstLevel"
         levelName="One"
@@ -89,29 +118,26 @@
         :color="ranks[5].color"
       />
     </v-container>
+    <!-- <v-subheader>Team Leaderboards</v-subheader>
+    <v-container fluid grid-list-xs>
+      <v-layout row wrap>
+        <v-flex sm6 pa-3>
+          <p>First Level qualifiers</p>
+          <FrontlineQualifiers :leaders="teamLeaders"/>
+        </v-flex>
+      </v-layout>
+    </v-container> -->
     <v-subheader>Leaderboards</v-subheader>
-    <v-container
-      fluid
-      grid-list-xs
-    >
-      <v-layout
-        row
-        wrap
-      >
-        <v-flex
-          sm6
-          pa-3
-        >
+    <v-container fluid grid-list-xs>
+      <v-layout row wrap>
+        <v-flex sm6 pa-3>
           <LeaderBoard
             :leaders="MonthlySalesLeaders"
             title="Top Sellers"
             :showTotal="false"
           />
         </v-flex>
-        <v-flex
-          sm6
-          pa-3
-        >
+        <v-flex sm6 pa-3>
           <LeaderBoard
             :leaders="MonthlyFrontlineLeaders"
             title="Top Recruiters"
@@ -129,14 +155,17 @@ import {
   MONTHLY_FRONTLINE_LEADERBOARD
 } from '@/graphql/Leaderboard.js'
 import { ADDRESS_BY_MEMBER_ID } from '@/graphql/Address.js'
+import MONTHLY_STATS_QUERY from '@/graphql/GetMonthlyStats.gql'
 
 import DashCard from '@/components/DashboardCard.vue'
 import LeaderBoard from '@/components/Leaderboard.vue'
+import FrontlineQualifiers from '@/components/FrontlineQualifiers.vue'
 import CompPlanLevel from '@/components/CompPlanLevel.vue'
 import MonthSelector from '@/components/MonthSelector.vue'
 import GET_MEMBERS from '@/graphql/GetMembers.gql'
 
 import moment from 'moment'
+import _ from 'lodash'
 import { pathOr } from 'rambda'
 import { mapMutations, mapState } from 'vuex'
 import { UserMutations } from '@/stores/UserStore'
@@ -150,9 +179,11 @@ export default {
     DashCard,
     MonthSelector,
     LeaderBoard,
-    CompPlanLevel
+    CompPlanLevel,
+    FrontlineQualifiers
   },
   data: () => ({
+    teamLeaders: [],
     ranks: {
       0: { name: 'Unqualified', color: 'FFFFFF' },
       1: { name: 'Zen Ambassador', color: 'E53A37' },
@@ -294,7 +325,31 @@ export default {
       update ({ monthlyFrontlineLeaderboard }) {
         return monthlyFrontlineLeaderboard
       }
-    }
+    }// ,
+    // teamLeaders: {
+    //   query: MONTHLY_STATS_QUERY,
+    //   variables () {
+    //     return {
+    //       targetCondition: {
+    //         tenantId,
+    //         sellerId: this.currentId,
+    //         month: this.month,
+    //         year: this.year
+    //       },
+    //       firstLevelCondition: {
+    //         tenantId,
+    //         sponsorId: this.$store.state.user.principal.memberId,
+    //         month: this.month,
+    //         year: this.year
+    //       }
+    //     }
+    //   },
+    //   update ({ targetStats, firstLevelStats }) {
+    //     const firstLevelQualifiers = firstLevelStats.nodes.filter(stats => stats.totalAmount > 0)
+    //     return _.orderBy(firstLevelQualifiers, 'totalAmount', 'desc')
+    //   },
+    //   fetchPolicy: 'cache-and-network'
+    // }
   },
   methods: {
     dateChanged ({ date }) {
@@ -318,18 +373,7 @@ export default {
   computed: {
     ...mapState({
       user: state => state.user
-    }),
-    getAvatar () {
-      let image =
-        'http://res.cloudinary.com/hexly/image/upload/dev/1001/avatar/undefined.jpg'
-      if (this.user.principal.profileUrl) {
-        image = this.user.principal.profileUrl.replace(
-          '/image/upload',
-          '/image/upload/w_190,h_190'
-        )
-      }
-      return image
-    }
+    })
   }
 }
 </script>
@@ -348,27 +392,27 @@ ul li {
 }
 
 .chakra {
-  width: 78px;
-  height: 67px;
+  width: 105px;
+  height: 105px;
   display: inline-block;
   filter: grayscale(100%) opacity(50%);
-  background-image: url("../../public/img/css_sprites.png");
+  background-image: url("/img/1004/chakras.png");
 }
 
 .ambassador {
-  background-position: -108px -107px;
+  background-position: -15px 0px;
 }
 .guide {
-  background-position: -209px -85px;
+  background-position: -135px 0px;
 }
 .guru {
-  background-position: -10px -199px;
+  background-position: -249px 0;
 }
 .sage {
-  background-position: -111px -10px;
+  background-position: -367px 0px;
 }
 .master {
-  background-position: -10px -107px;
+  background-position: -605px 0;
 }
 
 .active {

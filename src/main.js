@@ -14,6 +14,8 @@ import store from './store'
 
 import { apolloProvider } from './vue-apollo'
 
+import tenantInfo from '@/tenant.js'
+
 try {
   const mf = require('./build.info.json')
   window.$version = mf.buildTime
@@ -76,6 +78,8 @@ window.zE &&
       })
     }
   })
+
+Vue.prototype.$tenantInfo = tenantInfo
 
 new Vue({
   provide: apolloProvider.provide(),
