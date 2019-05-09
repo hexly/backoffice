@@ -171,7 +171,7 @@ export default {
   margin: auto;
   background-color: #fafafa;
   box-shadow: 1px 2px 6px -2px #000;
-  min-height: calc(100vh - 164px);
+  min-height: 100vh;
 }
 
 .logo {
