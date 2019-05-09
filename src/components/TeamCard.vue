@@ -74,7 +74,6 @@
 </template>
 
 <script>
-import tenantInfo from '@/tenant.js'
 
 export default {
   name: 'TeamCard',
@@ -103,7 +102,7 @@ export default {
     getAvatar () {
       return (
         (this.user && this.user.profileUrl) ||
-        tenantInfo.placeholder
+        this.$tenantInfo.placeholder
       )
     },
     isQualified () {
