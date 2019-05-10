@@ -6,29 +6,13 @@
       justify-center
       style="display:flex;height: 95%;"
     >
-      <v-layout
-        align-center
-        justify-center
-      >
-        <v-flex
-          xs12
-          sm8
-          md8
-        >
+      <v-layout align-center justify-center>
+        <v-flex xs12 sm8 md8>
           <v-card class="elevation-12">
             <v-card-text>
-              <img
-                class="logo"
-                :src="$tenantInfo.logoLoginPath"
-              >
-              <h2
-                class="error"
-                v-if="error"
-              >{{error}}</h2>
-              <h2
-                class="success"
-                v-if="success"
-              >{{success}}</h2>
+              <img class="logo" :src="$tenantInfo.logoLoginPath" />
+              <h2 class="error" v-if="error">{{error}}</h2>
+              <h2 class="success" v-if="success">{{success}}</h2>
               <div v-if="type === 'login'">
                 <v-form
                   ref="login"
@@ -55,24 +39,29 @@
                     type="password"
                   ></v-text-field>
                   <v-card-actions>
-                    <div>
-                      <span>
-                        Need access to your account?
-                        <a @click="changeMode('register')">Register</a>
-                      </span>
-                      <br>
-                      <span>
-                        Forgot your Password?
-                        <a @click="changeMode('reset')">Reset Password</a>
-                      </span>
-                    </div>
-                    <v-spacer></v-spacer>
-                    <v-btn
-                      :loading="buttonLoading"
-                      type="submit"
-                      color="deep-purple"
-                      dark
-                    >Login</v-btn>
+                    <v-layout row wrap justify-space-between>
+                      <v-flex xs12 sm6 class="py-2 text-xs-center text-sm-left">
+                        <div>
+                          <span>
+                            Need access to your account?
+                            <a @click="changeMode('register')">Register</a>
+                          </span>
+                          <br>
+                          <span>
+                            Forgot your Password?
+                            <a @click="changeMode('reset')">Reset Password</a>
+                          </span>
+                        </div>
+                      </v-flex>
+                      <v-flex xs12 sm6 class="py-2 text-xs-center text-sm-right">
+                        <v-btn
+                          :loading="buttonLoading"
+                          type="submit"
+                          :color="$tenantInfo.secondaryColor"
+                          dark
+                        >Login</v-btn>
+                      </v-flex>
+                    </v-layout>
                   </v-card-actions>
                 </v-form>
               </div>

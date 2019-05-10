@@ -2,38 +2,22 @@
   <div class="comp-plan-level">
     <v-layout row wrap>
       <v-flex>
-      <div class="ma-2" :style="{ border: `3px solid #${percent > 0 ? color: 'FFFFFF'}`}">
-        <div class="pa-2 grey lighten-4 d-flex align-top">
+      <div class="my-1" :style="{ border: `3px solid #${percent > 0 ? color: 'FFFFFF'}`}">
+        <div class="pa-1 grey lighten-4 d-flex align-top">
           <div class="flex xs3 text-xs-left">
-            <div class="header grey--text text--darken-1">Level</div>
             <div class="mono name">{{levelName}}</div>
           </div>
           <div class="flex xs3 text-xs-left">
-            <div class="header grey--text text--darken-1">Size</div>
             <div class="mono name">{{level.size}}</div>
           </div>
           <div class="flex xs3 text-xs-left">
-            <div class="header grey--text text--darken-1">Points</div>
             <div class="mono default">{{level.totalPoints}}</div>
           </div>
           <div class="flex xs3 text-xs-left">
-            <div class="header grey--text text--darken-1">Recruited</div>
             <div class="mono default">{{level.recruited}}</div>
           </div>
           <div class="flex xs3 text-xs-left">
-            <div class="header grey--text text--darken-1">Sales</div>
             <div class="mono default">{{level.sales}}</div>
-          </div>
-          <!-- <div class="flex xs3 text-xs-right">
-            <div class="header grey--text text--darken-1">Commision</div>
-            <div class="mono type"><Currency :amount="level.commissionablePoints * percent"/></div>
-          </div> -->
-        </div>
-        <div class="pa-2 grey lighten-3 grey--text text--darken-2 d-flex">
-          <div class="flex">
-            <div class="justify">
-              <p>{{notes}}</p>
-            </div>
           </div>
         </div>
       </div>

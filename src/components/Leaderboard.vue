@@ -1,7 +1,7 @@
 <template>
   <v-card>
     <v-toolbar
-      :color="$tenantInfo.primaryColor"
+      color="secondary"
       dark
     >
       <v-toolbar-title>{{title}}</v-toolbar-title>
