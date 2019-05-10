@@ -29,6 +29,7 @@ query getMonthlyStats(
       tenantId
       year
       month
+      name
       joinedOn
       sellerId
       sellerPath

@@ -74,7 +74,8 @@ export default {
 }
 
 #backoffice.tenant-1004 {
-  background-image: linear-gradient(to right, #722c7c, #6fb457);
+  background-image: none;
+  background-color: #373331;
 }
 
 #nav {
@@ -88,5 +89,11 @@ export default {
 
 #nav a.router-link-exact-active {
   color: #42b983;
+}
+
+@media only screen and (max-width: 959px){
+  .container{
+    padding: 2px !important;
+  }
 }
 </style>

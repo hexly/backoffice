@@ -149,8 +149,7 @@ export default {
   computed: {
     getAvatar () {
       return (
-        this.member.profileUrl ||
-        'http://res.cloudinary.com/hexly/image/upload/dev/1001/avatar/undefined.jpg'
+        this.member.profileUrl || this.$tenantInfo.placeholder
       )
     }
   }
