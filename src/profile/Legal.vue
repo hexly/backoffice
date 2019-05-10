@@ -96,7 +96,7 @@
           <v-btn
             :disabled="saving || (redacted && agreed)"
             :loading="saving"
-            color="success"
+            color="primary"
             type="submit"
           >Save Legal Details</v-btn>
         </v-flex>
@@ -106,7 +106,6 @@
 </template>
 
 <script>
-import moment from 'moment'
 import { mapActions, mapState } from 'vuex'
 import { encrypt } from '@/utils/EncryptionService'
 
@@ -163,7 +162,7 @@ export default {
     },
     accept (value) {
       if (!this.agreed) {
-        this.value.clicked[value] = moment.utc()
+        this.value.clicked[value] = this.$moment.utc()
       }
     },
     async save () {

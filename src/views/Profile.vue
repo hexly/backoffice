@@ -1,23 +1,10 @@
 <template>
-  <div class="profile">
-    <v-container
-      grid-list-md
-      text-xs-center
-    >
-      <v-tabs
-        centered
-        color="green"
-        dark
-        icons-and-text
-      >
-        <v-tabs-slider color="purple"></v-tabs-slider>
+  <div class="profile text-xs-center">
+      <v-tabs centered color="secondary" dark icons-and-text>
+        <v-tabs-slider color="white"></v-tabs-slider>
 
         <v-tab to="#profile">Profile
-          <v-badge
-            v-model="alert.birthday"
-            left
-            color="red"
-          >
+          <v-badge v-model="alert.birthday" left color="red" >
             <template slot="badge">
               <span>!</span>
             </template>
@@ -101,18 +88,17 @@
           </v-layout>
         </v-tab-item>
 
-        <v-tab-item value="address">
+        <v-tab-item value="address" class="px-4">
           <AddressForm
             @addressSnackBarEmitSuccess="addressSnackBarEmitSuccess"
             @addressSnackBarEmitError="addressSnackBarEmitError"
             @hasAddress="checkAlert"
           />
         </v-tab-item>
-        <v-tab-item value="legal">
+        <v-tab-item value="legal" class="px-4">
           <LegalForm @hasLegal="checkAlert" :value="legal" />
         </v-tab-item>
       </v-tabs>
-    </v-container>
     <v-snackbar
       :timeout="6000"
       :top="true"
@@ -122,11 +108,7 @@
       :multi-line="true"
     >
       <div style="color: white;">{{snackbarMsg}}</div>
-      <v-btn
-        flat
-        color="white"
-        @click.native="snackbar = false"
-      >Close</v-btn>
+      <v-btn flat color="white" @click.native="snackbar = false">Close</v-btn>
     </v-snackbar>
   </div>
 </template>
@@ -145,7 +127,7 @@ import { mapMutations } from 'vuex'
 var moment = require('moment')
 
 const ERROR_COLOR = 'red'
-const SUCCESS_COLOR = 'purple'
+const SUCCESS_COLOR = 'primary'
 
 export default {
   components: {
@@ -153,55 +135,57 @@ export default {
     AddressForm,
     LegalForm
   },
-  data: () => ({
-    modal: false,
-    moment,
-    visible: false,
-    password: '',
-    newPassword: '',
-    snackbar: false,
-    snackbarMsg: '',
-    snackBarColor: null,
-    slugRule: Rules.slugRule,
-    birthdateRule: Rules.birthdateRule,
-    uploadFileName: null,
-    isUploading: false,
-    isSaving: false,
-    slugIsUnique: true,
-    slugErrors: [],
-    editMember: {
-      id: '',
-      name: '',
-      displayName: '',
-      email: '',
-      profileUrl: '',
-      slug: '',
-      birthdate: ''
-    },
-    legal: {
-      agreement: {
-        affiliate: false,
-        policies: false
+  data() {
+    return {
+      modal: false,
+      moment,
+      visible: false,
+      password: '',
+      newPassword: '',
+      snackbar: false,
+      snackbarMsg: '',
+      snackBarColor: null,
+      slugRule: Rules.slugRule,
+      birthdateRule: Rules.birthdateRule,
+      uploadFileName: null,
+      isUploading: false,
+      isSaving: false,
+      slugIsUnique: true,
+      slugErrors: [],
+      editMember: {
+        id: '',
+        name: '',
+        displayName: '',
+        email: '',
+        profileUrl: '',
+        slug: '',
+        birthdate: ''
       },
-      clicked: {
-        affiliate: null,
-        policies: null
+      legal: {
+        agreement: {
+          affiliate: false,
+          policies: false
+        },
+        clicked: {
+          affiliate: null,
+          policies: null
+        },
+        initial: {
+          affiliate: null,
+          policies: null,
+          entity: null
+        },
+        entity: {}
       },
-      initial: {
-        affiliate: null,
-        policies: null,
-        entity: null
-      },
-      entity: {}
-    },
-    originalSlug: undefined,
-    saving: false,
-    alert: {
-      address: false,
-      birthday: false,
-      legal: false
+      originalSlug: undefined,
+      saving: false,
+      alert: {
+        address: false,
+        birthday: false,
+        legal: false
+      }
     }
-  }),
+  },
   methods: {
     ...mapMutations([Mutations.SET_GATE]),
     checkAlert (value) {

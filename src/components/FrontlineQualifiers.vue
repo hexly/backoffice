@@ -1,55 +1,79 @@
 <template>
   <v-card>
-    <v-list two-line>
-      <div v-for="(item, index) in leaders" :key="`${item.contactEmail}-${index}`">
+    <v-toolbar color="secondary" dark >
+      <v-toolbar-title>Front Line Qualifiers</v-toolbar-title>
+    </v-toolbar>
+    <v-list two-line style="padding: 0;">
+      <v-list-tile
+        v-if="personal"
+        class="progress"
+        :style="calculateColor(1, personal)">
+        <v-list-tile-content>
+          <v-list-tile-title>{{personal.name}} (You)</v-list-tile-title>
+        </v-list-tile-content>
+        <v-list-tile-action >
+          <v-list-tile-title v-if="personal.totalPoints/60 < 1">{{ personal.totalPoints.toFixed(2) }}/60</v-list-tile-title>
+          <v-list-tile-title v-else>Qualified</v-list-tile-title>
+        </v-list-tile-action>
+      </v-list-tile>
+      <div v-for="(item, index) in filteredLeaders" :key="`${item.contactEmail}-${index}`">
         <v-list-tile
           :key="item.name"
-          avatar
           class="progress"
-          :style="`background-image: -webkit-linear-gradient(left, rgb(160, 206, 78, 0.1) ${item.totalPoints/60*100}%, #ffffff ${item.totalPoints/60*100}%);`">
-          <v-list-tile-avatar>
-            <img :src="scaleImage(item.profileUrl)">
-          </v-list-tile-avatar>
+          :style="calculateColor(index+2, item)">
           <v-list-tile-content>
-            <v-list-tile-title>{{index + 1}}.- {{item.name}}</v-list-tile-title>
+            <v-list-tile-title>{{item.name}}</v-list-tile-title>
           </v-list-tile-content>
           <v-list-tile-action >
-            <v-list-tile-title >{{ item.totalPoints.toFixed(2) }}/60</v-list-tile-title>
+            <v-list-tile-title v-if="item.totalPoints/60 < 1">{{ item.totalPoints.toFixed(2) }}/60</v-list-tile-title>
+            <v-list-tile-title v-else>Qualified</v-list-tile-title>
           </v-list-tile-action>
         </v-list-tile>
       </div>
+      <v-list-tile
+        v-if="filteredLeaders && filteredLeaders.length < 4"
+        class="progress">
+        <v-list-tile-content>
+          <v-list-tile-title>You have {{leaders.length - filteredLeaders.length}} people in your front line with 0 points this month.</v-list-tile-title>
+        </v-list-tile-content>
+      </v-list-tile>
     </v-list>
     <div v-if="leaders.length < 5"></div>
   </v-card>
 </template>
 
 <script>
+import _ from 'lodash'
+
 export default {
   name: 'FrontlineQualifiers',
   data() { return { } },
   props: {
     leaders: Array,
-    title: String,
-    currency: {
-      type: Boolean,
-      default: false
-    },
-    showTotal: {
-      type: Boolean,
-      default: true
-    }
+    ranks: Object,
+    personal: Object
   },
   methods: {
-    scaleImage (image) {
-      if (image) {
-        return image.replace('/image/upload', '/image/upload/w_80')
+    calculateColor(rank, item) {
+      let color = 'rgb(160, 206, 78, 0.1)'
+      const percent = item.totalPoints / 60 * 100
+      if (this.ranks[rank] && (item.totalPoints / 60 >= 1) && this.isQualified()) {
+        color = `#${this.ranks[rank].color}`
       }
-      return image
+      return `background-image: -webkit-linear-gradient(left, ${color} ${percent}%, #ffffff ${percent}%);`
+    },
+    isQualified() {
+      return this.personal.totalPoints >= 60
+    }
+  },
+  computed: {
+    filteredLeaders() {
+      const firstLevelQualifiers = this.leaders.filter(stats => stats.totalAmount > 0)
+      return _.slice(_.orderBy(firstLevelQualifiers, 'totalAmount', 'desc'), 0, 4)
     }
   }
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 </style>
