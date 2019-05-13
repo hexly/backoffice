@@ -20,6 +20,7 @@
                   lazy-validation
                 >
                   <v-text-field
+                    data-cy="Username Login Page"
                     required
                     :rules="[v => !!v || 'Field is required']"
                     v-model="form.email"
@@ -29,6 +30,7 @@
                     type="email"
                   ></v-text-field>
                   <v-text-field
+                    data-cy="Password Login Page"
                     required
                     :rules="[v => !!v || 'Field is required']"
                     v-model="form.password"
@@ -55,6 +57,7 @@
                       </v-flex>
                       <v-flex xs12 sm6 class="py-2 text-xs-center text-sm-right">
                         <v-btn
+                          data-cy="Login Login Page"
                           :loading="buttonLoading"
                           type="submit"
                           :color="$tenantInfo.secondaryColor"
