@@ -54,7 +54,7 @@
       <v-spacer></v-spacer>
       <v-toolbar-items>
         <v-menu offset-y>
-          <v-btn flat slot="activator">
+          <v-btn flat slot="activator" data-cy="Display Name">
             {{user.isImpersonating ? impersonationPrefix + user.principal.member.displayName : user.principal.member.displayName}}
             <img class="avatar" :src="getAvatar" />
           </v-btn>
@@ -65,7 +65,7 @@
             <v-list-tile @click="logout" v-if="user.isImpersonating">
               <v-list-tile-title >End Impersonation</v-list-tile-title>
             </v-list-tile>
-            <v-list-tile @click="logout" v-if="!user.isImpersonating">
+            <v-list-tile data-cy="Logout" @click="logout" v-if="!user.isImpersonating">
               <v-list-tile-title>Log Out</v-list-tile-title>
             </v-list-tile>
           </v-list>
