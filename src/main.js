@@ -2,9 +2,7 @@ import Vue from 'vue'
 import Vuetify from 'vuetify'
 import 'vuetify/dist/vuetify.min.css'
 
-import Chartkick from 'chartkick'
-import VueChartkick from 'vue-chartkick'
-import 'chart.js'
+import moment from 'moment'
 
 import _ from 'lodash'
 
@@ -23,11 +21,14 @@ try {
   console.warn('Failed to load build.info.json', err)
 }
 
-Vue.use(VueChartkick, {
-  Chartkick
+// Vue.use(Vuetify)
+Vue.use(Vuetify, {
+  theme: {
+    primary: tenantInfo.primaryColor,
+    secondary: tenantInfo.secondaryColor,
+    accent: tenantInfo.accentColor
+  }
 })
-
-Vue.use(Vuetify)
 Vue.config.productionTip = false
 
 // Removing service worker since we dont use it
@@ -80,6 +81,7 @@ window.zE &&
   })
 
 Vue.prototype.$tenantInfo = tenantInfo
+Vue.prototype.$moment = moment
 
 new Vue({
   provide: apolloProvider.provide(),

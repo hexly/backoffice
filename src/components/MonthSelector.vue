@@ -43,8 +43,6 @@
 </template>
 
 <script>
-import moment from 'moment'
-
 export default {
   name: 'month-selector',
   data () {
@@ -52,13 +50,12 @@ export default {
       date: null,
       formattedDate: null,
       menu: false,
-      maxDate: moment().format(),
-      moment
+      maxDate: this.$moment().format()
     }
   },
   mounted () {
     this.date = `${this.year}-${this.month}`
-    this.formattedDate = moment(this.date).format('MMMM YYYY')
+    this.formattedDate = this.$moment(this.date, 'YYYY-MM').format('MMMM YYYY')
   },
   props: {
     month: {
@@ -77,7 +74,7 @@ export default {
   methods: {
     updateDate () {
       this.$refs.menu.save(this.date)
-      this.formattedDate = moment(this.date).format('MMMM YYYY')
+      this.formattedDate = this.$moment(this.date).format('MMMM YYYY')
       this.$emit('date-changed', {
         date: this.date
       })

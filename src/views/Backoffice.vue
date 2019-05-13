@@ -47,15 +47,34 @@
           </v-list-tile-content>
         </v-list-tile>
       </v-list>
+      <v-divider></v-divider>
+      <v-list>
+        <v-list-tile :href="usersStoreUrl" target="_blank">
+          <v-list-tile-action>
+            <v-icon>store</v-icon>
+          </v-list-tile-action>
+          <v-list-tile-content>
+            <v-list-tile-title>Shop</v-list-tile-title>
+          </v-list-tile-content>
+        </v-list-tile>
+      </v-list>
+      <div column class="text-xs-center py-4 footer">
+        <div>
+          <a v-for="social in $tenantInfo.social" :key="social.key" :href="social.url" target="_blank">
+            <img :src="`/img/social/${social.key}.svg`" />
+          </a>
+        </div>
+        <h5 class="py-4">Copyright 2019</h5>
+      </div>
     </v-navigation-drawer>
-    <v-toolbar :color="$tenantInfo.secondaryColor" dark fixed app>
+    <v-toolbar :color="$tenantInfo.baseColor" dark fixed app>
       <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
       <v-toolbar-title>Backoffice</v-toolbar-title>
       <v-spacer></v-spacer>
       <v-toolbar-items>
         <v-menu offset-y>
           <v-btn flat slot="activator" data-cy="Display Name">
-            {{user.isImpersonating ? impersonationPrefix + user.principal.member.displayName : user.principal.member.displayName}}
+            <span v-if="$vuetify.breakpoint.mdAndUp">{{user.isImpersonating ? impersonationPrefix + user.principal.member.displayName : user.principal.member.displayName}}</span>
             <img class="avatar" :src="getAvatar" />
           </v-btn>
           <v-list style="cursor: pointer;">
@@ -73,9 +92,9 @@
       </v-toolbar-items>
     </v-toolbar>
     <v-content>
-      <v-container fluid class="main">
+      <div class="main">
         <router-view/>
-      </v-container>
+      </div>
     </v-content>
     <v-dialog
       v-model="showGateDialog"
@@ -111,10 +130,12 @@ import { mapState, mapActions, mapMutations } from 'vuex'
 const impersonationPrefix = 'Impersonating '
 
 export default {
-  data: () => ({
-    impersonationPrefix,
-    drawer: null
-  }),
+  data() {
+    return {
+      impersonationPrefix,
+      drawer: null
+    }
+  },
   props: {
     source: String
   },
@@ -123,6 +144,9 @@ export default {
       user: state => state.user,
       showGate: state => state.showGate
     }),
+    usersStoreUrl() {
+      return this.$tenantInfo.storeUrl.replace('{slug}', this.user.principal.slug)
+    },
     showGateDialog() {
       return this.showGate && this.$route.path.indexOf('profile') === -1
     },
@@ -167,6 +191,13 @@ export default {
   margin-left: 12px;
 }
 
+@media only screen and (max-width: 959px){
+  .avatar{
+    width: 40px;
+    margin-left: 0;
+  }
+}
+
 .main {
   margin: auto;
   background-color: #fafafa;
@@ -177,7 +208,19 @@ export default {
 .logo {
   width: 100%;
   max-width: 100px;
-  margin: 50px auto;
+  margin: 15px auto;
   display: block;
+}
+
+.footer{
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  color: rgba(0,0,0,.54);
+}
+
+.footer img{
+  width: 25px;
+  height: 25px;
 }
 </style>

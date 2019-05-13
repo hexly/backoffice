@@ -50,7 +50,7 @@
         :disabled="saving"
         :loading="saving"
         type="submit"
-        color="success"
+        color="primary"
       >Save Address</v-btn>
     </v-form>
   </div>

@@ -12,12 +12,7 @@
       rel="shortcut icon"
       href="/img/<%= process.env.VUE_APP_TENANT_ID %>/favicon.png"
     />
-    <%= process.env.VUE_APP_ZENDESK_WIDGET_URL ? `
-    <script
-      id="ze-snippet"
-      src="${process.env.VUE_APP_ZENDESK_WIDGET_URL}"
-    ></script>
-    ` : '' %>
+    <%= process.env.VUE_APP_ZENDESK_WIDGET_URL ? ` <script id="ze-snippet" src="${process.env.VUE_APP_ZENDESK_WIDGET_URL}"></script> ` : '' %>
     <title>Backoffice</title>
   </head>
 

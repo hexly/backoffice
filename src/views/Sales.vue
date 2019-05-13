@@ -1,9 +1,8 @@
 <template>
   <v-flex xs12>
     <div class="about">
-      <h1>Sales</h1>
       <v-card>
-        <v-card-title class="headline font-weight-regular blue-grey white--text">Search</v-card-title>
+        <v-card-title class="headline font-weight-regular white--text secondary">Search Sales</v-card-title>
         <v-card-text>
           <v-subheader>Range</v-subheader>
           <v-container
@@ -33,7 +32,7 @@
                 />
                 <v-date-picker
                   ref="pickerStart"
-                  color="blue-grey"
+                  color="secondary"
                   v-model="startDate"
                   :reactive="true"
                   @change="startDateChanged"
@@ -56,7 +55,7 @@
                 />
                 <v-date-picker
                   ref="pickerEnd"
-                  color="blue-grey"
+                  color="secondary"
                   v-model="endDate"
                   :reactive="true"
                   @change="endDateChanged"
@@ -151,7 +150,6 @@
 import DateSelector from '@/components/DateSelector.vue'
 import SEARCH_SALES_QUERY from '@/graphql/SearchSales.gql'
 import { map } from 'ramda'
-import moment from 'moment'
 
 const tenantId = ~~process.env.VUE_APP_TENANT_ID
 
@@ -164,10 +162,10 @@ export default {
       loading: true,
       modalStart: false,
       modalEnd: false,
-      startDate: moment()
+      startDate: this.$moment()
         .startOf('month')
         .format('YYYY-MM-DD'),
-      endDate: moment()
+      endDate: this.$moment()
         .endOf('month')
         .format('YYYY-MM-DD'),
       headers: [
@@ -227,7 +225,7 @@ export default {
         return {
           ...sale,
           id: sale.saleId,
-          date: moment(sale.awardedDate, 'YYYY-MM-DD').format('MM/DD/YYYY')
+          date: this.$moment(sale.awardedDate, 'YYYY-MM-DD').format('MM/DD/YYYY')
         }
       }, this.sales)
     }

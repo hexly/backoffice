@@ -32,15 +32,8 @@
           </v-breadcrumbs-item>
         </v-breadcrumbs>
         <div v-if="!$apollo.queries.results.loading">
-          <v-layout
-            row
-            wrap
-          >
-            <v-flex
-              lg4
-              v-for="(i, index) in results.team"
-              :key="index"
-            >
+          <v-layout row wrap>
+            <v-flex xs12 sm6 md4 v-for="(i, index) in results.team" :key="index">
               <TeamCard
                 :loading="$apollo.queries.stats.loading"
                 @viewTeam="showTeam"
@@ -74,19 +67,21 @@ const tenantId = ~~process.env.VUE_APP_TENANT_ID
 
 export default {
   name: 'Team',
-  data: () => ({
-    root: {},
-    lineage: [],
-    currentId: undefined,
-    month: new Date().getMonth() + 1,
-    year: new Date().getFullYear(),
-    minDate: null,
-    results: {
-      target: undefined,
-      team: []
-    },
-    stats: []
-  }),
+  data() {
+    return {
+      root: {},
+      lineage: [],
+      currentId: undefined,
+      month: new Date().getMonth() + 1,
+      year: new Date().getFullYear(),
+      minDate: null,
+      results: {
+        target: undefined,
+        team: []
+      },
+      stats: []
+    }
+  },
   components: {
     TeamCard,
     MonthSelector

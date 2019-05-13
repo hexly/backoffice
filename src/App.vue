@@ -13,6 +13,7 @@
       <v-btn
         flat
         @click="update"
+        color="primary"
       >Click to update</v-btn>
     </v-snackbar>
     <router-view />
@@ -20,7 +21,6 @@
 </template>
 
 <script>
-import moment from 'moment'
 const MIN_IN_SECONDS = 60
 const SECONDS_IN_MS = 1000
 
@@ -42,8 +42,8 @@ export default {
 
       this.newVersion = json.buildTime
       const currentVersion = window.$version
-      const current = moment(currentVersion)
-      const newVersion = moment(json.buildTime)
+      const current = this.$moment(currentVersion)
+      const newVersion = this.$moment(json.buildTime)
       if (current.isValid() && current.isBefore(newVersion)) {
         this.newVersionAvailable = true
         clearInterval(this.appVersionInterval)

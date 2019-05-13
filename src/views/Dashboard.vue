@@ -88,45 +88,73 @@
           />
         </v-flex>
       </v-layout>
-      <v-subheader>Plan</v-subheader>
-      <CompPlanLevel
-        :level="team.firstLevel"
-        levelName="One"
-        :percent="calculatePercent(.1, 1)"
-        notes="If you have 1 qualifying member in your first level you will receive 10% of your First Level Commissionable Points"
-        :color="ranks[2].color"
-      />
-      <CompPlanLevel
-        :level="team.secondLevel"
-        levelName="Two"
-        :percent="calculatePercent(.05, 2)"
-        notes="If you have 2 qualifying members in your first level you will receive 5% of your Second Level Commissionable Points"
-        :color="ranks[3].color"
-      />
-      <CompPlanLevel
-        :level="team.thirdLevel"
-        levelName="Three"
-        :percent="calculatePercent(.05, 3)"
-        notes="If you have 3 qualifying members in your first level you will receive 5% of your Third Level Commissionable Points"
-        :color="ranks[4].color"
-      />
-      <CompPlanLevel
-        :level="team.fourthLevel"
-        levelName="Four"
-        :percent="calculatePercent(.1, 4)"
-        notes="If you have 4 qualifying members in your first level you will receive 10% of your Fourth Level Commissionable Points"
-        :color="ranks[5].color"
-      />
     </v-container>
-    <!-- <v-subheader>Team Leaderboards</v-subheader>
+    <v-subheader>Team Leaderboards</v-subheader>
     <v-container fluid grid-list-xs>
-      <v-layout row wrap>
-        <v-flex sm6 pa-3>
-          <p>First Level qualifiers</p>
-          <FrontlineQualifiers :leaders="teamLeaders"/>
+      <v-layout row wrap align-start justify-center>
+        <v-flex xs12 sm6 px-3>
+          <FrontlineQualifiers :personal="personalProgress" :ranks="ranks" :leaders="teamLeaders"/>
+          <small>The chart above shows your team's progress toward qualification this month.</small>
+        </v-flex>
+        <v-flex xs12 sm6 px-3>
+          <v-toolbar color="secondary" dark>
+            <v-toolbar-title>Front Line Qualifiers</v-toolbar-title>
+          </v-toolbar>
+          <v-layout row wrap>
+            <v-flex>
+            <div class="my-1">
+              <div class="pa-1 grey lighten-4 d-flex align-top">
+                <div class="flex xs3 text-xs-left">
+                  <div class="header grey--text text--darken-1">Level</div>
+                </div>
+                <div class="flex xs3 text-xs-left">
+                  <div class="header grey--text text--darken-1">Size</div>
+                </div>
+                <div class="flex xs3 text-xs-left">
+                  <div class="header grey--text text--darken-1">Points</div>
+                </div>
+                <div class="flex xs3 text-xs-left">
+                  <div class="header grey--text text--darken-1">Recruited</div>
+                </div>
+                <div class="flex xs3 text-xs-left">
+                  <div class="header grey--text text--darken-1">Sales</div>
+                </div>
+              </div>
+            </div>
+            </v-flex>
+          </v-layout>
+          <CompPlanLevel
+            :level="team.firstLevel"
+            levelName="One"
+            :percent="calculatePercent(.1, 1)"
+            :color="ranks[2].color"
+          />
+          <small> 1 qualifying front line member: 10% of first level points</small>
+          <CompPlanLevel
+            :level="team.secondLevel"
+            levelName="Two"
+            :percent="calculatePercent(.05, 2)"
+            :color="ranks[3].color"
+          />
+          <small> 2 qualifying front line member: 5% of second level points</small>
+          <CompPlanLevel
+            :level="team.thirdLevel"
+            levelName="Three"
+            :percent="calculatePercent(.05, 3)"
+            :color="ranks[4].color"
+          />
+          <small> 3 qualifying front line member: 5% of third level points</small>
+          <CompPlanLevel
+            :level="team.fourthLevel"
+            levelName="Four"
+            :percent="calculatePercent(.1, 4)"
+            :color="ranks[5].color"
+          />
+          <small> 4 qualifying front line member: 10% of fourth level points</small>
+          <br/>
         </v-flex>
       </v-layout>
-    </v-container> -->
+    </v-container>
     <v-subheader>Leaderboards</v-subheader>
     <v-container fluid grid-list-xs>
       <v-layout row wrap>
@@ -164,8 +192,6 @@ import CompPlanLevel from '@/components/CompPlanLevel.vue'
 import MonthSelector from '@/components/MonthSelector.vue'
 import GET_MEMBERS from '@/graphql/GetMembers.gql'
 
-import moment from 'moment'
-import _ from 'lodash'
 import { pathOr } from 'rambda'
 import { mapMutations, mapState } from 'vuex'
 import { UserMutations } from '@/stores/UserStore'
@@ -182,43 +208,46 @@ export default {
     CompPlanLevel,
     FrontlineQualifiers
   },
-  data: () => ({
-    teamLeaders: [],
-    ranks: {
-      0: { name: 'Unqualified', color: 'FFFFFF' },
-      1: { name: 'Zen Ambassador', color: 'E53A37' },
-      2: { name: 'Zen Guide', color: 'E67C4F' },
-      3: { name: 'Zen Guru', color: 'FDEF53' },
-      4: { name: 'Zen Sage', color: '7FB75F' },
-      5: { name: 'Zen Master', color: '3848A0' }
-    },
-    rankStyle: {},
-    currentRank: { name: 'Unqualified', color: 'FFFFFF' },
-    allSales: [],
-    month: new Date().getMonth() + 1,
-    year: new Date().getFullYear(),
-    startDate: moment()
-      .startOf('month')
-      .format('YYYY-MM-DD'),
-    endDate: moment()
-      .endOf('month')
-      .format('YYYY-MM-DD'),
-    MonthlyFrontlineLeaders: [],
-    MonthlySalesLeaders: [],
-    address: null,
-    team: {
-      personal: {
-        qualified: 0,
-        totalPoints: 0
+  data() {
+    return {
+      teamLeaders: [],
+      ranks: {
+        0: { name: 'Unqualified', color: 'FFFFFF' },
+        1: { name: 'Zen Ambassador', color: 'F59895' },
+        2: { name: 'Zen Guide', color: 'F3C789' },
+        3: { name: 'Zen Guru', color: 'F7E8AB' },
+        4: { name: 'Zen Sage', color: 'B8D886' },
+        5: { name: 'Zen Master', color: '9BD2EF' }
       },
-      firstLevel: {},
-      secondLevel: {},
-      thirdLevel: {},
-      fourthLevel: {},
-      teamSize: 0,
-      totalTeamAmount: 0
+      rankStyle: {},
+      personalProgress: null,
+      currentRank: { name: 'Unqualified', color: 'FFFFFF' },
+      allSales: [],
+      month: new Date().getMonth() + 1,
+      year: new Date().getFullYear(),
+      startDate: this.$moment()
+        .startOf('month')
+        .format('YYYY-MM-DD'),
+      endDate: this.$moment()
+        .endOf('month')
+        .format('YYYY-MM-DD'),
+      MonthlyFrontlineLeaders: [],
+      MonthlySalesLeaders: [],
+      address: null,
+      team: {
+        personal: {
+          qualified: 0,
+          totalPoints: 0
+        },
+        firstLevel: {},
+        secondLevel: {},
+        thirdLevel: {},
+        fourthLevel: {},
+        teamSize: 0,
+        totalTeamAmount: 0
+      }
     }
-  }),
+  },
   apollo: {
     member: {
       query: GET_MEMBERS,
@@ -325,38 +354,38 @@ export default {
       update ({ monthlyFrontlineLeaderboard }) {
         return monthlyFrontlineLeaderboard
       }
-    }// ,
-    // teamLeaders: {
-    //   query: MONTHLY_STATS_QUERY,
-    //   variables () {
-    //     return {
-    //       targetCondition: {
-    //         tenantId,
-    //         sellerId: this.currentId,
-    //         month: this.month,
-    //         year: this.year
-    //       },
-    //       firstLevelCondition: {
-    //         tenantId,
-    //         sponsorId: this.$store.state.user.principal.memberId,
-    //         month: this.month,
-    //         year: this.year
-    //       }
-    //     }
-    //   },
-    //   update ({ targetStats, firstLevelStats }) {
-    //     const firstLevelQualifiers = firstLevelStats.nodes.filter(stats => stats.totalAmount > 0)
-    //     return _.orderBy(firstLevelQualifiers, 'totalAmount', 'desc')
-    //   },
-    //   fetchPolicy: 'cache-and-network'
-    // }
+    },
+    teamLeaders: {
+      query: MONTHLY_STATS_QUERY,
+      variables () {
+        return {
+          targetCondition: {
+            tenantId,
+            sellerId: this.$store.state.user.principal.memberId,
+            month: this.month,
+            year: this.year
+          },
+          firstLevelCondition: {
+            tenantId,
+            sponsorId: this.$store.state.user.principal.memberId,
+            month: this.month,
+            year: this.year
+          }
+        }
+      },
+      update ({ targetStats, firstLevelStats }) {
+        this.personalProgress = targetStats.nodes[0]
+        return firstLevelStats.nodes
+      },
+      fetchPolicy: 'cache-and-network'
+    }
   },
   methods: {
     dateChanged ({ date }) {
       const dateSplit = date.split('-')
       this.month = parseInt(dateSplit[1])
       this.year = parseInt(dateSplit[0])
-      const monthDate = moment().set({ year: this.year, month: this.month })
+      const monthDate = this.$moment().set({ year: this.year, month: this.month })
       this.startDate = monthDate.startOf('month').format('YYYY-MM-DD')
       this.endDate = monthDate.endOf('month').format('YYYY-MM-DD')
     },
@@ -392,27 +421,28 @@ ul li {
 }
 
 .chakra {
-  width: 105px;
-  height: 105px;
+  width: 75px;
+  height: 75px;
+  margin: 0 25px;
   display: inline-block;
   filter: grayscale(100%) opacity(50%);
-  background-image: url("/img/1004/chakras.png");
+  background-image: url("/img/1004/chakras.svg");
 }
 
 .ambassador {
-  background-position: -15px 0px;
+  background-position: -450px 0;
 }
 .guide {
-  background-position: -135px 0px;
+  background-position: -372px 0;
 }
 .guru {
-  background-position: -249px 0;
+  background-position: -301px 0;
 }
 .sage {
-  background-position: -367px 0px;
+  background-position: -225px 0;
 }
 .master {
-  background-position: -605px 0;
+  background-position: -150px 0;
 }
 
 .active {

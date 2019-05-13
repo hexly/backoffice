@@ -4,7 +4,7 @@
       <v-layout align-center justify-center>
         <v-flex xs12 sm8 md8>
           <v-card class="elevation-12">
-            <v-toolbar dark color="black">
+            <v-toolbar dark color="secondary">
               <v-toolbar-title>Zendesk Support</v-toolbar-title>
             </v-toolbar>
             <v-progress-linear

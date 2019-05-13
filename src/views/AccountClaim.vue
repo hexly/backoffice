@@ -135,7 +135,6 @@ import { UserMutations, UserActions } from '@/stores/UserStore'
 import { Actions } from '@/Members/Store'
 import getLocalSettings from '@/graphql/GetLocalSettings'
 import { encrypt } from '@/utils/EncryptionService'
-import moment from 'moment'
 
 export default {
   data () {
@@ -209,7 +208,7 @@ export default {
       login: UserActions.LOGIN
     }),
     accept (value) {
-      this[value] = moment.utc()
+      this[value] = this.$moment.utc()
     },
     async onSubmit () {
       if (this.$refs.claim.validate()) {
