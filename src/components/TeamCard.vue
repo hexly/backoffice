@@ -5,11 +5,12 @@
         <v-flex xs7>
           <div v-if="!loading">
             <div class="headline">{{user.name}}</div>
+            <div>{{user.contactEmail}}</div>
             <div v-if="stats.joinedOn">
             <div>Joined {{formatDate(stats.joinedOn)}}</div>
-            <div>Team Size: {{stats.teamSize || 0}}</div>
+            <div>Tribe Size: {{stats.teamSize || 0}}</div>
             <div>Front Line: {{stats.firstLevelSize || 0}}</div>
-            <div>Total Points: {{stats.totalPoints || 0}}</div>
+            <div>Total Points: {{stats.totalPoints ? stats.totalPoints.toFixed(2) : 0}}</div>
             </div>
             <div v-else>
               User data not available for selected timeframe

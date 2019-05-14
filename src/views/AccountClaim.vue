@@ -5,7 +5,7 @@
       <v-layout align-center justify-center>
         <v-flex xs12 sm8 md8>
           <v-card class="elevation-12">
-            <v-toolbar dark color="black">
+            <v-toolbar dark color="secondary">
               <v-toolbar-title>Account Creation</v-toolbar-title>
             </v-toolbar>
             <v-card-text>
@@ -115,7 +115,7 @@
                   </v-flex>
                   <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn type="submit" color="deep-purple" dark>Create Account</v-btn>
+                    <v-btn type="submit" color="primary" dark>Create Account</v-btn>
                   </v-card-actions>
                 </v-form>
               </div>
@@ -173,7 +173,7 @@ export default {
         username: null
       },
       settings: {},
-      logoPath: tenantInfo.logoPath
+      logoPath: tenantInfo.logoLoginPath
     }
   },
   async beforeCreate () {
@@ -273,7 +273,7 @@ export default {
 
 .logo {
   width: 100%;
-  max-width: 250px;
+  max-width: 450px;
   margin: auto;
   display: block;
 }

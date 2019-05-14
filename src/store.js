@@ -37,7 +37,7 @@ export const Actions = {
 }
 
 const verifyPrincipal = async hydratedState => {
-  if (!hydratedState.user.principal || !hydratedState.user.principal) {
+  if (!hydratedState.user || !hydratedState.user.principal) {
     localStorage.clear()
     window.location = '/'
   }

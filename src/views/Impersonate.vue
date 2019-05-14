@@ -15,7 +15,7 @@
           <v-card class="elevation-12">
             <v-toolbar
               dark
-              color="black"
+              color="secondary"
             >
               <v-toolbar-title>Impersonate</v-toolbar-title>
             </v-toolbar>
