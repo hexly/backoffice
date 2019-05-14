@@ -2,8 +2,17 @@
   <v-card>
     <v-toolbar color="secondary" dark >
       <v-toolbar-title>Front Line Qualifiers</v-toolbar-title>
+      <v-spacer></v-spacer>
+      <v-menu :close-on-content-click="false" offset-x left >
+        <v-btn icon slot="activator">
+          <v-icon>info</v-icon>
+        </v-btn>
+        <v-card class="pa-4">
+          <span>This chart shows your team's progress toward qualification this month.</span>
+        </v-card>
+      </v-menu>
     </v-toolbar>
-    <v-list two-line style="padding: 0;">
+    <v-list style="padding: 0;">
       <v-list-tile
         v-if="personal"
         class="progress"
@@ -47,7 +56,10 @@ import _ from 'lodash'
 
 export default {
   name: 'FrontlineQualifiers',
-  data() { return { } },
+  data() {
+    return {
+    }
+  },
   props: {
     leaders: Array,
     ranks: Object,

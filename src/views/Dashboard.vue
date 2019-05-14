@@ -1,6 +1,6 @@
 <template>
-  <div class="dashboard">
-    <v-layout row wrap justify-space-between="">
+  <div class="dashboard py-4">
+    <v-layout row wrap justify-space-between class="px-2">
         <v-flex xs12 sm6>
           <h1>Dashboard</h1>
         </v-flex>
@@ -61,7 +61,7 @@
           <DashCard
             color="white"
             darken="1"
-            :display="team.personal.totalPoints.toFixed(2)"
+            :display="team.personal.totalPoints ? team.personal.totalPoints.toFixed(2) : 0"
             subheading="Monthly Points"
             icon="group_work"
           />
@@ -92,31 +92,44 @@
     <v-subheader>Team Leaderboards</v-subheader>
     <v-container fluid grid-list-xs>
       <v-layout row wrap align-start justify-center>
-        <v-flex xs12 sm6 px-3>
+        <v-flex xs12 sm6 px-3 my-3>
           <FrontlineQualifiers :personal="personalProgress" :ranks="ranks" :leaders="teamLeaders"/>
-          <small>The chart above shows your team's progress toward qualification this month.</small>
         </v-flex>
-        <v-flex xs12 sm6 px-3>
+        <v-flex xs12 sm6 px-3 my-3>
           <v-toolbar color="secondary" dark>
-            <v-toolbar-title>Front Line Qualifiers</v-toolbar-title>
+            <v-toolbar-title>Level Qualification</v-toolbar-title>
+            <v-spacer></v-spacer>
+            <v-menu :close-on-content-click="false" offset-x left >
+              <v-btn icon slot="activator">
+                <v-icon>info</v-icon>
+              </v-btn>
+              <v-card class="pa-4">
+                <ul>
+                  <li>1 qualifying front line member: 10% of first level points.</li>
+                  <li>2 qualifying front line member: 5% of second level points</li>
+                  <li>3 qualifying front line member: 5% of third level points</li>
+                  <li>4 qualifying front line member: 10% of fourth level points</li>
+                </ul>
+              </v-card>
+            </v-menu>
           </v-toolbar>
           <v-layout row wrap>
             <v-flex>
-            <div class="my-1">
+            <div class="my-2">
               <div class="pa-1 grey lighten-4 d-flex align-top">
                 <div class="flex xs3 text-xs-left">
                   <div class="header grey--text text--darken-1">Level</div>
                 </div>
-                <div class="flex xs3 text-xs-left">
+                <div class="flex xs2 text-xs-left">
                   <div class="header grey--text text--darken-1">Size</div>
                 </div>
                 <div class="flex xs3 text-xs-left">
                   <div class="header grey--text text--darken-1">Points</div>
                 </div>
-                <div class="flex xs3 text-xs-left">
+                <div class="flex xs2 text-xs-left">
                   <div class="header grey--text text--darken-1">Recruited</div>
                 </div>
-                <div class="flex xs3 text-xs-left">
+                <div class="flex xs2 text-xs-left">
                   <div class="header grey--text text--darken-1">Sales</div>
                 </div>
               </div>
@@ -129,28 +142,24 @@
             :percent="calculatePercent(.1, 1)"
             :color="ranks[2].color"
           />
-          <small> 1 qualifying front line member: 10% of first level points</small>
           <CompPlanLevel
             :level="team.secondLevel"
             levelName="Two"
             :percent="calculatePercent(.05, 2)"
             :color="ranks[3].color"
           />
-          <small> 2 qualifying front line member: 5% of second level points</small>
           <CompPlanLevel
             :level="team.thirdLevel"
             levelName="Three"
             :percent="calculatePercent(.05, 3)"
             :color="ranks[4].color"
           />
-          <small> 3 qualifying front line member: 5% of third level points</small>
           <CompPlanLevel
             :level="team.fourthLevel"
             levelName="Four"
             :percent="calculatePercent(.1, 4)"
             :color="ranks[5].color"
           />
-          <small> 4 qualifying front line member: 10% of fourth level points</small>
           <br/>
         </v-flex>
       </v-layout>
@@ -408,6 +417,17 @@ export default {
 </script>
 
 <style scoped>
+.dashboard {
+  max-width: 1440px;
+  margin: auto;
+  padding: 0 25px;
+}
+
+@media only screen and (max-width: 959px){
+  .dashboard {
+    padding: 0;
+  }
+}
 .image {
   width: 100%;
   border-radius: 100%;
@@ -416,16 +436,13 @@ export default {
 .comp-plan .contain {
   max-width: 1400px;
 }
-ul li {
-  list-style: none;
-}
 
 .chakra {
   width: 75px;
   height: 75px;
   margin: 0 25px;
   display: inline-block;
-  filter: grayscale(100%) opacity(50%);
+  filter: grayscale(100%) opacity(50%) contrast(0%);
   background-image: url("/img/1004/chakras.svg");
 }
 
