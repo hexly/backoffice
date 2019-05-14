@@ -91,7 +91,7 @@
                       </span>
                       <br>
                       <span>
-                        Forgot your Password?
+                        Forgot your password?
                         <a @click="changeMode('reset')">Reset Password</a>
                       </span>
                     </div>
