@@ -35,7 +35,7 @@
             <v-icon>shopping_basket</v-icon>
           </v-list-tile-action>
           <v-list-tile-content>
-            <v-list-tile-title>Sales</v-list-tile-title>
+            <v-list-tile-title>Order History</v-list-tile-title>
           </v-list-tile-content>
         </v-list-tile>
         <v-list-tile to="/team">

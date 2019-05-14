@@ -11,8 +11,8 @@
           <v-card class="elevation-12">
             <v-card-text>
               <img class="logo" :src="$tenantInfo.logoLoginPath" />
-              <h2 class="error" v-if="error">{{error}}</h2>
-              <h2 class="success" v-if="success">{{success}}</h2>
+              <v-alert type="error" :value="error">{{error}}</v-alert>
+              <v-alert color="primary" :value="success">{{success}}</v-alert>
               <div v-if="type === 'login'">
                 <v-form
                   ref="login"
@@ -185,7 +185,7 @@ export default {
         const { returnTo } = (this.$route.query || {})
         return success
           ? this.$router.push(returnTo || '/dashboard')
-          : this.onError('Invalid Username/Password.')
+          : this.onError('Invalid Username/Password')
       } catch (error) {
         this.buttonLoading = false
         this.onError(error.message)
@@ -206,7 +206,7 @@ export default {
           type: 'claim'
         })
         this.onSuccess(
-          'Registrations email has been sent! Please check your email.'
+          'Registration email has been sent! Please check your email.'
         )
       } catch (error) {
         this.onError(error)
@@ -262,14 +262,10 @@ export default {
 }
 
 .error {
-  margin: 5px;
-  padding: 10px;
-  text-align: center;
+  margin: 15px 5px;
 }
 .success {
-  margin: 5px;
-  padding: 10px;
-  text-align: center;
+  margin: 15px 5px;
 }
 .version {
   opacity: 0.3;
