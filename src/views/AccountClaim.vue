@@ -173,7 +173,7 @@ export default {
         username: null
       },
       settings: {},
-      logoPath: tenantInfo.logoPath
+      logoPath: tenantInfo.logoLoginPath
     }
   },
   async beforeCreate () {
@@ -273,7 +273,7 @@ export default {
 
 .logo {
   width: 100%;
-  max-width: 250px;
+  max-width: 450px;
   margin: auto;
   display: block;
 }

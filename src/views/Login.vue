@@ -60,7 +60,7 @@
                           data-cy="Login Login Page"
                           :loading="buttonLoading"
                           type="submit"
-                          :color="$tenantInfo.secondaryColor"
+                          color="primary"
                           dark
                         >Login</v-btn>
                       </v-flex>

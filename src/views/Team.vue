@@ -1,13 +1,19 @@
 <template>
   <v-flex xs12>
-    <div class="team">
-      <h1 v-bind:target="currentId">Team</h1>
-      <month-selector
-        :year="year"
-        :month="month"
-        :minDate="minDate"
-        @date-changed="dateChanged"
-      />
+    <div class="team py-4">
+      <v-layout row wrap justify-space-between>
+        <v-flex xs12 sm6>
+          <h1 :target="currentId">Team</h1>
+        </v-flex>
+        <v-flex xs12 sm3 md2>
+          <month-selector
+            :year="year"
+            :month="month"
+            :minDate="minDate"
+            @date-changed="dateChanged"
+          />
+        </v-flex>
+      </v-layout>
       <div>
         <v-layout
           v-if="results.target"
@@ -141,3 +147,11 @@ export default {
   }
 }
 </script>
+
+<style>
+.team {
+  max-width: 1440px;
+  margin: auto;
+  padding: 0 25px;
+}
+</style>
