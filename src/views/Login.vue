@@ -91,7 +91,7 @@
                       </span>
                       <br>
                       <span>
-                        Forgot your Password?
+                        Forgot your password?
                         <a @click="changeMode('reset')">Reset Password</a>
                       </span>
                     </div>
@@ -206,7 +206,7 @@ export default {
           type: 'claim'
         })
         this.onSuccess(
-          'Registrations email has been sent! Please check your email.'
+          'Registration email has been sent! Please check your email.'
         )
       } catch (error) {
         this.onError(error)
