@@ -4,7 +4,7 @@
       <v-layout align-center justify-center>
         <v-flex xs12 sm8 md8>
           <v-card class="elevation-12">
-            <v-toolbar dark color="black">
+            <v-toolbar dark color="secondary">
               <v-toolbar-title>Account Creation</v-toolbar-title>
             </v-toolbar>
             <v-card-text>
@@ -17,7 +17,7 @@
                   <v-text-field required :rules="confirmPasswordRule" v-model="confirmPassword" prepend-icon="lock" name="confirmPassword" label="Confirm Password" id="confirmPassword" type="password"></v-text-field>
                   <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn type="submit" color="deep-purple" dark>Reset Password</v-btn>
+                    <v-btn type="submit" color="primary" dark>Reset Password</v-btn>
                   </v-card-actions>
                 </v-form>
               </div>

@@ -23,7 +23,7 @@
         <v-btn
           :loading="locked"
           type="submit"
-          color="deep-purple"
+          color="primary"
           dark
         > Impersonate </v-btn>
       </v-card-actions>
