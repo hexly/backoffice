@@ -2,7 +2,7 @@
   <v-flex xs12>
     <div class="about">
       <v-card>
-        <v-card-title class="headline font-weight-regular white--text secondary">Search Sales</v-card-title>
+        <v-card-title class="headline font-weight-regular white--text secondary">Order History</v-card-title>
         <v-card-text>
           <v-subheader>Range</v-subheader>
           <v-container
@@ -79,16 +79,15 @@
           slot-scope="props"
         >
           <tr @click="props.expanded = !props.expanded">
-            <td>
-              <a>Details</a>
-            </td>
             <td>{{ props.item.date }}</td>
             <td>${{ props.item.total }}</td>
             <td>{{ props.item.totalPoints }}</td>
             <td>{{ props.item.commissionableAmount }}</td>
-            <td>{{ props.item.commissionablePoints }}</td>
-            <td>{{ props.item.displayName }}</td>
-            <td>{{ props.item.sellerEmail }}</td>
+            <td>{{ props.item.status }}</td>
+            <td>
+              <v-icon v-if="props.expanded">expand_less</v-icon>
+              <v-icon v-else>expand_more</v-icon>
+            </td>
           </tr>
         </template>
         <template
@@ -98,14 +97,6 @@
           <div class="pa-3 sale-details">
             <v-container fluid>
               <v-layout>
-                <v-flex xs4>
-                  <h4>Details:</h4>
-                  <ul>
-                    <li>Originating ID: {{props.item.providerOid}}</li>
-                    <li>Status: {{props.item.status}}</li>
-                    <li>Customer Note: {{props.item.customerNote}}</li>
-                  </ul>
-                </v-flex>
                 <v-flex xs4>
                   <h4>Customer Info:</h4>
                   <ul>
@@ -124,18 +115,25 @@
                     <li>{{props.item.billingCity}}, {{props.item.billingState}} {{props.item.billingZip}}</li>
                   </ul>
                 </v-flex>
-              </v-layout>
-              <v-layout>
-                <v-flex xs12>
-                  <h4>Line Items</h4>
+                <v-flex xs4>
+                  <h4>Details:</h4>
                   <ul>
-                    <li
-                      v-for="line in props.item.lineItems"
-                      :key="line.id"
-                    >
-                      {{line.name}} ({{line.total}})
-                    </li>
+                    <li>Originating ID: {{props.item.providerOid}}</li>
+                    <li>Status: {{props.item.status}}</li>
+                    <li>Customer Note: {{props.item.customerNote}}</li>
                   </ul>
+                </v-flex>
+              </v-layout>
+              <v-layout my-4>
+                <v-flex xs12>
+                  <h4>Products & Services</h4>
+                  <v-data-table :headers="productHeads" :items="props.item.lineItems" hide-actions>
+                    <template slot="items" slot-scope="props">
+                      <td>{{ props.item.name }}</td>
+                      <td>{{ props.item.quantity }}</td>
+                      <td>{{ props.item.subtotal }}</td>
+                    </template>
+                  </v-data-table>
                 </v-flex>
               </v-layout>
             </v-container>
@@ -169,19 +167,22 @@ export default {
         .endOf('month')
         .format('YYYY-MM-DD'),
       headers: [
-        {
-          text: 'Show Details',
-          value: 'string',
-          align: 'left',
-          sortable: false
-        },
         { text: 'Date', value: 'date' },
         { text: 'Sale Total', value: 'total' },
         { text: 'Total Points', value: 'points' },
         { text: 'Commissionable Total', value: 'comTotal' },
-        { text: 'Commissionable Points', value: 'comPoints' },
-        { text: 'Seller Name', value: 'displayName' },
-        { text: 'Seller Email', value: 'contactEmail' }
+        { text: 'Status', value: 'staus' },
+        {
+          text: 'Actions',
+          value: 'string',
+          align: 'left',
+          sortable: false
+        }
+      ],
+      productHeads: [
+        { text: 'Item', sortable: false },
+        { text: 'Qty.', sortable: false },
+        { text: 'subtotal', sortable: false }
       ],
       sales: []
     }
