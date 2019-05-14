@@ -110,7 +110,7 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn
-            color="green darken-1"
+            color="primary"
             flat="flat"
             @click="$router.push('/profile')"
           >

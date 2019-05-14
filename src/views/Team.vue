@@ -55,7 +55,7 @@
             indeterminate
             :size="70"
             :width="7"
-            color="black"
+            :color="$tenantInfo.baseColor"
           ></v-progress-circular>
         </div>
       </div>

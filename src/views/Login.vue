@@ -99,7 +99,7 @@
                     <v-btn
                       :loading="buttonLoading"
                       type="submit"
-                      color="deep-purple"
+                      color="primary"
                       dark
                     >Register</v-btn>
                   </v-card-actions>
@@ -129,7 +129,7 @@
                     <v-btn
                       :loading="buttonLoading"
                       type="submit"
-                      color="deep-purple"
+                      color="primary"
                       dark
                     >Reset</v-btn>
                   </v-card-actions>
