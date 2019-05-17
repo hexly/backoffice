@@ -25,7 +25,7 @@
             :loading="$apollo.queries.stats.loading"
             @viewTeam="showTeam"
             :user="results.target"
-            :stats="statsMap(results.target.id)"
+            :stats="statsMap[results.target.id]"
           />
         </v-layout>
         <v-breadcrumbs divider="/">
