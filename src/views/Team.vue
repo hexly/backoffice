@@ -22,7 +22,7 @@
           justify-center
         >
           <TeamCard
-            :loading="$apollo.queries.stats.loading"
+            :loading="$apollo.queries.stats.loading || !statsMap[results.target.id]"
             @viewTeam="showTeam"
             :user="results.target"
             :stats="statsMap[results.target.id]"
@@ -41,7 +41,6 @@
           <v-layout row wrap>
             <template v-for="(i, index) in results.team">
               <v-flex xs12 sm6 md4 v-if="statsMap[i.id]" :key="index">
-                {{i.id}}
                 <TeamCard
                   :loading="$apollo.queries.stats.loading"
                   @viewTeam="showTeam"

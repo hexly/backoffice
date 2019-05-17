@@ -6,7 +6,7 @@
           <div v-if="!loading">
             <div class="headline">{{user.name}}</div>
             <div>{{user.contactEmail}}</div>
-            <div v-if="stats.joinedOn">
+            <div v-if="stats && stats.joinedOn">
               <div>Joined {{formatDate(stats.joinedOn)}}</div>
               <div>Tribe Size: {{stats.teamSize || 0}}</div>
               <div>Front Line: {{stats.firstLevelSize || 0}}</div>
@@ -70,12 +70,15 @@ export default {
       )
     },
     isQualified () {
-      let joined = new Date(this.stats.joinedOn)
-      let today = new Date()
-      joined = `${joined.getFullYear()}-${joined.getMonth()}`
-      today = `${today.getFullYear()}-${today.getMonth()}`
-      const joinedThisMonth = joined === today
-      return this.stats.totalPoints >= 60 || joinedThisMonth
+      if (this.stats) {
+        let joined = new Date(this.stats.joinedOn)
+        let today = new Date()
+        joined = `${joined.getFullYear()}-${joined.getMonth()}`
+        today = `${today.getFullYear()}-${today.getMonth()}`
+        const joinedThisMonth = joined === today
+        return this.stats.totalPoints >= 60 || joinedThisMonth
+      }
+      return false
     }
   }
 }
