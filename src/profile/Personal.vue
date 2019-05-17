@@ -49,7 +49,7 @@
     <v-btn
       :disabled="saving"
       :loading="saving"
-      color="success"
+      color="primary"
       @click="saveData"
     >Save Information</v-btn>
   </div>
@@ -57,7 +57,6 @@
 
 <script>
 
-import moment from 'moment'
 import Rules from '../views/Rules.js'
 
 export default {
@@ -81,10 +80,9 @@ export default {
   },
   data () {
     return {
-      moment,
       slugRule: Rules.slugRule,
       birthdateRule: [
-        v => moment(v).isValid() || 'Birthday Must Be in MM/DD/YYYY Format'
+        v => this.$moment(v).isValid() || 'Birthday Must Be in MM/DD/YYYY Format'
       ]
     }
   }

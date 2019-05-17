@@ -6,29 +6,13 @@
       justify-center
       style="display:flex;height: 95%;"
     >
-      <v-layout
-        align-center
-        justify-center
-      >
-        <v-flex
-          xs12
-          sm8
-          md8
-        >
+      <v-layout align-center justify-center>
+        <v-flex xs12 sm8 md8>
           <v-card class="elevation-12">
             <v-card-text>
-              <img
-                class="logo"
-                :src="$tenantInfo.logoLoginPath"
-              >
-              <h2
-                class="error"
-                v-if="error"
-              >{{error}}</h2>
-              <h2
-                class="success"
-                v-if="success"
-              >{{success}}</h2>
+              <img class="logo" :src="$tenantInfo.logoLoginPath" />
+              <v-alert type="error" :value="error">{{error}}</v-alert>
+              <v-alert color="primary" :value="success">{{success}}</v-alert>
               <div v-if="type === 'login'">
                 <v-form
                   ref="login"
@@ -36,6 +20,7 @@
                   lazy-validation
                 >
                   <v-text-field
+                    data-cy="Username Login Page"
                     required
                     :rules="[v => !!v || 'Field is required']"
                     v-model="form.email"
@@ -45,6 +30,7 @@
                     type="email"
                   ></v-text-field>
                   <v-text-field
+                    data-cy="Password Login Page"
                     required
                     :rules="[v => !!v || 'Field is required']"
                     v-model="form.password"
@@ -55,24 +41,30 @@
                     type="password"
                   ></v-text-field>
                   <v-card-actions>
-                    <div>
-                      <span>
-                        Need access to your account?
-                        <a @click="changeMode('register')">Register</a>
-                      </span>
-                      <br>
-                      <span>
-                        Forgot your Password?
-                        <a @click="changeMode('reset')">Reset Password</a>
-                      </span>
-                    </div>
-                    <v-spacer></v-spacer>
-                    <v-btn
-                      :loading="buttonLoading"
-                      type="submit"
-                      color="deep-purple"
-                      dark
-                    >Login</v-btn>
+                    <v-layout row wrap justify-space-between>
+                      <v-flex xs12 sm6 class="py-2 text-xs-center text-sm-left">
+                        <div>
+                          <span>
+                            Need access to your account?
+                            <a @click="changeMode('register')">Register</a>
+                          </span>
+                          <br>
+                          <span>
+                            Forgot your Password?
+                            <a @click="changeMode('reset')">Reset Password</a>
+                          </span>
+                        </div>
+                      </v-flex>
+                      <v-flex xs12 sm6 class="py-2 text-xs-center text-sm-right">
+                        <v-btn
+                          data-cy="Login Login Page"
+                          :loading="buttonLoading"
+                          type="submit"
+                          color="primary"
+                          dark
+                        >Login</v-btn>
+                      </v-flex>
+                    </v-layout>
                   </v-card-actions>
                 </v-form>
               </div>
@@ -99,7 +91,7 @@
                       </span>
                       <br>
                       <span>
-                        Forgot your Password?
+                        Forgot your password?
                         <a @click="changeMode('reset')">Reset Password</a>
                       </span>
                     </div>
@@ -107,7 +99,7 @@
                     <v-btn
                       :loading="buttonLoading"
                       type="submit"
-                      color="deep-purple"
+                      color="primary"
                       dark
                     >Register</v-btn>
                   </v-card-actions>
@@ -137,7 +129,7 @@
                     <v-btn
                       :loading="buttonLoading"
                       type="submit"
-                      color="deep-purple"
+                      color="primary"
                       dark
                     >Reset</v-btn>
                   </v-card-actions>
@@ -193,7 +185,7 @@ export default {
         const { returnTo } = (this.$route.query || {})
         return success
           ? this.$router.push(returnTo || '/dashboard')
-          : this.onError('Invalid Username/Password.')
+          : this.onError('Invalid Username/Password')
       } catch (error) {
         this.buttonLoading = false
         this.onError(error.message)
@@ -214,7 +206,7 @@ export default {
           type: 'claim'
         })
         this.onSuccess(
-          'Registrations email has been sent! Please check your email.'
+          'Registration email has been sent! Please check your email.'
         )
       } catch (error) {
         this.onError(error)
@@ -270,14 +262,10 @@ export default {
 }
 
 .error {
-  margin: 5px;
-  padding: 10px;
-  text-align: center;
+  margin: 15px 5px;
 }
 .success {
-  margin: 5px;
-  padding: 10px;
-  text-align: center;
+  margin: 15px 5px;
 }
 .version {
   opacity: 0.3;

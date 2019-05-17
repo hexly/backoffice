@@ -1,13 +1,19 @@
 <template>
   <v-flex xs12>
-    <div class="team">
-      <h1 v-bind:target="currentId">Team</h1>
-      <month-selector
-        :year="year"
-        :month="month"
-        :minDate="minDate"
-        @date-changed="dateChanged"
-      />
+    <div class="team py-4">
+      <v-layout row wrap justify-space-between>
+        <v-flex xs12 sm6>
+          <h1 :target="currentId">Team</h1>
+        </v-flex>
+        <v-flex xs12 sm3 md2>
+          <month-selector
+            :year="year"
+            :month="month"
+            :minDate="minDate"
+            @date-changed="dateChanged"
+          />
+        </v-flex>
+      </v-layout>
       <div>
         <v-layout
           v-if="results.target"
@@ -32,15 +38,8 @@
           </v-breadcrumbs-item>
         </v-breadcrumbs>
         <div v-if="!$apollo.queries.results.loading">
-          <v-layout
-            row
-            wrap
-          >
-            <v-flex
-              lg4
-              v-for="(i, index) in results.team"
-              :key="index"
-            >
+          <v-layout row wrap>
+            <v-flex xs12 sm6 md4 v-for="(i, index) in results.team" :key="index">
               <TeamCard
                 :loading="$apollo.queries.stats.loading"
                 @viewTeam="showTeam"
@@ -56,7 +55,7 @@
             indeterminate
             :size="70"
             :width="7"
-            color="black"
+            :color="$tenantInfo.baseColor"
           ></v-progress-circular>
         </div>
       </div>
@@ -74,19 +73,21 @@ const tenantId = ~~process.env.VUE_APP_TENANT_ID
 
 export default {
   name: 'Team',
-  data: () => ({
-    root: {},
-    lineage: [],
-    currentId: undefined,
-    month: new Date().getMonth() + 1,
-    year: new Date().getFullYear(),
-    minDate: null,
-    results: {
-      target: undefined,
-      team: []
-    },
-    stats: []
-  }),
+  data() {
+    return {
+      root: {},
+      lineage: [],
+      currentId: undefined,
+      month: new Date().getMonth() + 1,
+      year: new Date().getFullYear(),
+      minDate: null,
+      results: {
+        target: undefined,
+        team: []
+      },
+      stats: []
+    }
+  },
   components: {
     TeamCard,
     MonthSelector
@@ -146,3 +147,11 @@ export default {
   }
 }
 </script>
+
+<style>
+.team {
+  max-width: 1440px;
+  margin: auto;
+  padding: 0 25px;
+}
+</style>

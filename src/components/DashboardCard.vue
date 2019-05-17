@@ -2,14 +2,14 @@
   <v-card :color="`${color} darken-${darken}`" :style="{overflow: 'hidden'}">
     <v-card-title primary-title>
       <div>
-        <span v-if="!loading" class="display-2">{{display}}</span>
+        <span v-if="!loading" class="display-2" style="position: relative; z-index: 1;">{{display}}</span>
         <span v-if="loading" class="display-2">
           <v-progress-circular indeterminate :size="30" :width="3" color="black"></v-progress-circular>
         </span>
         <p class="subheading">{{subheading}}</p>
       </div>
     </v-card-title>
-    <v-icon class="card-icon">{{icon}}</v-icon>
+    <v-icon class="card-icon" color="accent">{{icon}}</v-icon>
   </v-card>
 </template>
 

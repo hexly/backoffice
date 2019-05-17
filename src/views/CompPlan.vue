@@ -63,34 +63,35 @@
 import CompPlanLevel from '@/components/CompPlanLevel.vue'
 import GET_MEMBERS from '@/graphql/GetMembers.gql'
 import TEAM_STATS_BY_LEVEL from '@/graphql/TeamStatsByLevel.gql'
-import moment from 'moment'
 
 export default {
   components: {
     CompPlanLevel
   },
-  data: () => ({
-    member: {},
-    month: new Date().getMonth() + 1,
-    year: new Date().getFullYear(),
-    startDate: moment()
-      .startOf('month')
-      .format('YYYY-MM-DD'),
-    endDate: moment()
-      .endOf('month')
-      .format('YYYY-MM-DD'),
-    team: {
-      personal: {
-        qualified: 0
-      },
-      firstLevel: {},
-      secondLevel: {},
-      thirdLevel: {},
-      fourthLevel: {},
-      teamSize: 0,
-      totalTeamAmount: 0
+  data() {
+    return {
+      member: {},
+      month: new Date().getMonth() + 1,
+      year: new Date().getFullYear(),
+      startDate: this.$moment()
+        .startOf('month')
+        .format('YYYY-MM-DD'),
+      endDate: this.$moment()
+        .endOf('month')
+        .format('YYYY-MM-DD'),
+      team: {
+        personal: {
+          qualified: 0
+        },
+        firstLevel: {},
+        secondLevel: {},
+        thirdLevel: {},
+        fourthLevel: {},
+        teamSize: 0,
+        totalTeamAmount: 0
+      }
     }
-  }),
+  },
   apollo: {
     member: {
       query: GET_MEMBERS,

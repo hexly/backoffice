@@ -21,6 +21,7 @@ query getMonthlyStats(
       totalPoints
       commissionableAmount
       commissionablePoints
+      name
       sponsorId
     }
   }
