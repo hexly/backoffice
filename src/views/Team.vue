@@ -106,9 +106,6 @@ export default {
       this.lineage = this.lineage.slice(0, index + 1)
       this.currentId = user.memberId || user.id
     },
-    getStats (target) {
-      return this.stats.find(_ => _ && target && _.sellerId === target.id) || {}
-    },
     dateChanged ({ date }) {
       const dateSplit = date.split('-')
       this.month = parseInt(dateSplit[1])
