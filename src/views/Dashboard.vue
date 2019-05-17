@@ -97,7 +97,7 @@
               </v-btn>
               <v-card class="pa-4">
                 <ul>
-                  <li>1 qualifying front line member: 10% of first level points.</li>
+                  <li>1 qualifying front line member: 10% of first level points</li>
                   <li>2 qualifying front line member: 5% of second level points</li>
                   <li>3 qualifying front line member: 5% of third level points</li>
                   <li>4 qualifying front line member: 10% of fourth level points</li>
