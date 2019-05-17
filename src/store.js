@@ -107,7 +107,6 @@ export default new Vuex.Store({
   mutations: {
     [Mutations.INIT]: DejaVue.mutation('store', [verifyPrincipal]),
     [Mutations.SET_LOADING]: (state, loading) => {
-      console.log('here', {loading})
       state.loading = loading
     },
     [Mutations.SET_GATE]: (state, show) => {
