@@ -22,10 +22,10 @@
           justify-center
         >
           <TeamCard
-            :loading="$apollo.queries.stats.loading"
+            :loading="$apollo.queries.stats.loading || !statsMap[results.target.id]"
             @viewTeam="showTeam"
             :user="results.target"
-            :stats="getStats(results.target)"
+            :stats="statsMap[results.target.id]"
           />
         </v-layout>
         <v-breadcrumbs divider="/">
@@ -39,15 +39,18 @@
         </v-breadcrumbs>
         <div v-if="!$apollo.queries.results.loading">
           <v-layout row wrap>
-            <v-flex xs12 sm6 md4 v-for="(i, index) in results.team" :key="index">
-              <TeamCard
-                :loading="$apollo.queries.stats.loading"
-                @viewTeam="showTeam"
-                :user="i"
-                :actions="true"
-                :stats="getStats(i)"
-              />
-            </v-flex>
+            <template v-for="(i, index) in results.team">
+              <v-flex xs12 sm6 md4 v-if="statsMap[i.id]" :key="index">
+                <TeamCard
+                  :loading="$apollo.queries.stats.loading"
+                  @viewTeam="showTeam"
+                  :user="i"
+                  :actions="true"
+                  :stats="statsMap[i.id]"
+                  noData="No data available"
+                />
+              </v-flex>
+            </template>
           </v-layout>
         </div>
         <div v-if="$apollo.queries.results.loading">
@@ -85,7 +88,8 @@ export default {
         target: undefined,
         team: []
       },
-      stats: []
+      stats: [],
+      statsMap: {}
     }
   },
   components: {
@@ -100,9 +104,6 @@ export default {
     updateLineage (user, index) {
       this.lineage = this.lineage.slice(0, index + 1)
       this.currentId = user.memberId || user.id
-    },
-    getStats (target) {
-      return this.stats.find(_ => _ && target && _.sellerId === target.id) || {}
     },
     dateChanged ({ date }) {
       const dateSplit = date.split('-')
@@ -135,6 +136,10 @@ export default {
           this.minDate = targetStats.nodes[0].joinedOn
         }
         const result = targetStats.nodes.concat(firstLevelStats.nodes)
+        this.statsMap = {}
+        result.forEach(r => {
+          this.statsMap[r.sellerId] = r
+        })
         return result
       },
       fetchPolicy: 'cache-and-network'

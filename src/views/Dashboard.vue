@@ -12,84 +12,76 @@
           />
         </v-flex>
     </v-layout>
-    <v-container fluid class="contain">
-      <v-subheader>Rank</v-subheader>
-      <h2>{{currentRank.name}}</h2>
-      <div class="text-xs-center">
-        <div
-          class="chakra ambassador"
-          :class="{'active': team.personal.totalPoints >= 60}"
-        ></div>
-        <div
-          class="chakra guide"
-          :class="{'active': calculateRank(1)}"
-        ></div>
-        <div
-          class="chakra guru"
-          :class="{'active': calculateRank(2)}"
-        ></div>
-        <div
-          class="chakra sage"
-          :class="{'active': calculateRank(3)}"
-        ></div>
-        <div
-          class="chakra master"
-          :class="{'active': calculateRank(4)}"
-        ></div>
-      </div>
-      <v-subheader>Personal Stats</v-subheader>
-      <v-layout row wrap justify-center>
-        <v-flex xs12 sm4 md4 lg3 class="pa-3">
-          <DashCard
-            color="white"
-            darken="1"
-            :display="team.personal.sales"
-            subheading="Monthly Sales"
-            icon="shopping_basket"
-          />
-        </v-flex>
-        <v-flex xs12 sm4 md4 lg3 class="pa-3">
-          <DashCard
-            color="white"
-            darken="1"
-            :display="team.personal.qualified"
-            subheading="Qualified First Level"
-            icon="how_to_reg"
-          />
-        </v-flex>
-        <v-flex xs12 sm4 md4 lg3 class="pa-3">
-          <DashCard
-            color="white"
-            darken="1"
-            :display="team.personal.totalPoints ? team.personal.totalPoints.toFixed(2) : 0"
-            subheading="Monthly Points"
-            icon="group_work"
-          />
-        </v-flex>
-        </v-layout>
-      <v-subheader>Family Stats</v-subheader>
-      <v-layout row wrap justify-center>
-        <v-flex xs12 sm4 md4 lg3 class="pa-3">
-          <DashCard
-            color="white"
-            darken="1"
-            :display="team.teamSize"
-            subheading="Size"
-            icon="group"
-          />
-        </v-flex>
-        <v-flex xs12 sm4 md4 lg3 class="pa-3">
-          <DashCard
-            color="white"
-            darken="1"
-            :display="team.totalTeamAmount.toFixed(2)"
-            subheading="Points"
-            icon="group_work"
-          />
-        </v-flex>
+    <v-subheader>Rank</v-subheader>
+    <v-layout row wrap justify-center class="pa-3">
+      <v-flex xs12 sm4 md4 lg3>
+        <v-card class="py-4">
+          <div class="text-xs-center">
+            <div class="chakra ambassador" :class="{'active': team.personal.totalPoints >= 60}"></div>
+            <div class="chakra guide" :class="{'active': calculateRank(1)}"></div>
+            <div class="chakra guru" :class="{'active': calculateRank(2)}"></div>
+            <div class="chakra sage" :class="{'active': calculateRank(3)}"></div>
+            <div class="chakra master" :class="{'active': calculateRank(4)}"></div>
+          </div>
+          <h2 class="text-xs-center headline">{{currentRank.name}}</h2>
+        </v-card>
+      </v-flex>
+    </v-layout>
+    <v-subheader>Monthly Personal Stats</v-subheader>
+    <v-layout row wrap justify-center fill-height>
+      <v-flex xs12 sm4 md4 lg3 class="pa-3">
+        <DashCard
+          color="white"
+          darken="1"
+          :display="team.personal.sales"
+          subheading="Sales"
+          icon="shopping_basket"
+          :trend="currentMonth ? salesTrend : null"
+        />
+      </v-flex>
+      <v-flex xs12 sm4 md4 lg3 class="pa-3">
+        <DashCard
+          color="white"
+          darken="1"
+          :display="team.personal.qualified"
+          subheading="Qualified Front Line"
+          icon="how_to_reg"
+          :trend="currentMonth ? frontLineTrend : null"
+        />
+      </v-flex>
+      <v-flex xs12 sm4 md4 lg3 class="pa-3">
+        <DashCard
+          color="white"
+          darken="1"
+          :display="team.personal.totalPoints ? team.personal.totalPoints.toFixed(2) : 0"
+          subheading="Points"
+          icon="group_work"
+          :trend="currentMonth ? pointsTrend : null"
+        />
+      </v-flex>
       </v-layout>
-    </v-container>
-    <v-subheader>Team Leaderboards</v-subheader>
+    <v-subheader>Monthly Family Stats</v-subheader>
+    <v-layout row wrap justify-center>
+      <v-flex xs12 sm4 md4 lg3 class="pa-3">
+        <DashCard
+          color="white"
+          darken="1"
+          :display="team.teamSize"
+          subheading="Size"
+          icon="group"
+        />
+      </v-flex>
+      <v-flex xs12 sm4 md4 lg3 class="pa-3">
+        <DashCard
+          color="white"
+          darken="1"
+          :display="team.totalTeamAmount.toFixed(2)"
+          subheading="Points"
+          icon="group_work"
+        />
+      </v-flex>
+    </v-layout>
+    <v-subheader>Qualifications</v-subheader>
     <v-container fluid grid-list-xs>
       <v-layout row wrap align-start justify-center>
         <v-flex xs12 sm6 px-3 my-3>
@@ -105,7 +97,7 @@
               </v-btn>
               <v-card class="pa-4">
                 <ul>
-                  <li>1 qualifying front line member: 10% of first level points.</li>
+                  <li>1 qualifying front line member: 10% of first level points</li>
                   <li>2 qualifying front line member: 5% of second level points</li>
                   <li>3 qualifying front line member: 5% of third level points</li>
                   <li>4 qualifying front line member: 10% of fourth level points</li>
@@ -164,19 +156,37 @@
         </v-flex>
       </v-layout>
     </v-container>
-    <v-subheader>Leaderboards</v-subheader>
+    <v-subheader>Team Leaderboards</v-subheader>
     <v-container fluid grid-list-xs>
       <v-layout row wrap>
         <v-flex sm6 pa-3>
           <LeaderBoard
             :leaders="MonthlySalesLeaders"
+            title="Top Sellers In Your Team"
+            :currency="true"
+          />
+        </v-flex>
+        <v-flex sm6 pa-3>
+          <LeaderBoard
+            :leaders="MonthlyFrontlineLeaders"
+            title="Top Recruiters In Your Team"
+          />
+        </v-flex>
+      </v-layout>
+    </v-container>
+    <v-subheader>Company Leaderboards</v-subheader>
+    <v-container fluid grid-list-xs>
+      <v-layout row wrap>
+        <v-flex sm6 pa-3>
+          <LeaderBoard
+            :leaders="CompanyMonthlySalesLeaders"
             title="Top Sellers"
             :showTotal="false"
           />
         </v-flex>
         <v-flex sm6 pa-3>
           <LeaderBoard
-            :leaders="MonthlyFrontlineLeaders"
+            :leaders="CompanyMonthlyFrontlineLeaders"
             title="Top Recruiters"
           />
         </v-flex>
@@ -188,9 +198,12 @@
 <script>
 import TEAM_STATS_BY_LEVEL from '@/graphql/TeamStatsByLevel.gql'
 import {
-  MONTHLY_SALES_LEADERBOARD,
-  MONTHLY_FRONTLINE_LEADERBOARD
+  SALES_LEADERBOARD,
+  FRONTLINE_LEADERBOARD,
+  COMPANY_SALES_LEADERBOARD,
+  COMPANY_FRONTLINE_LEADERBOARD
 } from '@/graphql/Leaderboard.js'
+import { GET_MEMBER_STATS } from '@/Sales/Api.js'
 import { ADDRESS_BY_MEMBER_ID } from '@/graphql/Address.js'
 import MONTHLY_STATS_QUERY from '@/graphql/GetMonthlyStats.gql'
 
@@ -219,6 +232,10 @@ export default {
   },
   data() {
     return {
+      currentMonth: true,
+      pointsTrend: null,
+      salesTrend: null,
+      frontLineTrend: null,
       teamLeaders: [],
       ranks: {
         0: { name: 'Unqualified', color: 'FFFFFF' },
@@ -242,6 +259,8 @@ export default {
         .format('YYYY-MM-DD'),
       MonthlyFrontlineLeaders: [],
       MonthlySalesLeaders: [],
+      CompanyMonthlySalesLeaders: [],
+      CompanyMonthlyFrontlineLeaders: [],
       address: null,
       team: {
         personal: {
@@ -254,7 +273,17 @@ export default {
         fourthLevel: {},
         teamSize: 0,
         totalTeamAmount: 0
-      }
+      },
+      memberSalesStats: []
+    }
+  },
+  async mounted() {
+    this.calculatePersonalTrends()
+    this.calculateTeamTrends()
+  },
+  watch: {
+    '$apollo.loading'(newVal) {
+      this.setLoading(newVal)
     }
   },
   apollo: {
@@ -333,7 +362,39 @@ export default {
       fetchPolicy: 'cache-and-network'
     },
     MonthlySalesLeaders: {
-      query: MONTHLY_SALES_LEADERBOARD,
+      query: SALES_LEADERBOARD,
+      variables () {
+        return {
+          leaderInput: {
+            tenantId,
+            month: this.month,
+            year: this.year,
+            omitTagIds: [8]
+          }
+        }
+      },
+      update ({ monthlySalesLeaderboardByTeam }) {
+        return monthlySalesLeaderboardByTeam
+      }
+    },
+    MonthlyFrontlineLeaders: {
+      query: FRONTLINE_LEADERBOARD,
+      variables () {
+        return {
+          leaderInput: {
+            tenantId,
+            month: this.month,
+            year: this.year,
+            omitTagIds: [8]
+          }
+        }
+      },
+      update ({ monthlyFrontlineLeaderboardByTeam }) {
+        return monthlyFrontlineLeaderboardByTeam
+      }
+    },
+    CompanyMonthlySalesLeaders: {
+      query: COMPANY_SALES_LEADERBOARD,
       variables () {
         return {
           leaderInput: {
@@ -348,8 +409,8 @@ export default {
         return monthlySalesLeaderboard
       }
     },
-    MonthlyFrontlineLeaders: {
-      query: MONTHLY_FRONTLINE_LEADERBOARD,
+    CompanyMonthlyFrontlineLeaders: {
+      query: COMPANY_FRONTLINE_LEADERBOARD,
       variables () {
         return {
           leaderInput: {
@@ -397,6 +458,66 @@ export default {
       const monthDate = this.$moment().set({ year: this.year, month: this.month })
       this.startDate = monthDate.startOf('month').format('YYYY-MM-DD')
       this.endDate = monthDate.endOf('month').format('YYYY-MM-DD')
+      if (this.month === this.$moment().month() + 1 && this.year === this.$moment().year()) {
+        this.currentMonth = true
+        this.calculatePersonalTrends()
+        this.calculateTeamTrends()
+      } else {
+        this.currentMonth = false
+      }
+    },
+    async calculatePersonalTrends() {
+      const currentMonthVars = {
+        memberIds: [this.$store.state.user.principal.memberId],
+        startDate: this.$moment().startOf('month').format('YYYY-MM-DD'),
+        endDate: this.$moment().format('YYYY-MM-DD'),
+        mode: 'YEAR_AND_MONTH'
+      }
+      const lastMonthVars = {
+        ...currentMonthVars,
+        startDate: this.$moment().subtract(1, 'month').startOf('month').format('YYYY-MM-DD'),
+        endDate: this.$moment().subtract(1, 'month').endOf('month').format('YYYY-MM-DD')
+      }
+      const [curr, last] = await Promise.all([
+        this.$apollo.query({
+          query: GET_MEMBER_STATS,
+          variables: { input: currentMonthVars }
+        }),
+        this.$apollo.query({
+          query: GET_MEMBER_STATS,
+          variables: { input: lastMonthVars }
+        })
+      ])
+      const past = last.data.saleStatsByDateRange[0].stats[0]
+      const current = curr.data.saleStatsByDateRange[0].stats[0]
+      this.pointsTrend = (past.totalAmount - current.totalAmount) / past.totalAmount * -100
+      this.salesTrend = (past.saleCount - current.saleCount) / past.saleCount * -100
+    },
+    async calculateTeamTrends() {
+      const currentMonthVars = {
+        sponsorIds: [this.$store.state.user.principal.memberId],
+        startDate: this.$moment().startOf('month').format('YYYY-MM-DD'),
+        endDate: this.$moment().format('YYYY-MM-DD'),
+        mode: 'YEAR_AND_MONTH'
+      }
+      const lastMonthVars = {
+        ...currentMonthVars,
+        startDate: this.$moment().subtract(1, 'month').startOf('month').format('YYYY-MM-DD'),
+        endDate: this.$moment().subtract(1, 'month').endOf('month').format('YYYY-MM-DD')
+      }
+      const [curr, last] = await Promise.all([
+        this.$apollo.query({
+          query: GET_MEMBER_STATS,
+          variables: { input: currentMonthVars }
+        }),
+        this.$apollo.query({
+          query: GET_MEMBER_STATS,
+          variables: { input: lastMonthVars }
+        })
+      ])
+      const pastFrontLine = last.data.saleStatsByDateRange.filter(p => p.stats[0].totalAmount >= 60)
+      const currFrontLine = curr.data.saleStatsByDateRange.filter(p => p.stats[0].totalAmount >= 60)
+      this.frontLineTrend = (pastFrontLine.length - currFrontLine.length) / pastFrontLine.length * -100
     },
     calculatePercent (percent, qualified) {
       const { qualified: _qualified, totalPoints } = this.team.personal
@@ -406,7 +527,7 @@ export default {
       const { qualified: _qualified, totalPoints } = this.team.personal
       return _qualified >= qualified && totalPoints >= 60
     },
-    ...mapMutations([UserMutations.MEMBER_QUERY, Mutations.SET_GATE])
+    ...mapMutations([UserMutations.MEMBER_QUERY, Mutations.SET_GATE, Mutations.SET_LOADING])
   },
   computed: {
     ...mapState({
@@ -438,28 +559,29 @@ export default {
 }
 
 .chakra {
-  width: 75px;
-  height: 75px;
-  margin: 0 25px;
+  width: 45px;
+  height: 45px;
+  margin: 0 5px;
   display: inline-block;
   filter: grayscale(100%) opacity(50%) contrast(0%);
   background-image: url("/img/1004/chakras.svg");
+  background-size: 312px;
 }
 
 .ambassador {
-  background-position: -450px 0;
+  background-position: -267px 0;
 }
 .guide {
-  background-position: -372px 0;
+  background-position: -222px 0;
 }
 .guru {
-  background-position: -301px 0;
+  background-position: -179px 0;
 }
 .sage {
-  background-position: -225px 0;
+  background-position: -133px 0;
 }
 .master {
-  background-position: -150px 0;
+  background-position: -88px 0;
 }
 
 .active {
