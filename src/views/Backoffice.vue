@@ -90,6 +90,7 @@
           </v-list>
         </v-menu>
       </v-toolbar-items>
+      <v-progress-linear class="loading-bar" style="margin: 0;" v-if="loading" :indeterminate="true" color="secondary"></v-progress-linear>
     </v-toolbar>
     <v-content>
       <div class="main">
@@ -142,7 +143,8 @@ export default {
   computed: {
     ...mapState({
       user: state => state.user,
-      showGate: state => state.showGate
+      showGate: state => state.showGate,
+      loading: state => state.loading
     }),
     usersStoreUrl() {
       return this.$tenantInfo.storeUrl.replace('{slug}', this.user.principal.slug)
@@ -185,6 +187,13 @@ export default {
 </script>
 
 <style scoped>
+.loading-bar{
+  height: 7px;
+  margin: 0px;
+  position: absolute;
+  bottom: -7px;
+  left: 0;
+}
 .avatar{
   width: 50px;
   border-radius: 100px;

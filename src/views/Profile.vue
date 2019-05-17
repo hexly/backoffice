@@ -13,11 +13,7 @@
         </v-tab>
 
         <v-tab to="#address">Address
-          <v-badge
-            v-model="alert.address"
-            left
-            color="red"
-          >
+          <v-badge v-model="alert.address" left color="red">
             <template slot="badge">
               <span>!</span>
             </template>
@@ -26,11 +22,7 @@
         </v-tab>
 
         <v-tab to="#legal">Legal
-          <v-badge
-            v-model="alert.legal"
-            left
-            color="red"
-          >
+          <v-badge v-model="alert.legal" left color="red">
             <template slot="badge">
               <span>!</span>
             </template>
@@ -39,24 +31,11 @@
         </v-tab>
 
         <v-tab-item value="profile">
-          <v-layout
-            row
-            wrap
-            justify-space-around
-          >
-            <v-flex
-              xs12
-              sm3
-            >
+          <v-layout row wrap justify-space-around>
+            <v-flex xs12 sm3>
               <div class="mx-auto">
-                <img
-                  class="image"
-                  :src="getAvatar"
-                >
-                <form
-                  enctype="multipart/form-data"
-                  novalidate
-                >
+                <img class="image" :src="getAvatar">
+                <form enctype="multipart/form-data" novalidate>
                   <input
                     type="file"
                     name="avatar"
@@ -68,10 +47,7 @@
                 </form>
               </div>
             </v-flex>
-            <v-flex
-              xs12
-              sm6
-            >
+            <v-flex xs12 sm6>
               <PersonalForm
                 ref="personal"
                 :modal="modal"

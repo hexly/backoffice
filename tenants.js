@@ -1,7 +1,7 @@
 const R = require('rambda')
 const fs = require('fs')
 const path = require('path')
-const tenantId = ~~process.env.VUE_APP_TENANT_ID
+const tenantId = ~~process.env.VUE_APP_TENANT_ID || ~~process.env.npm_config_tenant_id
 let tenantOptions = {
   name: 'Veridian Dynamics',
   logoPath: '/veridian.jpg'
