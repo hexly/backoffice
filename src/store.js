@@ -28,7 +28,8 @@ axios.interceptors.request.use(config => {
 
 export const Mutations = {
   INIT: 'storeInit',
-  SET_GATE: 'setGate'
+  SET_GATE: 'setGate',
+  SET_LOADING: 'setLoading'
 }
 
 export const Actions = {
@@ -80,7 +81,8 @@ export default new Vuex.Store({
   },
   state: {
     locale: 'en-us',
-    showGate: false
+    showGate: false,
+    loading: false
   },
   actions: {
     [Actions.LOGOUT]: () => {
@@ -104,6 +106,9 @@ export default new Vuex.Store({
   },
   mutations: {
     [Mutations.INIT]: DejaVue.mutation('store', [verifyPrincipal]),
+    [Mutations.SET_LOADING]: (state, loading) => {
+      state.loading = loading
+    },
     [Mutations.SET_GATE]: (state, show) => {
       state.showGate = show
     }
