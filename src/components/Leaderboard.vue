@@ -6,7 +6,7 @@
     >
       <v-toolbar-title>{{title}}</v-toolbar-title>
     </v-toolbar>
-    <v-list two-line>
+    <v-list two-line dense>
       <div
         v-for="(item, index) in leaders"
         :key="`${item.contactEmail}-${index}`"
@@ -59,7 +59,7 @@ export default {
       if (image) {
         return image.replace('/image/upload', '/image/upload/w_80')
       }
-      return image
+      return this.$tenantInfo.placeholder
     }
   }
 }
