@@ -162,14 +162,14 @@
         <v-flex sm6 pa-3>
           <LeaderBoard
             :leaders="MonthlySalesLeaders"
-            title="Top Sellers In Your Team"
+            title="Team Top Sellers"
             :currency="true"
           />
         </v-flex>
         <v-flex sm6 pa-3>
           <LeaderBoard
             :leaders="MonthlyFrontlineLeaders"
-            title="Top Recruiters In Your Team"
+            title="Team Top Recruiters"
           />
         </v-flex>
       </v-layout>
