@@ -29,8 +29,13 @@ export default new Router({
       path: '/login',
       name: 'login',
       component: Login,
-      beforeEnter: (_, __, next) =>
-        store.state.user.jwt ? next('/dashboard') : next()
+      beforeEnter: (to, from, next) => {
+        if (store.state.user.authorized) {
+          next('/dashboard')
+        } else {
+          next()
+        }
+      }
     },
     {
       path: '/account/claim/:token',
