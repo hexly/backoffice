@@ -84,7 +84,7 @@ Vue.prototype.$tenantInfo = tenantInfo
 Vue.prototype.$moment = moment
 
 new Vue({
-  provide: apolloProvider.provide(),
+  apolloProvider,
   router,
   store,
   render: h => h(App)
