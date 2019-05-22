@@ -28,6 +28,7 @@
                     name="email"
                     label="Username"
                     type="email"
+                    autocomplete="email"
                   ></v-text-field>
                   <v-text-field
                     data-cy="Password Login Page"
@@ -39,6 +40,7 @@
                     label="Password"
                     id="password"
                     type="password"
+                    autocomplete="password"
                   ></v-text-field>
                   <v-card-actions>
                     <v-layout row wrap justify-space-between>

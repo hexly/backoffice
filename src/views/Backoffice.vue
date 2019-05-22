@@ -47,6 +47,7 @@
           </v-list-tile-content>
         </v-list-tile>
       </v-list>
+
       <v-divider></v-divider>
       <v-list>
         <v-list-tile :href="usersStoreUrl" target="_blank">
@@ -73,14 +74,13 @@
       <v-spacer></v-spacer>
       <v-toolbar-items>
         <v-menu offset-y>
-          <v-btn flat slot="activator" data-cy="Display Name">
-            <span v-if="$vuetify.breakpoint.mdAndUp">{{user.isImpersonating ? impersonationPrefix + user.principal.member.displayName : user.principal.member.displayName}}</span>
+          <v-btn flat slot="activator">
+            <span data-cy="Display Name" v-if="$vuetify.breakpoint.mdAndUp">
+              {{user.isImpersonating ? impersonationPrefix + user.principal.member.displayName : user.principal.member.displayName}}
+            </span>
             <img class="avatar" :src="getAvatar" />
           </v-btn>
-          <v-list style="cursor: pointer;">
-            <!-- <v-list-tile>
-              <v-list-tile-title>Settings</v-list-tile-title>
-            </v-list-tile>-->
+          <v-list>
             <v-list-tile @click="logout" v-if="user.isImpersonating">
               <v-list-tile-title >End Impersonation</v-list-tile-title>
             </v-list-tile>
@@ -164,14 +164,14 @@ export default {
     }
   },
   methods: {
+    logout() {
+      this.$store.dispatch(Actions.LOGOUT)
+      this.$router.go('/login')
+    },
     ...mapMutations([Mutations.SET_GATE]),
     ...mapActions({
       getAttributes: MemberActions.GET_ATTRIBUTES
-    }),
-    async logout() {
-      await this.$store.dispatch(Actions.LOGOUT)
-      this.$router.go('/login')
-    }
+    })
   },
   async mounted () {
     const { data } = await this.getAttributes({
