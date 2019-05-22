@@ -10,6 +10,7 @@ describe('Login Test', () => {
     cy.get('[data-cy=\'Password Login Page\']').type(mockUser.password)
     cy.get('[data-cy=\'Login Login Page\']').click()
     cy.get('[data-cy=\'Display Name\']').click()
+    cy.wait(6000)
     cy.get('[data-cy=\'Logout\']').click()
   })
 })

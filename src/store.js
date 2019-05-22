@@ -85,7 +85,7 @@ export default new Vuex.Store({
     loading: false
   },
   actions: {
-    [Actions.LOGOUT]: ({ commit }) => {
+    [Actions.LOGOUT]: () => {
       localStorage.clear()
     },
     [Actions.AVATAR_UPLOAD]: async (context, { file }) => {

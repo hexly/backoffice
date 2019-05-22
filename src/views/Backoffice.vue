@@ -166,8 +166,7 @@ export default {
   methods: {
     logout() {
       this.$store.dispatch(Actions.LOGOUT)
-      localStorage.removeItem('currentUser')
-      this.$router.push('/login')
+      this.$router.go('/login')
     },
     ...mapMutations([Mutations.SET_GATE]),
     ...mapActions({
