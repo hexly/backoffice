@@ -10,7 +10,7 @@
             <v-card-text>
               <img class="logo" :src="logoPath"/>
               <div class="center">
-                <p>Fill our the form to finish resetting your password</p>
+                <p>Fill out the form to finish resetting your password</p>
                 <v-form ref="claim" @submit.prevent="onSubmit" lazy-validation>
                   <v-text-field required :rules="requiredRule" v-model="username" prepend-icon="person" name="username" label="Username" type="email"></v-text-field>
                   <v-text-field required :rules="passwordRule" v-model="password" prepend-icon="lock" name="password" label="Password" id="password" type="password"></v-text-field>
