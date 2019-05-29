@@ -515,8 +515,8 @@ export default {
           variables: { input: lastMonthVars }
         })
       ])
-      const pastFrontLine = last.data.saleStatsByDateRange.filter(p => p.stats[0].totalAmount >= 60)
-      const currFrontLine = curr.data.saleStatsByDateRange.filter(p => p.stats[0].totalAmount >= 60)
+      const pastFrontLine = last.data.saleStatsByDateRange.filter(this.checkQualification)
+      const currFrontLine = curr.data.saleStatsByDateRange.filter(this.checkQualification)
       this.frontLineTrend = (pastFrontLine.length - currFrontLine.length) / pastFrontLine.length * -100
     },
     calculatePercent (percent, qualified) {
@@ -526,6 +526,12 @@ export default {
     calculateRank (qualified) {
       const { qualified: _qualified, totalPoints } = this.team.personal
       return _qualified >= qualified && totalPoints >= 60
+    },
+    checkQualification(member) {
+      if (member.stats[0].totalAmount >= 60 || this.$moment(member.joinedOn).isAfter(this.$moment().startOf('month'))) {
+        return true
+      }
+      return false
     },
     ...mapMutations([UserMutations.MEMBER_QUERY, Mutations.SET_GATE, Mutations.SET_LOADING])
   },
