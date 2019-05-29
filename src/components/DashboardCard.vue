@@ -11,7 +11,7 @@
         </div>
       </div>
     </v-card-title>
-    <v-card-text v-if="trend">
+    <v-card-text v-if="trend || trend === 0">
       <div style="width: 100%">
         <v-divider></v-divider>
         <div class="trend">

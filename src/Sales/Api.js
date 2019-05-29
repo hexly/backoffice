@@ -6,6 +6,7 @@ export const GET_MEMBER_STATS = gql`
       memberId
       rangeStart
       rangeEnd
+      joinedOn
       displayName
       profileUrl
       depth
