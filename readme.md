@@ -34,7 +34,7 @@ Use Brew to install Flyway
 - Follow this [guide](https://help.github.com/articles/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent/)
 
 ### Add key to GitHub account
-- In the shell enter  
+- In the shell enter
 
         cat <YOUR SSH KEY FILENAME>.pub
 
@@ -51,7 +51,7 @@ Use Brew to install Flyway
         git clone git@github.com:hexly/admin.git
 
 - Repeat this replacing 'admin.git' with 'platform.git' and 'backoffice.git' respectively
-- Change to /platform and run 
+- Change to /platform and run
 
         npm install
         npm run start
@@ -90,3 +90,6 @@ Use Brew to install Flyway
 ## Run 'up' and 'nuke'
     npm run local:up
     npm run local:nuke
+
+## Run Backoffice
+    npm --tenant_id=<tenantId> run start

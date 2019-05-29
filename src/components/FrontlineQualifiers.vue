@@ -33,14 +33,15 @@
           <v-list-tile-content>
             <v-list-tile-title>{{item.name}}</v-list-tile-title>
           </v-list-tile-content>
-          <v-list-tile-action >
-            <v-list-tile-title v-if="item.totalPoints/60 < 1">{{ item.totalPoints.toFixed(2) }}/60</v-list-tile-title>
+          <v-list-tile-action>
+            <v-list-tile-title v-if="isGrace(item.joinedOn)">Qualified</v-list-tile-title>
+            <v-list-tile-title v-else-if="item.totalPoints/60 < 1">{{ item.totalPoints.toFixed(2) }}/60</v-list-tile-title>
             <v-list-tile-title v-else>Qualified</v-list-tile-title>
           </v-list-tile-action>
         </v-list-tile>
       </div>
       <v-list-tile
-        v-if="filteredLeaders && filteredLeaders.length < 4"
+        v-if="filteredLeaders && filteredLeaders.length < 4 && leaders.length > 4"
         class="progress">
         <v-list-tile-content>
           <v-list-tile-title>You have {{leaders.length - filteredLeaders.length}} people in your front line with 0 points this month.</v-list-tile-title>
@@ -57,8 +58,7 @@ import _ from 'lodash'
 export default {
   name: 'FrontlineQualifiers',
   data() {
-    return {
-    }
+    return {}
   },
   props: {
     leaders: Array,
@@ -68,19 +68,30 @@ export default {
   methods: {
     calculateColor(rank, item) {
       let color = 'rgb(160, 206, 78, 0.1)'
-      const percent = item.totalPoints / 60 * 100
-      if (this.ranks[rank] && (item.totalPoints / 60 >= 1) && this.isQualified()) {
+      let percent = item.totalPoints / 60 * 100
+      if (this.isGrace(item.joinedOn)) {
+        percent = 100
+      }
+      if ((this.ranks[rank] && (item.totalPoints / 60 >= 1) && this.isQualified()) || this.isGrace(item.joinedOn)) {
         color = `#${this.ranks[rank].color}`
       }
       return `background-image: -webkit-linear-gradient(left, ${color} ${percent}%, #ffffff ${percent}%);`
     },
     isQualified() {
       return this.personal.totalPoints >= 60
+    },
+    isGrace(joinedOn) {
+      return this.$moment(joinedOn).isAfter(this.$moment().startOf('month'))
     }
   },
   computed: {
     filteredLeaders() {
-      const firstLevelQualifiers = this.leaders.filter(stats => stats.totalAmount > 0)
+      const firstLevelQualifiers = this.leaders.filter(stats => {
+        if (stats.totalAmount > 0 || this.isGrace(stats.joinedOn)) {
+          return true
+        }
+        return false
+      })
       return _.slice(_.orderBy(firstLevelQualifiers, 'totalAmount', 'desc'), 0, 4)
     }
   }
