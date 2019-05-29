@@ -34,8 +34,8 @@
             <v-list-tile-title>{{item.name}}</v-list-tile-title>
           </v-list-tile-content>
           <v-list-tile-action>
-            <v-list-tile-title v-if="item.totalPoints/60 < 1">{{ item.totalPoints.toFixed(2) }}/60</v-list-tile-title>
-            <v-list-tile-title v-else-if="isGrace(item.joinedOn)">Qualified</v-list-tile-title>
+            <v-list-tile-title v-if="isGrace(item.joinedOn)">Qualified</v-list-tile-title>
+            <v-list-tile-title v-else-if="item.totalPoints/60 < 1">{{ item.totalPoints.toFixed(2) }}/60</v-list-tile-title>
             <v-list-tile-title v-else>Qualified</v-list-tile-title>
           </v-list-tile-action>
         </v-list-tile>
