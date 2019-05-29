@@ -92,4 +92,4 @@ Use Brew to install Flyway
     npm run local:nuke
 
 ## Run Backoffice
-    npm --tenant_id=1004 run start
+    npm --tenant_id=<tenantId> run start

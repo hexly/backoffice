@@ -4,12 +4,28 @@ const path = require('path')
 const tenantId = ~~process.env.VUE_APP_TENANT_ID || ~~process.env.npm_config_tenant_id
 let tenantOptions = {
   name: 'Veridian Dynamics',
-  logoPath: '/veridian.jpg'
+  logoPath: '/veridian.jpg',
+  logoLoginPath: '/img/1004/logo-login.png',
+  placeholder: '/img/1004/profile.png',
+  baseColor: '#373331',
+  primaryColor: '#A0CE4E',
+  secondaryColor: '#C968A7',
+  accentColor: '#F7E8AB',
+  storeUrl: 'https://www.mygreenhorizen.com/store/{slug}',
+  corporateUrl: 'https://www.mygreenhorizen.com/',
+  social: [
+    {
+      key: 'facebook',
+      url: 'https://www.facebook.com/GreenHoriZen/'
+    }
+  ]
 }
 
 if (R.equals(tenantId, 1001)) {
-  tenantOptions.name = 'Hexly'
-  tenantOptions.logoPath = '/logo.png'
+  tenantOptions = {
+    name: 'Hexly',
+    logoPath: '/logo.png'
+  }
 }
 
 if (R.equals(tenantId, 1004)) {
