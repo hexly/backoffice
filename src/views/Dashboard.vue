@@ -369,7 +369,7 @@ export default {
             tenantId,
             month: this.month,
             year: this.year,
-            omitTagIds: [8]
+            omitTagIds: [7]
           }
         }
       },
@@ -385,7 +385,7 @@ export default {
             tenantId,
             month: this.month,
             year: this.year,
-            omitTagIds: [8]
+            omitTagIds: [7]
           }
         }
       },
@@ -401,7 +401,7 @@ export default {
             tenantId,
             month: this.month,
             year: this.year,
-            omitTagIds: [8]
+            omitTagIds: [7]
           }
         }
       },
