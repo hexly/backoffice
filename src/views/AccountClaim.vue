@@ -74,7 +74,6 @@
                     label="Select Timezone"
                     :rules="requiredRule"
                     :items="settings.timezones"
-                    @change="testingTZ"
                     item-text="name"
                     item-value="id"
                   />
@@ -208,9 +207,6 @@ export default {
       upsertAttribute: Actions.SET_ATTRIBUTE,
       login: UserActions.LOGIN
     }),
-    testingTZ(value) {
-      console.log(value)
-    },
     accept (value) {
       this[value] = this.$moment.utc()
     },
