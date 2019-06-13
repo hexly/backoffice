@@ -16,7 +16,7 @@
         v-model="form.pin"
         prepend-icon="person"
         name="pin"
-        label="Pin"
+        label="PIN"
       ></v-text-field>
       <v-card-actions>
         <v-spacer></v-spacer>
