@@ -54,7 +54,6 @@
 
 <script>
 import _ from 'lodash'
-import { join } from 'path'
 
 export default {
   name: 'FrontlineQualifiers',
