@@ -81,7 +81,7 @@ export default {
       return this.personal.totalPoints >= 60
     },
     isGrace(joinedOn) {
-      return this.$moment(joinedOn).isAfter(this.$moment().startOf('month'))
+      return this.$moment(joinedOn).isSame(this.$moment(), 'Month')
     }
   },
   computed: {
