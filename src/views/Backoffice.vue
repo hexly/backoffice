@@ -153,12 +153,15 @@ export default {
       return this.showGate && this.$route.path.indexOf('profile') === -1
     },
     getAvatar () {
+      console.log(this.user.principal.profileUrl)
       let image = this.$tenantInfo.placeholder
-      if (this.user.principal.profileUrl) {
+      if (this.user.principal.profileUrl && this.user.principal.profileUrl.indexOf('cloudinary')) {
         image = this.user.principal.profileUrl.replace(
           '/image/upload',
           '/image/upload/w_190,h_190'
         )
+      } else if (this.user.principal.profileUrl) {
+        return this.user.principal.profileUrl
       }
       return image
     }
@@ -195,7 +198,8 @@ export default {
   left: 0;
 }
 .avatar{
-  width: 50px;
+  max-width: 50px;
+  max-height: 50px;
   border-radius: 100px;
   margin-left: 12px;
 }

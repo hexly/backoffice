@@ -4,6 +4,7 @@ import axios from 'axios'
 import { UserStore } from '@/stores/UserStore'
 import { ClaimStore } from '@/stores/ClaimStore'
 import MemberStore from '@/Members/Store'
+import ContentStore from '@/modules/content/store'
 
 const {
   VUE_APP_API_ENDPOINT = 'http://localhost:3000',
@@ -77,12 +78,14 @@ export default new Vuex.Store({
   modules: {
     user: UserStore,
     claim: ClaimStore,
-    member: MemberStore
+    member: MemberStore,
+    content: ContentStore
   },
   state: {
     locale: 'en-us',
     showGate: false,
-    loading: false
+    loading: false,
+    tenantId: VUE_APP_TENANT_ID
   },
   actions: {
     [Actions.LOGOUT]: () => {
