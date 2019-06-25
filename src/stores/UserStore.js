@@ -13,7 +13,8 @@ export const UserMutations = {
   LOGIN_ERROR: 'setLoginError',
   SET_PRINCIPAL: 'setPrincipal',
   TOGGLE_IMPERSONATION: 'toggleImpersonation',
-  MEMBER_QUERY: 'memberQuery'
+  MEMBER_QUERY: 'memberQuery',
+  SET_PROFILE: 'setProfilePic'
 }
 
 const parseLegacyPrincipal = (principal) => {
@@ -46,10 +47,16 @@ export const UserStore = {
     },
     [UserMutations.LOGIN_ERROR]: (state, err) => (state.loginError = err),
     [UserMutations.SET_PRINCIPAL]: (state, principal) => {
-      state.principal = principal
+      state.principal = {
+        ...state.principal,
+        ...principal
+      }
     },
     [UserMutations.TOGGLE_IMPERSONATION]: state => {
       state.isImpersonating = !state.isImpersonating
+    },
+    [UserMutations.SET_PROFILE]: (state, profileUrl) => {
+      state.principal.profileUrl = profileUrl
     },
     [UserMutations.MEMBER_QUERY]: (state, member) => {
       state.principal = {
