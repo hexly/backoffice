@@ -153,7 +153,6 @@ export default {
       return this.showGate && this.$route.path.indexOf('profile') === -1
     },
     getAvatar () {
-      console.log(this.user.principal.profileUrl)
       let image = this.$tenantInfo.placeholder
       if (this.user.principal.profileUrl && this.user.principal.profileUrl.indexOf('cloudinary')) {
         image = this.user.principal.profileUrl.replace(
