@@ -99,7 +99,7 @@ export default {
         if (addressByMemberOrTenant && addressByMemberOrTenant[0]) {
           return Object.assign({}, addressByMemberOrTenant[0])
         } else {
-          this.$emit('hasAddress', {type: 'address', isSet: false})
+          this.$emit('hasAddress', { type: 'address', isSet: false })
           console.error('No address info found')
           return {}
         }
@@ -132,7 +132,7 @@ export default {
               this.saving = false
               this.address = updateAddress
               this.$emit('addressSnackBarEmitSuccess', 'Address successfully updated')
-              this.$emit('hasAddress', {type: 'address', isSet: true})
+              this.$emit('hasAddress', { type: 'address', isSet: true })
             }
           })
         } catch (err) {
