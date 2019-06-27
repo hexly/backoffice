@@ -151,7 +151,7 @@
 import { UserActions } from '@/stores/UserStore'
 import { ClaimActions } from '@/stores/ClaimStore'
 import { delay } from '@/utils/timer.js'
-import pathOr from 'rambda/lib/pathOr'
+import { pathOr } from 'rambda'
 
 const tenantId = ~~process.env.VUE_APP_TENANT_ID
 

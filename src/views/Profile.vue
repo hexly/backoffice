@@ -30,22 +30,17 @@
           </v-badge>
         </v-tab>
 
-        <v-tab-item value="profile">
+        <v-tab-item value="profile" class="py-3">
           <v-layout row wrap justify-space-around>
             <v-flex xs12 sm3>
               <div class="mx-auto">
                 <img class="image" :src="getAvatar">
-                <form enctype="multipart/form-data" novalidate>
-                  <input
-                    type="file"
-                    name="avatar"
-                    :disabled="isSaving"
-                    @change="filesChange($event.target.files)"
-                    accept="image/*"
-                  >
-                  <div v-if="isUploading">Uploading... please wait</div>
-                </form>
               </div>
+              <FileUpload
+                @profile="makeProfilePic"
+                label="Upload Profile"
+                :isProfilePic="true"
+              />
             </v-flex>
             <v-flex xs12 sm6>
               <PersonalForm
@@ -96,9 +91,12 @@ import AddressForm from '@/components/AddressForm.vue'
 import GET_MEMBERS from '@/graphql/GetMembers.gql'
 import UPDATE_PROFILE from '@/graphql/MemberPartialUpdate.gql'
 import CHECK_IF_UNIQUE_SLUG from '@/graphql/Slug.gql'
+import FileUpload from '@/components/FileUpload.vue'
 import Rules from './Rules.js'
-import { Actions, Mutations } from '@/store'
+import { Mutations } from '@/store'
+import { UserMutations } from '@/stores/UserStore'
 import { mapMutations } from 'vuex'
+import { getAsset } from '@/utils/AssetService'
 
 var moment = require('moment')
 
@@ -109,7 +107,8 @@ export default {
   components: {
     PersonalForm,
     AddressForm,
-    LegalForm
+    LegalForm,
+    FileUpload
   },
   data() {
     return {
@@ -163,22 +162,16 @@ export default {
     }
   },
   methods: {
-    ...mapMutations([Mutations.SET_GATE]),
+    ...mapMutations([Mutations.SET_GATE, UserMutations.SET_PROFILE]),
     checkAlert (value) {
       this.alert[value.type] = !value.isSet
       if (!this.alert.address && !this.alert.legal) {
         this.setGate(false)
       }
     },
-    async filesChange (files) {
+    async makeProfilePic(asset) {
       try {
-        const file = files[0]
-        this.isSaving = true
-        this.isUploading = true
-        const { data } = await this.$store.dispatch(Actions.AVATAR_UPLOAD, {
-          file
-        })
-        this.editMember.profileUrl = data.secure_url
+        this.editMember.profileUrl = getAsset(asset.id)
         await this.$apollo.mutate({
           mutation: UPDATE_PROFILE,
           variables: {
@@ -188,6 +181,7 @@ export default {
             }
           }
         })
+        this.setProfilePic(this.editMember.profileUrl)
         this.isFalse = false
         this.isUploading = false
         this.isSaving = false
@@ -198,8 +192,8 @@ export default {
         this.isFalse = false
         this.isUploading = false
         this.isSaving = false
-        console.error('error uploading file', { err })
-        this.snackbarMsg = 'Error uploading file'
+        this.snackbarMsg = 'error uploading profile Pic'
+        console.error(this.snackbarMsg, { err })
         this.snackBarColor = ERROR_COLOR
         this.snackbar = true
       }
