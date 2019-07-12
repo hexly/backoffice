@@ -95,10 +95,10 @@ import FileUpload from '@/components/FileUpload.vue'
 import Rules from './Rules.js'
 import { Mutations } from '@/store'
 import { UserMutations } from '@/stores/UserStore'
-import { mapMutations } from 'vuex'
+import { mapMutations, mapGetters } from 'vuex'
 import { getAsset } from '@/utils/AssetService'
-
-var moment = require('moment')
+import { CONTACT_UPSERT, CONTACT_EMAIL_UPSERT } from '@/graphql/Contacts.js'
+import { USERNAME_UPSERT } from '@/graphql/iam.js'
 
 const ERROR_COLOR = 'red'
 const SUCCESS_COLOR = 'primary'
@@ -113,7 +113,6 @@ export default {
   data() {
     return {
       modal: false,
-      moment,
       visible: false,
       password: '',
       newPassword: '',
@@ -130,8 +129,10 @@ export default {
       editMember: {
         id: '',
         name: '',
+        firstName: '',
+        lastName: '',
         displayName: '',
-        email: '',
+        contactEmail: '',
         profileUrl: '',
         slug: '',
         birthdate: ''
@@ -212,9 +213,9 @@ export default {
       if (membersResult) {
         const { members } = membersResult.data
         const editMember = members.nodes[0]
-        this.editMember = { ...editMember }
+        this.editMember = { ...editMember, contactEmail: { ...editMember.contacts[0].emails[0] } }
         if (this.editMember.birthdate) {
-          this.editMember.birthdate = moment(this.editMember.birthdate).format('MM/DD/YYYY')
+          this.editMember.birthdate = this.$moment(this.editMember.birthdate, 'YYYY-MM-DD').format('MM/DD/YYYY')
         } else {
           this.checkAlert({ type: 'birthday', isSet: false })
         }
@@ -277,19 +278,53 @@ export default {
               ? this.editMember.slug
               : this.originalSlug
             try {
-              await this.$apollo.mutate({
-                mutation: UPDATE_PROFILE,
-                variables: {
-                  input: {
-                    id: this.editMember.id,
-                    name: this.editMember.name,
-                    displayName: this.editMember.displayName,
-                    contactEmail: this.editMember.email,
-                    slug: sentSlug,
-                    birthday: this.editMember.birthdate
+              await Promise.all([
+                this.$apollo.mutate({
+                  mutation: UPDATE_PROFILE,
+                  variables: {
+                    input: {
+                      id: this.editMember.id,
+                      name: this.editMember.name,
+                      firstName: this.editMember.firstName,
+                      lastName: this.editMember.lastName,
+                      displayName: this.editMember.displayName,
+                      slug: sentSlug,
+                      birthday: this.editMember.birthdate
+                    }
                   }
-                }
-              })
+                }),
+                this.$apollo.mutate({
+                  mutation: CONTACT_UPSERT,
+                  variables: {
+                    input: {
+                      firstName: this.editMember.firstName,
+                      lastName: this.editMember.lastName,
+                      displayName: this.editMember.displayName,
+                      id: this.contactId,
+                      memberId: this.editMember.id
+                    }
+                  }
+                }),
+                this.$apollo.mutate({
+                  mutation: CONTACT_EMAIL_UPSERT,
+                  variables: {
+                    input: {
+                      email: this.editMember.contactEmail.email,
+                      id: this.editMember.contactEmail.id,
+                      contactId: this.contactId
+                    }
+                  }
+                }),
+                this.$apollo.mutate({
+                  mutation: USERNAME_UPSERT,
+                  variables: {
+                    input: {
+                      username: this.editMember.contactEmail.email,
+                      identityId: this.$store.state.user.principal.identityId
+                    }
+                  }
+                })
+              ])
               this.saving = false
               this.snackBarColor = SUCCESS_COLOR
               this.snackbarMsg = 'Information Saved'
@@ -331,6 +366,7 @@ export default {
     }
   },
   computed: {
+    ...mapGetters(['contactId']),
     birthdate () {
       return this.editMember.birthdate
     },

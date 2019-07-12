@@ -2,18 +2,33 @@
   <div>
     <v-form ref="informationForm">
       <v-text-field
-        label="Legal Name"
-        v-model="value.name"
+        label="First Name"
+        v-model.trim="value.firstName"
+        :rules="requiredRule"
         required
       ></v-text-field>
       <v-text-field
-        label="E-mail"
-        v-model="value.contactEmail"
+        label="Last Name"
+        v-model.trim="value.lastName"
+        :rules="requiredRule"
+        required
+      ></v-text-field>
+      <v-text-field
+        label="Legal Name"
+        v-model.trim="value.name"
+        :rules="requiredRule"
         required
       ></v-text-field>
       <v-text-field
         label="Display Name"
-        v-model="value.displayName"
+        v-model.trim="value.displayName"
+        :rules="requiredRule"
+        required
+      ></v-text-field>
+      <v-text-field
+        label="E-mail"
+        v-model.trim="value.contactEmail.email"
+        :rules="emailRule"
         required
       ></v-text-field>
       <v-text-field
@@ -80,9 +95,11 @@ export default {
   },
   data () {
     return {
+      requiredRule: Rules.requiredRule,
       slugRule: Rules.slugRule,
+      emailRule: Rules.emailRule,
       birthdateRule: [
-        v => this.$moment(v).isValid() || 'Birthday Must Be in MM/DD/YYYY Format'
+        v => this.$moment(v, 'MM/DD/YYYY').isValid() || 'Birthday Must Be in MM/DD/YYYY Format'
       ]
     }
   }

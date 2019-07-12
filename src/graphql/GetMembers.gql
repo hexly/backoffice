@@ -1,6 +1,8 @@
 query Member($input: MemberSearchCondition!) {
   members(condition: $input) {
     nodes {
+      firstName
+      lastName
       id
       birthdate
       tenantId
@@ -8,7 +10,13 @@ query Member($input: MemberSearchCondition!) {
       displayName
       mrn
       slug
-      contactEmail
+      contacts {
+        id
+        emails {
+          id
+          email
+        }
+      }
       profileUrl
     }
   }

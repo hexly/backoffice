@@ -9,6 +9,9 @@ mutation auth($creds: Credentials!) {
       memberId
       member {
         displayName
+        contacts {
+          id
+        }
       }
     }
   }

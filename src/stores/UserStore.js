@@ -88,6 +88,9 @@ export const UserStore = {
   getters: {
     displayName: state => {
       return state.principal && state.principal.displayName
+    },
+    contactId: state => {
+      return state.principal && state.principal.member.contacts[0].id
     }
   }
 }

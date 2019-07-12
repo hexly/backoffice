@@ -22,6 +22,7 @@ export const ClaimStore = {
     [ClaimActions.GET_TOKEN]: ({ commit }, token) => {
       return apolloClient.query({
         query: VALIDATE_TOKEN,
+        fetchPolicy: 'network-only',
         variables: { token }
       })
     },
