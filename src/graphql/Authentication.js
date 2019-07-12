@@ -17,7 +17,13 @@ export const GENERATE_TOKEN = gql`
 export const VALIDATE_TOKEN = gql`
   query oneTimeToken($token: OneTimeTokenInput!){ 
     oneTimeToken(input: $token) {
-      contactEmail
+      contacts {
+        id
+        emails {
+          id
+          email
+        }
+      }
       displayName
       id
       name

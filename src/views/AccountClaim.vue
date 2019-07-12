@@ -184,10 +184,12 @@ export default {
         ClaimActions.GET_TOKEN,
         { token }
       )
+      const { email } = member.contacts[0].emails[0]
       this.editMember = {
         ...member,
         memberId: member.id,
-        username: member.contactEmail
+        username: email,
+        contactEmail: email
       }
       this.loading = false
     } catch (err) {

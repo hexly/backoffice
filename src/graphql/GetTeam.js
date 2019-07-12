@@ -13,7 +13,11 @@ export const QUERY = gql`
         displayName
         mrn
         slug
-        contactEmail
+        contacts {
+          emails {
+            email
+          }
+        }
         profileUrl
       }
     }
@@ -25,7 +29,11 @@ export const QUERY = gql`
         displayName
         mrn
         slug
-        contactEmail
+        contacts {
+          emails {
+            email
+          }
+        }
         profileUrl
       }
     }
