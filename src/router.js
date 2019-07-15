@@ -5,7 +5,6 @@ import Login from './views/Login.vue'
 import AccountClaim from './views/AccountClaim.vue'
 import PasswordReset from './views/PasswordReset.vue'
 import Backoffice from './views/Backoffice.vue'
-import Dashboard from './views/Dashboard.vue'
 import Profile from './views/Profile.vue'
 import Assets from './views/Assets.vue'
 import Team from './views/Team.vue'
@@ -76,7 +75,7 @@ export default new Router({
           path: 'dashboard',
           alias: '',
           name: 'dashboard',
-          component: Dashboard
+          component: () => import(`./views/dashboards/${process.env.VUE_APP_TENANT_ID}.vue`)
         },
         {
           path: 'profile',
