@@ -73,6 +73,11 @@ export default {
   background-image: linear-gradient(to right top, #33ccbb, #3b2f93);
 }
 
+#backoffice.tenant-1000 {
+  background-image: none;
+  background-color: #262223;
+}
+
 #backoffice.tenant-1004 {
   background-image: none;
   background-color: #373331;
