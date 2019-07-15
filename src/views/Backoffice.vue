@@ -125,8 +125,10 @@
 
 <script>
 import { Actions, Mutations } from '@/store'
+import { UserMutations } from '@/stores/UserStore'
 import { Actions as MemberActions } from '@/Members/Store'
 import { mapState, mapActions, mapMutations } from 'vuex'
+import GET_PRINCIPAL from '@/graphql/Principal.gql'
 
 const impersonationPrefix = 'Impersonating '
 
@@ -170,7 +172,7 @@ export default {
       this.$store.dispatch(Actions.LOGOUT)
       this.$router.go('/login')
     },
-    ...mapMutations([Mutations.SET_GATE]),
+    ...mapMutations([Mutations.SET_GATE, UserMutations.SET_PRINCIPAL]),
     ...mapActions({
       getAttributes: MemberActions.GET_ATTRIBUTES
     })
@@ -183,6 +185,14 @@ export default {
     })
     if (data.getMemberAttributes.length < 2) {
       this.setGate(true)
+    }
+  },
+  apollo: {
+    principal: {
+      query: GET_PRINCIPAL,
+      update({ principal }) {
+        this.setPrincipal(principal)
+      }
     }
   }
 }
