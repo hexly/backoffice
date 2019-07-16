@@ -191,7 +191,9 @@ export default {
     principal: {
       query: GET_PRINCIPAL,
       update({ principal }) {
-        this.setPrincipal(principal)
+        if (principal) {
+          this.setPrincipal(principal)
+        }
       }
     }
   }

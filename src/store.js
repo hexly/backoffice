@@ -49,7 +49,9 @@ const DejaVue = {
   plugin: (init, localStorageName) => store => {
     store.commit(init)
     store.subscribe((mutation, state) => {
-      localStorage.setItem(localStorageName, JSON.stringify(state))
+      if (mutation.type !== 'setLoading') {
+        localStorage.setItem(localStorageName, JSON.stringify(state))
+      }
     })
   },
   mutation: (localStorageName, setup) => state => {
