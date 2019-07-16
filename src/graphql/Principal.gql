@@ -1,16 +1,12 @@
 query principal {
-  principal {
+  getPrincipal {
     role
     displayName
     username
     identityId
     tenantId
     memberId
-    permissions {
-      id
-      key
-      name
-    }
+    permissions
     member {
       id
       name
