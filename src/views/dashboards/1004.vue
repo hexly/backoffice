@@ -204,7 +204,7 @@ import {
   COMPANY_FRONTLINE_LEADERBOARD
 } from '@/graphql/Leaderboard.js'
 import { GET_MEMBER_STATS } from '@/Sales/Api.js'
-import { ADDRESS_BY_MEMBER_ID } from '@/graphql/Address.js'
+import { ADDRESS_BY_CONTACT_ID } from '@/graphql/Address.js'
 import MONTHLY_STATS_QUERY from '@/graphql/GetMonthlyStats.gql'
 
 import DashCard from '@/components/DashboardCard.vue'
@@ -215,7 +215,7 @@ import MonthSelector from '@/components/MonthSelector.vue'
 import GET_MEMBERS from '@/graphql/GetMembers.gql'
 
 import { pathOr } from 'rambda'
-import { mapMutations, mapState } from 'vuex'
+import { mapMutations, mapState, mapGetters } from 'vuex'
 import { UserMutations } from '@/stores/UserStore'
 import { Mutations } from '@/store'
 
@@ -343,17 +343,17 @@ export default {
       }
     },
     address: {
-      query: ADDRESS_BY_MEMBER_ID,
+      query: ADDRESS_BY_CONTACT_ID,
       variables () {
         return {
-          addressMemberId: {
-            memberId: this.$store.state.user.principal.memberId,
+          addressContactId: {
+            contactId: this.contactId,
             tenantId
           }
         }
       },
-      update ({ addressByMemberOrTenant }) {
-        const a = addressByMemberOrTenant[0]
+      update ({ addressByContactOrTenant }) {
+        const a = addressByContactOrTenant[0]
         if (!a) {
           this.setGate(true)
         }
@@ -538,7 +538,8 @@ export default {
   computed: {
     ...mapState({
       user: state => state.user
-    })
+    }),
+    ...mapGetters(['contactId'])
   }
 }
 </script>

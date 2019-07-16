@@ -15,9 +15,9 @@ export const UPDATE_ADDRESS = gql`
   }
 `
 
-export const ADDRESS_BY_MEMBER_ID = gql`
-  query addressByMemberId($addressMemberId: MemberOrTenantInput!) {
-    addressByMemberOrTenant(input: $addressMemberId) {
+export const ADDRESS_BY_CONTACT_ID = gql`
+  query addressByContactId($addressContactId: ContactOrTenantInput!) {
+    addressByContactOrTenant(input: $addressContactId) {
       id
       name
       street

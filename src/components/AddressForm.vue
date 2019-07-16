@@ -57,7 +57,8 @@
 </template>
 
 <script>
-import { ADDRESS_BY_MEMBER_ID, UPDATE_ADDRESS } from '@/graphql/Address.js'
+import { mapGetters } from 'vuex'
+import { ADDRESS_BY_CONTACT_ID, UPDATE_ADDRESS } from '@/graphql/Address.js'
 
 const tenantId = ~~process.env.VUE_APP_TENANT_ID
 
@@ -86,18 +87,18 @@ export default {
   },
   apollo: {
     address: {
-      query: ADDRESS_BY_MEMBER_ID,
+      query: ADDRESS_BY_CONTACT_ID,
       variables () {
         return {
-          addressMemberId: {
-            memberId: this.$store.state.user.principal.memberId,
+          addressContactId: {
+            contactId: this.contactId,
             tenantId
           }
         }
       },
-      update ({ addressByMemberOrTenant }) {
-        if (addressByMemberOrTenant && addressByMemberOrTenant[0]) {
-          return Object.assign({}, addressByMemberOrTenant[0])
+      update ({ addressByContactOrTenant }) {
+        if (addressByContactOrTenant && addressByContactOrTenant[0]) {
+          return Object.assign({}, addressByContactOrTenant[0])
         } else {
           this.$emit('hasAddress', { type: 'address', isSet: false })
           console.error('No address info found')
@@ -110,21 +111,20 @@ export default {
     async save () {
       if (this.$refs.addressForm.validate()) {
         this.saving = true
-        const ProfileObject = this.$parent.$parent.$parent.$parent.$parent
-
         try {
           await this.$apollo.mutate({
             mutation: UPDATE_ADDRESS,
             variables: {
               addressInput: {
                 id: this.address.id,
-                name: ProfileObject.editMember.name,
+                name: this.$store.state.user.principal.name,
                 street: this.address.street,
                 city: this.address.city,
                 province: this.address.province,
                 country: this.address.country || 'US',
                 postalCode: this.address.postalCode,
                 street2: this.address.street2 || '',
+                contactId: this.contactId,
                 memberId: this.$store.state.user.principal.memberId
               }
             },
@@ -151,6 +151,9 @@ export default {
         )
       }
     }
+  },
+  computed: {
+    ...mapGetters(['contactId'])
   }
 }
 </script>

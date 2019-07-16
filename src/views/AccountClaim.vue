@@ -184,10 +184,15 @@ export default {
         ClaimActions.GET_TOKEN,
         { token }
       )
+      const { id: contactId, emails } = member.contacts[0]
+      const { email, id: emailId } = emails[0]
       this.editMember = {
         ...member,
         memberId: member.id,
-        username: member.contactEmail
+        username: email,
+        contactId,
+        emailId,
+        contactEmail: email
       }
       this.loading = false
     } catch (err) {
@@ -224,6 +229,8 @@ export default {
           })
           const { token } = this.$route.params
           const { data: { consumeOneTimeToken } } = await this.createAccount({
+            emailId: this.editMember.emailId,
+            contactId: this.editMember.contactId,
             contactEmail: this.editMember.contactEmail,
             displayName: this.editMember.displayName,
             languageId: this.editMember.languageId,
