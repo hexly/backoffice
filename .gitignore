@@ -30,3 +30,6 @@ package-lock.json
 *.ntvs*
 *.njsproj
 *.sln
+
+# Backoffice
+src/tenant.js

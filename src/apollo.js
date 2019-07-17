@@ -4,6 +4,9 @@ import { InMemoryCache } from 'apollo-cache-inmemory'
 import { setContext } from 'apollo-link-context'
 import store from '@/store'
 
+import tenantInfo from '@/tenant.js'
+const mf = require('./build.info.json')
+
 function getAuth () {
   // get the authentication token from local storage if it exists
   const token = store.state.user.jwt
@@ -49,7 +52,9 @@ export default function createApolloClient ({
   const apolloClient = new ApolloClient({
     link,
     cache,
-    connectToDevTools: process.env.NODE_ENV !== 'production'
+    connectToDevTools: process.env.NODE_ENV !== 'production',
+    name: tenantInfo.name,
+    version: mf.buildTime
   })
 
   return apolloClient
