@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-form ref="informationForm">
+    <v-form ref="informationForm" @submit.prevent="saveData">
       <v-text-field
         label="First Name"
         v-model.trim="value.firstName"
@@ -60,13 +60,13 @@
                   :append-icon-cb="() => (visible = !visible)"
                   :type="visible ? 'text' : 'password'"
                 ></v-text-field>-->
-    </v-form>
     <v-btn
       :disabled="saving"
       :loading="saving"
       color="primary"
-      @click="saveData"
+      type="submit"
     >Save Information</v-btn>
+    </v-form>
   </div>
 </template>
 
@@ -101,6 +101,13 @@ export default {
       birthdateRule: [
         v => this.$moment(v, 'MM/DD/YYYY').isValid() || 'Birthday Must Be in MM/DD/YYYY Format'
       ]
+    }
+  },
+  methods: {
+    validateForm() {
+      if (this.$refs.informationForm.validate()) {
+        this.saveData()
+      }
     }
   }
 }

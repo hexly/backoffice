@@ -49,6 +49,13 @@ mutation Impersonate($input: IamImpersonationRequest!) {
       memberId
       member {
         displayName
+        contacts {
+          id
+          emails {
+            id
+            email
+          }
+        }
       }
     }
   }
