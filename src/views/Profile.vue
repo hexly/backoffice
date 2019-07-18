@@ -78,7 +78,11 @@
       v-model="snackbar"
       :multi-line="true"
     >
-      <div style="color: white;">{{snackbarMsg}}</div>
+      <div style="color: white;">
+        <ul>
+          <li v-for="(msg, index) in snackbarMsg" :key="index">{{msg}}</li>
+        </ul>
+      </div>
       <v-btn flat color="white" @click.native="snackbar = false">Close</v-btn>
     </v-snackbar>
   </div>
@@ -127,6 +131,7 @@ export default {
       slugIsUnique: true,
       slugErrors: [],
       editMember: {
+        username: '',
         id: '',
         name: '',
         firstName: '',
@@ -163,7 +168,7 @@ export default {
     }
   },
   methods: {
-    ...mapMutations([Mutations.SET_GATE, UserMutations.SET_PROFILE]),
+    ...mapMutations([Mutations.SET_GATE, UserMutations.SET_PROFILE, UserMutations.SET_PRINCIPAL]),
     checkAlert (value) {
       this.alert[value.type] = !value.isSet
       if (!this.alert.address && !this.alert.legal) {
@@ -187,14 +192,13 @@ export default {
         this.isUploading = false
         this.isSaving = false
         this.snackBarColor = SUCCESS_COLOR
-        this.snackbarMsg = 'Profile Successfully Saved'
+        this.snackbarMsg = ['Profile Successfully Saved']
         this.snackbar = true
       } catch (err) {
         this.isFalse = false
         this.isUploading = false
         this.isSaving = false
-        this.snackbarMsg = 'error uploading profile Pic'
-        console.error(this.snackbarMsg, { err })
+        this.snackbarMsg = ['error uploading profile Pic']
         this.snackBarColor = ERROR_COLOR
         this.snackbar = true
       }
@@ -213,7 +217,11 @@ export default {
       if (membersResult) {
         const { members } = membersResult.data
         const editMember = members.nodes[0]
-        this.editMember = { ...editMember, contactEmail: { ...editMember.contacts[0].emails[0] } }
+        this.editMember = {
+          ...editMember,
+          contactEmail: { ...editMember.contacts[0].emails[0] },
+          username: this.$store.state.user.principal.username
+        }
         if (this.editMember.birthdate) {
           this.editMember.birthdate = this.$moment(this.editMember.birthdate, 'YYYY-MM-DD').format('MM/DD/YYYY')
         } else {
@@ -228,7 +236,7 @@ export default {
           this.originalSlug = this.editMember.slug
         }
       } else {
-        this.snackbarMsg = 'Could not retrieve profile data'
+        this.snackbarMsg = ['Could not retrieve profile data']
         this.snackBarColor = ERROR_COLOR
         this.snackbar = true
       }
@@ -255,7 +263,7 @@ export default {
           })
         } catch (err) {
           console.error('error checking slugs', { err })
-          this.snackbarMsg = 'Unable to save profile data'
+          this.snackbarMsg = ['Unable to save profile data']
           this.snackBarColor = ERROR_COLOR
           this.snackbar = true
         }
@@ -266,7 +274,7 @@ export default {
           if (findMemberBySlug && findMemberBySlug.id !== this.memberId) {
             this.slugIsUnique = false
             this.snackBarColor = ERROR_COLOR
-            this.snackbarMsg = 'Chosen store name is unavailable!'
+            this.snackbarMsg = ['Chosen store name is unavailable!']
             this.snackbar = true
             this.slugErrors.push(
               `The store name ${this.editMember.slug} is unavailable`
@@ -319,46 +327,61 @@ export default {
                   mutation: USERNAME_UPSERT,
                   variables: {
                     input: {
-                      username: this.editMember.contactEmail.email,
+                      username: this.editMember.username,
                       identityId: this.$store.state.user.principal.identityId
                     }
                   }
                 })
               ])
+              this.setPrincipal({ username: this.editMember.username })
               this.saving = false
               this.snackBarColor = SUCCESS_COLOR
-              this.snackbarMsg = 'Information Saved'
+              this.snackbarMsg = ['Information Saved']
               this.snackbar = true
               this.originalSlug = this.editMember.slug
               this.getMembers()
             } catch (err) {
-              console.error({ err })
-              this.saving = false
-              this.snackbarMsg = 'Profile update was unsuccessful'
-              this.snackBarColor = ERROR_COLOR
-              this.snackbar = true
+              this.parseErrors(err)
             }
           }
         }
       } else {
-        this.snackbarMsg = 'One or more fields were filled out incorrectly'
+        this.snackbarMsg = ['One or more fields were filled out incorrectly']
         this.snackBarColor = ERROR_COLOR
         this.snackbar = true
       }
     },
+    parseErrors(err) {
+      console.log({ err })
+      const errors = []
+      err.graphQLErrors.forEach(e => {
+        e.path.forEach(p => {
+          if (p === 'iamUpsertUsername') {
+            errors.push('Could not update username')
+          }
+        })
+      })
+      this.showErrors(errors)
+    },
+    showErrors(errors) {
+      this.saving = false
+      this.snackbarMsg = errors
+      this.snackBarColor = ERROR_COLOR
+      this.snackbar = true
+    },
     addressSnackBarEmitSuccess (e) {
-      this.snackbarMsg = e
+      this.snackbarMsg = [e]
       this.snackBarColor = SUCCESS_COLOR
       this.snackbar = true
     },
     addressSnackBarEmitError (e) {
-      this.snackbarMsg = e
+      this.snackbarMsg = [e]
       this.snackBarColor = ERROR_COLOR
       this.snackbar = true
     }
   },
-  mounted() {
-    this.getMembers()
+  async mounted() {
+    await this.getMembers()
   },
   watch: {
     modal (val) {
