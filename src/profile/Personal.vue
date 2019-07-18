@@ -14,19 +14,31 @@
         required
       ></v-text-field>
       <v-text-field
+        class="pb-2"
         label="Legal Name"
         v-model.trim="value.name"
         :rules="requiredRule"
-        required
+        hint="This is used for all legal documents"
+        persistent-hint
       ></v-text-field>
       <v-text-field
+        class="pb-2"
         label="Display Name"
         v-model.trim="value.displayName"
         :rules="requiredRule"
-        required
+        hint="This is used to display publicly on your replicated site"
+        persistent-hint
       ></v-text-field>
       <v-text-field
-        label="E-mail"
+        class="pb-2"
+        label="Username"
+        v-model.trim="value.username"
+        :rules="requiredRule"
+        hint="This is used to log into your backoffice"
+        persistent-hint
+      ></v-text-field>
+      <v-text-field
+        label="Contact E-mail"
         v-model.trim="value.contactEmail.email"
         :rules="emailRule"
         required
@@ -49,23 +61,12 @@
         placeholder="MM/DD/YYYY"
         :rules="birthdateRule"
       ></v-text-field>
-
-      <!-- <v-text-field
-                  name="password"
-                  label="Enter your password"
-                  hint="At least 8 characters"
-                  v-model="password"
-                  min="8"
-                  :append-icon="visible ? 'visibility_off' : 'visibility'"
-                  :append-icon-cb="() => (visible = !visible)"
-                  :type="visible ? 'text' : 'password'"
-                ></v-text-field>-->
     <v-btn
       :disabled="saving"
       :loading="saving"
       color="primary"
       type="submit"
-    >Save Information</v-btn>
+    >Save Personal Info</v-btn>
     </v-form>
   </div>
 </template>
