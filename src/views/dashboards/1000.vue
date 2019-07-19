@@ -237,11 +237,11 @@ export default {
       teamLeaders: [],
       ranks: {
         0: { name: 'Unqualified', color: 'ececec' },
-        1: { name: 'Intern', color: 'acdefe' },
-        2: { name: 'Manager', color: 'f6394c' },
-        3: { name: 'VP', color: 'dbe453' },
-        4: { name: 'Senior VP', color: '1e6da9' },
-        5: { name: 'CEO', color: '4cad49' }
+        1: { name: 'Blueberry', color: 'acdefe' },
+        2: { name: 'Strawberry', color: 'f6394c' },
+        3: { name: 'Banana', color: 'dbe453' },
+        4: { name: 'Plum', color: '1e6da9' },
+        5: { name: 'Celery', color: '4cad49' }
       },
       rankStyle: {},
       personalProgress: null,

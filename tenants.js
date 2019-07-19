@@ -9,8 +9,8 @@ let tenantOptions = {
   placeholder: '/img/1000/profile.png',
   baseColor: '#2c3e49',
   primaryColor: '#4cad49',
-  secondaryColor: '#3c8c25',
-  accentColor: '#287524',
+  secondaryColor: '#287524',
+  accentColor: '#3c8c25',
   storeUrl: 'https://go-mana.com/',
   corporateUrl: 'https://go-mana.com/',
   social: [
