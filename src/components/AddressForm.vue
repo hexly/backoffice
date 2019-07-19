@@ -57,7 +57,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapState } from 'vuex'
 import { ADDRESS_BY_CONTACT_ID, UPDATE_ADDRESS } from '@/graphql/Address.js'
 
 const tenantId = ~~process.env.VUE_APP_TENANT_ID
@@ -120,7 +120,7 @@ export default {
             variables: {
               addressInput: {
                 id: this.address.id,
-                name: this.$store.state.user.principal.name,
+                name: this.principal.member.name,
                 street: this.address.street,
                 city: this.address.city,
                 province: this.address.province,
@@ -128,7 +128,7 @@ export default {
                 postalCode: this.address.postalCode,
                 street2: this.address.street2 || '',
                 contactId: this.contactId,
-                memberId: this.$store.state.user.principal.memberId
+                memberId: this.principal.memberId
               }
             },
             update: (store, { data: { updateAddress } }) => {
@@ -156,6 +156,9 @@ export default {
     }
   },
   computed: {
+    ...mapState({
+      principal: state => state.user.principal
+    }),
     ...mapGetters(['contactId'])
   }
 }

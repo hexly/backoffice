@@ -150,20 +150,20 @@ export default {
       loading: state => state.loading
     }),
     usersStoreUrl() {
-      return this.$tenantInfo.storeUrl.replace('{slug}', this.user.principal.slug)
+      return this.$tenantInfo.storeUrl.replace('{slug}', this.user.principal.member.slug)
     },
     showGateDialog() {
       return this.showGate && this.$route.path.indexOf('profile') === -1
     },
     getAvatar () {
       let image = this.$tenantInfo.placeholder
-      if (this.user.principal.profileUrl && this.user.principal.profileUrl.indexOf('cloudinary')) {
-        image = this.user.principal.profileUrl.replace(
+      if (this.user.principal.member.profileUrl && this.user.principal.member.profileUrl.indexOf('cloudinary')) {
+        image = this.user.principal.member.profileUrl.replace(
           '/image/upload',
           '/image/upload/w_190,h_190'
         )
-      } else if (this.user.principal.profileUrl) {
-        return this.user.principal.profileUrl
+      } else if (this.user.principal.member.profileUrl) {
+        return this.user.principal.member.profileUrl
       }
       return image
     }
@@ -191,10 +191,10 @@ export default {
   apollo: {
     principal: {
       query: GET_PRINCIPAL,
-      update({ principal }) {
-        if (principal) {
-          this.setPrincipal(principal)
-          const address = get(principal, 'contacts[0].addresses[0]')
+      update({ getPrincipal }) {
+        if (getPrincipal) {
+          this.setPrincipal(getPrincipal)
+          const address = get(getPrincipal, 'member.contacts[0].addresses[0]')
           if (!address) {
             this.setGate(true)
           }
