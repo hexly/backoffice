@@ -104,6 +104,9 @@ export default {
           console.error('No address info found')
           return {}
         }
+      },
+      skip() {
+        return !this.contactId
       }
     }
   },

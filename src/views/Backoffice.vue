@@ -129,6 +129,7 @@ import { UserMutations } from '@/stores/UserStore'
 import { Actions as MemberActions } from '@/Members/Store'
 import { mapState, mapActions, mapMutations } from 'vuex'
 import GET_PRINCIPAL from '@/graphql/Principal.gql'
+import { get } from 'lodash'
 
 const impersonationPrefix = 'Impersonating '
 
@@ -193,6 +194,10 @@ export default {
       update({ principal }) {
         if (principal) {
           this.setPrincipal(principal)
+          const address = get(principal, 'contacts[0].addresses[0]')
+          if (!address) {
+            this.setGate(true)
+          }
         }
       }
     }
