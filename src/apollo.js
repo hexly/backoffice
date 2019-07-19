@@ -1,7 +1,9 @@
 import { ApolloClient } from 'apollo-client'
 import { BatchHttpLink } from 'apollo-link-batch-http'
+import { HttpLink } from 'apollo-link-http'
 import { InMemoryCache } from 'apollo-cache-inmemory'
 import { setContext } from 'apollo-link-context'
+import { get } from 'lodash'
 import store from '@/store'
 
 import tenantInfo from '@/tenant.js'
@@ -21,11 +23,14 @@ export default function createApolloClient ({
   endpoints,
   persisting
 }) {
-  let httpLink = new BatchHttpLink({
+  const batchLink = new BatchHttpLink({
     // You should use an absolute URL here
-    uri: base + endpoints.graphql
+    uri: base + endpoints.graphql,
     // fetch: customFetch
+    batchMax: 4
   })
+
+  const httpLink = new HttpLink({ uri: base + endpoints.graphql })
 
   // HTTP Auth header injection
   const authLink = setContext((_, { headers = {} }) => {
@@ -33,6 +38,10 @@ export default function createApolloClient ({
       headers: {
         ...headers
       }
+    }
+    const memberId = get(store, 'state.user.principal.memberId')
+    if (memberId) {
+      context.headers['x-hexly-member-id'] = memberId
     }
     const authToken = getAuth()
     if (authToken && authToken.trim().length > 0) {
@@ -44,7 +53,15 @@ export default function createApolloClient ({
   })
 
   // Concat all the http link parts
-  const link = authLink.concat(httpLink)
+  const dontBatch = [
+    'teamStatsByLevel',
+    'principal'
+  ]
+  const link = authLink.split(
+    (operation) => dontBatch.indexOf(operation.operationName) === -1,
+    batchLink,
+    httpLink
+  )
 
   // Apollo cache
   const cache = new InMemoryCache()

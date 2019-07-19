@@ -13,7 +13,6 @@ export const UserMutations = {
   LOGIN_ERROR: 'setLoginError',
   SET_PRINCIPAL: 'setPrincipal',
   TOGGLE_IMPERSONATION: 'toggleImpersonation',
-  MEMBER_QUERY: 'memberQuery',
   SET_PROFILE: 'setProfilePic'
 }
 
@@ -57,12 +56,6 @@ export const UserStore = {
     },
     [UserMutations.SET_PROFILE]: (state, profileUrl) => {
       state.principal.profileUrl = profileUrl
-    },
-    [UserMutations.MEMBER_QUERY]: (state, member) => {
-      state.principal = {
-        ...state.principal,
-        ...member
-      }
     }
   },
   actions: {
