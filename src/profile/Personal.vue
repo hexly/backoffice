@@ -33,7 +33,7 @@
         class="pb-2"
         label="Username"
         v-model.trim="value.username"
-        :rules="requiredRule"
+        :rules="emailRule"
         hint="This is used to log into your backoffice"
         persistent-hint
       ></v-text-field>
