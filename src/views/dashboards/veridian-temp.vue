@@ -238,12 +238,12 @@ export default {
       frontLineTrend: null,
       teamLeaders: [],
       ranks: {
-        0: { name: 'Unqualified', color: 'ececec' },
-        1: { name: 'Intern', color: 'acdefe' },
-        2: { name: 'Manager', color: 'f6394c' },
-        3: { name: 'VP', color: 'dbe453' },
-        4: { name: 'Senior VP', color: '1e6da9' },
-        5: { name: 'CEO', color: '4cad49' }
+        0: { name: 'Unqualified', color: 'FFFFFF' },
+        1: { name: 'Intern', color: 'F59895' },
+        2: { name: 'Manager', color: 'F3C789' },
+        3: { name: 'VP', color: 'F7E8AB' },
+        4: { name: 'Senior VP', color: 'B8D886' },
+        5: { name: 'CEO', color: '9BD2EF' }
       },
       rankStyle: {},
       personalProgress: null,
@@ -567,27 +567,34 @@ export default {
 
 .rank-icon {
   width: 70px;
-  height: 70px;
+  height: 65px;
   margin: 0 5px;
   display: inline-block;
-  background-color: #ececec;
-  border-radius: 100%;
+  filter: grayscale(100%) opacity(50%) contrast(0%);
+  background-image: url("/img/1000/vd-ranks.svg");
+  background-size: 312px;
 }
 
-.intern.active {
-  background-color: #acdefe;
+.intern {
+  background-position: 26px -15px;
+  background-size: 387px;
 }
-.manager.active {
-  background-color: #f6394c;
+.manager {
+  background-position: -50px -13px;
+  background-size: 375px;
 }
-.vp.active {
-  background-color: #dbe453;
+.vp {
+  background-position: -98px 0;
 }
-.seniorvp.active {
-  background-color: #1e6da9;
+.seniorvp {
+  background-position: -169px 0;
 }
-.ceo.active {
-  background-color: #4cad49;
+.ceo {
+  background-position: -238px 0;
+}
+
+.active {
+  filter: grayscale(0%) opacity(100%);
 }
 
 /* .chakra6 {
