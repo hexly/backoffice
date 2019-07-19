@@ -86,8 +86,8 @@ export default {
   },
   mounted () {
     const { principal } = this.$store.state.user
-    if (principal && principal.name) {
-      this.name = principal.name
+    if (principal && principal.member.name) {
+      this.name = principal.member.name
     }
     if (principal && principal.username) {
       this.email = principal.username
