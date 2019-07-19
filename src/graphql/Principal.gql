@@ -8,12 +8,33 @@ query principal {
     memberId
     permissions
     member {
+      firstName
+      lastName
       id
+      birthdate
+      tenantId
       name
       displayName
+      mrn
+      slug
       contacts {
         id
+        emails {
+          id
+          email
+        }
+        addresses {
+          id
+          name
+          street
+          street2
+          city
+          province
+          postalCode
+          country
+        }
       }
+      profileUrl
     }
   }
 }
