@@ -99,7 +99,7 @@ import FileUpload from '@/components/FileUpload.vue'
 import Rules from './Rules.js'
 import { Mutations } from '@/store'
 import { UserMutations } from '@/stores/UserStore'
-import { mapMutations, mapGetters } from 'vuex'
+import { mapMutations, mapGetters, mapState } from 'vuex'
 import { getAsset } from '@/utils/AssetService'
 import { CONTACT_UPSERT, CONTACT_EMAIL_UPSERT } from '@/graphql/Contacts.js'
 import { USERNAME_UPSERT } from '@/graphql/iam.js'
@@ -220,7 +220,7 @@ export default {
         this.editMember = {
           ...editMember,
           contactEmail: { ...editMember.contacts[0].emails[0] },
-          username: this.$store.state.user.principal.username
+          username: this.principal.username
         }
         if (this.editMember.birthdate) {
           this.editMember.birthdate = this.$moment(this.editMember.birthdate, 'YYYY-MM-DD').format('MM/DD/YYYY')
@@ -328,7 +328,7 @@ export default {
                   variables: {
                     input: {
                       username: this.editMember.username,
-                      identityId: this.$store.state.user.principal.identityId
+                      identityId: this.principal.identityId
                     }
                   }
                 })
@@ -389,15 +389,19 @@ export default {
     }
   },
   computed: {
+    ...mapState({
+      principal: state => state.user.principal
+    }),
     ...mapGetters(['contactId']),
     birthdate () {
       return this.editMember.birthdate
     },
     memberId () {
-      return this.$store.state.user.principal.memberId
+      console.log(this.principal)
+      return this.principal.memberId
     },
     tenantId () {
-      return this.$store.state.user.principal.tenantId || ~~process.env.VUE_APP_TENANT_ID
+      return this.principal.tenantId || ~~process.env.VUE_APP_TENANT_ID
     },
     getAvatar () {
       return (

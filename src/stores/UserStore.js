@@ -55,7 +55,7 @@ export const UserStore = {
       state.isImpersonating = !state.isImpersonating
     },
     [UserMutations.SET_PROFILE]: (state, profileUrl) => {
-      state.principal.profileUrl = profileUrl
+      state.principal.member.profileUrl = profileUrl
     }
   },
   actions: {
@@ -80,7 +80,7 @@ export const UserStore = {
   },
   getters: {
     displayName: state => {
-      return state.principal && state.principal.displayName
+      return state.principal && state.principal.member.displayName
     },
     contactId: state => {
       return state.principal && state.principal.member.contacts[0].id
