@@ -27,7 +27,7 @@ export default function createApolloClient ({
     // You should use an absolute URL here
     uri: base + endpoints.graphql,
     // fetch: customFetch
-    batchMax: 1
+    batchMax: 5
   })
 
   const httpLink = new HttpLink({ uri: base + endpoints.graphql })
