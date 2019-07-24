@@ -47,6 +47,25 @@ if (R.equals(tenantId, 1004)) {
       }
     ]
   }
+} else if (R.equals(tenantId, 1008)) {
+  tenantOptions = {
+    name: 'GoMana',
+    logoPath: '/img/1000/logo.png',
+    logoLoginPath: '/img/1000/logo-login.png',
+    placeholder: '/img/1000/profile.png',
+    baseColor: '#2c3e49',
+    primaryColor: '#4cad49',
+    secondaryColor: '#287524',
+    accentColor: '#3c8c25',
+    storeUrl: 'https://go-mana.com/',
+    corporateUrl: 'https://go-mana.com/',
+    social: [
+      {
+        key: 'facebook',
+        url: 'http://www.veridian-dynamics.org/'
+      }
+    ]
+  }
 }
 
 const contents = `
