@@ -397,7 +397,6 @@ export default {
       return this.editMember.birthdate
     },
     memberId () {
-      console.log(this.principal)
       return this.principal.memberId
     },
     tenantId () {

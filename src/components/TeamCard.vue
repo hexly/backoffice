@@ -5,7 +5,7 @@
         <v-flex xs7>
           <div v-if="!loading">
             <div class="headline">{{user.name}}</div>
-            <div>{{user.contactEmail}}</div>
+            <div v-if="hasEmail">{{user.contacts[0].emails[0].email}}</div>
             <div v-if="stats && stats.joinedOn">
               <div>Joined {{formatDate(stats.joinedOn)}}</div>
               <div>Tribe Size: {{stats.teamSize || 0}}</div>
@@ -79,6 +79,9 @@ export default {
         return this.stats.totalPoints >= 60 || joinedThisMonth
       }
       return false
+    },
+    hasEmail () {
+      return this.user.contacts[0].emails[0].email
     }
   }
 }
