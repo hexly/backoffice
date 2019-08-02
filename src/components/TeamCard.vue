@@ -1,14 +1,15 @@
 <template>
-      <v-card
-      class="mx-2 my-2"
-      max-width="400"
-    >
+<v-flex xs6 md3 lg1>
+  <v-card
+    class="mx-3 my-3"
+    width="400"
+  >
     <v-responsive :aspect-ratio="16/9">
       <v-img
         class="white--text"
         :src="getAvatar"
-        height="400px"
-        width="400px"
+        height="400"
+        width="400"
         contain
         gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
       >
@@ -27,17 +28,14 @@
           <span></span>
         </span>
       </v-card-text>
-      <v-card-actions>
-        <v-btn
-        >
-          Share
-        </v-btn>
-        <v-btn
-        >
-          Explore
-        </v-btn>
+      <v-card-actions v-if="actions">
+        <v-btn flat color="secondary" block @click="viewTeam">View Team</v-btn>
+        <v-btn flat color="white" block disabled></v-btn>
+        <v-btn flat color="primary" block v-if="isQualified">qualified</v-btn>
+        <v-btn flat color=white block disabled v-else>unqualified</v-btn>
       </v-card-actions>
     </v-card>
+    </v-flex>
         <!-- <v-flex xs7>
           <div v-if="!loading">
             <div class="headline">{{user.name}}</div>
@@ -122,11 +120,4 @@ export default {
 </script>
 
 <style scoped>
-/* .team-card {
-} */
- .team-card v-img {
-  width: 125px;
-  height: 125px;
-  margin: auto;
-}
 </style>
