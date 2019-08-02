@@ -1,8 +1,39 @@
 <template>
-  <v-card class="team-card">
-    <v-container fluid grid-list-lg>
-      <v-layout row>
-        <v-flex xs7>
+      <v-card
+      class="mx-2 my-2 px-2 py-2"
+      max-width="400"
+    >
+    <v-responsive :aspect-ratio="16/9">
+      <v-img
+        class="white--text"
+        :src="getAvatar"
+        height="400px"
+        width="400px"
+        contain
+        gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
+      >
+        <v-card-title class="align-end fill-height"><h4>{{user.name}}</h4></v-card-title>
+      </v-img>
+    </v-responsive>
+      <v-card-text>
+        <span></span><br>
+        <span class="text--primary">
+          <span>{{stats.joinedOn}}</span><br>
+          <span></span>
+        </span>
+      </v-card-text>
+      <v-card-actions>
+        <v-btn
+        >
+          Share
+        </v-btn>
+        <v-btn
+        >
+          Explore
+        </v-btn>
+      </v-card-actions>
+    </v-card>
+        <!-- <v-flex xs7>
           <div v-if="!loading">
             <div class="headline">{{user.name}}</div>
             <div v-if="hasEmail">{{user.contacts[0].emails[0].email}}</div>
@@ -24,18 +55,16 @@
           <v-card-media>
             <img :src="getAvatar" />
           </v-card-media>
-        </v-flex>
-      </v-layout>
-    </v-container>
-    <div width=100%>
-      <v-card-actions v-if="actions">
+        </v-flex> -->
+    <!-- <div width=100%> -->
+      <!--<v-card-actions v-if="actions">
         <v-btn flat color="secondary" block @click="viewTeam">View Team</v-btn>
         <v-btn flat color="white" block disabled></v-btn>
         <v-btn flat color="primary" block v-if="isQualified">qualified</v-btn>
         <v-btn flat color=white block disabled v-else>unqualified</v-btn>
-      </v-card-actions>
-    </div>
-  </v-card>
+      </v-card-actions> -->
+    <!-- </div> -->
+  <!--</v-card>-->
 
 </template>
 
@@ -87,13 +116,10 @@ export default {
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style>
-.team-card {
-  margin: 10px;
-  max-width: 500px;
-}
-.team-card img {
+<style scoped>
+/* .team-card {
+} */
+ .team-card v-img {
   width: 125px;
   height: 125px;
   margin: auto;
