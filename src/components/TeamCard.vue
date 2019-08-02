@@ -1,6 +1,6 @@
 <template>
       <v-card
-      class="mx-2 my-2 px-2 py-2"
+      class="mx-2 my-2"
       max-width="400"
     >
     <v-responsive :aspect-ratio="16/9">
@@ -12,13 +12,18 @@
         contain
         gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
       >
-        <v-card-title class="align-end fill-height"><h4>{{user.name}}</h4></v-card-title>
+      <v-layout row></v-layout>
+        <v-card-title class="align-end fill-height">
+          <h4>{{(user.name).toUpperCase()}}</h4>
+          <v-spacer/>
+          <h4>{{(user.contacts[0].emails[0].email).toLowerCase()}}</h4>
+        </v-card-title>
       </v-img>
     </v-responsive>
       <v-card-text>
         <span></span><br>
         <span class="text--primary">
-          <span>{{stats.joinedOn}}</span><br>
+          <span>Joined {{formatDate(stats.joinedOn)}}</span><br>
           <span></span>
         </span>
       </v-card-text>
