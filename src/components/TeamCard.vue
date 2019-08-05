@@ -1,37 +1,37 @@
 <template>
-  <v-card class="team-card mx-2 my-2">
-    <v-card-title primary-title class="secondary white--text">
-      <v-flex>
-        <h4>{{(user.name).toUpperCase()}}</h4>
-        <h4 v-if="hasEmail">{{(user.contacts[0].emails[0].email).toLowerCase()}}</h4>
-        </v-flex>
-        <!-- <v-flex fill-height>
-          <img :src="getAvatar" class="cardImg" height="125px" width="125px"/>
-        </v-flex> -->
-      </v-card-title>
-    <v-container fluid grid-list-lg>
-      <v-layout row>
-        <v-flex xs12>
-          <v-card-text v-if="!loading">
-            <span v-if="stats && stats.joinedOn"><br>
-            <span>Joined {{formatDate(stats.joinedOn)}}</span><br>
-            <span>Tribe Size: {{stats.teamSize || 0}}</span><br>
-            <span>Front Line: {{stats.firstLevelSize || 0}}</span><br>
-            <span>Total Points: {{stats.totalPoints ? stats.totalPoints.toFixed(2) : 0}}</span>
-            </span>
-          <span v-else>{{noData}}</span>
-          </v-card-text>
-        <div v-if="loading">
-          <v-progress-circular indeterminate :size="50" :width="5" color="black"></v-progress-circular>
-        </div>
-        </v-flex>
-      </v-layout>
-    </v-container>
+  <v-card
+    max-width="500"
+    class="ma-2 pa-2"
+  >
+    <div v-if="loading">
+      <v-progress-circular indeterminate :size="50" :width="5" color="primary"></v-progress-circular>
+    </div>
+
+    <v-img
+      :src="getAvatar"
+      class="cardImg white--text"
+      gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
+    >
+    <v-card-title class="fill-height align-end">
+      <h2>{{(user.name).toUpperCase()}}</h2>
+      <h4>{{(user.contacts[0].emails[0].email).toLowerCase()}}</h4>
+    </v-card-title>
+    </v-img>
+
+    <v-card-text v-if="!loading">
+      <span v-if="stats && stats.joinedOn"><br>
+        <span>Joined {{formatDate(stats.joinedOn)}}</span><br>
+        <span>Tribe Size: {{stats.teamSize || 0}}</span><br>
+        <span>Front Line: {{stats.firstLevelSize || 0}}</span><br>
+        <span>Total Points: {{stats.totalPoints ? stats.totalPoints.toFixed(2) : 0}}</span>
+        </span>
+      <span v-else>{{noData}}</span>
+    </v-card-text>
     <div width=100%>
-      <v-card-actions v-if="actions" justify-space-around>
-        <v-btn flat color="secondary" block @click="viewTeam">View Team</v-btn>
-        <v-btn flat color="primary" block v-if="isQualified">qualified</v-btn>
-        <v-btn flat color=white block disabled v-else>unqualified</v-btn>
+      <v-card-actions v-if="actions" class="justify-space-between">
+        <v-btn flat color="secondary" @click="viewTeam">View Team</v-btn>
+        <v-btn flat color="secondary" v-if="isQualified">Qualified</v-btn>
+        <v-btn flat color=white disabled v-else>Unqualified</v-btn>
       </v-card-actions>
     </div>
   </v-card>
@@ -88,14 +88,9 @@ export default {
 </script>
 
 <style scoped>
-.team-card {
-  margin: 10px;
-  /* min-width: 350px; */
-  max-width: 500px;
-}
 .cardImg {
   margin: auto;
-  height: 125px;
-  widows: 125px;
+  max-height: 50%;
+  max-width: 100%;
 }
 </style>
