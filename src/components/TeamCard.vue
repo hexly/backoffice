@@ -100,9 +100,9 @@ export default {
 </script>
 
 <style scoped>
-/* .cardImg {
+.cardImg {
   margin: auto;
   max-height: 100%;
   max-width: 100%;
-} */
+}
 </style>
