@@ -26,9 +26,9 @@
         <v-card-text v-if="!loading">
           <div v-if="stats && stats.joinedOn">
             <div>
-            <span>Joined: {{$moment(stats.joinedOn).format('ll')}}</span>
-            <span> -- </span>
-            <span>{{formatDate(stats.joinedOn)}}</span>
+              <span>Joined {{formatDate(stats.joinedOn)}}</span>
+              <span> on </span>
+              <span>{{$moment(stats.joinedOn).format('ll')}}</span>
             </div>
             <div>Tribe Size: {{stats.teamSize || 0}}</div>
             <div>Front Line: {{stats.firstLevelSize || 0}}</div>
