@@ -22,7 +22,7 @@
           justify-center
         >
           <TeamCard
-            :loading="$apollo.queries.stats.loading || !statsMap[results.target.id]"
+            :loading="$apollo.queries.stats.loading"
             @viewTeam="showTeam"
             :user="results.target"
             :stats="statsMap[results.target.id]"
@@ -47,7 +47,7 @@
                   :user="i"
                   :actions="true"
                   :stats="statsMap[i.id]"
-                  noData="No data available"
+                  :noData="'No data available'"
                 />
               </v-flex>
             </template>
