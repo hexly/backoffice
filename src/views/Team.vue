@@ -22,7 +22,7 @@
           justify-center
         >
           <TeamCard
-            :loading="$apollo.queries.stats.loading"
+            :loading="loading"
             @viewTeam="showTeam"
             :user="results.target"
             :stats="statsMap[results.target.id]"
@@ -37,12 +37,12 @@
             <span @click="updateLineage(user, index)">{{user.displayName}}</span>
           </v-breadcrumbs-item>
         </v-breadcrumbs>
-        <div v-if="!$apollo.queries.results.loading">
+        <div v-if="!loading">
           <v-layout row wrap>
             <template v-for="(i, index) in results.team">
               <v-flex xs12 sm6 md4 v-if="statsMap[i.id]" :key="index">
                 <TeamCard
-                  :loading="$apollo.queries.stats.loading"
+                  :loading="loading"
                   @viewTeam="showTeam"
                   :user="i"
                   :actions="true"
@@ -52,14 +52,6 @@
               </v-flex>
             </template>
           </v-layout>
-        </div>
-        <div v-if="$apollo.queries.results.loading">
-          <v-progress-circular
-            indeterminate
-            :size="70"
-            :width="7"
-            :color="$tenantInfo.baseColor"
-          ></v-progress-circular>
         </div>
       </div>
     </div>
@@ -71,6 +63,8 @@ import MonthSelector from '@/components/MonthSelector.vue'
 import TeamCard from '../components/TeamCard.vue'
 import getTeamByMemberId from '@/graphql/GetTeam'
 import MONTHLY_STATS_QUERY from '@/graphql/GetMonthlyStats.gql'
+import { Mutations } from '@/store'
+import { mapMutations, mapState } from 'vuex'
 
 const tenantId = ~~process.env.VUE_APP_TENANT_ID
 
@@ -92,11 +86,17 @@ export default {
       statsMap: {}
     }
   },
+  computed: {
+    ...mapState({
+      loading: state => state.loading
+    })
+  },
   components: {
     TeamCard,
     MonthSelector
   },
   methods: {
+    ...mapMutations([ Mutations.SET_LOADING ]),
     showTeam (user) {
       this.lineage.push(user)
       this.currentId = user.id || user.memberId
@@ -112,7 +112,9 @@ export default {
     }
   },
   apollo: {
-    results: getTeamByMemberId('currentId'),
+    results: getTeamByMemberId('currentId', function (isLoading, countModifier) {
+      this.setLoading(isLoading)
+    }),
     stats: {
       query: MONTHLY_STATS_QUERY,
       variables () {
@@ -142,7 +144,10 @@ export default {
         })
         return result
       },
-      fetchPolicy: 'cache-and-network'
+      fetchPolicy: 'cache-and-network',
+      watchLoading(isLoading, countModifier) {
+        this.setLoading(isLoading)
+      }
     }
   },
   mounted () {

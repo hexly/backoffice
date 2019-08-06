@@ -168,7 +168,7 @@ export default {
     }
   },
   methods: {
-    ...mapMutations([Mutations.SET_GATE, UserMutations.SET_PROFILE, UserMutations.SET_PRINCIPAL]),
+    ...mapMutations([Mutations.SET_GATE, UserMutations.SET_PROFILE, UserMutations.SET_PRINCIPAL, Mutations.SET_LOADING]),
     checkAlert (value) {
       this.alert[value.type] = !value.isSet
       if (!this.alert.address && !this.alert.legal) {
@@ -177,6 +177,7 @@ export default {
     },
     async makeProfilePic(asset) {
       try {
+        this.setLoading(true)
         this.editMember.profileUrl = getAsset(asset.id)
         await this.$apollo.mutate({
           mutation: UPDATE_PROFILE,
@@ -187,6 +188,7 @@ export default {
             }
           }
         })
+        this.setLoading(false)
         this.setProfilePic(this.editMember.profileUrl)
         this.isFalse = false
         this.isUploading = false
@@ -195,6 +197,7 @@ export default {
         this.snackbarMsg = ['Profile Successfully Saved']
         this.snackbar = true
       } catch (err) {
+        this.setLoading(false)
         this.isFalse = false
         this.isUploading = false
         this.isSaving = false
@@ -204,6 +207,7 @@ export default {
       }
     },
     async getMembers() {
+      this.setLoading(true)
       const membersResult = await this.$apollo.query({
         fetchPolicy: 'network-only',
         query: GET_MEMBERS,
@@ -213,6 +217,7 @@ export default {
           }
         }
       })
+      this.setLoading(false)
       // If graphql query succeeds
       if (membersResult) {
         const { members } = membersResult.data
@@ -252,6 +257,7 @@ export default {
       if (formIsValid) {
         // Slug uniqueness query
         try {
+          this.setLoading(true)
           response = await this.$apollo.query({
             query: CHECK_IF_UNIQUE_SLUG,
             variables: {
@@ -261,7 +267,9 @@ export default {
               }
             }
           })
+          this.setLoading(false)
         } catch (err) {
+          this.setLoading(false)
           console.error('error checking slugs', { err })
           this.snackbarMsg = ['Unable to save profile data']
           this.snackBarColor = ERROR_COLOR
@@ -390,7 +398,8 @@ export default {
   },
   computed: {
     ...mapState({
-      principal: state => state.user.principal
+      principal: state => state.user.principal,
+      loading: state => state.loading
     }),
     ...mapGetters(['contactId']),
     birthdate () {
