@@ -1,45 +1,55 @@
 <template>
-  <v-card class="team-card">
-    <v-container fluid grid-list-lg>
-      <v-layout row>
-        <v-flex xs7>
-          <div v-if="!loading">
-            <div class="headline">{{user.name}}</div>
-            <div v-if="hasEmail">{{user.contacts[0].emails[0].email}}</div>
-            <div v-if="stats && stats.joinedOn">
-              <div>Joined {{formatDate(stats.joinedOn)}}</div>
-              <div>Tribe Size: {{stats.teamSize || 0}}</div>
-              <div>Front Line: {{stats.firstLevelSize || 0}}</div>
-              <div>Total Points: {{stats.totalPoints ? stats.totalPoints.toFixed(2) : 0}}</div>
-            </div>
-            <div v-else>
-              {{noData}}
-            </div>
-          </div>
-          <div v-if="loading">
-            <v-progress-circular indeterminate :size="50" :width="5" color="black"></v-progress-circular>
-          </div>
-        </v-flex>
-        <v-flex xs5>
-          <v-card-media>
-            <img :src="getAvatar" />
-          </v-card-media>
-        </v-flex>
-      </v-layout>
-    </v-container>
-    <div width=100%>
-      <v-card-actions v-if="actions">
-        <v-btn flat color="secondary" block @click="viewTeam">View Team</v-btn>
-        <v-btn flat color="white" block disabled></v-btn>
-        <v-btn flat color="primary" block v-if="isQualified">qualified</v-btn>
-        <v-btn flat color=white block disabled v-else>unqualified</v-btn>
-      </v-card-actions>
-    </div>
-  </v-card>
+  <v-card
+  max-width="350"
+  class="ma-2 pa-2"
+  >
 
+    <v-img
+      :src="getAvatar"
+      contain
+      class="cardImg white--text"
+      gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
+    >
+    <v-card-title class="fill-height align-end">
+      <v-flex row>
+        <h2>{{(user.name).toUpperCase()}}</h2>
+        <h4 v-if="hasEmail">{{(user.contacts[0].emails[0].email).toLowerCase()}}</h4>
+      </v-flex>
+    </v-card-title>
+    </v-img>
+
+      <v-flex v-if="loading" d-flex justify-center align-center class="text-xs-center">
+        <v-progress-circular indeterminate :size="50" :width="5" color="primary"></v-progress-circular>
+      </v-flex>
+
+      <v-flex row>
+        <v-card-text v-if="!loading">
+          <div v-if="stats && stats.joinedOn">
+            <div>
+              <span>Joined {{formatDate(stats.joinedOn)}}</span>
+              <span> on </span>
+              <span>{{$moment(stats.joinedOn).format('ll')}}</span>
+            </div>
+            <div>Tribe Size: {{stats.teamSize || 0}}</div>
+            <div>Front Line: {{stats.firstLevelSize || 0}}</div>
+            <div>Total Points: {{stats.totalPoints ? stats.totalPoints.toFixed(2) : 0}}</div>
+          </div>
+          <div v-else>{{noData}}</div>
+        </v-card-text>
+      </v-flex>
+
+    <v-divider v-if="actions" class="primary"/>
+    <v-card-actions v-if="actions" class="justify-space-between">
+      <v-btn flat color="secondary" @click="viewTeam">View Team</v-btn>
+      <v-btn flat color="primary" v-if="isQualified">Qualified</v-btn>
+      <v-btn flat color=white disabled v-else>Unqualified</v-btn>
+    </v-card-actions>
+
+  </v-card>
 </template>
 
 <script>
+
 export default {
   name: 'TeamCard',
   data() {
@@ -81,21 +91,18 @@ export default {
       return false
     },
     hasEmail () {
-      return this.user.contacts[0].emails[0].email
+      if (this.user.contacts[0].emails[0].email) {
+        return true
+      } else return false
     }
   }
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style>
-.team-card {
-  margin: 10px;
-  max-width: 500px;
-}
-.team-card img {
-  width: 125px;
-  height: 125px;
+<style scoped>
+.cardImg {
   margin: auto;
+  max-height: 100%;
+  max-width: 100%;
 }
 </style>
