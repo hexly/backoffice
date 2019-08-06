@@ -47,7 +47,7 @@
                   :user="i"
                   :actions="true"
                   :stats="statsMap[i.id]"
-                  :noData="'No data available'"
+                  noData="No data available"
                 />
               </v-flex>
             </template>
