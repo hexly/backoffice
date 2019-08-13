@@ -22,6 +22,7 @@
           justify-center
         >
           <TeamCard
+            style="width: 100%;"
             :loading="$apollo.queries.stats.loading || !statsMap[results.target.id]"
             @viewTeam="showTeam"
             :user="results.target"

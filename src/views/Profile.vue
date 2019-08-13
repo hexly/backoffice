@@ -352,7 +352,7 @@ export default {
       }
     },
     parseErrors(err) {
-      console.log({ err })
+      console.error({ err })
       const errors = []
       err.graphQLErrors.forEach(e => {
         e.path.forEach(p => {
@@ -397,7 +397,6 @@ export default {
       return this.editMember.birthdate
     },
     memberId () {
-      console.log(this.principal)
       return this.principal.memberId
     },
     tenantId () {

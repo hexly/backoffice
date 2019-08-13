@@ -5,6 +5,7 @@ import Login from './views/Login.vue'
 import AccountClaim from './views/AccountClaim.vue'
 import PasswordReset from './views/PasswordReset.vue'
 import Backoffice from './views/Backoffice.vue'
+import Integrations from './views/Integrations.vue'
 import Profile from './views/Profile.vue'
 import Assets from './views/Assets.vue'
 import Team from './views/Team.vue'
@@ -96,6 +97,11 @@ export default new Router({
           path: 'team',
           name: 'team',
           component: Team
+        },
+        {
+          path: 'integrations',
+          name: 'integrations',
+          component: Integrations
         }
       ]
     },
