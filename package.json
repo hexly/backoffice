@@ -75,7 +75,8 @@
     "cypress": "3.2.0",
     "eslint-plugin-cypress": "2.2.1",
     "jest": "24.8.0",
-    "lt": "^0.3.3"
+    "lt": "^0.3.3",
+    "vue-google-charts": "^0.3.2"
   },
   "optionalDependencies": {
     "@vue/cli-plugin-e2e-cypress": "3.7.0",

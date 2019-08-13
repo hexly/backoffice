@@ -46,6 +46,14 @@
             <v-list-tile-title>Team</v-list-tile-title>
           </v-list-tile-content>
         </v-list-tile>
+        <v-list-tile to="/charts">
+          <v-list-tile-action>
+            <v-icon>insert_chart</v-icon>
+          </v-list-tile-action>
+          <v-list-tile-content>
+            <v-list-tile-title>Sales Charts</v-list-tile-title>
+          </v-list-tile-content>
+        </v-list-tile>
       </v-list>
 
       <v-divider></v-divider>
