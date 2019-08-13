@@ -183,12 +183,13 @@ export default {
       this.$store.dispatch(Actions.LOGOUT)
       this.$router.go('/login')
     },
-    ...mapMutations([Mutations.SET_GATE, UserMutations.SET_PRINCIPAL]),
+    ...mapMutations([Mutations.SET_GATE, UserMutations.SET_PRINCIPAL, Mutations.SET_LOADING]),
     ...mapActions({
       getAttributes: MemberActions.GET_ATTRIBUTES
     })
   },
   async mounted () {
+    this.setLoading(true)
     const { data } = await this.getAttributes({
       key: ['affiliate-agreement', 'entity-details'],
       accessMode: 'ALL',
@@ -197,6 +198,7 @@ export default {
     if (data.getMemberAttributes.length < 2) {
       this.setGate(true)
     }
+    this.setLoading(false)
   },
   apollo: {
     principal: {

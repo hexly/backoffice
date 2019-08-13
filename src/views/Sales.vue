@@ -147,7 +147,9 @@
 <script>
 import DateSelector from '@/components/DateSelector.vue'
 import SEARCH_SALES_QUERY from '@/graphql/SearchSales.gql'
+import { Mutations } from '@/store'
 import { map } from 'ramda'
+import { mapMutations, mapState } from 'vuex'
 
 const tenantId = ~~process.env.VUE_APP_TENANT_ID
 
@@ -157,7 +159,6 @@ export default {
   },
   data() {
     return {
-      loading: true,
       modalStart: false,
       modalEnd: false,
       startDate: this.$moment()
@@ -189,6 +190,9 @@ export default {
   },
   apollo: {
     sales: {
+      watchLoading(isLoading, countModifier) {
+        this.setLoading(isLoading)
+      },
       query: SEARCH_SALES_QUERY,
       variables() {
         return {
@@ -202,17 +206,18 @@ export default {
         }
       },
       error(err) {
-        this.loading = false
+        this.setLoading(false)
         console.error({ err })
       },
       debounce: 500,
       update({ searchSalesBySellerId }) {
-        this.loading = false
+        this.setLoading(false)
         return searchSalesBySellerId
       }
     }
   },
   methods: {
+    ...mapMutations([ Mutations.SET_LOADING ]),
     startDateChanged(date) {
       this.$refs.dialogStart.save(date)
     },
@@ -221,6 +226,9 @@ export default {
     }
   },
   computed: {
+    ...mapState({
+      loading: state => state.loading
+    }),
     items() {
       return map(sale => {
         return {
