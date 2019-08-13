@@ -98,7 +98,5 @@ export default {
 </script>
 
 <style scoped>
-.v-card {
-  max-width: 500px;
-}
+
 </style>
