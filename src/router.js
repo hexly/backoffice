@@ -13,7 +13,7 @@ import Impersonate from './views/Impersonate.vue'
 import Redirect from './views/Redirect.vue'
 import Zendesk from './zendesk/Zendesk.vue'
 import ZendeskRoot from './zendesk/root.vue'
-import SalesCharts from './components/SalesCharts.vue'
+import SalesCharts from './views/SalesCharts.vue'
 
 Vue.use(Router)
 
