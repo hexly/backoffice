@@ -35,6 +35,30 @@ query principal {
         }
       }
       profileUrl
+      tenantIntegrations {
+        id
+        tenantIntegrationId
+        integrationOid
+        integrationStatusId
+        metadata
+        priority
+        name
+        key
+      }
+    }
+    tenant {
+      id
+      baseUrl
+      name
+      slug
+      integrations {
+        id
+        priority
+        metadata
+        statusId
+        name
+        key
+      }
     }
   }
 }

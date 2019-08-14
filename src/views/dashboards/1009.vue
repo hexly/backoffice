@@ -514,7 +514,7 @@ export default {
 
 .rank-icon {
   width: 70px;
-  height: 70px;
+  height: 65px;
   margin: 0 5px;
   display: inline-block;
   filter: grayscale(100%) opacity(50%) contrast(0%);
@@ -539,4 +539,16 @@ export default {
 .ceo {
   background-position: -238px 0;
 }
+
+.active {
+  filter: grayscale(0%) opacity(100%);
+}
+
+/* .chakra6 {
+  background-position: -209px -10px;
+}
+
+.chakra7 {
+  background-position: -10px -10px;
+} */
 </style>

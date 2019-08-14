@@ -46,6 +46,14 @@
             <v-list-tile-title>Team</v-list-tile-title>
           </v-list-tile-content>
         </v-list-tile>
+        <v-list-tile v-if="activeIntegrations.length" to="/integrations">
+          <v-list-tile-action>
+            <v-icon>compare_arrows</v-icon>
+          </v-list-tile-action>
+          <v-list-tile-content>
+            <v-list-tile-title>Integrations</v-list-tile-title>
+          </v-list-tile-content>
+        </v-list-tile>
       </v-list>
 
       <v-divider></v-divider>
@@ -137,7 +145,8 @@ export default {
   data() {
     return {
       impersonationPrefix,
-      drawer: null
+      drawer: null,
+      activeIntegrations: []
     }
   },
   props: {
@@ -147,7 +156,8 @@ export default {
     ...mapState({
       user: state => state.user,
       showGate: state => state.showGate,
-      loading: state => state.loading
+      loading: state => state.loading,
+      integrations: state => state.integrations
     }),
     usersStoreUrl() {
       return this.$tenantInfo.storeUrl.replace('{slug}', this.user.principal.member.slug)
@@ -200,6 +210,10 @@ export default {
           if (!address) {
             this.setGate(true)
           }
+          const integrations = get(getPrincipal, 'tenant.integrations')
+          this.activeIntegrations = integrations.filter(i => {
+            return this.integrations.indexOf(i.key) > -1 && i.statusId === 200
+          })
         }
       }
     }
