@@ -3,16 +3,16 @@ const fs = require('fs')
 const path = require('path')
 const tenantId = ~~process.env.VUE_APP_TENANT_ID || ~~process.env.npm_config_tenant_id
 let tenantOptions = {
-  name: 'Veridian Dynamics',
-  logoPath: '/img/1000/logo.jpg',
+  name: 'GoMana',
+  logoPath: '/img/1000/logo.png',
   logoLoginPath: '/img/1000/logo-login.png',
-  placeholder: '/img/1000/profile.jpeg',
-  baseColor: '#262223',
-  primaryColor: '#bf214b',
-  secondaryColor: '#bf4565',
-  accentColor: '#f2d0dd',
-  storeUrl: 'http://www.veridian-dynamics.org/',
-  corporateUrl: 'http://www.veridian-dynamics.org/',
+  placeholder: '/img/1000/profile.png',
+  baseColor: '#2c3e49',
+  primaryColor: '#4cad49',
+  secondaryColor: '#287524',
+  accentColor: '#3c8c25',
+  storeUrl: 'https://go-mana.com/',
+  corporateUrl: 'https://go-mana.com/',
   social: [
     {
       key: 'facebook',
@@ -44,6 +44,25 @@ if (R.equals(tenantId, 1004)) {
       {
         key: 'facebook',
         url: 'https://www.facebook.com/GreenHoriZen/'
+      }
+    ]
+  }
+} else if (R.equals(tenantId, 1008)) {
+  tenantOptions = {
+    name: 'GoMana',
+    logoPath: '/img/1000/logo.png',
+    logoLoginPath: '/img/1000/logo-login.png',
+    placeholder: '/img/1000/profile.png',
+    baseColor: '#2c3e49',
+    primaryColor: '#4cad49',
+    secondaryColor: '#287524',
+    accentColor: '#3c8c25',
+    storeUrl: 'https://go-mana.com/',
+    corporateUrl: 'https://go-mana.com/',
+    social: [
+      {
+        key: 'facebook',
+        url: 'http://www.veridian-dynamics.org/'
       }
     ]
   }

@@ -13,7 +13,8 @@ export const UserMutations = {
   LOGIN_ERROR: 'setLoginError',
   SET_PRINCIPAL: 'setPrincipal',
   TOGGLE_IMPERSONATION: 'toggleImpersonation',
-  SET_PROFILE: 'setProfilePic'
+  SET_PROFILE: 'setProfilePic',
+  ADD_INTEGRATION: 'addTenantIntegration'
 }
 
 const parseLegacyPrincipal = (principal) => {
@@ -56,6 +57,9 @@ export const UserStore = {
     },
     [UserMutations.SET_PROFILE]: (state, profileUrl) => {
       state.principal.member.profileUrl = profileUrl
+    },
+    [UserMutations.ADD_INTEGRATION]: (state, integration) => {
+      state.principal.member.tenantIntegrations.push(integration)
     }
   },
   actions: {

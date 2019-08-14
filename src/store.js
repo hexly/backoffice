@@ -22,7 +22,7 @@ axios.interceptors.request.use(config => {
     const hydratedState = JSON.parse(dehydratedState)
     config.headers = config.headers || {}
     config.headers.common = config.headers.common || {}
-    config.headers.common['Authorization'] = `Bearer ${hydratedState.user.jwt}`
+    config.headers.common['Authorization'] = `Bearer ${hydratedState.jwt}`
   }
   return config
 })
@@ -39,7 +39,7 @@ export const Actions = {
 }
 
 const verifyPrincipal = async hydratedState => {
-  if (!hydratedState.user || !hydratedState.user.principal) {
+  if (!hydratedState || !hydratedState.principal) {
     localStorage.clear()
     window.location = '/'
   }
@@ -49,9 +49,7 @@ const DejaVue = {
   plugin: (init, localStorageName) => store => {
     store.commit(init)
     store.subscribe((mutation, state) => {
-      if (mutation.type !== 'setLoading') {
-        localStorage.setItem(localStorageName, JSON.stringify(state))
-      }
+      localStorage.setItem(localStorageName, JSON.stringify(state.user))
     })
   },
   mutation: (localStorageName, setup) => state => {
@@ -63,13 +61,12 @@ const DejaVue = {
       }
       if (
         hydratedState &&
-        hydratedState.user &&
-        hydratedState.user.version >= 2
+        hydratedState.version >= 2
       ) {
         if (typeof setup === 'function') {
           setup(hydratedState)
         }
-        state = Object.assign(state, hydratedState)
+        state.user = Object.assign(state.user, hydratedState)
       }
     }
   }
@@ -87,7 +84,8 @@ export default new Vuex.Store({
     locale: 'en-us',
     showGate: false,
     loading: false,
-    tenantId: VUE_APP_TENANT_ID
+    tenantId: VUE_APP_TENANT_ID,
+    integrations: ['xomly', 'paychex']
   },
   actions: {
     [Actions.LOGOUT]: () => {

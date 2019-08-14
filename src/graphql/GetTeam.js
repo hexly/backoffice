@@ -40,7 +40,7 @@ export const QUERY = gql`
   }
 `
 
-export const getTeamByMemberId = memberIdFn => {
+export const getTeamByMemberId = (memberIdFn, watchLoading) => {
   if (!memberIdFn) return
   return {
     query: QUERY,
@@ -57,7 +57,8 @@ export const getTeamByMemberId = memberIdFn => {
         target: target.nodes[0],
         team: team.nodes
       }
-    }
+    },
+    watchLoading
   }
 }
 

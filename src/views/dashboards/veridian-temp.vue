@@ -204,6 +204,7 @@ import {
   COMPANY_FRONTLINE_LEADERBOARD
 } from '@/graphql/Leaderboard.js'
 import { GET_MEMBER_STATS } from '@/Sales/Api.js'
+import { ADDRESS_BY_CONTACT_ID } from '@/graphql/Address.js'
 import MONTHLY_STATS_QUERY from '@/graphql/GetMonthlyStats.gql'
 
 import DashCard from '@/components/DashboardCard.vue'
@@ -211,6 +212,7 @@ import LeaderBoard from '@/components/Leaderboard.vue'
 import FrontlineQualifiers from '@/components/FrontlineQualifiers.vue'
 import CompPlanLevel from '@/components/CompPlanLevel.vue'
 import MonthSelector from '@/components/MonthSelector.vue'
+import GET_MEMBERS from '@/graphql/GetMembers.gql'
 
 import { pathOr } from 'rambda'
 import { mapMutations, mapState, mapGetters } from 'vuex'
@@ -276,7 +278,8 @@ export default {
     }
   },
   async mounted() {
-    this.calculateTrends()
+    this.calculatePersonalTrends()
+    this.calculateTeamTrends()
   },
   watch: {
     '$apollo.loading'(newVal) {
@@ -284,6 +287,19 @@ export default {
     }
   },
   apollo: {
+    member: {
+      query: GET_MEMBERS,
+      variables () {
+        return {
+          input: {
+            ids: [this.$store.state.user.principal.memberId]
+          }
+        }
+      },
+      update ({ members }) {
+        this.memberQuery(members.nodes[0])
+      }
+    },
     team: {
       query: TEAM_STATS_BY_LEVEL,
       variables () {
@@ -325,6 +341,25 @@ export default {
         this.rankStyle.borderStyle = `#${this.currentRank.color}`
         return { ...this.team, ...teamStatsByLevel, totalTeamAmount, teamSize }
       }
+    },
+    address: {
+      query: ADDRESS_BY_CONTACT_ID,
+      variables () {
+        return {
+          addressContactId: {
+            contactId: this.contactId,
+            tenantId
+          }
+        }
+      },
+      update ({ addressByContactOrTenant }) {
+        const a = addressByContactOrTenant[0]
+        if (!a) {
+          this.setGate(true)
+        }
+        return Object.assign({}, a)
+      },
+      fetchPolicy: 'cache-and-network'
     },
     MonthlySalesLeaders: {
       query: SALES_LEADERBOARD,
@@ -425,12 +460,13 @@ export default {
       this.endDate = monthDate.endOf('month').format('YYYY-MM-DD')
       if (this.month === this.$moment().month() + 1 && this.year === this.$moment().year()) {
         this.currentMonth = true
-        this.calculateTrends()
+        this.calculatePersonalTrends()
+        this.calculateTeamTrends()
       } else {
         this.currentMonth = false
       }
     },
-    async calculateTrends() {
+    async calculatePersonalTrends() {
       const currentMonthVars = {
         memberIds: [this.$store.state.user.principal.memberId],
         startDate: this.$moment().startOf('month').format('YYYY-MM-DD'),
@@ -452,16 +488,33 @@ export default {
           variables: { input: lastMonthVars }
         })
       ])
-      this.calculatePersonalTrends(curr, last)
-      this.calculateTeamTrends(curr, last)
-    },
-    calculatePersonalTrends(curr, last) {
       const past = last.data.saleStatsByDateRange[0].stats[0]
       const current = curr.data.saleStatsByDateRange[0].stats[0]
       this.pointsTrend = (past.totalAmount - current.totalAmount) / past.totalAmount * -100
       this.salesTrend = (past.saleCount - current.saleCount) / past.saleCount * -100
     },
-    calculateTeamTrends(curr, last) {
+    async calculateTeamTrends() {
+      const currentMonthVars = {
+        sponsorIds: [this.$store.state.user.principal.memberId],
+        startDate: this.$moment().startOf('month').format('YYYY-MM-DD'),
+        endDate: this.$moment().format('YYYY-MM-DD'),
+        mode: 'YEAR_AND_MONTH'
+      }
+      const lastMonthVars = {
+        ...currentMonthVars,
+        startDate: this.$moment().subtract(1, 'month').startOf('month').format('YYYY-MM-DD'),
+        endDate: this.$moment().subtract(1, 'month').endOf('month').format('YYYY-MM-DD')
+      }
+      const [curr, last] = await Promise.all([
+        this.$apollo.query({
+          query: GET_MEMBER_STATS,
+          variables: { input: currentMonthVars }
+        }),
+        this.$apollo.query({
+          query: GET_MEMBER_STATS,
+          variables: { input: lastMonthVars }
+        })
+      ])
       const pastFrontLine = last.data.saleStatsByDateRange.filter(this.checkQualification)
       const currFrontLine = curr.data.saleStatsByDateRange.filter(this.checkQualification)
       this.frontLineTrend = (pastFrontLine.length - currFrontLine.length) / pastFrontLine.length * -100
@@ -514,7 +567,7 @@ export default {
 
 .rank-icon {
   width: 70px;
-  height: 70px;
+  height: 65px;
   margin: 0 5px;
   display: inline-block;
   filter: grayscale(100%) opacity(50%) contrast(0%);
@@ -539,4 +592,16 @@ export default {
 .ceo {
   background-position: -238px 0;
 }
+
+.active {
+  filter: grayscale(0%) opacity(100%);
+}
+
+/* .chakra6 {
+  background-position: -209px -10px;
+}
+
+.chakra7 {
+  background-position: -10px -10px;
+} */
 </style>

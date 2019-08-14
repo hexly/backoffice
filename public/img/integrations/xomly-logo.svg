@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="200px" height="200px" viewBox="0 0 200 200" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 51.3 (57544) - http://www.bohemiancoding.com/sketch -->
+    <title>Logo White</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <polygon id="path-1" points="0 160 192.606 160 192.606 0.04 0 0.04"></polygon>
+    </defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Artboard" transform="translate(-508.000000, -1381.000000)">
+            <g id="Logo-White" transform="translate(511.000000, 1401.000000)">
+                <mask id="mask-2" fill="white">
+                    <use xlink:href="#path-1"></use>
+                </mask>
+                <g id="Clip-2"></g>
+                <path d="M87.397,114.694 L48.555,159.629 C48.347,159.858 48.052,160 47.747,160 L1.076,160 C0.159,160 -0.343,158.908 0.268,158.221 L69.668,78.133 L87.397,114.694" id="Fill-1" fill="#FFFFFF" mask="url(#mask-2)"></path>
+                <path d="M185.006,1.801 L123.38,73.079 L105.782,36.452 L137.026,0.393 C137.234,0.153 137.528,0.022 137.845,0.022 L184.199,0.022 C185.116,0.022 185.618,1.103 185.006,1.801" id="Fill-3" fill="#FFFFFF" mask="url(#mask-2)"></path>
+                <path d="M192.343,128.646 L165.53,159.629 C165.334,159.869 165.028,160 164.723,160 L114.832,160 C114.417,160 114.046,159.771 113.86,159.4 L52.91,33.745 C52.725,33.373 52.354,33.133 51.939,33.133 L22.605,33.133 C22.19,33.133 21.819,32.904 21.633,32.533 L6.764,1.539 C6.426,0.83 6.939,0 7.736,0 L82.834,0 C83.249,0 83.631,0.24 83.806,0.611 L144.166,126.266 C144.34,126.638 144.723,126.867 145.127,126.867 L191.524,126.867 C192.452,126.867 192.943,127.948 192.343,128.646" id="Fill-4" fill="#FFFFFF" mask="url(#mask-2)"></path>
+            </g>
+        </g>
+    </g>
+</svg>
