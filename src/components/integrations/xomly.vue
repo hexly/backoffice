@@ -4,6 +4,9 @@
       Xomly Integration
     </h2>
     <h3> Xomly provides {{tenant.name}} with a premier sales enablement product. </h3>
+    <v-alert type="error" :value="error">
+      {{error}}
+    </v-alert>
     <div v-if="!integrationDetails && !loading && !setup">
       <p> It looks like you do not yet have a Xomly account.
         <br/>
@@ -22,14 +25,14 @@
             type="password"
             :rules="rules.required"
           />
+          <v-btn type="submit" color="primary">
+            Create Account
+          </v-btn>
         </v-form>
-        <v-btn type="submit" color="primary">
-          Create Account
-        </v-btn>
       </div>
     <div v-if="integrationDetails">
       <p>You are properly set up! Click the button below to launch xomly.</p>
-      <v-btn :to="`https://www.xomly.com/pages/getting-started`" color="primary">
+      <v-btn target="_blank" href="https://www.xomly.com/pages/getting-started" color="primary">
         Launch Xomly
       </v-btn>
     </div>
@@ -43,7 +46,8 @@ import { mapState } from 'vuex'
 export default {
   name: 'XomlyIntegration',
   props: {
-    details: Object
+    details: Object,
+    error: String
   },
   data() {
     return {
@@ -56,11 +60,7 @@ export default {
   },
   mounted() {
     this.loading = true
-    this.integrations.forEach(i => {
-      if (i.key === 'xomly') {
-        this.integrationDetails = i
-      }
-    })
+    this.reload()
     this.loading = false
   },
   methods: {
@@ -68,7 +68,25 @@ export default {
       this.setup = true
     },
     setupXomly() {
-      console.log(this.password, this.details, this.member)
+      this.$emit('create', {
+        command: 'xomly',
+        tenantIntegrationId: this.details.id,
+        data: {
+          password: this.password,
+          email: this.member.contacts[0].emails[0].email,
+          firstName: this.member.firstName,
+          lastName: this.member.lastName
+        }
+      })
+    },
+    reload() {
+      console.log('loading stuff')
+      this.integrations.forEach(i => {
+        if (i.key === 'xomly') {
+          this.setup = false
+          this.integrationDetails = i
+        }
+      })
     }
   },
   computed: {

@@ -52,6 +52,7 @@ query principal {
       name
       slug
       integrations {
+        id
         priority
         metadata
         statusId
