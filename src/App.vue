@@ -83,6 +83,16 @@ export default {
   background-color: #373331;
 }
 
+#backoffice.tenant-1008 {
+  background-image: none;
+  background-color: #2c3e49;
+}
+
+#backoffice.tenant-1009 {
+  background-image: none;
+  background-color: #2b3ea0;
+}
+
 #nav {
   padding: 30px;
 }
