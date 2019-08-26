@@ -1,7 +1,9 @@
 <template>
   <div>
     <v-toolbar>
+      <v-spacer/>
       <v-toolbar-title>Sales Charts</v-toolbar-title>
+      <v-spacer/>
     </v-toolbar>
     <div>
       <GChart
@@ -84,7 +86,7 @@ export default {
         },
         bars: 'horizontal',
         hAxis: { format: 'decimal' },
-        height: 800,
+        height: 400,
         colors: ['#1b9e77', '#d95f02', '#7570b3']
       })
     }
