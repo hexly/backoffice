@@ -348,6 +348,9 @@ export default {
               this.snackbar = true
               this.originalSlug = this.editMember.slug
               this.getMembers()
+              if (this.editMember.birthdate) {
+                this.checkAlert({ type: 'birthday', isSet: true })
+              }
             } catch (err) {
               this.parseErrors(err)
             }

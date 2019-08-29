@@ -72,7 +72,6 @@
 </template>
 
 <script>
-
 import Rules from '../views/Rules.js'
 
 export default {

@@ -14,7 +14,8 @@ export const UserMutations = {
   SET_PRINCIPAL: 'setPrincipal',
   TOGGLE_IMPERSONATION: 'toggleImpersonation',
   SET_PROFILE: 'setProfilePic',
-  ADD_INTEGRATION: 'addTenantIntegration'
+  ADD_INTEGRATION: 'addTenantIntegration',
+  SET_SLUG: 'user:setSlug'
 }
 
 const parseLegacyPrincipal = (principal) => {
@@ -60,6 +61,9 @@ export const UserStore = {
     },
     [UserMutations.ADD_INTEGRATION]: (state, integration) => {
       state.principal.member.tenantIntegrations.push(integration)
+    },
+    [UserMutations.SET_SLUG]: (state, slug) => {
+      state.principal.member.slugs = [slug]
     }
   },
   actions: {
@@ -88,6 +92,12 @@ export const UserStore = {
     },
     contactId: state => {
       return state.principal && state.principal.member.contacts[0].id
+    },
+    memberId: state => {
+      return state.principal && state.principal.memberId
+    },
+    slug: state => {
+      return state.principal && state.principal.member.slugs[0].slug
     }
   }
 }

@@ -78,7 +78,7 @@
     </v-navigation-drawer>
     <v-toolbar :color="$tenantInfo.baseColor" dark fixed app>
       <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
-      <v-toolbar-title>Backoffice</v-toolbar-title>
+      <v-toolbar-title class="title">{{$route.name}}</v-toolbar-title>
       <v-spacer></v-spacer>
       <v-toolbar-items>
         <v-menu offset-y>
@@ -245,7 +245,7 @@ export default {
 
 .main {
   margin: auto;
-  background-color: #fafafa;
+  background-color: #e5e5e5;
   box-shadow: 1px 2px 6px -2px #000;
   min-height: 100vh;
 }
@@ -267,5 +267,9 @@ export default {
 .footer img{
   width: 25px;
   height: 25px;
+}
+
+.title {
+ text-transform: capitalize;
 }
 </style>

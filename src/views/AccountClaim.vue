@@ -95,6 +95,9 @@
                       </div>
                     </v-checkbox>
                   </v-flex>
+                  <!-- <v-flex xs12 v-for="agreement in agreements" :key="agreement.key">
+                    <AgreementCheckbox :agreement="agreement" />
+                  </v-flex> -->
                   <v-flex xs12>
                     <v-checkbox
                       v-model="agreement.policies"
@@ -135,8 +138,12 @@ import { UserMutations, UserActions } from '@/stores/UserStore'
 import { Actions } from '@/Members/Store'
 import getLocalSettings from '@/graphql/GetLocalSettings'
 import { encrypt } from '@/utils/EncryptionService'
+import AgreementCheckbox from '@/components/Agreement'
 
 export default {
+  components: {
+    AgreementCheckbox
+  },
   data () {
     return {
       loading: true,
@@ -173,7 +180,8 @@ export default {
         username: null
       },
       settings: {},
-      logoPath: tenantInfo.logoLoginPath
+      logoPath: tenantInfo.logoLoginPath,
+      agreements: tenantInfo.agreements
     }
   },
   async beforeCreate () {

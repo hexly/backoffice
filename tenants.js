@@ -45,6 +45,18 @@ if (R.equals(tenantId, 1004)) {
         key: 'facebook',
         url: 'https://www.facebook.com/GreenHoriZen/'
       }
+    ],
+    agreements: [
+      {
+        key: 'affiliate',
+        name: 'Independent Contractor Agreement',
+        url: '/Consultant_Agreement_(March_2018).pdf'
+      },
+      {
+        key: 'policies',
+        name: 'Policies and Procedures',
+        url: '/Policies_and_Procedures_(April_2018).pdf'
+      }
     ]
   }
 } else if (R.equals(tenantId, 1008)) {
@@ -76,7 +88,7 @@ if (R.equals(tenantId, 1004)) {
     primaryColor: '#fe4943',
     secondaryColor: '#2ea3f2',
     accentColor: '#fdaa58',
-    storeUrl: 'https://kyngdomorganizer.com/',
+    storeUrl: 'https://kyngdomorganizer.com/store/{slug}',
     corporateUrl: 'https://kyngdomorganizer.com/',
     social: [
       {
