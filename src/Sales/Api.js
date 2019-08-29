@@ -14,6 +14,7 @@ export const GET_MEMBER_STATS = gql`
       teamSize
       frontLineSize
       stats {
+        mode
         saleCount
         totalPoints
         totalAmount

@@ -17,6 +17,11 @@ query principal {
       displayName
       mrn
       slug
+      slugs {
+        slug
+      }
+      joinedOn
+      tags
       contacts {
         id
         emails {
