@@ -7,7 +7,7 @@
       Hey There! You do not have your link set up yet.
       <v-text-field
         label="Your Store Link"
-        class="mb-3"
+        class="mb-3 slug-field"
         v-model="tempSlug"
         @keyup="slugChanged"
         :rules="slugRule"
@@ -15,7 +15,7 @@
         outline
         :prefix="$tenantInfo.storeUrl.replace('{slug}', '')"
       ></v-text-field>
-      <v-btn :disabled="!slugUnique" type="primary">Create Link</v-btn>
+      <v-btn @click="saveSlug" :disabled="!slugUnique" type="primary">Create Link</v-btn>
     </div>
   </div>
 </template>
@@ -23,7 +23,7 @@
 <script>
 import { mapMutations, mapGetters } from 'vuex'
 import Rules from '@/views/Rules.js'
-import CHECK_IF_UNIQUE_SLUG from '@/graphql/Slug.gql'
+import { CHECK_IF_UNIQUE_SLUG, ADD_MEMBER_SLUG } from '@/graphql/Slug'
 import { UserMutations } from '@/stores/UserStore'
 
 const tenantId = ~~process.env.VUE_APP_TENANT_ID
@@ -36,7 +36,8 @@ export default {
       slugUnique: false,
       checkingSlug: 0,
       slugErrors: [],
-      slugRule: Rules.slugRule
+      slugRule: Rules.slugRule,
+      checkSlug: null
     }
   },
   methods: {
@@ -46,6 +47,18 @@ export default {
         this.$apollo.queries.checkSlug.stop()
       }
       this.$apollo.queries.checkSlug.start()
+    },
+    async saveSlug() {
+      const { data: { addMemberSlug } } = await this.$apollo.mutate({
+        mutation: ADD_MEMBER_SLUG,
+        variables: {
+          input: {
+            tenantId,
+            slug: this.tempSlug
+          }
+        }
+      })
+      this.setSlug(addMemberSlug.slug)
     },
     ...mapMutations({
       setSlug: UserMutations.SET_SLUG
@@ -57,20 +70,31 @@ export default {
   apollo: {
     checkSlug: {
       query: CHECK_IF_UNIQUE_SLUG,
-      variables: {
-        input: {
-          tenantId: tenantId,
-          slug: this.slug
+      variables() {
+        return {
+          input: {
+            tenantId,
+            slug: this.tempSlug
+          }
         }
       },
       loadingKey: 'checkingSlug',
       skip() {
-        return !this.slug && this.tempSlug
+        return (!this.slug && this.tempSlug)
       },
-      result({ findMemberBySlug }, key) {
-        console.log(findMemberBySlug)
+      update({ findMemberBySlug }) {
+        if (!findMemberBySlug && this.tempSlug) {
+          this.slugUnique = true
+        }
+        return findMemberBySlug
       }
     }
   }
 }
 </script>
+
+<style>
+.slug-field .v-text-field__prefix {
+  white-space: nowrap;
+}
+</style>
