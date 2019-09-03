@@ -3,6 +3,7 @@ mutation auth($creds: Credentials!) {
     token
     success
     reason
+    issued
     principal {
       username
       identityId
