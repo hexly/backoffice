@@ -4,9 +4,12 @@
 
 <script>
 export default {
-  name: 'CompPlanLevel',
+  name: 'Currency',
   props: {
-    amount: Number
+    amount: {
+      type: Number,
+      default: 0
+    }
   },
   methods: {
     formatCurrency (total) {
@@ -18,6 +21,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-</style>

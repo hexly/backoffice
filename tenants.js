@@ -88,8 +88,8 @@ if (R.equals(tenantId, 1004)) {
     primaryColor: '#fe4943',
     secondaryColor: '#2ea3f2',
     accentColor: '#fdaa58',
-    storeUrl: 'https://kyngdomorganizer.com/store/{slug}',
-    corporateUrl: 'https://kyngdomorganizer.com/',
+    storeUrl: 'https://www.kyngdomorganizer.com/store/{slug}',
+    corporateUrl: 'https://www.kyngdomorganizer.com/',
     social: [
       {
         key: 'facebook',

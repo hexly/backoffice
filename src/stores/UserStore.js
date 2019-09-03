@@ -97,7 +97,7 @@ export const UserStore = {
       return state.principal && state.principal.memberId
     },
     slug: state => {
-      return state.principal && state.principal.member.slugs[0].slug
+      return state.principal && state.principal.member.slugs[0] && state.principal.member.slugs[0].slug
     }
   }
 }
