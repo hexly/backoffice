@@ -73,17 +73,17 @@ export const UserStore = {
         variables: { creds },
         fetchPolicy: 'no-cache'
       })
-      let { success, token, principal, reason } = _.get(
+      let { success, token, principal, reason, issued } = _.get(
         response,
         'data.login',
         {}
       )
-      if (success) {
+      if (success && issued) {
         principal = parseLegacyPrincipal(principal)
         commit(UserMutations.SET_JWT, token)
         commit(UserMutations.SET_PRINCIPAL, principal)
       }
-      return { success, token, principal, reason }
+      return { success, token, principal, reason, issued }
     }
   },
   getters: {
