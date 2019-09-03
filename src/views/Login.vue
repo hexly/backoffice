@@ -215,7 +215,6 @@ export default {
     async onRegister () {
       this.buttonLoading = true
       this.error = null
-      console.log('GONNA SEND AN EMAIL')
       try {
         await this.$store.dispatch(ClaimActions.CLAIM, {
           email: this.form.email,
