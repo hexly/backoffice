@@ -1,5 +1,0 @@
-query Slugs($input: SlugInput!) {
-  findMemberBySlug(input: $input) {
-    id
-  }
-}

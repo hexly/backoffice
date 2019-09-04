@@ -44,18 +44,6 @@
         required
       ></v-text-field>
       <v-text-field
-        label="Slug / Store Name"
-        class="mb-3"
-        v-model="value.slug"
-        @keyup="slugChanged"
-        :rules="slugRule"
-        :error-messages="slugErrors"
-        required
-        :disabled="!!originalSlug"
-        persistent-hint
-        :hint="`https://www.mygreenhorizen.com/store/${value.slug || '{your_store_name}'}`"
-      ></v-text-field>
-      <v-text-field
         v-model="value.birthdate"
         label="Date of Birth"
         placeholder="MM/DD/YYYY"
@@ -80,23 +68,15 @@ export default {
       type: Object,
       required: true
     },
-    slugChanged: {
-      type: Function,
-      required: true
-    },
     saveData: {
       type: Function,
       required: true
     },
-    saving: Boolean,
-    slugIsUnique: Boolean,
-    slugErrors: Array,
-    originalSlug: String
+    saving: Boolean
   },
   data () {
     return {
       requiredRule: Rules.requiredRule,
-      slugRule: Rules.slugRule,
       emailRule: Rules.emailRule,
       birthdateRule: [
         v => this.$moment(v, 'MM/DD/YYYY').isValid() || 'Birthday Must Be in MM/DD/YYYY Format'

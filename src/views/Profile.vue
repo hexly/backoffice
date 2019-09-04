@@ -46,12 +46,8 @@
               <PersonalForm
                 ref="personal"
                 :modal="modal"
-                :slugIsUnique="slugIsUnique"
-                :slugErrors="slugErrors"
-                :originalSlug="originalSlug"
                 :value="editMember"
                 :saveData="saveData"
-                :slugChanged="slugChanged"
                 :saving="saving"
                 @hasBirthday="checkAlert"
               />
@@ -94,7 +90,6 @@ import LegalForm from '@/profile/Legal.vue'
 import AddressForm from '@/components/AddressForm.vue'
 import GET_MEMBERS from '@/graphql/GetMembers.gql'
 import UPDATE_PROFILE from '@/graphql/MemberPartialUpdate.gql'
-import CHECK_IF_UNIQUE_SLUG from '@/graphql/Slug.gql'
 import FileUpload from '@/components/FileUpload.vue'
 import Rules from './Rules.js'
 import { Mutations } from '@/store'
@@ -123,13 +118,10 @@ export default {
       snackbar: false,
       snackbarMsg: '',
       snackBarColor: null,
-      slugRule: Rules.slugRule,
       birthdateRule: Rules.birthdateRule,
       uploadFileName: null,
       isUploading: false,
       isSaving: false,
-      slugIsUnique: true,
-      slugErrors: [],
       editMember: {
         username: '',
         id: '',
@@ -139,7 +131,6 @@ export default {
         displayName: '',
         contactEmail: '',
         profileUrl: '',
-        slug: '',
         birthdate: ''
       },
       legal: {
@@ -158,7 +149,6 @@ export default {
         },
         entity: {}
       },
-      originalSlug: undefined,
       saving: false,
       alert: {
         address: false,
@@ -232,129 +222,74 @@ export default {
         } else {
           this.checkAlert({ type: 'birthday', isSet: false })
         }
-
-        const isInvalid = /[^a-z0-9_]/gi.test(this.editMember.slug)
-        if (isInvalid) {
-          console.error('invalid slug found')
-          this.originalSlug = this.editMember.slug = null
-        } else {
-          this.originalSlug = this.editMember.slug
-        }
       } else {
         this.snackbarMsg = ['Could not retrieve profile data']
         this.snackBarColor = ERROR_COLOR
         this.snackbar = true
       }
     },
-    slugChanged () {
-      this.slugErrors = []
-      this.editMember.slug = this.editMember.slug.toLowerCase()
-    },
     async saveData () {
-      this.slugIsUnique = true // reset to default state
       const formIsValid = this.$refs.personal.$refs.informationForm.validate()
-      let response
       if (formIsValid) {
-        // Slug uniqueness query
+        this.saving = true
         try {
-          this.setLoading(true)
-          response = await this.$apollo.query({
-            query: CHECK_IF_UNIQUE_SLUG,
-            variables: {
-              input: {
-                tenantId: this.tenantId,
-                slug: this.editMember.slug
+          await Promise.all([
+            this.$apollo.mutate({
+              mutation: UPDATE_PROFILE,
+              variables: {
+                input: {
+                  id: this.editMember.id,
+                  name: this.editMember.name,
+                  firstName: this.editMember.firstName,
+                  lastName: this.editMember.lastName,
+                  displayName: this.editMember.displayName,
+                  birthday: this.editMember.birthdate
+                }
               }
-            }
-          })
-          this.setLoading(false)
-        } catch (err) {
-          this.setLoading(false)
-          console.error('error checking slugs', { err })
-          this.snackbarMsg = ['Unable to save profile data']
-          this.snackBarColor = ERROR_COLOR
+            }),
+            this.$apollo.mutate({
+              mutation: CONTACT_UPSERT,
+              variables: {
+                input: {
+                  firstName: this.editMember.firstName,
+                  lastName: this.editMember.lastName,
+                  displayName: this.editMember.displayName,
+                  id: this.contactId,
+                  memberId: this.editMember.id
+                }
+              }
+            }),
+            this.$apollo.mutate({
+              mutation: CONTACT_EMAIL_UPSERT,
+              variables: {
+                input: {
+                  email: this.editMember.contactEmail.email,
+                  id: this.editMember.contactEmail.id,
+                  contactId: this.contactId
+                }
+              }
+            }),
+            this.$apollo.mutate({
+              mutation: USERNAME_UPSERT,
+              variables: {
+                input: {
+                  username: this.editMember.username,
+                  identityId: this.principal.identityId
+                }
+              }
+            })
+          ])
+          this.setPrincipal({ username: this.editMember.username })
+          this.saving = false
+          this.snackBarColor = SUCCESS_COLOR
+          this.snackbarMsg = ['Information Saved']
           this.snackbar = true
-        }
-
-        if (response) {
-          const { findMemberBySlug } = response.data
-          this.slugErrors = []
-          if (findMemberBySlug && findMemberBySlug.id !== this.memberId) {
-            this.slugIsUnique = false
-            this.snackBarColor = ERROR_COLOR
-            this.snackbarMsg = ['Chosen store name is unavailable!']
-            this.snackbar = true
-            this.slugErrors.push(
-              `The store name ${this.editMember.slug} is unavailable`
-            )
+          this.getMembers()
+          if (this.editMember.birthdate) {
+            this.checkAlert({ type: 'birthday', isSet: true })
           }
-          if (this.slugIsUnique) {
-            this.saving = true
-            const sentSlug = !this.originalSlug
-              ? this.editMember.slug
-              : this.originalSlug
-            try {
-              await Promise.all([
-                this.$apollo.mutate({
-                  mutation: UPDATE_PROFILE,
-                  variables: {
-                    input: {
-                      id: this.editMember.id,
-                      name: this.editMember.name,
-                      firstName: this.editMember.firstName,
-                      lastName: this.editMember.lastName,
-                      displayName: this.editMember.displayName,
-                      slug: sentSlug,
-                      birthday: this.editMember.birthdate
-                    }
-                  }
-                }),
-                this.$apollo.mutate({
-                  mutation: CONTACT_UPSERT,
-                  variables: {
-                    input: {
-                      firstName: this.editMember.firstName,
-                      lastName: this.editMember.lastName,
-                      displayName: this.editMember.displayName,
-                      id: this.contactId,
-                      memberId: this.editMember.id
-                    }
-                  }
-                }),
-                this.$apollo.mutate({
-                  mutation: CONTACT_EMAIL_UPSERT,
-                  variables: {
-                    input: {
-                      email: this.editMember.contactEmail.email,
-                      id: this.editMember.contactEmail.id,
-                      contactId: this.contactId
-                    }
-                  }
-                }),
-                this.$apollo.mutate({
-                  mutation: USERNAME_UPSERT,
-                  variables: {
-                    input: {
-                      username: this.editMember.username,
-                      identityId: this.principal.identityId
-                    }
-                  }
-                })
-              ])
-              this.setPrincipal({ username: this.editMember.username })
-              this.saving = false
-              this.snackBarColor = SUCCESS_COLOR
-              this.snackbarMsg = ['Information Saved']
-              this.snackbar = true
-              this.originalSlug = this.editMember.slug
-              this.getMembers()
-              if (this.editMember.birthdate) {
-                this.checkAlert({ type: 'birthday', isSet: true })
-              }
-            } catch (err) {
-              this.parseErrors(err)
-            }
-          }
+        } catch (err) {
+          this.parseErrors(err)
         }
       } else {
         this.snackbarMsg = ['One or more fields were filled out incorrectly']

@@ -177,13 +177,27 @@ export default {
         this.$refs.login.validate()
         this.buttonLoading = true
 
-        const { success } = await this.$store.dispatch(UserActions.LOGIN, {
+        const { success, issued } = await this.$store.dispatch(UserActions.LOGIN, {
           username: this.form.email,
           password: this.form.password,
           tenantId
         })
 
         this.buttonLoading = false
+        if (success && !issued) {
+          try {
+            await this.$store.dispatch(ClaimActions.CLAIM, {
+              email: this.form.email,
+              tenantId,
+              type: 'claim'
+            })
+            return this.onError('This account has not been claimed yet. Please click on the link that has been sent to your email to verify your account.')
+          }
+          catch(err) {
+            this.onError(err)
+          }
+        }
+
         const { returnTo } = (this.$route.query || {})
         return success
           ? this.$router.push(returnTo || '/dashboard')

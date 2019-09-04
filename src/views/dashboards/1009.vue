@@ -17,8 +17,7 @@
       </v-flex>
       <v-flex xs12 md6 class="pa-4">
         <StatsCard title="My Link">
-          {{$tenantInfo.corporateUrl}}
-          <!-- <MyLink /> -->
+          <MyLink />
         </StatsCard>
       </v-flex>
     </v-layout>
@@ -34,22 +33,28 @@
           </v-flex>
         </v-layout>
       </v-flex>
-      <!-- <v-flex xs12 md4 class="pa-4">
+      <v-flex xs12 md4 class="pa-4">
         <StatsCard title="Month-to-Date Sales by Affiliate Type">
           <section>
             <h6 class="name">Member</h6>
-            <h3 class="stat">$459.93</h3>
+            <h3 class="stat">
+              <Currency :amount="salesByProduct.member" />
+            </h3>
           </section>
           <section>
             <h6 class="name">Affiliate</h6>
-            <h3 class="stat">$5,986.32</h3>
+            <h3 class="stat">
+              <Currency :amount="salesByProduct.affiliate" />
+            </h3>
           </section>
           <section>
             <h6 class="name">Certified Trainer</h6>
-            <h3 class="stat">$27,979.99</h3>
+            <h3 class="stat">
+              <Currency :amount="salesByProduct.trainer" />
+            </h3>
           </section>
         </StatsCard>
-      </v-flex> -->
+      </v-flex>
       <v-flex xs12 md4 class="pa-4">
         <StatsCard title="Year-to-Date Sales" :amount="yearToDate">
           <div class="sparks">
@@ -71,14 +76,10 @@
 </template>
 
 <script>
-import DashCard from '@/components/DashboardCard.vue'
-import LeaderBoard from '@/components/Leaderboard.vue'
-import FrontlineQualifiers from '@/components/FrontlineQualifiers.vue'
-import CompPlanLevel from '@/components/CompPlanLevel.vue'
-import MonthSelector from '@/components/MonthSelector.vue'
 import StatsCard from '@/components/StatsCard.vue'
-// import MyLink from '@/components/MyLink.vue'
-import { GET_MEMBER_STATS } from '@/Sales/Api.js'
+import Currency from '@/components/Currency.vue'
+import MyLink from '@/components/MyLink.vue'
+import { GET_MEMBER_STATS, SALES_BY_PRODUCT_QUERY } from '@/Sales/Api.js'
 import { mapMutations, mapState, mapGetters } from 'vuex'
 import { UserMutations } from '@/stores/UserStore'
 import { Mutations } from '@/store'
@@ -88,19 +89,18 @@ const tenantId = ~~process.env.VUE_APP_TENANT_ID
 export default {
   name: 'dashboard',
   components: {
-    DashCard,
-    MonthSelector,
-    LeaderBoard,
-    CompPlanLevel,
-    FrontlineQualifiers,
-    StatsCard
+    StatsCard,
+    MyLink,
+    Currency
   },
   data() {
     return {
+      products: [17, 581, 582],
       salesGraphValues: [],
       yearToDate: 0,
       saleStats: {},
       salesByMonth: {},
+      salesByProduct: {},
       affiliateTags: ['subscription:level:member', 'subscription:level:affiliate', 'subscription:level:trainer', 'subscription:level:cornerstone'],
       tagTranslations: {
         'subscription:level:member': 'Member',
@@ -142,6 +142,39 @@ export default {
           }
         })
         return saleStatsByDateRange[0].stats
+      }
+    },
+    salesByProduct: {
+      query: SALES_BY_PRODUCT_QUERY,
+      variables() {
+        return {
+          input: {
+            sellerId: this.memberId,
+            depths: [1],
+            startDate: this.$moment().startOf('year').format('YYYY-MM-DD'),
+            endDate: this.$moment().endOf('year').format('YYYY-MM-DD'),
+            productVariationOidPairs: ['14', '581', '582']
+          }
+        }
+      },
+      update({ salesByProductVariant }) {
+        const salesByProduct = {
+          member: 0,
+          affiliate: 0,
+          trainer: 0
+        }
+        salesByProductVariant.forEach(p => {
+          if (p.productOid === '14') {
+            salesByProduct.member += p.subtotal
+          }
+          if (p.productOid === '581') {
+            salesByProduct.affiliate += p.subtotal
+          }
+          if (p.productOid === '582') {
+            salesByProduct.trainer += p.subtotal
+          }
+        })
+        return salesByProduct
       }
     }
   },
