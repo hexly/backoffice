@@ -46,6 +46,14 @@
             <v-list-tile-title>Team</v-list-tile-title>
           </v-list-tile-content>
         </v-list-tile>
+        <v-list-tile to="/training">
+          <v-list-tile-action>
+            <v-icon>video_library</v-icon>
+          </v-list-tile-action>
+          <v-list-tile-content>
+            <v-list-tile-title>Training</v-list-tile-title>
+          </v-list-tile-content>
+        </v-list-tile>
         <v-list-tile v-if="activeIntegrations.length" to="/integrations">
           <v-list-tile-action>
             <v-icon>compare_arrows</v-icon>
