@@ -192,8 +192,7 @@ export default {
               type: 'claim'
             })
             return this.onError('This account has not been claimed yet. Please click on the link that has been sent to your email to verify your account.')
-          }
-          catch(err) {
+          } catch (err) {
             this.onError(err)
           }
         }
