@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Vuetify from 'vuetify'
+import VueClipboard from 'vue-clipboard2'
 import 'vuetify/dist/vuetify.min.css'
 
 import moment from 'moment'
@@ -20,6 +21,9 @@ try {
 } catch (err) {
   console.warn('Failed to load build.info.json', err)
 }
+
+VueClipboard.config.autoSetContainer = true // add this line
+Vue.use(VueClipboard)
 
 // Vue.use(Vuetify)
 Vue.use(Vuetify, {

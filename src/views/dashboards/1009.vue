@@ -1,18 +1,13 @@
 <template>
   <div class="dashboard py-4">
-    <v-subheader>General</v-subheader>
+    <v-subheader>Membership</v-subheader>
     <v-layout row>
       <v-flex xs12 md6 class="pa-4">
-        <StatsCard title="Membership Info">
-          <div>
-            Member #: <strong>{{user.principal.member.mrn}}</strong>
-          </div>
-          <div>
-            Member Type: <strong>{{memberType}}</strong>
-          </div>
-          <div>
-            Member Since: <strong>{{$moment(user.principal.member.joinedOn).format('LL')}}</strong>
-          </div>
+        <StatsCard :title="`Member #${user.principal.member.mrn}`">
+          <section>
+            <h3 class="stat">{{memberType}}</h3>
+          </section>
+          <div>Since {{$moment(user.principal.member.joinedOn).format('MMM YYYY')}}</div>
         </StatsCard>
       </v-flex>
       <v-flex xs12 md6 class="pa-4">
@@ -84,7 +79,7 @@ import { mapMutations, mapState, mapGetters } from 'vuex'
 import { UserMutations } from '@/stores/UserStore'
 import { Mutations } from '@/store'
 
-const tenantId = ~~process.env.VUE_APP_TENANT_ID
+// const tenantId = ~~process.env.VUE_APP_TENANT_ID
 
 export default {
   name: 'dashboard',
