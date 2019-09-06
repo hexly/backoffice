@@ -1,7 +1,17 @@
 <template>
   <div>
     <div v-if="slug">
-      {{$tenantInfo.storeUrl.replace('{slug}', slug)}}
+      <v-text-field
+        solo
+        color="black"
+        :value="formattedSlug"
+        readonly
+        single-line>
+        <v-tooltip slot="append" bottom>
+            <v-icon @click="copyToClipboard" slot="activator" color="black" dark>assignment</v-icon>
+            <span>{{copyTooltipText}}</span>
+        </v-tooltip>
+      </v-text-field>
     </div>
     <div v-else>
       Hey There! You do not have your link set up yet.
@@ -25,6 +35,7 @@ import { mapMutations, mapGetters } from 'vuex'
 import Rules from '@/views/Rules.js'
 import { CHECK_IF_UNIQUE_SLUG, ADD_MEMBER_SLUG } from '@/graphql/Slug'
 import { UserMutations } from '@/stores/UserStore'
+import { setTimeout } from 'timers'
 
 const tenantId = ~~process.env.VUE_APP_TENANT_ID
 
@@ -37,10 +48,18 @@ export default {
       checkingSlug: 0,
       slugErrors: [],
       slugRule: Rules.slugRule,
-      checkSlug: null
+      checkSlug: null,
+      copyTooltipText: 'Copy'
     }
   },
   methods: {
+    async copyToClipboard() {
+      await this.$copyText(this.formattedSlug)
+      this.copyTooltipText = 'Copied!'
+      setTimeout(() => {
+        this.copyTooltipText = 'Copy'
+      }, 3000)
+    },
     async slugChanged(event) {
       this.slugUnique = false
       if (this.checkingSlug > 0) {
@@ -65,7 +84,10 @@ export default {
     })
   },
   computed: {
-    ...mapGetters(['slug'])
+    ...mapGetters(['slug']),
+    formattedSlug() {
+      return this.$tenantInfo.storeUrl.replace('{slug}', this.slug)
+    }
   },
   apollo: {
     checkSlug: {
