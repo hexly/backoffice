@@ -90,7 +90,7 @@
                         <a
                           @click="accept('affiliate')"
                           target="_blank"
-                          href="/Consultant_Agreement_(March_2018).pdf"
+                          :href="$tenantInfo.agreements[0].url"
                         >Independent Contractor Agreement</a>
                       </div>
                     </v-checkbox>
@@ -111,7 +111,7 @@
                         <a
                           @click="accept('policies')"
                           target="_blank"
-                          href="/Policies_and_Procedures_(April_2018).pdf"
+                          :href="$tenantInfo.agreements[1].url"
                         >Policies and Procedures</a>
                       </div>
                     </v-checkbox>

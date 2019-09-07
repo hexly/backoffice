@@ -63,7 +63,13 @@ export const UserStore = {
       state.principal.member.tenantIntegrations.push(integration)
     },
     [UserMutations.SET_SLUG]: (state, slug) => {
-      state.principal.member.slugs = [slug]
+      state.principal = {
+        ...state.principal,
+        member: {
+          ...state.principal.member,
+          slugs: [{ slug }]
+        }
+      }
     }
   },
   actions: {

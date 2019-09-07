@@ -16,7 +16,8 @@
     <div v-else>
       Hey There! You do not have your link set up yet.
       <v-text-field
-        label="Your Store Link"
+        :loading="savingSlug"
+        placeholder="my-personal-link"
         class="mb-3 slug-field"
         v-model="tempSlug"
         @keyup="slugChanged"
@@ -25,7 +26,7 @@
         outline
         :prefix="$tenantInfo.storeUrl.replace('{slug}', '')"
       ></v-text-field>
-      <v-btn @click="saveSlug" :disabled="!slugUnique" type="primary">Create Link</v-btn>
+      <v-btn :loading="savingSlug" @click="saveSlug" :disabled="!slugUnique" type="primary">Create Link</v-btn>
     </div>
   </div>
 </template>
@@ -49,7 +50,8 @@ export default {
       slugErrors: [],
       slugRule: Rules.slugRule,
       checkSlug: null,
-      copyTooltipText: 'Copy'
+      copyTooltipText: 'Copy',
+      savingSlug: false
     }
   },
   methods: {
@@ -68,6 +70,7 @@ export default {
       this.$apollo.queries.checkSlug.start()
     },
     async saveSlug() {
+      this.savingSlug = true
       const { data: { addMemberSlug } } = await this.$apollo.mutate({
         mutation: ADD_MEMBER_SLUG,
         variables: {
@@ -77,7 +80,8 @@ export default {
           }
         }
       })
-      this.setSlug(addMemberSlug.slug)
+      this.setSlug(addMemberSlug[0].slug)
+      this.savingSlug = false
     },
     ...mapMutations({
       setSlug: UserMutations.SET_SLUG
@@ -86,7 +90,7 @@ export default {
   computed: {
     ...mapGetters(['slug']),
     formattedSlug() {
-      return this.$tenantInfo.storeUrl.replace('{slug}', this.slug)
+      return this.$tenantInfo.storeUrl.replace('{slug}', this.slug || this.tempSlug)
     }
   },
   apollo: {
