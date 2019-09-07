@@ -50,12 +50,12 @@ if (R.equals(tenantId, 1004)) {
       {
         key: 'affiliate',
         name: 'Independent Contractor Agreement',
-        url: '/Consultant_Agreement_(March_2018).pdf'
+        url: '/docs/1004/Consultant_Agreement_(March_2018).pdf'
       },
       {
         key: 'policies',
         name: 'Policies and Procedures',
-        url: '/Policies_and_Procedures_(April_2018).pdf'
+        url: '/docs/1004/Policies_and_Procedures_(April_2018).pdf'
       }
     ]
   }
@@ -94,6 +94,18 @@ if (R.equals(tenantId, 1004)) {
       {
         key: 'facebook',
         url: 'https://www.facebook.com/Kyngdom-Organizer-187348015476222/'
+      }
+    ],
+    agreements: [
+      {
+        key: 'affiliate',
+        name: 'Independent Contractor Agreement',
+        url: '/docs/1009/AffiliateAgreement.pdf'
+      },
+      {
+        key: 'policies',
+        name: 'Policies and Procedures',
+        url: '/docs/1009/PoliciesProcedures.pdf'
       }
     ]
   }
