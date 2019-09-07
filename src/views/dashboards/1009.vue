@@ -90,7 +90,6 @@ export default {
   },
   data() {
     return {
-      products: [17, 581, 582],
       salesGraphValues: [],
       yearToDate: 0,
       saleStats: {},
@@ -148,7 +147,7 @@ export default {
             depths: [1],
             startDate: this.$moment().startOf('year').format('YYYY-MM-DD'),
             endDate: this.$moment().endOf('year').format('YYYY-MM-DD'),
-            productVariationOidPairs: ['14', '581', '582']
+            productVariationOidPairs: ['17|604', '17|605', '17|606']
           }
         }
       },
@@ -159,13 +158,13 @@ export default {
           trainer: 0
         }
         salesByProductVariant.forEach(p => {
-          if (p.productOid === '14') {
+          if (p.productOid === '17' && p.variantOid === '604') {
             salesByProduct.member += p.subtotal
           }
-          if (p.productOid === '581') {
+          if (p.productOid === '17' && p.variantOid === '605') {
             salesByProduct.affiliate += p.subtotal
           }
-          if (p.productOid === '582') {
+          if (p.productOid === '17' && p.variantOid === '606') {
             salesByProduct.trainer += p.subtotal
           }
         })
