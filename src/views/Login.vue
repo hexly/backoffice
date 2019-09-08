@@ -47,11 +47,6 @@
                       <v-flex xs12 sm6 class="py-2 text-xs-center text-sm-left">
                         <div>
                           <span>
-                            Need access to your account?
-                            <a @click="changeMode('register')">Register</a>
-                          </span>
-                          <br>
-                          <span>
                             Forgot your Password?
                             <a @click="changeMode('reset')">Reset Password</a>
                           </span>
@@ -67,43 +62,6 @@
                         >Login</v-btn>
                       </v-flex>
                     </v-layout>
-                  </v-card-actions>
-                </v-form>
-              </div>
-              <div v-if="type === 'register'">
-                <v-form
-                  ref="register"
-                  @submit.prevent="onRegister"
-                  lazy-validation
-                >
-                  <v-text-field
-                    required
-                    :rules="[v => !!v || 'Field is required']"
-                    v-model="form.email"
-                    prepend-icon="person"
-                    name="email"
-                    label="Email"
-                    type="email"
-                  ></v-text-field>
-                  <v-card-actions>
-                    <div>
-                      <span>
-                        Already have an account?
-                        <a @click="changeMode('login')">Login</a>
-                      </span>
-                      <br>
-                      <span>
-                        Forgot your password?
-                        <a @click="changeMode('reset')">Reset Password</a>
-                      </span>
-                    </div>
-                    <v-spacer></v-spacer>
-                    <v-btn
-                      :loading="buttonLoading"
-                      type="submit"
-                      color="primary"
-                      dark
-                    >Register</v-btn>
                   </v-card-actions>
                 </v-form>
               </div>
@@ -210,23 +168,6 @@ export default {
       this.error = null
       this.success = null
       this.type = type
-    },
-    async onRegister () {
-      this.buttonLoading = true
-      this.error = null
-      try {
-        await this.$store.dispatch(ClaimActions.CLAIM, {
-          email: this.form.email,
-          tenantId,
-          type: 'claim'
-        })
-        this.onSuccess(
-          'Registration email has been sent! Please check your email.'
-        )
-      } catch (error) {
-        this.onError(error)
-      }
-      this.buttonLoading = false
     },
     async onReset () {
       this.error = null
