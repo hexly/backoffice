@@ -35,12 +35,6 @@
                     :rules="requiredRule"
                     required
                   ></v-text-field>
-                  <v-text-field
-                    label="Store Name"
-                    v-model="editMember.slug"
-                    :rules="slugRule"
-                    required
-                  ></v-text-field>
                   <v-text-field label="username" v-model="editMember.contactEmail" disabled></v-text-field>
                   <v-text-field
                     name="password"
@@ -150,13 +144,6 @@ export default {
       visible: false,
       error: null,
       requiredRule: [v => !!v || 'Field is required'],
-      slugRule: [
-        v => !!v || 'Field is required',
-        v =>
-          (v && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(v)) ||
-          'Store name must not have spaces, special characters, nor capital letters',
-        v => (v && v.length <= 20) || 'Slug must be 20 or less characters'
-      ],
       passwordRule: [
         v => !!v || 'Field is required',
         v => (v && v.length > 8) || 'Password must be more than 8 characters'
@@ -175,7 +162,6 @@ export default {
         memberId: null,
         name: null,
         password: null,
-        slug: null,
         timezoneId: null,
         username: null
       },
@@ -246,7 +232,6 @@ export default {
             memberId: this.editMember.memberId,
             name: this.editMember.name,
             password: this.editMember.password,
-            slug: this.editMember.slug,
             timezoneId: this.editMember.timezoneId,
             username: this.editMember.username,
             simpleClaim: false,
@@ -254,16 +239,16 @@ export default {
           })
           if (consumeOneTimeToken && consumeOneTimeToken !== 'done') {
             this.setJwt(consumeOneTimeToken)
+            await this.login({
+              username: this.editMember.username,
+              password: this.editMember.password,
+              tenantId: ~~process.env.VUE_APP_TENANT_ID
+            })
             await this.upsertAttribute({
               private: true,
               key: 'affiliate-agreement',
               value: encryptedAffiliate.payload,
               signature: encryptedAffiliate.signature
-            })
-            await this.login({
-              username: this.editMember.username,
-              password: this.editMember.password,
-              tenantId: ~~process.env.VUE_APP_TENANT_ID
             })
             this.$router.push('/dashboard')
           }
