@@ -50,6 +50,12 @@ query principal {
         name
         key
       }
+      customer {
+        subscriptions {
+          metadata
+          status
+        }
+      }
     }
     tenant {
       id

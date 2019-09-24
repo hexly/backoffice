@@ -18,15 +18,11 @@ export const UserMutations = {
   SET_SLUG: 'user:setSlug'
 }
 
-const parseLegacyPrincipal = (principal) => {
+const parseLegacyPrincipal = principal => {
   const updated = {
     ...principal
   }
-  updated.displayName = _.get(
-    principal,
-    'member.displayName',
-    '<Unknown Name>'
-  )
+  updated.displayName = _.get(principal, 'member.displayName', '<Unknown Name>')
   return updated
 }
 
@@ -39,7 +35,7 @@ export const UserStore = {
     version: 2
   },
   mutations: {
-    'storeInit': (state, a, b, c) => {
+    storeInit: (state, a, b, c) => {
       // TODO: check state for principal / jwt; if exists, fetch JWT and set the principal again...
       // if call fails, logout / dump state / whatever we do on logout
     },
@@ -103,7 +99,21 @@ export const UserStore = {
       return state.principal && state.principal.memberId
     },
     slug: state => {
-      return state.principal && state.principal.member.slugs[0] && state.principal.member.slugs[0].slug
+      return (
+        state.principal &&
+        state.principal.member.slugs[0] &&
+        state.principal.member.slugs[0].slug
+      )
+    },
+    customer: state => {
+      return state.principal && state.principal.member.customer
+    },
+    subscriptions: state => {
+      return (
+        state.principal &&
+        state.principal.member.customer &&
+        state.principal.member.customer.subscriptions
+      )
     }
   }
 }

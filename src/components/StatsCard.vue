@@ -1,7 +1,7 @@
 <template>
   <v-card class="pa-3 stats-card">
     <h4 class="name">{{title}}</h4>
-    <h3 class="stat" v-if="amount">
+    <h3 class="stat" v-if="amount === 0 || amount">
       <Currency :amount="amount" />
     </h3>
     <div class="trend" v-if="trend">

@@ -21,7 +21,7 @@
           </v-badge>
         </v-tab>
 
-        <v-tab to="#legal">Legal
+        <v-tab v-if="$tenantInfo.features.legal" to="#legal">Legal
           <v-badge v-model="alert.legal" left color="red">
             <template slot="badge">
               <span>!</span>
@@ -62,7 +62,7 @@
             @hasAddress="checkAlert"
           />
         </v-tab-item>
-        <v-tab-item value="legal" class="px-4">
+        <v-tab-item  v-if="$tenantInfo.features.legal" value="legal" class="px-4">
           <LegalForm @hasLegal="checkAlert" :value="legal" />
         </v-tab-item>
       </v-tabs>
