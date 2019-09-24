@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
+import tenantInfo from '@/tenant.js'
 import store from './store'
 import Login from './views/Login.vue'
 import AccountClaim from './views/AccountClaim.vue'
@@ -66,7 +67,11 @@ export default new Router({
       path: '/',
       name: 'backoffice',
       component: Backoffice,
-      beforeEnter: (_, __, next) => {
+      beforeEnter: (to, from, next) => {
+        if (to.name === 'team' && !tenantInfo.features.team) {
+          next(from.path)
+        }
+
         return !store.state.user.jwt
           ? next('/login?returnTo=' + encodeURI('/'))
           : next()
