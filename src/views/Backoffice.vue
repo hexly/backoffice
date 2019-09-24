@@ -38,7 +38,7 @@
             <v-list-tile-title>Order History</v-list-tile-title>
           </v-list-tile-content>
         </v-list-tile>
-        <v-list-tile to="/team">
+        <v-list-tile v-if="$tenantInfo.features.team" to="/team">
           <v-list-tile-action>
             <v-icon>people</v-icon>
           </v-list-tile-action>
@@ -135,7 +135,7 @@
 import { Actions, Mutations } from '@/store'
 import { UserMutations } from '@/stores/UserStore'
 import { Actions as MemberActions } from '@/Members/Store'
-import { mapState, mapActions, mapMutations } from 'vuex'
+import { mapState, mapActions, mapMutations, mapGetters } from 'vuex'
 import GET_PRINCIPAL from '@/graphql/Principal.gql'
 import { get } from 'lodash'
 
@@ -159,8 +159,9 @@ export default {
       loading: state => state.loading,
       integrations: state => state.integrations
     }),
+    ...mapGetters(['slug']),
     usersStoreUrl() {
-      return this.$tenantInfo.storeUrl.replace('{slug}', this.user.principal.member.slug)
+      return this.$tenantInfo.storeUrl.replace('{slug}', this.slug)
     },
     showGateDialog() {
       return this.showGate && this.$route.path.indexOf('profile') === -1
@@ -190,14 +191,17 @@ export default {
   },
   async mounted () {
     this.setLoading(true)
-    const { data } = await this.getAttributes({
-      key: ['affiliate-agreement', 'entity-details'],
-      accessMode: 'ALL',
-      memberId: this.user.principal.memberId
-    })
-    if (data.getMemberAttributes.length < 2) {
-      this.setGate(true)
+    if (this.$tenantInfo.features.legal) {
+      const { data } = await this.getAttributes({
+        key: ['affiliate-agreement', 'entity-details'],
+        accessMode: 'ALL',
+        memberId: this.user.principal.memberId
+      })
+      if (data.getMemberAttributes.length < 2) {
+        this.setGate(true)
+      }
     }
+
     this.setLoading(false)
   },
   apollo: {

@@ -1,35 +1,39 @@
-const R = require('rambda')
 const fs = require('fs')
 const path = require('path')
-const tenantId = ~~process.env.VUE_APP_TENANT_ID || ~~process.env.npm_config_tenant_id
-let tenantOptions = {
-  name: 'Veridian Dynamics',
-  logoPath: '/img/1000/logo.png',
-  logoLoginPath: '/img/1000/logo-login.png',
-  placeholder: '/img/1000/profile.jpeg',
-  baseColor: '#262223',
-  primaryColor: '#bf214b',
-  secondaryColor: '#bf4565',
-  accentColor: '#f2d0dd',
-  storeUrl: 'http://www.veridian-dynamics.org/',
-  corporateUrl: 'http://www.veridian-dynamics.org/',
-  social: [
-    {
-      key: 'facebook',
-      url: 'http://www.veridian-dynamics.org/'
+const tenantId =
+  ~~process.env.VUE_APP_TENANT_ID || ~~process.env.npm_config_tenant_id
+const tenantOptions = {
+  1000: {
+    name: 'Veridian Dynamics',
+    logoPath: '/img/1000/logo.png',
+    logoLoginPath: '/img/1000/logo-login.png',
+    placeholder: '/img/1000/profile.jpeg',
+    baseColor: '#262223',
+    primaryColor: '#bf214b',
+    secondaryColor: '#bf4565',
+    accentColor: '#f2d0dd',
+    storeUrl: 'http://www.veridian-dynamics.org/',
+    corporateUrl: 'http://www.veridian-dynamics.org/',
+    social: [
+      {
+        key: 'facebook',
+        url: 'http://www.veridian-dynamics.org/'
+      }
+    ],
+    features: {
+      team: true,
+      legal: true
     }
-  ]
-}
-
-if (R.equals(tenantId, 1001)) {
-  tenantOptions = {
+  },
+  1001: {
     name: 'Hexly',
-    logoPath: '/logo.png'
-  }
-}
-
-if (R.equals(tenantId, 1004)) {
-  tenantOptions = {
+    logoPath: '/logo.png',
+    features: {
+      team: true,
+      legal: true
+    }
+  },
+  1004: {
     name: 'Green HoriZen',
     logoPath: '/img/1004/logo.png',
     logoLoginPath: '/img/1004/logo-login.png',
@@ -57,10 +61,13 @@ if (R.equals(tenantId, 1004)) {
         name: 'Policies and Procedures',
         url: '/docs/1004/Policies_and_Procedures_(April_2018).pdf'
       }
-    ]
-  }
-} else if (R.equals(tenantId, 1008)) {
-  tenantOptions = {
+    ],
+    features: {
+      team: true,
+      legal: true
+    }
+  },
+  1008: {
     name: 'GoMana',
     logoPath: '/img/1000/logo.png',
     logoLoginPath: '/img/1000/logo-login.png',
@@ -76,10 +83,13 @@ if (R.equals(tenantId, 1004)) {
         key: 'facebook',
         url: 'http://www.veridian-dynamics.org/'
       }
-    ]
-  }
-} else if (R.equals(tenantId, 1009)) {
-  tenantOptions = {
+    ],
+    features: {
+      team: false,
+      legal: false
+    }
+  },
+  1009: {
     name: 'Kyngdom Organizer',
     logoPath: '/img/1009/logo.jpg',
     logoLoginPath: '/img/1009/logo.jpg',
@@ -107,13 +117,17 @@ if (R.equals(tenantId, 1004)) {
         name: 'Policies and Procedures',
         url: '/docs/1009/PoliciesProcedures.pdf'
       }
-    ]
+    ],
+    features: {
+      team: false,
+      legal: true
+    }
   }
 }
 
 const contents = `
 /* eslint-disable */
-export default ${JSON.stringify(tenantOptions)}
+export default ${JSON.stringify(tenantOptions[tenantId] || tenantOptions[1000])}
 `
 
 fs.writeFileSync(path.resolve(__dirname, 'src/tenant.js'), contents)

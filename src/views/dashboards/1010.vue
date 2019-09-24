@@ -5,7 +5,7 @@
       <v-flex xs12 md6 class="pa-4">
         <StatsCard :title="`Member #${user.principal.member.mrn}`">
           <section>
-            <h3 class="stat">{{subscriptionLevel}}</h3>
+            <h3 class="stat">{{memberType}}</h3>
           </section>
           <div>Since {{$moment(user.principal.member.joinedOn).format('MMM YYYY')}}</div>
         </StatsCard>
@@ -21,10 +21,14 @@
       <v-flex xs12 md4 class="pa-4">
         <v-layout align-stretch justify-space-between column fill-height>
           <v-flex xs6 class="mb-3">
-            <StatsCard :trend="getMonthlySalesTrend" title="Month-to-Date Sales" :amount="currentMonthAmount"/>
+            <StatsCard
+              :trend="getMonthlySalesTrend"
+              title="Month-to-Date Sales"
+              :amount="currentMonthAmount"
+            />
           </v-flex>
           <v-flex xs6>
-            <StatsCard title="Last Month Sales" :amount="lastMonthAmount"/>
+            <StatsCard title="Last Month Sales" :amount="lastMonthAmount" />
           </v-flex>
         </v-layout>
       </v-flex>
@@ -71,14 +75,13 @@
 </template>
 
 <script>
-import _ from 'lodash'
-import StatsCard from '@/components/StatsCard.vue'
-import Currency from '@/components/Currency.vue'
-import MyLink from '@/components/MyLink.vue'
-import { GET_MEMBER_STATS, SALES_BY_PRODUCT_QUERY } from '@/Sales/Api.js'
-import { mapMutations, mapState, mapGetters } from 'vuex'
-import { UserMutations } from '@/stores/UserStore'
-import { Mutations } from '@/store'
+import StatsCard from '@/components/StatsCard.vue';
+import Currency from '@/components/Currency.vue';
+import MyLink from '@/components/MyLink.vue';
+import { GET_MEMBER_STATS, SALES_BY_PRODUCT_QUERY } from '@/Sales/Api.js';
+import { mapMutations, mapState, mapGetters } from 'vuex';
+import { UserMutations } from '@/stores/UserStore';
+import { Mutations } from '@/store';
 
 // const tenantId = ~~process.env.VUE_APP_TENANT_ID
 
@@ -96,14 +99,20 @@ export default {
       saleStats: {},
       salesByMonth: {},
       salesByProduct: {},
-      levelMap: {
-        200: 'Affiliate',
-        300: 'Trainer'
+      affiliateTags: [
+        'subscription:level:affiliate',
+        'subscription:level:trainer',
+        'subscription:level:cornerstone'
+      ],
+      tagTranslations: {
+        'subscription:level:member': 'Member',
+        'subscription:level:affiliate': 'Affiliate',
+        'subscription:level:trainer': 'Affiliate Trainer',
+        'subscription:level:cornerstone': 'Cornerstone Affiliate'
       }
     }
   },
-  async mounted() {
-  },
+  async mounted() {},
   watch: {
     '$apollo.loading'(newVal) {
       this.setLoading(newVal)
@@ -116,8 +125,12 @@ export default {
         return {
           input: {
             memberIds: [this.memberId],
-            startDate: this.$moment().startOf('year').format('YYYY-MM-DD'),
-            endDate: this.$moment().endOf('year').format('YYYY-MM-DD'),
+            startDate: this.$moment()
+              .startOf('year')
+              .format('YYYY-MM-DD'),
+            endDate: this.$moment()
+              .endOf('year')
+              .format('YYYY-MM-DD'),
             mode: 'YEAR_AND_MONTH_CUBED'
           }
         }
@@ -143,8 +156,12 @@ export default {
           input: {
             sellerId: this.memberId,
             depths: [1],
-            startDate: this.$moment().startOf('year').format('YYYY-MM-DD'),
-            endDate: this.$moment().endOf('year').format('YYYY-MM-DD'),
+            startDate: this.$moment()
+              .startOf('year')
+              .format('YYYY-MM-DD'),
+            endDate: this.$moment()
+              .endOf('year')
+              .format('YYYY-MM-DD'),
             productVariationOidPairs: ['17|604', '17|605', '17|606']
           }
         }
@@ -171,20 +188,35 @@ export default {
     }
   },
   methods: {
-    ...mapMutations([UserMutations.MEMBER_QUERY, Mutations.SET_GATE, Mutations.SET_LOADING])
+    ...mapMutations([
+      UserMutations.MEMBER_QUERY,
+      Mutations.SET_GATE,
+      Mutations.SET_LOADING
+    ])
   },
   computed: {
-    subscriptionLevel() {
-      const level = _.get(this.subscriptions, ['0', 'metadata', '_hexly_commerce_subscription_level'], 200)
-      return this.levelMap[level]
+    memberType() {
+      let type = this.affiliateTags[0]
+      this.user.principal.member.tags.forEach(t => {
+        if (this.affiliateTags.indexOf(t) > -1) {
+          type = t
+        }
+      })
+      return this.tagTranslations[type]
     },
     currentMonthAmount() {
       const currentMonth = new Date().getMonth() + 1
-      return this.salesByMonth[currentMonth] && this.salesByMonth[currentMonth].totalAmount
+      return (
+        this.salesByMonth[currentMonth] &&
+        this.salesByMonth[currentMonth].totalAmount
+      )
     },
     lastMonthAmount() {
       const currentMonth = new Date().getMonth()
-      return this.salesByMonth[currentMonth] && this.salesByMonth[currentMonth].totalAmount
+      return (
+        this.salesByMonth[currentMonth] &&
+        this.salesByMonth[currentMonth].totalAmount
+      )
     },
     getMonthlySalesTrend() {
       return this.currentMonthAmount - this.lastMonthAmount
@@ -192,7 +224,7 @@ export default {
     ...mapState({
       user: state => state.user
     }),
-    ...mapGetters(['contactId', 'memberId', 'subscriptions'])
+    ...mapGetters(['contactId', 'memberId'])
   }
 }
 </script>
@@ -204,7 +236,7 @@ export default {
   padding: 0 25px;
 }
 
-@media only screen and (max-width: 959px){
+@media only screen and (max-width: 959px) {
   .dashboard {
     padding: 0;
   }
@@ -214,7 +246,7 @@ section {
   margin-top: 8px;
 }
 
-section .name{
+section .name {
   font-size: 12px;
   color: #666666;
   font-weight: normal;
@@ -226,5 +258,4 @@ section .stat {
   color: #000000;
   font-weight: normal;
 }
-
 </style>
