@@ -126,7 +126,6 @@ export default {
 
         if (success && !issued) {
           try {
-            console.log('a', principal)
             if (!principal || !principal.memberId) {
               throw new Error("It looks like your account has not been claimed, but we couldn't determine your Member ID. Please contact support")
             }
