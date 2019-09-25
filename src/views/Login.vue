@@ -1,11 +1,6 @@
 <template>
   <v-content>
-    <v-container
-      fluid
-      align-center
-      justify-center
-      style="display:flex;height: 95%;"
-    >
+    <v-container fluid align-center justify-center style="display:flex;height: 95%;">
       <v-layout align-center justify-center>
         <v-flex xs12 sm8 md8>
           <v-card class="elevation-12">
@@ -14,11 +9,7 @@
               <v-alert type="error" :value="error">{{error}}</v-alert>
               <v-alert color="primary" :value="success">{{success}}</v-alert>
               <div v-if="type === 'login'">
-                <v-form
-                  ref="login"
-                  @submit.prevent="onLogin"
-                  lazy-validation
-                >
+                <v-form ref="login" @submit.prevent="onLogin" lazy-validation>
                   <v-text-field
                     data-cy="Username Login Page"
                     required
@@ -66,11 +57,7 @@
                 </v-form>
               </div>
               <div v-if="type === 'reset'">
-                <v-form
-                  ref="reset"
-                  @submit.prevent="onReset"
-                  lazy-validation
-                >
+                <v-form ref="reset" @submit.prevent="onReset" lazy-validation>
                   <v-text-field
                     required
                     :rules="[v => !!v || 'Field is required']"
@@ -86,12 +73,7 @@
                       <a @click="changeMode('login')">Login</a>
                     </span>
                     <v-spacer></v-spacer>
-                    <v-btn
-                      :loading="buttonLoading"
-                      type="submit"
-                      color="primary"
-                      dark
-                    >Reset</v-btn>
+                    <v-btn :loading="buttonLoading" type="submit" color="primary" dark>Reset</v-btn>
                   </v-card-actions>
                 </v-form>
               </div>
@@ -135,16 +117,21 @@ export default {
         this.$refs.login.validate()
         this.buttonLoading = true
 
-        const { success, issued } = await this.$store.dispatch(UserActions.LOGIN, {
+        const loginRes = await this.$store.dispatch(UserActions.LOGIN, {
           username: this.form.email,
           password: this.form.password,
           tenantId
         })
+        const { success, issued, principal } = loginRes
 
-        this.buttonLoading = false
         if (success && !issued) {
           try {
+            console.log('a', principal)
+            if (!principal || !principal.memberId) {
+              throw new Error("It looks like your account has not been claimed, but we couldn't determine your Member ID. Please contact support")
+            }
             await this.$store.dispatch(ClaimActions.CLAIM, {
+              memberId: principal.memberId,
               email: this.form.email,
               tenantId,
               type: 'claim'
@@ -162,6 +149,8 @@ export default {
       } catch (error) {
         this.buttonLoading = false
         this.onError(error.message)
+      } finally {
+        this.buttonLoading = false
       }
     },
     changeMode (type) {
@@ -209,7 +198,6 @@ export default {
 </script>
 
 <style scoped>
-
 .logo {
   width: 100%;
   max-width: 450px;
