@@ -142,7 +142,7 @@ export default {
         return {
           input: {
             sellerId: this.memberId,
-            depths: [1],
+            depths: [0],
             startDate: this.$moment().startOf('year').format('YYYY-MM-DD'),
             endDate: this.$moment().endOf('year').format('YYYY-MM-DD'),
             productVariationOidPairs: ['17|604', '17|605', '17|606']

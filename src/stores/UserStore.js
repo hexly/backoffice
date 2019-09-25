@@ -101,6 +101,7 @@ export const UserStore = {
     slug: state => {
       return (
         state.principal &&
+        state.principal.member.slugs &&
         state.principal.member.slugs[0] &&
         state.principal.member.slugs[0].slug
       )
