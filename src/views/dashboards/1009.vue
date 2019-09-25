@@ -175,7 +175,7 @@ export default {
   },
   computed: {
     subscriptionLevel() {
-      const level = _.get(this.subscriptions, ['0', 'metadata', '_hexly_commerce_subscription_level'], 200)
+      const level = _.get(this.subscriptions, ['0', 'metadata', 'HexlyCommerceSubscriptionLevel', '0'], 200)
       return this.levelMap[level]
     },
     currentMonthAmount() {
