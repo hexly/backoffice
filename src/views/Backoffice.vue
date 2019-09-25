@@ -30,7 +30,7 @@
             <v-list-tile-title>Assets</v-list-tile-title>
           </v-list-tile-content>
         </v-list-tile>-->
-        <v-list-tile to="/sales">
+        <v-list-tile v-if="$tenantInfo.features.sales" to="/sales">
           <v-list-tile-action>
             <v-icon>shopping_basket</v-icon>
           </v-list-tile-action>
