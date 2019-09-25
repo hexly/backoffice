@@ -63,6 +63,7 @@ const tenantOptions = {
       }
     ],
     features: {
+      sales: true,
       team: true,
       legal: true
     }
@@ -85,6 +86,7 @@ const tenantOptions = {
       }
     ],
     features: {
+      sales: true,
       team: false,
       legal: false
     }
@@ -119,7 +121,43 @@ const tenantOptions = {
       }
     ],
     features: {
+      sales: true,
       team: false,
+      legal: true
+    }
+  },
+  1010: {
+    name: 'Kyngdom Organizer',
+    logoPath: '/img/1009/logo.jpg',
+    logoLoginPath: '/img/1009/logo.jpg',
+    placeholder: '/img/1009/logo.jpg',
+    baseColor: '#2b3ea0',
+    primaryColor: '#fe4943',
+    secondaryColor: '#2ea3f2',
+    accentColor: '#fdaa58',
+    storeUrl: 'https://www.kyngdomorganizer.com/store/{slug}',
+    corporateUrl: 'https://www.kyngdomorganizer.com/',
+    social: [
+      {
+        key: 'facebook',
+        url: 'https://www.facebook.com/Kyngdom-Organizer-187348015476222/'
+      }
+    ],
+    agreements: [
+      {
+        key: 'affiliate',
+        name: 'Independent Contractor Agreement',
+        url: '/docs/1009/AffiliateAgreement.pdf'
+      },
+      {
+        key: 'policies',
+        name: 'Policies and Procedures',
+        url: '/docs/1009/PoliciesProcedures.pdf'
+      }
+    ],
+    features: {
+      sales: true,
+      team: true,
       legal: true
     }
   }

@@ -71,6 +71,9 @@ export default new Router({
         if (to.name === 'team' && !tenantInfo.features.team) {
           next(from.path)
         }
+        if (to.name === 'sales' && !tenantInfo.features.sales) {
+          next(from.path)
+        }
 
         return !store.state.user.jwt
           ? next('/login?returnTo=' + encodeURI('/'))

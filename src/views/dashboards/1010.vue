@@ -75,13 +75,13 @@
 </template>
 
 <script>
-import StatsCard from '@/components/StatsCard.vue';
-import Currency from '@/components/Currency.vue';
-import MyLink from '@/components/MyLink.vue';
-import { GET_MEMBER_STATS, SALES_BY_PRODUCT_QUERY } from '@/Sales/Api.js';
-import { mapMutations, mapState, mapGetters } from 'vuex';
-import { UserMutations } from '@/stores/UserStore';
-import { Mutations } from '@/store';
+import StatsCard from '@/components/StatsCard.vue'
+import Currency from '@/components/Currency.vue'
+import MyLink from '@/components/MyLink.vue'
+import { GET_MEMBER_STATS, SALES_BY_PRODUCT_QUERY } from '@/Sales/Api.js'
+import { mapMutations, mapState, mapGetters } from 'vuex'
+import { UserMutations } from '@/stores/UserStore'
+import { Mutations } from '@/store'
 
 // const tenantId = ~~process.env.VUE_APP_TENANT_ID
 
@@ -155,7 +155,7 @@ export default {
         return {
           input: {
             sellerId: this.memberId,
-            depths: [1],
+            depths: [0],
             startDate: this.$moment()
               .startOf('year')
               .format('YYYY-MM-DD'),
