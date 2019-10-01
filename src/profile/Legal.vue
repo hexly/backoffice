@@ -6,7 +6,7 @@
         please contact support.
       </p>
       <v-form ref="legalForm" @submit.prevent="save" lazy-validation>
-        <v-layout row wrap>
+        <v-layout row wrap v-if="$tenantInfo.features.legal.ssn !== false">
           <v-flex xs12 sm4>
             <v-radio-group
               class="radios"

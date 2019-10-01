@@ -1,7 +1,7 @@
 <template>
   <div>
-    <v-navigation-drawer fixed v-model="drawer" app temporary clipped>
-      <div class="text-xs-center">
+    <v-navigation-drawer fixed v-model="drawer" app>
+      <div v-if="$tenantInfo.logoPath" class="text-xs-center">
         <img :src="$tenantInfo.logoPath" class="logo">
       </div>
       <v-divider></v-divider>
@@ -77,7 +77,7 @@
       </div>
     </v-navigation-drawer>
     <v-toolbar :color="$tenantInfo.baseColor" dark fixed app>
-      <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
+      <v-toolbar-side-icon v-if="$vuetify.breakpoint.mdAndDown" @click.stop="drawer = !drawer"></v-toolbar-side-icon>
       <v-toolbar-title class="title">{{$route.name}}</v-toolbar-title>
       <v-spacer></v-spacer>
       <v-toolbar-items>
