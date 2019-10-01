@@ -5,7 +5,8 @@
         <v-flex xs12 sm8 md8>
           <v-card class="elevation-12">
             <v-card-text>
-              <img class="logo" :src="$tenantInfo.logoLoginPath" />
+              <img v-if="$tenantInfo.logoLoginPath" class="logo" :src="$tenantInfo.logoLoginPath" />
+              <h1 class="logo text-xs-center heading" v-else>{{$tenantInfo.name}}</h1>
               <v-alert type="error" :value="error">{{error}}</v-alert>
               <v-alert color="primary" :value="success">{{success}}</v-alert>
               <div v-if="type === 'login'">

@@ -11,10 +11,10 @@
         </div>
       </div>
     </v-card-title>
-    <v-card-text v-if="trend || trend === 0">
+    <v-card-text>
       <div style="width: 100%">
         <v-divider></v-divider>
-        <div class="trend">
+        <div class="trend"  v-if="trend || trend === 0">
           <div v-if="trend < 0">
             <v-icon  color="red">trending_down</v-icon>
             <small>you are down {{Math.abs(trend.toFixed(2))}}% from last month</small>

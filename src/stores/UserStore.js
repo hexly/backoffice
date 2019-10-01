@@ -89,6 +89,9 @@ export const UserStore = {
     }
   },
   getters: {
+    member: state => {
+      return state.principal && state.principal.member
+    },
     displayName: state => {
       return state.principal && state.principal.member.displayName
     },

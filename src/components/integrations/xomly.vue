@@ -80,7 +80,6 @@ export default {
       })
     },
     reload() {
-      console.log('loading stuff')
       this.integrations.forEach(i => {
         if (i.key === 'xomly') {
           this.setup = false

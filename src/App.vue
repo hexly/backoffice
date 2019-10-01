@@ -93,6 +93,11 @@ export default {
   background-color: #2b3ea0;
 }
 
+#backoffice.tenant-1010 {
+  background-image: none;
+  background-color: #14244C;
+}
+
 #nav {
   padding: 30px;
 }
@@ -110,5 +115,11 @@ export default {
   .container{
     padding: 2px !important;
   }
+}
+
+.full-wrapper {
+  max-width: 1200px;
+  margin: auto;
+  padding: 0 5px;
 }
 </style>

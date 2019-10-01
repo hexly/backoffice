@@ -1,12 +1,13 @@
 <template>
-  <div>
+  <div class="my-link">
     <div v-if="slug">
       <v-text-field
         solo
         color="black"
         :value="formattedSlug"
         readonly
-        single-line>
+        single-line
+        class="link">
         <v-tooltip slot="append" bottom>
             <v-icon @click="copyToClipboard" slot="activator" color="black" dark>assignment</v-icon>
             <span>{{copyTooltipText}}</span>
@@ -14,19 +15,24 @@
       </v-text-field>
     </div>
     <div v-else>
-      Hey There! You do not have your link set up yet.
+      <v-alert
+        :value="true"
+        type="warning"
+      >
+        Hey There! You do not have your link set up yet. We've generated one for you, but feel free to change it and make it your own.
+      </v-alert>
       <v-text-field
         :loading="savingSlug"
         placeholder="my-personal-link"
-        class="mb-3 slug-field"
-        v-model="tempSlug"
+        class="mb-3 slug-field edit-link"
+        v-model="generateSlug"
         @keyup="slugChanged"
         :rules="slugRule"
         :error-messages="slugErrors"
         outline
-        :prefix="$tenantInfo.storeUrl.replace('{slug}', '')"
+        :label="$tenantInfo.storeUrl.replace('{slug}', '')"
       ></v-text-field>
-      <v-btn :loading="savingSlug" @click="saveSlug" :disabled="!slugUnique" type="primary">Create Link</v-btn>
+      <v-btn :loading="savingSlug" @click="saveSlug" :disabled="!slugUnique" color="green">Create Link</v-btn>
     </div>
   </div>
 </template>
@@ -45,7 +51,7 @@ export default {
   data() {
     return {
       tempSlug: '',
-      slugUnique: false,
+      slugUnique: true,
       checkingSlug: 0,
       slugErrors: [],
       slugRule: Rules.slugRule,
@@ -88,9 +94,18 @@ export default {
     })
   },
   computed: {
-    ...mapGetters(['slug']),
+    ...mapGetters(['slug', 'member']),
     formattedSlug() {
       return this.$tenantInfo.storeUrl.replace('{slug}', this.slug || this.tempSlug)
+    },
+    generateSlug: {
+      get() {
+        const slug = this.member.displayName.toLowerCase()
+        return this.tempSlug || `${slug.replace(' ', '-')}-${this.member.mrn}`
+      },
+      set(val) {
+        this.tempSlug = val
+      }
     }
   },
   apollo: {
@@ -120,7 +135,21 @@ export default {
 </script>
 
 <style>
-.slug-field .v-text-field__prefix {
-  white-space: nowrap;
+.my-link .edit-link {
+  font-size: 14px;
 }
+.my-link .link {
+  font-size: 3vw;
+}
+@media screen and (min-width: 800px) {
+  .my-link .link {
+  font-size: 14px;
+}
+}
+@media screen and (min-width: 1200px) {
+  div {
+    font-size: 14px;
+  }
+}
+
 </style>

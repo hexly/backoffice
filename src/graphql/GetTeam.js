@@ -1,6 +1,6 @@
 import gql from 'graphql-tag'
 
-export const QUERY = gql`
+export const TEAM_QUERY = gql`
   query TeamByMemberId(
     $bySponsor: MemberSearchCondition!
     $byTarget: MemberSearchCondition!
@@ -40,10 +40,33 @@ export const QUERY = gql`
   }
 `
 
+export const TEAM_SPONSOR_QUERY = gql`
+  query TeamByMemberId($bySponsor: MemberSearchCondition!) {
+    team: members(first: 100, condition: $bySponsor) {
+      nodes {
+        id
+        tenantId
+        name
+        displayName
+        mrn
+        slugs{
+          slug
+        }
+        contacts {
+          emails {
+            email
+          }
+        }
+        profileUrl
+      }
+    }
+  }
+`
+
 export const getTeamByMemberId = (memberIdFn, watchLoading) => {
   if (!memberIdFn) return
   return {
-    query: QUERY,
+    query: TEAM_QUERY,
     variables: function () {
       const { principal: member } = this.$store.state.user
       const memberId = this[memberIdFn] || member.memberId || -1
