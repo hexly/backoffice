@@ -2,7 +2,7 @@
   <div class="directory">
     <v-card>
       <v-card-title class="secondary white--text headline">
-        Your Circle Of Influence
+        {{title}}
       </v-card-title>
       <v-layout justify-space-between row wrap>
         <v-flex xs12 sm5>
@@ -78,7 +78,8 @@ export default {
   },
   props: {
     self: Object,
-    frontline: Array
+    frontline: Array,
+    title: String
   },
   data() {
     return {

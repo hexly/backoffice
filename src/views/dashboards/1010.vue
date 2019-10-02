@@ -22,7 +22,9 @@
     </v-layout>
     <v-layout row wrap>
       <v-flex xs12 md6 class="pa-2">
-        <PersonalCard />
+        <PersonalCard memberName="Influencer">
+          <Badges slot="footer" v-if="member.joinedOn" :joinedOn="member.joinedOn"/>
+        </PersonalCard>
       </v-flex>
       <v-flex xs12 md6>
         <v-layout fill-height column justify-space-between>
@@ -41,8 +43,8 @@
               color="white"
               darken="1"
               :display="personalStats.counts.total"
-              subheading="Total Team Size"
-              icon="account_tree"
+              subheading="Your Circle of Influence"
+              icon="supervised_user_circle"
               :loading="loadingStats > 0"
             />
           </v-flex>
@@ -51,15 +53,16 @@
               color="white"
               darken="1"
               :display="personalStats.counts.level1"
-              subheading="Front-Line Size"
-              icon="supervised_user_circle"
+              subheading="Your Front-Line Size"
+              icon="account_tree"
               :loading="loadingStats > 0"
             />
           </v-flex>
         </v-layout>
       </v-flex>
     </v-layout>
-    <Directory class="pa-2" :self="personalStats" :frontline="team"/>
+    <Directory class="pa-2" :self="personalStats" :frontline="team" title="Your Circle of Influence"/>
+    <CompanyMap class="pa-2" title="Influencers around the world"/>
   </div>
 </template>
 
@@ -67,6 +70,8 @@
 import PersonalCard from '@/components/dashboard/PersonalCard.vue'
 import Directory from '@/components/dashboard/Directory.vue'
 import DashCard from '@/components/DashboardCard.vue'
+import CompanyMap from '@/components/dashboard/CompanyMap.vue'
+import Badges from '@/components/Badges.vue'
 
 import { MEMBER_STATS_BY_DEPTH, MEMBER_TOTAL_COUNT } from '@/graphql/MemberStats.gql'
 import { mapMutations, mapState, mapGetters } from 'vuex'
@@ -80,7 +85,9 @@ export default {
   components: {
     DashCard,
     PersonalCard,
-    Directory
+    Directory,
+    CompanyMap,
+    Badges
   },
   data() {
     return {
@@ -98,7 +105,9 @@ export default {
       loadingCount: 0
     }
   },
-  async mounted() {},
+  async mounted() {
+
+  },
   watch: {
     '$apollo.loading'(newVal) {
       this.setLoading(newVal)
@@ -115,7 +124,7 @@ export default {
     ...mapState({
       user: state => state.user
     }),
-    ...mapGetters(['contactId', 'memberId'])
+    ...mapGetters(['contactId', 'memberId', 'member'])
   },
   apollo: {
     team: {

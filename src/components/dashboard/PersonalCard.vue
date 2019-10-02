@@ -1,5 +1,5 @@
 <template>
-  <div class="dashboard-card">
+  <div class="personal-card">
     <v-card class="mx-auto">
       <v-img
           v-if="!$tenantInfo.profileColor"
@@ -12,14 +12,11 @@
         <v-avatar size="124" class="avatar" color="white">
           <v-img :src="user.principal.member.profileUrl || $tenantInfo.placeholder" class="mb-4" ></v-img>
         </v-avatar>
-        <h3 class="headline mb-2"> {{ user.principal.member.name }} </h3>
+        <h3 class="headline mb-2"> {{ user.principal.member.name }}</h3>
         <div class="primary--text mb-2">{{ user.principal.member.email }}</div>
-        <div class="primary--text subheading font-weight-bold">Influencer #<b>{{user.principal.member.mrn}}</b></div>
+        <div v-if="showMrn" class="primary--text subheading font-weight-bold">{{memberName || 'Member'}} #<b>{{user.principal.member.mrn}}</b></div>
         <div v-if="user.principal.member.sponsor">
-          <b>Sponsor:</b> {{user.principal.member.sponsor.displayName}}
-        </div>
-        <div v-else>
-          You're in the penthouse suite, kid! The tip of the pyramid. Have a drink. Make yourself comfortable.
+          <b>{{sponsorName || 'Sponsor'}}:</b> {{user.principal.member.sponsor.displayName}}
         </div>
       </v-card-text>
       <v-divider class="mb-3"></v-divider>
@@ -27,14 +24,14 @@
           <h3>Website</h3>
           <MyLink />
         </div>
-        <Badges v-if="user.principal.member.joinedOn" :joinedOn="user.principal.member.joinedOn"/>
+        <v-divider class="mb-3"></v-divider>
+        <slot name="footer"></slot>
     </v-card>
   </div>
 </template>
 
 <script>
 import DashCard from '@/components/DashboardCard.vue'
-import Badges from '@/components/Badges.vue'
 import MyLink from '@/components/MyLink.vue'
 import { mapMutations, mapState, mapGetters } from 'vuex'
 import { UserMutations } from '@/stores/UserStore'
@@ -43,11 +40,18 @@ import { Mutations } from '@/store'
 // const tenantId = ~~process.env.VUE_APP_TENANT_ID
 
 export default {
-  name: 'dashboard',
+  name: 'PersonalCard',
   components: {
     MyLink,
-    DashCard,
-    Badges
+    DashCard
+  },
+  props: {
+    memberName: String,
+    sponsorName: String,
+    showMrn: {
+      type: Boolean,
+      default: true
+    }
   },
   data() {
     return {
@@ -90,13 +94,16 @@ export default {
   height: 125px;
   width: 100%;
 }
-.dashboard-card .avatar {
+.personal-card {
+  width: 100%;
+}
+.personal-card .avatar {
   position: relative;
   top: -62px;
   margin-bottom: -62px;
   padding-top: 19px;
 }
-.dashboard-card .avatar .v-responsive {
+.personal-card .avatar .v-responsive {
   box-shadow: 0px -10px 30px -4px black;
   border: 3px solid white;
 }

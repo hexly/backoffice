@@ -20,19 +20,9 @@
 
 <script>
 export default {
-  name: 'dashboard',
+  name: 'Badges',
   props: {
     joinedOn: String // Just leave it... I know
-  },
-  data() {
-    return {
-    }
-  },
-  async mounted() {},
-  watch: {
-    '$apollo.loading'(newVal) {
-      this.setLoading(newVal)
-    }
   },
   computed: {
     birthday() {
