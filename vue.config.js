@@ -10,6 +10,9 @@ module.exports = {
   lintOnSave: true,
   configureWebpack: {
     plugins: [
+      new webpack.ProvidePlugin({
+        mapboxgl: 'mapbox-gl'
+      }),
       new webpack.DefinePlugin({
         VERSION: JSON.stringify(
           moment(buildTime).format()

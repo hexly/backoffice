@@ -12,6 +12,10 @@
       rel="shortcut icon"
       href="/img/<%= process.env.VUE_APP_TENANT_ID %>/favicon.png"
     />
+    <link
+      href="https://api.tiles.mapbox.com/mapbox-gl-js/v0.53.0/mapbox-gl.css"
+      rel="stylesheet"
+    />
     <%= process.env.VUE_APP_ZENDESK_WIDGET_URL ? ` <script id="ze-snippet" src="${process.env.VUE_APP_ZENDESK_WIDGET_URL}"></script> ` : '' %>
     <title>Backoffice</title>
   </head>
