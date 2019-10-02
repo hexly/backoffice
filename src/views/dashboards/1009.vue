@@ -1,19 +1,54 @@
 <template>
   <div class="dashboard py-4">
     <v-subheader>Membership</v-subheader>
-    <v-layout row>
-      <v-flex xs12 md6 class="pa-4">
-        <StatsCard :title="`Member #${user.principal.member.mrn}`">
-          <section>
-            <h3 class="stat">{{subscriptionLevel}}</h3>
-          </section>
-          <div>Since {{$moment(user.principal.member.joinedOn).format('MMM YYYY')}}</div>
-        </StatsCard>
+    <v-layout row justify-center>
+      <v-flex xs12 md6>
+        <PersonalCard class="pa-4" memberName="Affiliate" :showMrn="false">
+          <div slot="footer" class="text-xs-center">
+            <p class="headline">Badges</p>
+            <BirthdayBadge :joinedOn="member.joinedOn" />
+            <v-chip v-if="subscriptionLevel" color="secondary" text-color="white">
+              <v-avatar class="secondary darken-4">
+                <v-icon>star</v-icon>
+              </v-avatar>
+              {{subscriptionLevel}}
+            </v-chip>
+          </div>
+        </PersonalCard>
       </v-flex>
-      <v-flex xs12 md6 class="pa-4">
-        <StatsCard title="My Link">
-          <MyLink />
-        </StatsCard>
+      <v-flex xs12 md6>
+        <v-layout fill-height column justify-space-between>
+          <v-flex class="pt-4 pb-4 px-4">
+            <DashCard
+              color="white"
+              darken="1"
+              :display="memberCount[0].count"
+              subheading="Total Affiliates and Trainers"
+              icon="location_city"
+              :loading="loadingCount > 0"
+            />
+          </v-flex>
+          <v-flex class="pt-2 pb-4 px-4">
+            <DashCard
+              color="white"
+              darken="1"
+              :display="personalStats.counts.total - 1"
+              subheading="Your Entire Team"
+              icon="account_tree"
+              :loading="loadingStats > 0"
+            />
+          </v-flex>
+          <v-flex class="pt-2 pb-4 px-4">
+            <DashCard
+              color="white"
+              darken="1"
+              :display="personalStats.counts.level1"
+              subheading="Your Front-Line"
+              icon="supervised_user_circle"
+              :loading="loadingStats > 0"
+            />
+          </v-flex>
+        </v-layout>
       </v-flex>
     </v-layout>
     <v-subheader>Statistics</v-subheader>
@@ -72,25 +107,41 @@
 
 <script>
 import _ from 'lodash'
+import BirthdayBadge from '@/components/BirthdayBadge.vue'
+import PersonalCard from '@/components/dashboard/PersonalCard.vue'
 import StatsCard from '@/components/StatsCard.vue'
+import DashCard from '@/components/DashboardCard.vue'
 import Currency from '@/components/Currency.vue'
-import MyLink from '@/components/MyLink.vue'
 import { GET_MEMBER_STATS, SALES_BY_PRODUCT_QUERY } from '@/Sales/Api.js'
+import { MEMBER_STATS_BY_DEPTH, MEMBER_TOTAL_COUNT } from '@/graphql/MemberStats.gql'
 import { mapMutations, mapState, mapGetters } from 'vuex'
 import { UserMutations } from '@/stores/UserStore'
 import { Mutations } from '@/store'
 
-// const tenantId = ~~process.env.VUE_APP_TENANT_ID
+const tenantId = ~~process.env.VUE_APP_TENANT_ID
 
 export default {
   name: 'dashboard',
   components: {
+    PersonalCard,
     StatsCard,
-    MyLink,
-    Currency
+    Currency,
+    BirthdayBadge,
+    DashCard
   },
   data() {
     return {
+      personalStats: {
+        counts: {
+          total: 0,
+          level1: 0
+        }
+      },
+      memberCount: [{
+        count: 0
+      }],
+      loadingStats: 0,
+      loadingCount: 0,
       salesGraphValues: [],
       yearToDate: 0,
       saleStats: {},
@@ -110,6 +161,33 @@ export default {
     }
   },
   apollo: {
+    team: {
+      query: MEMBER_STATS_BY_DEPTH,
+      variables () {
+        return {
+          input: {
+            relativeDepthIn: [1],
+            targetId: this.$store.state.user.principal.memberId
+          }
+        }
+      },
+      loadingKey: 'loadingStats',
+      update ({ getTeamDataByDepth }) {
+        // Frist one is always personal stats
+        const [personal, ...rest] = getTeamDataByDepth
+        this.personalStats = personal
+        return rest
+      }
+    },
+    memberCount: {
+      query: MEMBER_TOTAL_COUNT,
+      variables: {
+        input: {
+          tenantId
+        }
+      },
+      loadingKey: 'loadingCount'
+    },
     saleStats: {
       query: GET_MEMBER_STATS,
       variables() {
@@ -192,7 +270,7 @@ export default {
     ...mapState({
       user: state => state.user
     }),
-    ...mapGetters(['contactId', 'memberId', 'subscriptions'])
+    ...mapGetters(['contactId', 'memberId', 'subscriptions', 'member'])
   }
 }
 </script>

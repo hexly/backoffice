@@ -1,190 +1,116 @@
 <template>
-  <div class="dashboard py-4">
-    <v-subheader>Membership</v-subheader>
+  <div class="full-wrapper dashboard">
     <v-layout row>
-      <v-flex xs12 md6 class="pa-4">
-        <StatsCard :title="`Member #${user.principal.member.mrn}`">
-          <section>
-            <h3 class="stat">{{memberType}}</h3>
-          </section>
-          <div>Since {{$moment(user.principal.member.joinedOn).format('MMM YYYY')}}</div>
-        </StatsCard>
-      </v-flex>
-      <v-flex xs12 md6 class="pa-4">
-        <StatsCard title="My Link">
-          <MyLink />
-        </StatsCard>
+      <v-flex xs12 class="pa-2">
+        <v-card>
+          <v-card-title>
+            <p class="headline">Welcome to Luccii!</p>
+          </v-card-title>
+          <v-card-text>
+            <p class="subheading">
+              We are currently operating incognito and are so excited you are with us.
+              Please join our facebook group here: <a href="">Luccii Facebook Group</a>
+            </p>
+            <p class="subheading">
+            Questions? Please email <a href="mailto:support@luccii.com">support@luccii.com</a>
+            </p>
+            The Luccii Team
+            <br/>
+          </v-card-text>
+        </v-card>
       </v-flex>
     </v-layout>
-    <v-subheader>Statistics</v-subheader>
-    <v-layout row wrap justify-space-between fill-height>
-      <v-flex xs12 md4 class="pa-4">
-        <v-layout align-stretch justify-space-between column fill-height>
-          <v-flex xs6 class="mb-3">
-            <StatsCard
-              :trend="getMonthlySalesTrend"
-              title="Month-to-Date Sales"
-              :amount="currentMonthAmount"
+    <v-layout row wrap>
+      <v-flex xs12 md6 class="pa-2">
+        <PersonalCard memberName="Influencer">
+          <Badges slot="footer" v-if="member.joinedOn" :joinedOn="member.joinedOn"/>
+        </PersonalCard>
+      </v-flex>
+      <v-flex xs12 md6>
+        <v-layout fill-height column justify-space-between>
+          <v-flex class="pa-2">
+            <DashCard
+              color="white"
+              darken="1"
+              :display="memberCount[0].count"
+              subheading="Total Influencers"
+              icon="location_city"
+              :loading="loadingCount > 0"
             />
           </v-flex>
-          <v-flex xs6>
-            <StatsCard title="Last Month Sales" :amount="lastMonthAmount" />
+          <v-flex class="pa-2">
+            <DashCard
+              color="white"
+              darken="1"
+              :display="personalStats.counts.total"
+              subheading="Your Circle of Influence"
+              icon="supervised_user_circle"
+              :loading="loadingStats > 0"
+            />
+          </v-flex>
+          <v-flex class="pa-2">
+            <DashCard
+              color="white"
+              darken="1"
+              :display="personalStats.counts.level1"
+              subheading="Your Front-Line Size"
+              icon="account_tree"
+              :loading="loadingStats > 0"
+            />
           </v-flex>
         </v-layout>
       </v-flex>
-      <v-flex xs12 md4 class="pa-4">
-        <StatsCard title="Month-to-Date Sales by Affiliate Type">
-          <section>
-            <h6 class="name">Member</h6>
-            <h3 class="stat">
-              <Currency :amount="salesByProduct.member" />
-            </h3>
-          </section>
-          <section>
-            <h6 class="name">Affiliate</h6>
-            <h3 class="stat">
-              <Currency :amount="salesByProduct.affiliate" />
-            </h3>
-          </section>
-          <section>
-            <h6 class="name">Certified Trainer</h6>
-            <h3 class="stat">
-              <Currency :amount="salesByProduct.trainer" />
-            </h3>
-          </section>
-        </StatsCard>
-      </v-flex>
-      <v-flex xs12 md4 class="pa-4">
-        <StatsCard title="Year-to-Date Sales" :amount="yearToDate">
-          <div class="sparks">
-            <v-sparkline
-              :value="salesGraphValues"
-              color="#2da3f2"
-              type="bar"
-              line-width="25"
-              padding="20"
-              height="165"
-              width="400"
-              auto-draw
-            ></v-sparkline>
-          </div>
-        </StatsCard>
-      </v-flex>
     </v-layout>
+    <Directory class="pa-2" :self="personalStats" :frontline="team" title="Your Circle of Influence"/>
+    <CompanyMap class="pa-2" title="Influencers around the world"/>
   </div>
 </template>
 
 <script>
-import StatsCard from '@/components/StatsCard.vue'
-import Currency from '@/components/Currency.vue'
-import MyLink from '@/components/MyLink.vue'
-import { GET_MEMBER_STATS, SALES_BY_PRODUCT_QUERY } from '@/Sales/Api.js'
+import PersonalCard from '@/components/dashboard/PersonalCard.vue'
+import Directory from '@/components/dashboard/Directory.vue'
+import DashCard from '@/components/DashboardCard.vue'
+import CompanyMap from '@/components/dashboard/CompanyMap.vue'
+import Badges from '@/components/Badges.vue'
+
+import { MEMBER_STATS_BY_DEPTH, MEMBER_TOTAL_COUNT } from '@/graphql/MemberStats.gql'
 import { mapMutations, mapState, mapGetters } from 'vuex'
 import { UserMutations } from '@/stores/UserStore'
 import { Mutations } from '@/store'
 
-// const tenantId = ~~process.env.VUE_APP_TENANT_ID
+const tenantId = ~~process.env.VUE_APP_TENANT_ID
 
 export default {
   name: 'dashboard',
   components: {
-    StatsCard,
-    MyLink,
-    Currency
+    DashCard,
+    PersonalCard,
+    Directory,
+    CompanyMap,
+    Badges
   },
   data() {
     return {
-      salesGraphValues: [],
-      yearToDate: 0,
-      saleStats: {},
-      salesByMonth: {},
-      salesByProduct: {},
-      affiliateTags: [
-        'subscription:level:affiliate',
-        'subscription:level:trainer',
-        'subscription:level:cornerstone'
-      ],
-      tagTranslations: {
-        'subscription:level:member': 'Member',
-        'subscription:level:affiliate': 'Affiliate',
-        'subscription:level:trainer': 'Affiliate Trainer',
-        'subscription:level:cornerstone': 'Cornerstone Affiliate'
-      }
+      personalStats: {
+        counts: {
+          total: 0,
+          level1: 0
+        }
+      },
+      memberCount: [{
+        count: 0
+      }],
+      team: [],
+      loadingStats: 0,
+      loadingCount: 0
     }
   },
-  async mounted() {},
+  async mounted() {
+
+  },
   watch: {
     '$apollo.loading'(newVal) {
       this.setLoading(newVal)
-    }
-  },
-  apollo: {
-    saleStats: {
-      query: GET_MEMBER_STATS,
-      variables() {
-        return {
-          input: {
-            memberIds: [this.memberId],
-            startDate: this.$moment()
-              .startOf('year')
-              .format('YYYY-MM-DD'),
-            endDate: this.$moment()
-              .endOf('year')
-              .format('YYYY-MM-DD'),
-            mode: 'YEAR_AND_MONTH_CUBED'
-          }
-        }
-      },
-      update({ saleStatsByDateRange }) {
-        this.salesGraphValues = []
-        this.salesByMonth = {}
-        saleStatsByDateRange[0].stats.forEach(s => {
-          if (s.mode === 'YEAR_AND_MONTH') {
-            this.salesGraphValues.push(s.totalAmount)
-            this.salesByMonth[s.month] = s
-          } else if (s.mode === 'TOTAL') {
-            this.yearToDate = s.totalAmount
-          }
-        })
-        return saleStatsByDateRange[0].stats
-      }
-    },
-    salesByProduct: {
-      query: SALES_BY_PRODUCT_QUERY,
-      variables() {
-        return {
-          input: {
-            sellerId: this.memberId,
-            depths: [0],
-            startDate: this.$moment()
-              .startOf('year')
-              .format('YYYY-MM-DD'),
-            endDate: this.$moment()
-              .endOf('year')
-              .format('YYYY-MM-DD'),
-            productVariationOidPairs: ['17|604', '17|605', '17|606']
-          }
-        }
-      },
-      update({ salesByProductVariant }) {
-        const salesByProduct = {
-          member: 0,
-          affiliate: 0,
-          trainer: 0
-        }
-        salesByProductVariant.forEach(p => {
-          if (p.productOid === '17' && p.variantOid === '604') {
-            salesByProduct.member += p.subtotal
-          }
-          if (p.productOid === '17' && p.variantOid === '605') {
-            salesByProduct.affiliate += p.subtotal
-          }
-          if (p.productOid === '17' && p.variantOid === '606') {
-            salesByProduct.trainer += p.subtotal
-          }
-        })
-        return salesByProduct
-      }
     }
   },
   methods: {
@@ -195,53 +121,47 @@ export default {
     ])
   },
   computed: {
-    memberType() {
-      let type = this.affiliateTags[0]
-      this.user.principal.member.tags.forEach(t => {
-        if (this.affiliateTags.indexOf(t) > -1) {
-          type = t
-        }
-      })
-      return this.tagTranslations[type]
-    },
-    currentMonthAmount() {
-      const currentMonth = new Date().getMonth() + 1
-      return (
-        this.salesByMonth[currentMonth] &&
-        this.salesByMonth[currentMonth].totalAmount
-      )
-    },
-    lastMonthAmount() {
-      const currentMonth = new Date().getMonth()
-      return (
-        this.salesByMonth[currentMonth] &&
-        this.salesByMonth[currentMonth].totalAmount
-      )
-    },
-    getMonthlySalesTrend() {
-      return this.currentMonthAmount - this.lastMonthAmount
-    },
     ...mapState({
       user: state => state.user
     }),
-    ...mapGetters(['contactId', 'memberId'])
+    ...mapGetters(['contactId', 'memberId', 'member'])
+  },
+  apollo: {
+    team: {
+      query: MEMBER_STATS_BY_DEPTH,
+      variables () {
+        return {
+          input: {
+            relativeDepthIn: [1],
+            targetId: this.$store.state.user.principal.memberId
+          }
+        }
+      },
+      loadingKey: 'loadingStats',
+      update ({ getTeamDataByDepth }) {
+        // Frist one is always personal stats
+        const [personal, ...rest] = getTeamDataByDepth
+        this.personalStats = personal
+        return rest
+      }
+    },
+    memberCount: {
+      query: MEMBER_TOTAL_COUNT,
+      variables: {
+        input: {
+          tenantId
+        }
+      },
+      loadingKey: 'loadingCount'
+    }
   }
 }
 </script>
 
 <style scoped>
 .dashboard {
-  max-width: 1440px;
-  margin: auto;
-  padding: 0 25px;
+  padding-bottom: 45px;
 }
-
-@media only screen and (max-width: 959px) {
-  .dashboard {
-    padding: 0;
-  }
-}
-
 section {
   margin-top: 8px;
 }

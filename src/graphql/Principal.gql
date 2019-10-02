@@ -20,6 +20,9 @@ query principal {
       slugs {
         slug
       }
+      sponsor {
+        displayName
+      }
       joinedOn
       tags
       contacts {
