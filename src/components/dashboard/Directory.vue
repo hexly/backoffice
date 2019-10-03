@@ -48,7 +48,7 @@
                 <h3 class="headline mb-2">
                   {{ selected.name }}
                 </h3>
-                <!-- <div class="primary--text mb-2">{{ selected.contacts[0].emails[0].email }}</div> -->
+                <div class="primary--text mb-2">{{ selected.emails[0] }}</div>
                 <div class="primary--text subheading font-weight-bold">Influencer #<b>{{selected.mrn}}</b></div>
               </v-card-text>
               <v-divider class="mb-3"></v-divider>
