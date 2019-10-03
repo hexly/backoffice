@@ -12,31 +12,30 @@
           <v-progress-circular indeterminate :size="30" :width="3" color="grey"></v-progress-circular>
         </p>
       </div>
-      <MglMap
+      <mapbox
         v-else
         class="map"
-        :accessToken="accessToken"
-        :mapStyle.sync="mapStyle"
-        :boxZoom="false"
-        :zoom="2.7"
-        :center="[-61.5, 42]"
-        >
-        <MglMarker v-for="c in coordinates" :key="c[0]" :coordinates="[c.long, c.lat]" color="blue"></MglMarker>
-      </MglMap>
+        :access-token="accessToken"
+        :map-options="{
+          style: mapStyle,
+          center: [-61.5, 42],
+          zoom: 2.7,
+        }"
+        @map-load="addMarkers"
+      />
     </v-card>
   </div>
 </template>
 
 <script>
-import { MglMap, MglMarker } from 'vue-mapbox'
+import Mapbox from 'mapbox-gl-vue'
 import { LAT_LONGS } from '@/graphql/Contacts.js'
 
 const tenantId = ~~process.env.VUE_APP_TENANT_ID
 
 export default {
   components: {
-    MglMap,
-    MglMarker
+    Mapbox
   },
   props: {
     title: String
@@ -46,6 +45,21 @@ export default {
       coordinates: [],
       accessToken: process.env.VUE_APP_MAPBOX_ACCESS_TOKEN,
       mapStyle: process.env.VUE_APP_MAPBOX_MAP_STYLE
+    }
+  },
+  methods: {
+    addMarkers(map) {
+      const mapboxgl = require('mapbox-gl/dist/mapbox-gl')
+      this.coordinates.forEach((marker) => {
+        // create a HTML element for each feature
+        const el = document.createElement('div')
+        el.className = 'Map__marker'
+
+        // make a marker for each feature and add to the map
+        new mapboxgl.Marker(el)
+          .setLngLat([marker.long, marker.lat])
+          .addTo(map)
+      })
     }
   },
   apollo: {
@@ -73,7 +87,12 @@ export default {
   height: 500px;
   margin: auto;
 }
-.map > div{
-  height: 100%;
+.Map__marker{
+  background-color: #EB8381;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0px 0px 16px 0px #EB8381;
 }
 </style>
