@@ -11,7 +11,7 @@ export default {
   slugRule: [
     v => !!v || 'Field is required and cannot be changed once submitted',
     v =>
-      (v && /^[a-z0-9\-\\_]*$/.test(v)) ||
+      (v && /^[a-z0-9\\_]*$/.test(v)) ||
       'Store name must not have spaces or special characters',
     v => {
       return (

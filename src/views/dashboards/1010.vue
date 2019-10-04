@@ -4,7 +4,7 @@
       <v-flex xs12 class="pa-2">
         <v-card>
           <v-card-title>
-            <p class="headline">Welcome to Luccii!</p>
+            <p class="headline">Welcome to your Luccii Influencer Hub!</p>
           </v-card-title>
           <v-card-text>
             <p class="subheading">
@@ -14,7 +14,7 @@
             <p class="subheading">
             Questions? Please email <a href="mailto:support@luccii.com">support@luccii.com</a>
             </p>
-            The Luccii Team
+            - The Luccii Team
             <br/>
           </v-card-text>
         </v-card>
@@ -22,7 +22,7 @@
     </v-layout>
     <v-layout row wrap>
       <v-flex xs12 md6 class="pa-2">
-        <PersonalCard memberName="Influencer">
+        <PersonalCard memberName="Your Influencer Number:">
           <Badges slot="footer" v-if="member.joinedOn" :joinedOn="member.joinedOn"/>
         </PersonalCard>
       </v-flex>
