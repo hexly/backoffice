@@ -15,9 +15,10 @@
                 <p>We are reteiving your information, please hold.</p>
               </div>
               <div class="center" v-if="!loading">
-                <p>Welcome! Please fill out the following information to setup your account.</p>
+                <p class="headline">Welcome {{editMember.name}}!</p>
+                <p>Please fill out the following information to finish setting up your account.</p>
                 <v-form ref="claim" @submit.prevent="onSubmit" lazy-validation>
-                  <v-text-field
+                  <!-- <v-text-field
                     label="Name"
                     v-model="editMember.name"
                     :rules="requiredRule"
@@ -34,11 +35,11 @@
                     v-model="editMember.displayName"
                     :rules="requiredRule"
                     required
-                  ></v-text-field>
-                  <v-text-field label="username" v-model="editMember.contactEmail" disabled></v-text-field>
+                  ></v-text-field> -->
+                  <!-- <v-text-field label="username" v-model="editMember.contactEmail" disabled></v-text-field> -->
                   <v-text-field
                     name="password"
-                    label="Enter your password"
+                    label="Verify Password"
                     hint="At least 8 characters"
                     v-model="editMember.password"
                     min="8"
@@ -49,7 +50,7 @@
                   ></v-text-field>
                   <v-autocomplete
                     v-model="editMember.legalLocaleId"
-                    label="Select Locale"
+                    label="Select Country of Citizenship"
                     :rules="requiredRule"
                     :items="settings.legalLocales"
                     item-text="name"
@@ -57,7 +58,7 @@
                   />
                   <v-autocomplete
                     v-model="editMember.languageId"
-                    label="Select Language"
+                    label="Select Preferred Language"
                     :rules="requiredRule"
                     :items="settings.languages"
                     item-text="name"
@@ -77,10 +78,10 @@
                       :rules="requiredRule"
                       :readonly="!affiliate"
                       :persistent-hint="!affiliate"
-                      hint="Note: You must read the agreement before agreeing"
+                      hint="Note: Please click the link before agreeing"
                     >
                       <div slot="label">
-                        I agree to the terms in the
+                        I agree to the
                         <a
                           @click="accept('affiliate')"
                           target="_blank"
@@ -98,10 +99,10 @@
                       :rules="requiredRule"
                       :readonly="!policies"
                       :persistent-hint="!policies"
-                      hint="Note: You must read the policies and procedures before agreeing"
+                      hint="Note: Please click the link before agreeing"
                     >
                       <div slot="label">
-                        I agree to all the
+                        I agree to the
                         <a
                           @click="accept('policies')"
                           target="_blank"
@@ -130,7 +131,7 @@ import tenantInfo from '@/tenant.js'
 import { ClaimActions } from '@/stores/ClaimStore'
 import { UserMutations, UserActions } from '@/stores/UserStore'
 import { Actions } from '@/Members/Store'
-import getLocalSettings from '@/graphql/GetLocalSettings'
+import { LOCALE_QUERY } from '@/graphql/GetLocalSettings'
 import { encrypt } from '@/utils/EncryptionService'
 import AgreementCheckbox from '@/components/Agreement'
 
@@ -181,6 +182,7 @@ export default {
       const { id: contactId, emails } = member.contacts[0]
       const { email, id: emailId } = emails[0]
       this.editMember = {
+        ...this.editMember,
         ...member,
         memberId: member.id,
         username: email,
@@ -195,7 +197,40 @@ export default {
     }
   },
   apollo: {
-    settings: getLocalSettings()
+    settings: {
+      query: LOCALE_QUERY,
+      update ({ allLegalLocales, allTimezones, allLanguages }) {
+        const localTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone
+        allTimezones.nodes.forEach(tz => {
+          if (tz.name === localTimezone) {
+            this.editMember.timezoneId = tz.id
+          }
+        })
+
+        const localLanguage = navigator.language.toLowerCase()
+        allLanguages.nodes.forEach(lang => {
+          const isTwoPart = lang.bcp47.indexOf('-') >= 0
+          if (isTwoPart && localLanguage === lang.bcp47) {
+            this.editMember.languageId = lang.id
+          } else if (localLanguage.split('-') === lang.bcp47) {
+            this.editMember.languageId = lang.id
+          }
+        })
+
+        // Momentary until we get better country support
+        if (localLanguage.indexOf('us') >= 0) {
+          this.editMember.legalLocaleId = 235
+        } else if (localLanguage.indexOf('gb') >= 0) {
+          this.editMember.legalLocaleId = 80
+        }
+
+        return {
+          legalLocales: allLegalLocales.nodes,
+          timezones: allTimezones.nodes,
+          languages: allLanguages.nodes
+        }
+      }
+    }
   },
   methods: {
     ...mapMutations({
@@ -208,6 +243,7 @@ export default {
     }),
     accept (value) {
       this[value] = this.$moment.utc()
+      this.agreement[value] = true
     },
     async onSubmit () {
       if (this.$refs.claim.validate()) {

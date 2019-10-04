@@ -20,7 +20,7 @@
         <p>Please confirm your password in order to set up Xomly</p>
         <v-form @submit.prevent="setupXomly" width="500">
           <v-text-field
-            label="password"
+            label="Verify Your Password"
             v-model="password"
             type="password"
             :rules="rules.required"

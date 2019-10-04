@@ -1,6 +1,6 @@
 import gql from 'graphql-tag'
 
-const LOCALE_QUERY = gql`
+export const LOCALE_QUERY = gql`
   query {
     allLegalLocales {
       nodes {
@@ -23,12 +23,13 @@ const LOCALE_QUERY = gql`
         id
         name
         localName
+        bcp47
       }
     }
   }
 `
 
-export default () => {
+export const getLocalSettings = () => {
   return {
     query: LOCALE_QUERY,
     update ({ allLegalLocales, allTimezones, allLanguages }) {

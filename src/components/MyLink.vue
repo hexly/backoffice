@@ -82,7 +82,7 @@ export default {
         variables: {
           input: {
             tenantId,
-            slug: this.tempSlug
+            slug: this.tempSlug || this.generateSlug
           }
         }
       })
@@ -101,7 +101,7 @@ export default {
     generateSlug: {
       get() {
         const slug = this.member.displayName.toLowerCase()
-        return this.tempSlug || `${slug.replace(' ', '-')}-${this.member.mrn}`
+        return this.tempSlug || `${slug.replace(' ', '_')}_${this.member.mrn}`
       },
       set(val) {
         this.tempSlug = val

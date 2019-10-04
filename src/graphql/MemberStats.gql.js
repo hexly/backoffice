@@ -16,6 +16,7 @@ export const MEMBER_STATS_BY_DEPTH = gql`
       claimedOn
       slugs
       counts
+      emails
     }
   }
 `
