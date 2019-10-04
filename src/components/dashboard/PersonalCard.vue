@@ -10,7 +10,8 @@
       <div v-else class="profile-color" :style="`background-color: ${$tenantInfo.profileColor}`"></div>
       <v-card-text class="text-xs-center">
         <v-avatar size="124" class="avatar" color="white">
-          <v-img :src="user.principal.member.profileUrl || $tenantInfo.placeholder" class="mb-4" ></v-img>
+          <v-img v-if="user.principal.member.profileUrl || $tenantInfo.placeholder" :src="user.principal.member.profileUrl || $tenantInfo.placeholder" class="mb-4" ></v-img>
+          <v-gravatar v-else default-img="mp" :email="user.principal.member.contacts[0].emails[0].email" class="mb-4"/>
         </v-avatar>
         <h3 class="headline mb-2"> {{ user.principal.member.name }}</h3>
         <div class="primary--text mb-2">{{ user.principal.member.email }}</div>
@@ -21,7 +22,7 @@
       </v-card-text>
       <v-divider class="mb-3"></v-divider>
         <div class="text-xs-center pa-2">
-          <h3>Website</h3>
+          <h3>Your Personal Link</h3>
           <MyLink />
         </div>
         <v-divider class="mb-3"></v-divider>
@@ -103,8 +104,27 @@ export default {
   margin-bottom: -62px;
   padding-top: 19px;
 }
-.personal-card .avatar .v-responsive {
+.personal-card .avatar .v-responsive,
+.personal-card .avatar img {
   box-shadow: 0px -10px 30px -4px black;
   border: 3px solid white;
+}
+
+.personal-card .avatar::after{
+  content: 'camera_alt';
+  font-family: 'Material Icons';
+  font-size: 78px;
+  display: none;
+  position: absolute;
+  top: 0px;
+  right: 2px;
+  bottom: 2px;
+  left: 2px;
+  background-color: rgba(0,0,0,0.3);
+  border-radius: 100%;
+  cursor: pointer;
+}
+.personal-card .avatar:hover::after{
+  display: block;
 }
 </style>

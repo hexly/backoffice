@@ -142,11 +142,6 @@ export default {
         accessMode: 'ALL',
         memberId: this.user.principal.memberId
       })
-      if (data.getMemberAttributes.length < 2) {
-        this.$emit('hasLegal', { type: 'legal', isSet: false })
-      } else {
-        this.$emit('hasLegal', { type: 'legal', isSet: true })
-      }
       data.getMemberAttributes.forEach(_ => {
         if (_.key === 'affiliate-agreement') {
           this.value.agreement.affiliate = !!_.value.metadata.affiliate
@@ -159,6 +154,11 @@ export default {
           this.redacted = true
         }
       })
+      if (this.$tenantInfo.features.legal === true && data.getMemberAttributes.length < 2) {
+        this.$emit('hasLegal', { type: 'legal', isSet: false })
+      } else {
+        this.$emit('hasLegal', { type: 'legal', isSet: true })
+      }
     },
     accept (value) {
       if (!this.agreed) {

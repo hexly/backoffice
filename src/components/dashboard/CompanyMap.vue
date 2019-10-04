@@ -19,7 +19,7 @@
         :map-options="{
           style: mapStyle,
           center: [-61.5, 42],
-          zoom: 2.7,
+          zoom: zoom,
         }"
         @map-load="addMarkers"
       />
@@ -42,6 +42,7 @@ export default {
   },
   data() {
     return {
+      zoom: Math.min(window.innerWidth / 320, 2.5),
       coordinates: [],
       accessToken: process.env.VUE_APP_MAPBOX_ACCESS_TOKEN,
       mapStyle: process.env.VUE_APP_MAPBOX_MAP_STYLE

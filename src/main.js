@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Vuetify from 'vuetify'
 import VueClipboard from 'vue-clipboard2'
+import Gravatar from 'vue-gravatar'
 import 'vuetify/dist/vuetify.min.css'
 
 import moment from 'moment'
@@ -24,6 +25,7 @@ try {
 
 VueClipboard.config.autoSetContainer = true // add this line
 Vue.use(VueClipboard)
+Vue.component('v-gravatar', Gravatar)
 
 // Vue.use(Vuetify)
 Vue.use(Vuetify, {

@@ -191,7 +191,7 @@ export default {
   },
   async mounted () {
     this.setLoading(true)
-    if (this.$tenantInfo.features.legal) {
+    if (this.$tenantInfo.features.legal === true) {
       const { data } = await this.getAttributes({
         key: ['affiliate-agreement', 'entity-details'],
         accessMode: 'ALL',
