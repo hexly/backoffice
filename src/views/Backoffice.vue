@@ -2,7 +2,7 @@
   <div>
     <v-navigation-drawer fixed v-model="drawer" app>
       <div v-if="$tenantInfo.logoPath" class="text-xs-center">
-        <img :src="$tenantInfo.logoPath" class="logo">
+        <img :src="$tenantInfo.logoPath" class="logo" />
       </div>
       <v-divider></v-divider>
       <v-list dense>
@@ -67,9 +67,34 @@
           </v-list-tile-content>
         </v-list-tile>
       </v-list>
+      <v-divider v-if="hasAdminMenu"></v-divider>
+      <v-list v-if="hasAdminMenu">
+        <v-list-tile target="_blank" href="https://admin.hexly.cloud">
+          <v-list-tile-action>
+            <v-icon>cloud_circle</v-icon>
+          </v-list-tile-action>
+          <v-list-tile-content>
+            <v-list-tile-title>Hexly Admin</v-list-tile-title>
+          </v-list-tile-content>
+        </v-list-tile>
+        <v-list-tile to="/zendesk">
+          <v-list-tile-action>
+            <v-icon>supervised_user_circle</v-icon>
+          </v-list-tile-action>
+          <v-list-tile-content>
+            <v-list-tile-title>Zendesk Admin</v-list-tile-title>
+          </v-list-tile-content>
+        </v-list-tile>
+      </v-list>
+
       <div column class="text-xs-center py-4 footer">
         <div>
-          <a v-for="social in $tenantInfo.social" :key="social.key" :href="social.url" target="_blank">
+          <a
+            v-for="social in $tenantInfo.social"
+            :key="social.key"
+            :href="social.url"
+            target="_blank"
+          >
             <img :src="`/img/social/${social.key}.svg`" />
           </a>
         </div>
@@ -83,14 +108,15 @@
       <v-toolbar-items>
         <v-menu offset-y>
           <v-btn flat slot="activator">
-            <span data-cy="Display Name" v-if="$vuetify.breakpoint.mdAndUp">
-              {{user.isImpersonating ? impersonationPrefix + user.principal.member.displayName : user.principal.member.displayName}}
-            </span>
+            <span
+              data-cy="Display Name"
+              v-if="$vuetify.breakpoint.mdAndUp"
+            >{{user.isImpersonating ? impersonationPrefix + user.principal.member.displayName : user.principal.member.displayName}}</span>
             <img class="avatar" :src="getAvatar" />
           </v-btn>
           <v-list>
             <v-list-tile @click="logout" v-if="user.isImpersonating">
-              <v-list-tile-title >End Impersonation</v-list-tile-title>
+              <v-list-tile-title>End Impersonation</v-list-tile-title>
             </v-list-tile>
             <v-list-tile data-cy="Logout" @click="logout" v-if="!user.isImpersonating">
               <v-list-tile-title>Log Out</v-list-tile-title>
@@ -98,18 +124,20 @@
           </v-list>
         </v-menu>
       </v-toolbar-items>
-      <v-progress-linear class="loading-bar" style="margin: 0;" v-if="loading" :indeterminate="true" color="secondary"></v-progress-linear>
+      <v-progress-linear
+        class="loading-bar"
+        style="margin: 0;"
+        v-if="loading"
+        :indeterminate="true"
+        color="secondary"
+      ></v-progress-linear>
     </v-toolbar>
     <v-content>
       <div class="main">
-        <router-view/>
+        <router-view />
       </div>
     </v-content>
-    <v-dialog
-      v-model="showGateDialog"
-      max-width="290"
-      persistent
-    >
+    <v-dialog v-model="showGateDialog" max-width="290" persistent>
       <v-card>
         <v-card-title class="headline">We need more information!</v-card-title>
         <v-card-text>
@@ -118,13 +146,7 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn
-            color="primary"
-            flat="flat"
-            @click="$router.push('/profile')"
-          >
-            Go To Profile Page
-          </v-btn>
+          <v-btn color="primary" flat="flat" @click="$router.push('/profile')">Go To Profile Page</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -142,7 +164,7 @@ import { get } from 'lodash'
 const impersonationPrefix = 'Impersonating '
 
 export default {
-  data() {
+  data () {
     return {
       impersonationPrefix,
       drawer: null,
@@ -160,10 +182,23 @@ export default {
       integrations: state => state.integrations
     }),
     ...mapGetters(['slug']),
-    usersStoreUrl() {
+    usersStoreUrl () {
       return this.$tenantInfo.storeUrl.replace('{slug}', this.slug)
     },
-    showGateDialog() {
+    hasAdminMenu () {
+      return this.hasAdmin || this.hasZendeskAdmin
+    },
+    hasAdmin () {
+      const perms = get(this, 'user.principal.permissions', [])
+      console.log({ perms })
+      return perms.findIndex(e => e === 10 || e === '10') >= 0
+    },
+    hasZendeskAdmin () {
+      const tags = get(this, 'user.principal.member.tags', [])
+      console.log({ tags })
+      return tags.indexOf('zendesk:agent') >= 0
+    },
+    showGateDialog () {
       return this.showGate && this.$route.path.indexOf('profile') === -1
     },
     getAvatar () {
@@ -180,7 +215,7 @@ export default {
     }
   },
   methods: {
-    logout() {
+    logout () {
       this.$store.dispatch(Actions.LOGOUT)
       this.$router.go('/login')
     },
@@ -207,7 +242,7 @@ export default {
   apollo: {
     principal: {
       query: GET_PRINCIPAL,
-      update({ getPrincipal }) {
+      update ({ getPrincipal }) {
         if (getPrincipal) {
           this.setPrincipal(getPrincipal)
           const address = get(getPrincipal, 'member.contacts[0].addresses[0]')
@@ -226,22 +261,22 @@ export default {
 </script>
 
 <style scoped>
-.loading-bar{
+.loading-bar {
   height: 7px;
   margin: 0px;
   position: absolute;
   bottom: -7px;
   left: 0;
 }
-.avatar{
+.avatar {
   max-width: 50px;
   max-height: 50px;
   border-radius: 100px;
   margin-left: 12px;
 }
 
-@media only screen and (max-width: 959px){
-  .avatar{
+@media only screen and (max-width: 959px) {
+  .avatar {
     width: 40px;
     margin-left: 0;
   }
@@ -261,19 +296,19 @@ export default {
   display: block;
 }
 
-.footer{
+.footer {
   position: absolute;
   bottom: 0;
   width: 100%;
-  color: rgba(0,0,0,.54);
+  color: rgba(0, 0, 0, 0.54);
 }
 
-.footer img{
+.footer img {
   width: 25px;
   height: 25px;
 }
 
 .title {
- text-transform: capitalize;
+  text-transform: capitalize;
 }
 </style>

@@ -28,6 +28,9 @@
             </v-card-text>
             <v-card-text v-else>
               <p>It doesn't look like you have any support accounts. Please contact support if you feel there's an error.</p>
+              <p>
+                <a href="javascript:history.back()">Back to where you came from</a>
+              </p>
             </v-card-text>
           </v-card>
         </v-flex>
@@ -41,13 +44,13 @@
 import * as gql from './zendesk.gql'
 
 export default {
-  data() {
+  data () {
     return {
       supportUsers: []
     }
   },
   methods: {
-    async selectUser(user) {
+    async selectUser (user) {
       const { agentId, memberId } = user
       this.$apollo.mutate({
         mutation: gql.zendeskAuth,
@@ -61,6 +64,7 @@ export default {
           const { supportUserCommand: { metadata } } = data
           if (metadata && metadata.token) {
             const url = `${process.env.VUE_APP_ZENDESK_BASE_URL}/access/jwt?jwt=${metadata.token}`
+            console.log('Redirecting to zendesk', { url })
             window.open(url, '_blank')
           } else {
             console.warn('Failed to get response from GraphQL')
@@ -72,14 +76,14 @@ export default {
   apollo: {
     supportUsers: {
       query: gql.zendeskUsers,
-      variables() {
+      variables () {
         return {
           input: {
             memberIds: [this.$store.state.user.principal.memberId]
           }
         }
       },
-      update({ supportUsers = [] }) {
+      update ({ supportUsers = [] }) {
         return supportUsers.results || []
       }
     }
