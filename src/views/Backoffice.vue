@@ -190,12 +190,10 @@ export default {
     },
     hasAdmin () {
       const perms = get(this, 'user.principal.permissions', [])
-      console.log({ perms })
       return perms.findIndex(e => e === 10 || e === '10') >= 0
     },
     hasZendeskAdmin () {
       const tags = get(this, 'user.principal.member.tags', [])
-      console.log({ tags })
       return tags.indexOf('zendesk:agent') >= 0
     },
     showGateDialog () {

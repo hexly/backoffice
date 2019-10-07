@@ -1,12 +1,12 @@
 <template>
   <v-container>
-    <v-btn @click="canShow = true" :disabled="canUpload" class="primary text-capitalize" large>
+    <v-btn v-if="label" @click="canShow = true" :disabled="canUpload" class="primary text-capitalize" large>
       {{ label }}
     </v-btn>
     <v-dialog
       max-width="600px"
       :fullscreen="$vuetify.breakpoint.xs"
-      v-model="canShow"
+      v-model="showDialog"
     >
       <v-card>
         <v-card-title class="application-title">
@@ -91,8 +91,15 @@ export default {
   },
   props: {
     canUpload: Boolean,
-    label: { type: String, default: 'Upload Media' },
-    isProfilePic: { type: Boolean, default: false }
+    shouldShow: {
+      type: Boolean,
+      default: false
+    },
+    label: String,
+    isProfilePic: {
+      type: Boolean,
+      default: false
+    }
   },
   data() {
     return {
@@ -113,6 +120,17 @@ export default {
     ...mapGetters({ assetMeta: ContentGetters.assetMeta }),
     acceptedTypes() {
       return this.isProfilePic ? this.acceptedImages : this.acceptedImages.concat(this.acceptedVideo)
+    },
+    showDialog: {
+      get() {
+        return this.canShow || this.shouldShow
+      },
+      set(newVal) {
+        if (newVal === false) {
+          this.$emit('dialogClosed')
+        }
+        this.canShow = newVal
+      }
     }
   },
   methods: {
@@ -304,6 +322,7 @@ export default {
       this.$refs.pond.removeFile()
       this.thumbnail = null
       this.$emit('assetsUploaded')
+      this.$emit('dialogClosed')
       this.uploadDialog = false
       this.canShow = false
     }

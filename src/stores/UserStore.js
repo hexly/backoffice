@@ -1,10 +1,12 @@
 import { apolloClient } from '@/vue-apollo'
 import LOGIN from '@/graphql/Login.gql'
+import UPDATE_PROFILE from '@/graphql/MemberPartialUpdate.gql'
 import _ from 'lodash'
 
 export const UserActions = {
   LOGIN: 'login',
-  LOGIN_SUCCESS: 'loginSuccess'
+  LOGIN_SUCCESS: 'loginSuccess',
+  SAVE_PROFILE: 'saveProfile'
 }
 
 export const UserMutations = {
@@ -86,6 +88,20 @@ export const UserStore = {
         commit(UserMutations.SET_PRINCIPAL, principal)
       }
       return { success, token, principal, reason, issued }
+    },
+    async [UserActions.SAVE_PROFILE]({ commit }, { memberId, profileUrl }) {
+      await apolloClient.mutate({
+        mutation: UPDATE_PROFILE,
+        variables: {
+          input: {
+            id: memberId,
+            profileUrl: profileUrl
+          }
+        }
+      })
+
+      commit(UserMutations.SET_PROFILE, profileUrl)
+      return profileUrl
     }
   },
   getters: {
