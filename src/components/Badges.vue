@@ -1,6 +1,6 @@
 <template>
   <div class="text-xs-center pb-3 badges">
-    <h3>Badges</h3>
+    <h3>Awards</h3>
     <v-flex tag="strong" xs5 text-xs-right mr-3 mb-2>
       <v-chip color="primary" text-color="white">
         <v-avatar class="primary darken-4">
