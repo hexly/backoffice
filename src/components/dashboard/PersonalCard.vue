@@ -9,7 +9,7 @@
         />
       <div v-else class="profile-color" :style="`background-color: ${$tenantInfo.profileColor}`"></div>
       <v-card-text class="text-xs-center">
-        <v-avatar size="124" class="avatar" color="white">
+        <v-avatar size="124" class="avatar" color="white" @click="showProfilePicDialog = true">
           <v-img v-if="user.principal.member.profileUrl || $tenantInfo.placeholder" :src="user.principal.member.profileUrl || $tenantInfo.placeholder" class="mb-4" ></v-img>
           <v-gravatar v-else default-img="mp" :email="user.principal.member.contacts[0].emails[0].email" class="mb-4"/>
         </v-avatar>
@@ -22,20 +22,23 @@
       </v-card-text>
       <v-divider class="mb-3"></v-divider>
         <div class="text-xs-center pa-2">
-          <h3>Your Personal Link</h3>
+          <h3 class="mb-4">Your Personal Link</h3>
           <MyLink />
         </div>
         <v-divider class="mb-3"></v-divider>
         <slot name="footer"></slot>
     </v-card>
+    <FileUpload @dialogClosed="uploadDialogClosed" :shouldShow="showProfilePicDialog" @profile="makeProfilePic" :isProfilePic="true" />
   </div>
 </template>
 
 <script>
 import DashCard from '@/components/DashboardCard.vue'
 import MyLink from '@/components/MyLink.vue'
-import { mapMutations, mapState, mapGetters } from 'vuex'
-import { UserMutations } from '@/stores/UserStore'
+import FileUpload from '@/components/FileUpload.vue'
+import { getAsset } from '@/utils/AssetService'
+import { mapMutations, mapState, mapGetters, mapActions } from 'vuex'
+import { UserMutations, UserActions } from '@/stores/UserStore'
 import { Mutations } from '@/store'
 
 // const tenantId = ~~process.env.VUE_APP_TENANT_ID
@@ -44,7 +47,8 @@ export default {
   name: 'PersonalCard',
   components: {
     MyLink,
-    DashCard
+    DashCard,
+    FileUpload
   },
   props: {
     memberName: String,
@@ -56,6 +60,7 @@ export default {
   },
   data() {
     return {
+      showProfilePicDialog: false
     }
   },
   async mounted() {},
@@ -66,12 +71,23 @@ export default {
   },
   apollo: {},
   methods: {
+    uploadDialogClosed(val) {
+      this.showProfilePicDialog = val
+    },
     formatTimeSince(time) {
       if (time === 'a') {
         return 1
       }
       return time
     },
+    async makeProfilePic(asset) {
+      const profileUrl = getAsset(asset.id)
+      await this.saveProfile({ memberId: this.user.principal.member.id, profileUrl })
+      this.showProfilePicDialog = false
+    },
+    ...mapActions([
+      UserActions.SAVE_PROFILE
+    ]),
     ...mapMutations([
       UserMutations.MEMBER_QUERY,
       Mutations.SET_GATE,
@@ -120,7 +136,7 @@ export default {
   right: 2px;
   bottom: 2px;
   left: 2px;
-  background-color: rgba(0,0,0,0.3);
+  background-color: rgba(255,255,255,0.5);
   border-radius: 100%;
   cursor: pointer;
 }
