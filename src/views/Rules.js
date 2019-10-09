@@ -1,4 +1,13 @@
+const moment = require('moment')
+let birthdayFormat = 'MM/DD/YYYY'
+if (Intl.DateTimeFormat().resolvedOptions()) {
+  const locale = Intl.DateTimeFormat().resolvedOptions().locale
+  if (locale.toLowerCase().indexOf('gb') > -1) {
+    birthdayFormat = 'DD/MM/YYYY'
+  }
+}
 export default {
+  birthdayFormat,
   requiredRule: [
     v => !!v || 'This field is required'
   ],
@@ -20,7 +29,11 @@ export default {
       )
     }
   ],
+  passwordRule: [
+    v => !!v || 'Field is required',
+    v => (v && v.length > 8) || 'Password must be more than 8 characters'
+  ],
   birthdateRule: [
-    v => !!v || 'Field is required'
+    v => moment(v, birthdayFormat).isValid() || `Birthday Must Be in ${birthdayFormat} Format`
   ]
 }

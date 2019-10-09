@@ -19,7 +19,10 @@
         :value="true"
         type="warning"
       >
-        Hey There! You do not have your link set up yet. We've generated one for you, but feel free to change it and make it your own.
+        Hey There! You do not have your link set up yet.
+        We've generated one for you, but feel free to change it and make it your own.
+        <br />
+        Note: You will not be able to change it once it is set.
       </v-alert>
       <v-text-field
         :loading="savingSlug"
