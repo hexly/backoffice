@@ -77,7 +77,7 @@
             <v-list-tile-title>Hexly Admin</v-list-tile-title>
           </v-list-tile-content>
         </v-list-tile>
-        <v-list-tile to="/zendesk">
+        <v-list-tile v-if="hasZendeskAdmin" to="/zendesk">
           <v-list-tile-action>
             <v-icon>supervised_user_circle</v-icon>
           </v-list-tile-action>
@@ -183,7 +183,7 @@ export default {
     }),
     ...mapGetters(['slug']),
     usersStoreUrl () {
-      return this.$tenantInfo.storeUrl.replace('{slug}', this.slug)
+      return this.slug ? this.$tenantInfo.storeUrl.replace('{slug}', this.slug) : this.$tenantInfo.storeUrl
     },
     hasAdminMenu () {
       return this.hasAdmin || this.hasZendeskAdmin

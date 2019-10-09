@@ -18,25 +18,12 @@
                 <p class="headline">Welcome {{editMember.name}}!</p>
                 <p>Please fill out the following information to finish setting up your account.</p>
                 <v-form ref="claim" @submit.prevent="onSubmit" lazy-validation>
-                  <!-- <v-text-field
-                    label="Name"
-                    v-model="editMember.name"
-                    :rules="requiredRule"
-                    required
-                  ></v-text-field>
                   <v-text-field
-                    label="E-mail"
-                    v-model="editMember.contactEmail"
-                    :rules="requiredRule"
-                    required
+                    v-model="editMember.birthday"
+                    label="Date of Birth"
+                    :placeholder="this.birthdayFormat"
+                    :rules="birthdateRule"
                   ></v-text-field>
-                  <v-text-field
-                    label="Display name"
-                    v-model="editMember.displayName"
-                    :rules="requiredRule"
-                    required
-                  ></v-text-field> -->
-                  <!-- <v-text-field label="username" v-model="editMember.contactEmail" disabled></v-text-field> -->
                   <v-text-field
                     name="password"
                     label="Verify Password"
@@ -134,6 +121,7 @@ import { Actions } from '@/Members/Store'
 import { LOCALE_QUERY } from '@/graphql/GetLocalSettings'
 import { encrypt } from '@/utils/EncryptionService'
 import AgreementCheckbox from '@/components/Agreement'
+import Rules from '@/views/Rules.js'
 
 export default {
   components: {
@@ -144,11 +132,10 @@ export default {
       loading: true,
       visible: false,
       error: null,
-      requiredRule: [v => !!v || 'Field is required'],
-      passwordRule: [
-        v => !!v || 'Field is required',
-        v => (v && v.length > 8) || 'Password must be more than 8 characters'
-      ],
+      requiredRule: Rules.requiredRule,
+      passwordRule: Rules.passwordRule,
+      birthdateRule: Rules.birthdateRule,
+      birthdayFormat: Rules.birthdayFormat,
       affiliate: null,
       policies: null,
       agreement: {
@@ -258,6 +245,7 @@ export default {
             }
           })
           const { token } = this.$route.params
+
           const { data: { consumeOneTimeToken } } = await this.createAccount({
             emailId: this.editMember.emailId,
             contactId: this.editMember.contactId,
@@ -270,6 +258,7 @@ export default {
             password: this.editMember.password,
             timezoneId: this.editMember.timezoneId,
             username: this.editMember.username,
+            birthday: this.$moment(this.editMember.birthday, this.birthdayFormat).format('YYYY-MM-DD'),
             simpleClaim: false,
             token
           })
