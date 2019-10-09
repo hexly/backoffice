@@ -17,7 +17,7 @@
       rel="stylesheet"
     />
     <%= process.env.VUE_APP_ZENDESK_WIDGET_URL ? ` <script id="ze-snippet" src="${process.env.VUE_APP_ZENDESK_WIDGET_URL}"></script> ` : '' %>
-    <title>Backoffice</title>
+    <%= process.env.VUE_APP_TITLE_NAME ? ` <title>${process.env.VUE_APP_TITLE_NAME}</title> ` : '<title>Backoffice</title>' %>
   </head>
 
   <body>
