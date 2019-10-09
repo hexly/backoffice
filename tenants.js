@@ -14,6 +14,7 @@ const tenantOptions = {
     accentColor: '#f2d0dd',
     storeUrl: 'http://www.veridian-dynamics.org/',
     corporateUrl: 'http://www.veridian-dynamics.org/',
+    encryptKey: 'veridian-dynamics',
     social: [
       {
         key: 'facebook',
@@ -44,6 +45,7 @@ const tenantOptions = {
     accentColor: '#F7E8AB',
     storeUrl: 'https://www.mygreenhorizen.com/store/{slug}',
     corporateUrl: 'https://www.mygreenhorizen.com/',
+    encryptKey: 'green-horizen',
     social: [
       {
         key: 'facebook',
@@ -79,6 +81,7 @@ const tenantOptions = {
     accentColor: '#3c8c25',
     storeUrl: 'https://go-mana.com/',
     corporateUrl: 'https://go-mana.com/',
+    encryptKey: 'go-mana',
     social: [
       {
         key: 'facebook',
@@ -103,6 +106,7 @@ const tenantOptions = {
     accentColor: '#fdaa58',
     storeUrl: 'https://www.kyngdomorganizer.com/store/{slug}',
     corporateUrl: 'https://www.kyngdomorganizer.com/',
+    encryptKey: 'kyngdom-organizer',
     social: [
       {
         key: 'facebook',
@@ -139,6 +143,7 @@ const tenantOptions = {
     accentColor: '#EB8381',
     storeUrl: 'https://www.luccii.com/store/{slug}',
     corporateUrl: 'https://www.luccii.com/',
+    encryptKey: 'luccii',
     social: [
       {
         key: 'facebook',
