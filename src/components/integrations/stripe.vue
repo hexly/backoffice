@@ -1,9 +1,11 @@
 <template>
-  <div></div>
+   <h2>
+      Stripe Integration
+    </h2>
 </template>
 
 <script>
 export default {
-  name: 'StripeIntegrations'
+  name: 'StripeIntegration'
 }
 </script>

@@ -85,7 +85,7 @@ export default new Vuex.Store({
     showGate: false,
     loading: false,
     tenantId: VUE_APP_TENANT_ID,
-    integrations: ['xomly', 'paychex']
+    integrations: ['xomly', 'paychex', 'stripe_connect']
   },
   actions: {
     [Actions.LOGOUT]: () => {
