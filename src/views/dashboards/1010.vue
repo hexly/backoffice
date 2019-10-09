@@ -4,17 +4,17 @@
       <v-flex xs12 class="pa-2">
         <v-card>
           <v-card-title>
-            <p class="headline">Welcome to your Luccii Influencer Hub!</p>
+            <p class="headline">Welcome to your Early Access Beauty Hub!</p>
           </v-card-title>
           <v-card-text>
             <p class="subheading">
-              We are currently operating incognito and are so excited you are with us.
-              Please join our facebook group here: <a href="">Luccii Facebook Group</a>
+              You are one of the first to join us and we are so excited you are with us.
+              Please join our facebook group here: <a :href="$tenantInfo.social[0].url">Early Access Beauty Facebook Group</a>
             </p>
             <p class="subheading">
-            Questions? Please email <a href="mailto:support@luccii.com">support@luccii.com</a>
+            Questions? Please email <a href="mailto:support@earlyaccessbeauty.com">support@earlyaccessbeauty.com</a>
             </p>
-            - The Luccii Team
+            - The Early Access Beauty Team
             <br/>
           </v-card-text>
         </v-card>
