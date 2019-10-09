@@ -132,7 +132,7 @@ const tenantOptions = {
     }
   },
   1010: {
-    name: 'Luccii',
+    name: 'Early Access Beauty',
     // logoPath: '/img/1009/logo.jpg',
     // logoLoginPath: '/img/1009/logo.jpg',
     // placeholder: '/img/1009/logo.jpg',
@@ -141,13 +141,13 @@ const tenantOptions = {
     primaryColor: '#3e5b06',
     secondaryColor: '#F2AE45',
     accentColor: '#EB8381',
-    storeUrl: 'https://www.luccii.com/store/{slug}',
-    corporateUrl: 'https://www.luccii.com/',
+    storeUrl: 'https://www.earlyaccessbeauty.com/store/{slug}',
+    corporateUrl: 'https://www.earlyaccessbeauty.com/',
     encryptKey: 'luccii',
     social: [
       {
         key: 'facebook',
-        url: 'https://www.facebook.com/luccii/'
+        url: 'https://www.facebook.com/groups/543677573058327/'
       }
     ],
     agreements: [
