@@ -135,7 +135,7 @@ const tenantOptions = {
     name: 'Early Access Beauty',
     // logoPath: '/img/1009/logo.jpg',
     // logoLoginPath: '/img/1009/logo.jpg',
-    // placeholder: '/img/1009/logo.jpg',
+    placeholder: '/img/1010/placeholder.png',
     profileColor: '#fee541',
     baseColor: '#14244C',
     primaryColor: '#3e5b06',
