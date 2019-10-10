@@ -85,8 +85,8 @@
 </template>
 
 <script>
-import PersonalForm from '@/profile/Personal.vue'
-import LegalForm from '@/profile/Legal.vue'
+import PersonalForm from '@/components/profile/Personal.vue'
+import LegalForm from '@/components/profile/Legal.vue'
 import AddressForm from '@/components/AddressForm.vue'
 import GET_MEMBERS from '@/graphql/GetMembers.gql'
 import UPDATE_PROFILE from '@/graphql/MemberPartialUpdate.gql'

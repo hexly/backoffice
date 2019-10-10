@@ -8,6 +8,10 @@ export default {
       (v && /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,24}))$/.test(v)) ||
       'Please enter a valid email address'
   ],
+  ssnLastFourRule: [
+    v => !!v || 'This field is required',
+    v => (v && v.length == 4) || 'Last 4 of digits of SSN required'
+  ],
   slugRule: [
     v => !!v || 'Field is required and cannot be changed once submitted',
     v =>
