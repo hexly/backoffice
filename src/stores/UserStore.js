@@ -1,12 +1,14 @@
 import { apolloClient } from '@/vue-apollo'
 import LOGIN from '@/graphql/Login.gql'
 import UPDATE_PROFILE from '@/graphql/MemberPartialUpdate.gql'
+import { ADJUST_TAGS } from '@/graphql/Member.gql'
 import _ from 'lodash'
 
 export const UserActions = {
   LOGIN: 'login',
   LOGIN_SUCCESS: 'loginSuccess',
-  SAVE_PROFILE: 'saveProfile'
+  SAVE_PROFILE: 'saveProfile',
+  ADJUST_TAGS: 'adjustTags'
 }
 
 export const UserMutations = {
@@ -17,7 +19,8 @@ export const UserMutations = {
   TOGGLE_IMPERSONATION: 'toggleImpersonation',
   SET_PROFILE: 'setProfilePic',
   ADD_INTEGRATION: 'addTenantIntegration',
-  SET_SLUG: 'user:setSlug'
+  SET_SLUG: 'user:setSlug',
+  SET_TAGS: 'user:setTags'
 }
 
 const parseLegacyPrincipal = principal => {
@@ -68,6 +71,15 @@ export const UserStore = {
           slugs: [{ slug }]
         }
       }
+    },
+    [UserMutations.SET_TAGS]: (state, tags) => {
+      state.principal = {
+        ...state.principal,
+        member: {
+          ...state.principal.member,
+          tags
+        }
+      }
     }
   },
   actions: {
@@ -102,6 +114,18 @@ export const UserStore = {
 
       commit(UserMutations.SET_PROFILE, profileUrl)
       return profileUrl
+    },
+    async [UserActions.ADJUST_TAGS]({ commit }, input) {
+      const { data } = await apolloClient.mutate({
+        mutation: ADJUST_TAGS,
+        variables: {
+          input
+        }
+      })
+      console.log({ data })
+
+      commit(UserMutations.SET_TAGS, data.adjustTags.tags)
+      return data.adjustTags.tags
     }
   },
   getters: {

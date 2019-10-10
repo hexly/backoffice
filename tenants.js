@@ -153,15 +153,16 @@ const tenantOptions = {
     agreements: [
       {
         key: 'affiliate',
-        name: 'Independent Contractor Agreement',
-        url: '/docs/1010/AffiliateAgreement.pdf'
+        name: 'Independent Consultant Agreement',
+        url: '/docs/1010/Independent-Consultant-Agreement.pdf'
       },
       {
         key: 'policies',
         name: 'Policies and Procedures',
-        url: '/docs/1010/PoliciesProcedures.pdf'
+        url: '/docs/1010/Policies-and-Procedures.pdf'
       }
     ],
+    privacyPolicy: '/docs/1010/Privacy-Policy.pdf',
     features: {
       sales: false,
       team: false,

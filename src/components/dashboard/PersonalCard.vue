@@ -24,6 +24,7 @@
         <div class="text-xs-center pa-2">
           <h3 class="mb-4">Your Personal Link</h3>
           <MyLink />
+          <PrivateProfile />
         </div>
         <v-divider class="mb-3"></v-divider>
         <slot name="footer"></slot>
@@ -35,6 +36,7 @@
 <script>
 import DashCard from '@/components/DashboardCard.vue'
 import MyLink from '@/components/MyLink.vue'
+import PrivateProfile from '@/components/PrivateProfile.vue'
 import FileUpload from '@/components/FileUpload.vue'
 import { getAsset } from '@/utils/AssetService'
 import { mapMutations, mapState, mapGetters, mapActions } from 'vuex'
@@ -48,7 +50,8 @@ export default {
   components: {
     MyLink,
     DashCard,
-    FileUpload
+    FileUpload,
+    PrivateProfile
   },
   props: {
     memberName: String,
