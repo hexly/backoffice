@@ -98,7 +98,12 @@
             <img :src="`/img/social/${social.key}.svg`" />
           </a>
         </div>
-        <h5 class="py-4">Copyright 2019</h5>
+        <h5 class="py-4">
+          <span v-if="$tenantInfo.privacyPolicy">
+            <a target="_blank" :href="$tenantInfo.privacyPolicy">Privacy Policy</a> ·
+          </span>
+          <span>Copyright 2019</span>
+        </h5>
       </div>
     </v-navigation-drawer>
     <v-toolbar :color="$tenantInfo.baseColor" dark fixed app>
@@ -183,7 +188,7 @@ export default {
     }),
     ...mapGetters(['slug']),
     usersStoreUrl () {
-      return this.slug ? this.$tenantInfo.storeUrl.replace('{slug}', this.slug) : this.$tenantInfo.storeUrl
+      return this.slug ? this.$tenantInfo.storeUrl.replace('{slug}', this.slug) : this.$tenantInfo.corporateUrl
     },
     hasAdminMenu () {
       return this.hasAdmin || this.hasZendeskAdmin

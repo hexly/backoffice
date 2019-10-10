@@ -175,4 +175,8 @@ export default {
   height: 444px;
   overflow-y: scroll;
 }
+
+.directory .v-treeview-node__label{
+  cursor: pointer;
+}
 </style>
