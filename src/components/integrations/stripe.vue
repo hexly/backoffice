@@ -18,17 +18,17 @@
     <div v-if="!loading && setup">
         <h3>Account Setup</h3>
         <p>Please enter the following information</p>
-        <v-form @submit.prevent="setupStripe" width="500">
+        <v-form @submit.prevent="setupStripe" ref="informationForm" width="500">
           <v-text-field
             label="First Name"
             v-model="firstName"
             type="text"
-            :rules="rules.required"/>
+            :rules="rules.requiredRule"/>
           <v-text-field
             label="Last Name"
             v-model="lastName"
             type="text"
-            :rules="rules.required"/>
+            :rules="rules.requiredRule"/>
           <v-text-field
             label="Date of Birth"
             v-model="birthdate"
@@ -44,22 +44,26 @@
             label="Bank Account Number"
             v-model="accountNumber"
             type="text"
-            :rules="rules.required"/>
+            :rules="rules.requiredRule"/>
           <v-text-field
             label="Routing Number"
             v-model="routingNumber"
             type="text"
-            :rules="rules.required"/>
+            :rules="rules.requiredRule"/>
+          <v-checkbox
+            v-model="stripeToS"
+            :rules="rules.requiredRule">
+            <div slot="label">
+              I agree to the Stripe <a href='https://stripe.com/connect-account/legal' target="_blank">Terms of Service</a>
+            </div>
+          </v-checkbox>
           <v-btn type="submit" color="primary">
             Create Account
           </v-btn>
         </v-form>
       </div>
     <div v-if="integrationDetails">
-      <p>Your account has been created</p>
-      <v-btn target="_blank" href="" color="primary">
-        Send to Zendesk?
-      </v-btn>
+      <p>Your stripe account has been created!</p>
     </div>
   </div>
 </template>
@@ -71,6 +75,10 @@ import { mapState } from 'vuex'
 
 export default {
   name: 'StripeIntegration',
+  props: {
+    details: Object,
+    error: String
+  },
   data() {
     return {
       loading: false,
@@ -78,12 +86,13 @@ export default {
       setup: false,
       password: null,
       rules: Rules,
-      firstName: "",
-      lastName: "",
-      birthdate: "",
-      accountNumber: "",
-      routingNumber: "",
-      ssnLastFour: ""
+      firstName: '',
+      lastName: '',
+      birthdate: '',
+      accountNumber: '',
+      routingNumber: '',
+      ssnLastFour: '',
+      stripeToS: false
     }
   },
   mounted() {
@@ -96,19 +105,55 @@ export default {
       this.setup = true
     },
     setupStripe() {
-      this.$emit('create', {
-        command: 'stripe_connect',
-        tenantIntegrationId: this.details.id,
-        data: {
-          password: this.password,
-          email: this.member.contacts[0].emails[0].email,
-          firstName: this.member.firstName,
-          lastName: this.member.lastName,
-          birthdate: this.member.birthdate
+      if (this.$refs.informationForm.validate()){
+        const stripe = Stripe(this.tenant.integrations.find(function(i){
+          return i.key ==='stripe_connect'
+        }).metadata.publishableKey)
+
+        const bdate = this.$moment(this.birthdate, 'MM/DD/YYYY')
+        console.log(bdate)
+
+        try{
+          const accountResult = stripe.createToken('account', {
+            business_type: 'individual',
+            individual: {
+              first_name: this.firstName,
+              last_name: this.lastName,
+              dob: {
+                day: bdate.date(),
+                month: bdate.month(),
+                year: bdate.year()
+              },
+              ssn_last_4: this.ssnLastFour
+            },
+            tos_shown_and_accepted: true,
+          }).then((result) => {
+            console.log(result)
+            if (result.token) {
+
+              this.$emit('create', {
+                command: 'stripe_connect',
+                tenantIntegrationId: this.details.id,
+                data: result,
+              })
+
+            } else {
+              if (result.error) {
+                this.error = result.error.message
+              } else {
+                this.error = "There was an error communicating with Stripe, please try again later."
+              }
+            }
+          })
+        } catch (e) {
+          this.error = e
         }
-      })
+      }
     },
     reload() {
+      console.log(this.integrations)
+      console.log(this.tenant)
+      console.log(this.member)
       this.integrations.forEach(i => {
         if (i.key === 'stripe_connect') {
           this.setup = false
@@ -118,7 +163,7 @@ export default {
       this.firstName = this.member.firstName
       this.lastName = this.member.lastName
       this.birthdate = this.$moment(this.member.birthdate, 'YYYY-MM-DD').format('MM/DD/YYYY')
-      console.log(this.member)
+        console.log()
     }
   },
   computed: {
