@@ -60,6 +60,7 @@
                     item-value="id"
                   />
                   <v-flex xs12>
+                    <p>To Continue, please click on the link to review the document.</p>
                     <v-checkbox
                       v-model="agreement.affiliate"
                       :rules="requiredRule"
@@ -81,6 +82,7 @@
                     <AgreementCheckbox :agreement="agreement" />
                   </v-flex> -->
                   <v-flex xs12>
+                    <p>To Continue, please click on the link to review the document.</p>
                     <v-checkbox
                       v-model="agreement.policies"
                       :rules="requiredRule"

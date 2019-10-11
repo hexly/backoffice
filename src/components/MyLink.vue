@@ -80,7 +80,7 @@ export default {
     },
     async saveSlug() {
       this.savingSlug = true
-      const { data: { addMemberSlug } } = await this.$apollo.mutate({
+      await this.$apollo.mutate({
         mutation: ADD_MEMBER_SLUG,
         variables: {
           input: {
@@ -89,7 +89,7 @@ export default {
           }
         }
       })
-      this.setSlug(addMemberSlug[0].slug)
+      this.setSlug(this.tempSlug || this.generateSlug)
       this.savingSlug = false
     },
     ...mapMutations({
@@ -103,8 +103,7 @@ export default {
     },
     generateSlug: {
       get() {
-        const slug = this.member.displayName.toLowerCase()
-        return this.tempSlug || `${slug.replace(' ', '_')}_${this.member.mrn}`
+        return this.tempSlug
       },
       set(val) {
         this.tempSlug = val.toLowerCase()
