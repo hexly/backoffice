@@ -51,6 +51,7 @@
         </v-layout>
       </v-flex>
     </v-layout>
+    <Directory class="pa-2" :self="personalStats" :frontline="team" title="Your Kyngdom" :badges="false" membersTypeName="Affiliate"/>
     <v-subheader>Statistics</v-subheader>
     <v-layout row wrap justify-space-between fill-height>
       <v-flex xs12 md4 class="pa-4">
@@ -109,6 +110,7 @@
 import _ from 'lodash'
 import BirthdayBadge from '@/components/BirthdayBadge.vue'
 import PersonalCard from '@/components/dashboard/PersonalCard.vue'
+import Directory from '@/components/dashboard/Directory.vue'
 import StatsCard from '@/components/StatsCard.vue'
 import DashCard from '@/components/DashboardCard.vue'
 import Currency from '@/components/Currency.vue'
@@ -127,7 +129,8 @@ export default {
     StatsCard,
     Currency,
     BirthdayBadge,
-    DashCard
+    DashCard,
+    Directory
   },
   data() {
     return {
