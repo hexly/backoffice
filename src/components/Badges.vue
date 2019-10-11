@@ -14,6 +14,12 @@
         </v-avatar>
         Founding Influencer
       </v-chip>
+      <v-chip v-if="isEarlyAccess" color="accent" text-color="white">
+        <v-avatar class="secondary darken-4">
+          <v-icon>alarm</v-icon>
+        </v-avatar>
+        Early Access
+      </v-chip>
     </v-flex>
   </div>
 </template>
@@ -34,6 +40,9 @@ export default {
     },
     isFounder() {
       return this.$moment(this.joinedOn).isBefore('2020-04-01')
+    },
+    isEarlyAccess() {
+      return this.$moment(this.joinedOn).isBefore('2019-11-20')
     }
   }
 }

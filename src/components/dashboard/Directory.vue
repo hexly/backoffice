@@ -23,6 +23,7 @@
               <span>
                 {{item.displayName || item.name}}
                 <span v-if="item.counts && item.counts.level1" :color="active ? 'primary' : ''" > ({{item.counts.level1}}) </span>
+                <span v-else-if="!item.id && frontline && frontline.length" :color="active ? 'primary' : ''" > ({{frontline.length}}) </span>
               </span>
             </template>
           </v-treeview>
@@ -40,7 +41,7 @@
               <p>Select a team member to view details.</p>
               <p class="subheading">Select the arrow to their view team</p>
             </div>
-            <v-card v-else :key="selected.id" class="pt-4 mx-auto" flat max-width="400">
+            <v-card v-else :key="selected.id" class="pt-4 mx-auto" flat>
               <v-card-text class="text-xs-center">
                 <v-avatar size="124" class="avatar" color="white">
                   <v-img :src="selected.profileUrl || $tenantInfo.placeholder" class="mb-4" ></v-img>
