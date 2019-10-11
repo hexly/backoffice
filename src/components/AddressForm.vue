@@ -35,7 +35,6 @@
         label="Postal Code"
         name="Postal Code"
         v-model="address.postalCode"
-        :rules="digitsOnlyRule"
         required
       ></v-text-field>
       <v-select
