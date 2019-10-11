@@ -20,12 +20,12 @@
         type="warning"
       >
         Hey There! You do not have your link set up yet.
-        We've generated one for you, but feel free to change it and make it your own.
         <br />
         Note: You will not be able to change it once it is set.
       </v-alert>
       <v-text-field
-        :loading="savingSlug"
+        ref="slugField"
+        :loading="checkingSlug > 0"
         placeholder="my-personal-link"
         class="mb-3 slug-field edit-link"
         v-model="generateSlug"
@@ -35,7 +35,7 @@
         outline
         :label="$tenantInfo.storeUrl.replace('{slug}', '')"
       ></v-text-field>
-      <v-btn :loading="savingSlug" @click="saveSlug" :disabled="!slugUnique" color="green">Create Link</v-btn>
+      <v-btn :loading="savingSlug" @click="saveSlug" :disabled="!slugUnique || !generateSlug || !$refs.slugField.valid" color="green">Create Link</v-btn>
     </div>
   </div>
 </template>
@@ -73,24 +73,27 @@ export default {
     },
     async slugChanged(event) {
       this.slugUnique = false
+      this.slugErrors = []
       if (this.checkingSlug > 0) {
         this.$apollo.queries.checkSlug.stop()
       }
       this.$apollo.queries.checkSlug.start()
     },
     async saveSlug() {
-      this.savingSlug = true
-      await this.$apollo.mutate({
-        mutation: ADD_MEMBER_SLUG,
-        variables: {
-          input: {
-            tenantId,
-            slug: this.tempSlug || this.generateSlug
+      if (this.generateSlug) {
+        this.savingSlug = true
+        await this.$apollo.mutate({
+          mutation: ADD_MEMBER_SLUG,
+          variables: {
+            input: {
+              tenantId,
+              slug: this.generateSlug
+            }
           }
-        }
-      })
-      this.setSlug(this.tempSlug || this.generateSlug)
-      this.savingSlug = false
+        })
+        this.setSlug(this.generateSlug)
+        this.savingSlug = false
+      }
     },
     ...mapMutations({
       setSlug: UserMutations.SET_SLUG
@@ -99,7 +102,7 @@ export default {
   computed: {
     ...mapGetters(['slug', 'member']),
     formattedSlug() {
-      return this.$tenantInfo.storeUrl.replace('{slug}', this.slug || this.tempSlug)
+      return this.$tenantInfo.storeUrl.replace('{slug}', this.slug || this.generateSlug)
     },
     generateSlug: {
       get() {
@@ -117,19 +120,22 @@ export default {
         return {
           input: {
             tenantId,
-            slug: this.tempSlug
+            slug: this.generateSlug
           }
         }
       },
+      fetchPolicy: 'network-only',
       loadingKey: 'checkingSlug',
       skip() {
-        return (!this.slug && this.tempSlug)
+        return (!this.slug && this.generateSlug)
       },
-      update({ findMemberBySlug }) {
-        if (!findMemberBySlug && this.tempSlug) {
+      update({ checkSlug }) {
+        if (!checkSlug && this.generateSlug) {
           this.slugUnique = true
+        } else if (checkSlug) {
+          this.slugErrors = ['Your link needs to be unique']
         }
-        return findMemberBySlug
+        return checkSlug
       }
     }
   }
