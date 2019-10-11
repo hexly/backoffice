@@ -29,3 +29,8 @@ export const MEMBER_TOTAL_COUNT = gql`
     }
   }
 `
+export const MAX_MRN = gql`
+  query getMaxMrn($input: MrnForTenantInput){
+    memberGetMaxMrnForTenant(input: $input)
+  }
+`
