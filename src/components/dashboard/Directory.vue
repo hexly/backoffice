@@ -50,7 +50,7 @@
                   {{ selected.name }}
                 </h3>
                 <div class="primary--text mb-2">{{ selected.emails[0] }}</div>
-                <div class="primary--text subheading font-weight-bold">Influencer #<b>{{selected.mrn}}</b></div>
+                <div class="primary--text subheading font-weight-bold">{{membersTypeName}} #<b>{{selected.mrn}}</b></div>
               </v-card-text>
               <v-divider class="mb-3"></v-divider>
               <div class="text-xs-center pa-2" v-if="selected.slugs[0]">
@@ -59,7 +59,7 @@
                   {{$tenantInfo.storeUrl.replace('{slug}', selected.slugs[0])}}
                 </a>
               </div>
-              <Badges v-if="selected.joinedOn" :joinedOn="selected.joinedOn" />
+              <Badges v-if="selected.joinedOn && badges" :joinedOn="selected.joinedOn" />
             </v-card>
           </v-scroll-y-transition>
         </v-flex>
@@ -80,7 +80,15 @@ export default {
   props: {
     self: Object,
     frontline: Array,
-    title: String
+    title: String,
+    membersTypeName: {
+      type: String,
+      default: 'Member'
+    },
+    badges: {
+      type: Boolean,
+      default: true
+    }
   },
   data() {
     return {
