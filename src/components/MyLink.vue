@@ -107,7 +107,7 @@ export default {
         return this.tempSlug || `${slug.replace(' ', '_')}_${this.member.mrn}`
       },
       set(val) {
-        this.tempSlug = val
+        this.tempSlug = val.toLowerCase()
       }
     }
   },
