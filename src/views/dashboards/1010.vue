@@ -68,7 +68,7 @@
         </v-layout>
       </v-flex>
     </v-layout>
-    <Directory class="pa-2" :self="personalStats" :frontline="team" title="Your Circle of Influence"/>
+    <Directory class="pa-2" :self="personalStats" :frontline="team" title="Your Circle of Influence" membersTypeName="Influencer"/>
     <CompanyMap class="pa-2" title="Influencers around the world"/>
   </div>
 </template>
