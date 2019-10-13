@@ -4,8 +4,8 @@
       Stripe Connect
     </h2>
     <h3> Stripe Connect provides {{tenant.name}} the ability to send money directly to your bank account. </h3>
-    <v-alert type="error" :value="error">
-      {{error}}
+    <v-alert type="error" :value="(error || localError)">
+      {{error || localError}}
     </v-alert>
     <div v-if="!integrationDetails && !loading && !setup">
       <p> It looks like you do not yet have Stripe configured.
@@ -92,7 +92,8 @@ export default {
       accountNumber: '',
       routingNumber: '',
       ssnLastFour: '',
-      stripeToS: false
+      stripeToS: false,
+      localError: ''
     }
   },
   mounted() {
@@ -104,17 +105,10 @@ export default {
     beginSetup() {
       this.setup = true
     },
-    setupStripe() {
-      if (this.$refs.informationForm.validate()){
-        const stripe = Stripe(this.tenant.integrations.find(function(i){
-          return i.key ==='stripe_connect'
-        }).metadata.publishableKey)
-
-        const bdate = this.$moment(this.birthdate, 'MM/DD/YYYY')
-        console.log(bdate)
-
-        try{
-          const accountResult = stripe.createToken('account', {
+    accountToken({stripe}) {
+      const bdate = this.$moment(this.birthdate, 'MM/DD/YYYY')
+      try {
+        return stripe.createToken('account', {
             business_type: 'individual',
             individual: {
               first_name: this.firstName,
@@ -124,30 +118,70 @@ export default {
                 month: bdate.month(),
                 year: bdate.year()
               },
-              ssn_last_4: this.ssnLastFour
+              ssn_last_4: this.ssnLastFour,
             },
-            tos_shown_and_accepted: true,
-          }).then((result) => {
-            console.log(result)
-            if (result.token) {
-
-              this.$emit('create', {
-                command: 'stripe_connect',
-                tenantIntegrationId: this.details.id,
-                data: result,
-              })
-
-            } else {
-              if (result.error) {
-                this.error = result.error.message
-              } else {
-                this.error = "There was an error communicating with Stripe, please try again later."
-              }
+            tos_shown_and_accepted: true
+        })
+      } catch (e) {
+        console.log("account error!", e)
+        throw new Error(e)
+      }
+    },
+    bankToken({stripe}){
+      try {
+        return stripe.createToken('bank_account', {
+            bank_account: {
+              country: 'US',
+              currency: 'usd',
+              account_holder_type: 'individual',
+              routing_number: this.routingNumber,
+              account_number: this.accountNumber
             }
-          })
+        })
+      } catch (e) {
+        console.log("bank error!", e)
+        throw new Error(e)
+      }
+    },
+    async setupStripe() {
+      if (this.$refs.informationForm.validate()){
+        this.localError = ''
+        const integrationMetadata = this.tenant.integrations.find(function(i){
+          return i.key ==='stripe_connect'
+        }).metadata
+        
+        const stripe = Stripe(integrationMetadata.publishableKey)
+        const url = (this.member.slugs.length > 0) ? this.$tenantInfo.storeUrl.replace('{slug}', this.member.slugs[0].slug) : ''
+
+        let accountToken
+        try {
+          accountToken = await this.accountToken({stripe})
+          if (accountToken.error) {
+            this.localError = accountToken.error.message
+            return
+          }
         } catch (e) {
-          this.error = e
+          this.localError = e.message
+          return
         }
+
+        let bankToken
+        try {
+          bankToken = await this.bankToken({stripe})
+          if (bankToken.error) {
+            this.localError = bankToken.error.message
+            return
+          }
+        } catch (e) {
+          this.localError = e.message
+          return
+        }
+
+        this.$emit('create', {
+            command: 'stripe_connect',
+            tenantIntegrationId: this.details.id,
+            data: {accountToken: accountToken.token, bankToken: bankToken.token, url}
+          })
       }
     },
     reload() {
