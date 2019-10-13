@@ -29,7 +29,8 @@
         placeholder="my-personal-link"
         class="mb-3 slug-field edit-link"
         v-model="generateSlug"
-        @keyup="slugChanged"
+        @keyup.native="slugChanged"
+        @change="slugChanged"
         :rules="slugRule"
         :error-messages="slugErrors"
         outline
@@ -71,13 +72,10 @@ export default {
         this.copyTooltipText = 'Copy'
       }, 3000)
     },
-    async slugChanged(event) {
+    slugChanged(event) {
       this.slugUnique = false
       this.slugErrors = []
-      if (this.checkingSlug > 0) {
-        this.$apollo.queries.checkSlug.stop()
-      }
-      this.$apollo.queries.checkSlug.start()
+      this.$apollo.queries.checkSlug.refresh()
     },
     async saveSlug() {
       if (this.generateSlug) {
@@ -127,7 +125,7 @@ export default {
       fetchPolicy: 'network-only',
       loadingKey: 'checkingSlug',
       skip() {
-        return (!this.slug && this.generateSlug)
+        return !(!this.slug && this.generateSlug)
       },
       update({ checkSlug }) {
         if (!checkSlug && this.generateSlug) {
