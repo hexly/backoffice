@@ -17,7 +17,7 @@ query principal {
       displayName
       mrn
       slug
-      slugs {
+      slugs(priority: 0) {
         slug
       }
       sponsor {

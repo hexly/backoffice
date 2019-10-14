@@ -46,7 +46,7 @@
       <v-text-field
         v-model="value.birthdate"
         label="Date of Birth"
-        placeholder="MM/DD/YYYY"
+        :placeholder="this.birthdayFormat"
         :rules="birthdateRule"
       ></v-text-field>
     <v-btn
@@ -78,9 +78,8 @@ export default {
     return {
       requiredRule: Rules.requiredRule,
       emailRule: Rules.emailRule,
-      birthdateRule: [
-        v => this.$moment(v, 'MM/DD/YYYY').isValid() || 'Birthday Must Be in MM/DD/YYYY Format'
-      ]
+      birthdateRule: Rules.birthdateRule,
+      birthdayFormat: Rules.birthdayFormat
     }
   },
   methods: {

@@ -77,7 +77,7 @@
             <v-list-tile-title>Hexly Admin</v-list-tile-title>
           </v-list-tile-content>
         </v-list-tile>
-        <v-list-tile to="/zendesk">
+        <v-list-tile v-if="hasZendeskAdmin" to="/zendesk">
           <v-list-tile-action>
             <v-icon>supervised_user_circle</v-icon>
           </v-list-tile-action>
@@ -98,7 +98,12 @@
             <img :src="`/img/social/${social.key}.svg`" />
           </a>
         </div>
-        <h5 class="py-4">Copyright 2019</h5>
+        <h5 class="py-4">
+          <span v-if="$tenantInfo.privacyPolicy">
+            <a target="_blank" :href="$tenantInfo.privacyPolicy">Privacy Policy</a> ·
+          </span>
+          <span>Copyright 2019</span>
+        </h5>
       </div>
     </v-navigation-drawer>
     <v-toolbar :color="$tenantInfo.baseColor" dark fixed app>
@@ -183,7 +188,7 @@ export default {
     }),
     ...mapGetters(['slug']),
     usersStoreUrl () {
-      return this.$tenantInfo.storeUrl.replace('{slug}', this.slug)
+      return this.slug ? this.$tenantInfo.storeUrl.replace('{slug}', this.slug) : this.$tenantInfo.corporateUrl
     },
     hasAdminMenu () {
       return this.hasAdmin || this.hasZendeskAdmin

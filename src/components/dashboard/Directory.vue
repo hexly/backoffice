@@ -23,6 +23,7 @@
               <span>
                 {{item.displayName || item.name}}
                 <span v-if="item.counts && item.counts.level1" :color="active ? 'primary' : ''" > ({{item.counts.level1}}) </span>
+                <span v-else-if="!item.id && frontline && frontline.length" :color="active ? 'primary' : ''" > ({{frontline.length}}) </span>
               </span>
             </template>
           </v-treeview>
@@ -40,7 +41,7 @@
               <p>Select a team member to view details.</p>
               <p class="subheading">Select the arrow to their view team</p>
             </div>
-            <v-card v-else :key="selected.id" class="pt-4 mx-auto" flat max-width="400">
+            <v-card v-else :key="selected.id" class="pt-4 mx-auto" flat>
               <v-card-text class="text-xs-center">
                 <v-avatar size="124" class="avatar" color="white">
                   <v-img :src="selected.profileUrl || $tenantInfo.placeholder" class="mb-4" ></v-img>
@@ -49,7 +50,7 @@
                   {{ selected.name }}
                 </h3>
                 <div class="primary--text mb-2">{{ selected.emails[0] }}</div>
-                <div class="primary--text subheading font-weight-bold">Influencer #<b>{{selected.mrn}}</b></div>
+                <div class="primary--text subheading font-weight-bold">{{membersTypeName}} #<b>{{selected.mrn}}</b></div>
               </v-card-text>
               <v-divider class="mb-3"></v-divider>
               <div class="text-xs-center pa-2" v-if="selected.slugs[0]">
@@ -58,7 +59,7 @@
                   {{$tenantInfo.storeUrl.replace('{slug}', selected.slugs[0])}}
                 </a>
               </div>
-              <Badges v-if="selected.joinedOn" :joinedOn="selected.joinedOn" />
+              <Badges v-if="selected.joinedOn && badges" :joinedOn="selected.joinedOn" />
             </v-card>
           </v-scroll-y-transition>
         </v-flex>
@@ -79,7 +80,15 @@ export default {
   props: {
     self: Object,
     frontline: Array,
-    title: String
+    title: String,
+    membersTypeName: {
+      type: String,
+      default: 'Member'
+    },
+    badges: {
+      type: Boolean,
+      default: true
+    }
   },
   data() {
     return {
@@ -174,5 +183,9 @@ export default {
 .directory .v-treeview{
   height: 444px;
   overflow-y: scroll;
+}
+
+.directory .v-treeview-node__label{
+  cursor: pointer;
 }
 </style>

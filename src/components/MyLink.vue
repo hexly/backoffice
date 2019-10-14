@@ -19,20 +19,24 @@
         :value="true"
         type="warning"
       >
-        Hey There! You do not have your link set up yet. We've generated one for you, but feel free to change it and make it your own.
+        Hey There! You do not have your link set up yet.
+        <br />
+        Note: You will not be able to change it once it is set.
       </v-alert>
       <v-text-field
-        :loading="savingSlug"
+        ref="slugField"
+        :loading="checkingSlug > 0"
         placeholder="my-personal-link"
         class="mb-3 slug-field edit-link"
         v-model="generateSlug"
-        @keyup="slugChanged"
+        @keyup.native="slugChanged"
+        @change="slugChanged"
         :rules="slugRule"
         :error-messages="slugErrors"
         outline
         :label="$tenantInfo.storeUrl.replace('{slug}', '')"
       ></v-text-field>
-      <v-btn :loading="savingSlug" @click="saveSlug" :disabled="!slugUnique" color="green">Create Link</v-btn>
+      <v-btn :loading="savingSlug" @click="saveSlug" :disabled="!slugUnique || !generateSlug || !$refs.slugField.valid" color="green">Create Link</v-btn>
     </div>
   </div>
 </template>
@@ -68,26 +72,26 @@ export default {
         this.copyTooltipText = 'Copy'
       }, 3000)
     },
-    async slugChanged(event) {
+    slugChanged(event) {
       this.slugUnique = false
-      if (this.checkingSlug > 0) {
-        this.$apollo.queries.checkSlug.stop()
-      }
-      this.$apollo.queries.checkSlug.start()
+      this.slugErrors = []
+      this.$apollo.queries.checkSlug.refresh()
     },
     async saveSlug() {
-      this.savingSlug = true
-      const { data: { addMemberSlug } } = await this.$apollo.mutate({
-        mutation: ADD_MEMBER_SLUG,
-        variables: {
-          input: {
-            tenantId,
-            slug: this.tempSlug || this.generateSlug
+      if (this.generateSlug) {
+        this.savingSlug = true
+        await this.$apollo.mutate({
+          mutation: ADD_MEMBER_SLUG,
+          variables: {
+            input: {
+              tenantId,
+              slug: this.generateSlug
+            }
           }
-        }
-      })
-      this.setSlug(addMemberSlug[0].slug)
-      this.savingSlug = false
+        })
+        this.setSlug(this.generateSlug)
+        this.savingSlug = false
+      }
     },
     ...mapMutations({
       setSlug: UserMutations.SET_SLUG
@@ -96,15 +100,14 @@ export default {
   computed: {
     ...mapGetters(['slug', 'member']),
     formattedSlug() {
-      return this.$tenantInfo.storeUrl.replace('{slug}', this.slug || this.tempSlug)
+      return this.$tenantInfo.storeUrl.replace('{slug}', this.slug || this.generateSlug)
     },
     generateSlug: {
       get() {
-        const slug = this.member.displayName.toLowerCase()
-        return this.tempSlug || `${slug.replace(' ', '_')}_${this.member.mrn}`
+        return this.tempSlug
       },
       set(val) {
-        this.tempSlug = val
+        this.tempSlug = val.toLowerCase()
       }
     }
   },
@@ -115,19 +118,22 @@ export default {
         return {
           input: {
             tenantId,
-            slug: this.tempSlug
+            slug: this.generateSlug
           }
         }
       },
+      fetchPolicy: 'network-only',
       loadingKey: 'checkingSlug',
       skip() {
-        return (!this.slug && this.tempSlug)
+        return !(!this.slug && this.generateSlug)
       },
-      update({ findMemberBySlug }) {
-        if (!findMemberBySlug && this.tempSlug) {
+      update({ checkSlug }) {
+        if (!checkSlug && this.generateSlug) {
           this.slugUnique = true
+        } else if (checkSlug) {
+          this.slugErrors = ['Your link needs to be unique']
         }
-        return findMemberBySlug
+        return checkSlug
       }
     }
   }

@@ -135,7 +135,7 @@ const tenantOptions = {
     name: 'Early Access Beauty',
     // logoPath: '/img/1009/logo.jpg',
     // logoLoginPath: '/img/1009/logo.jpg',
-    // placeholder: '/img/1009/logo.jpg',
+    placeholder: '/img/1010/placeholder.png',
     profileColor: '#fee541',
     baseColor: '#14244C',
     primaryColor: '#3e5b06',
@@ -153,15 +153,16 @@ const tenantOptions = {
     agreements: [
       {
         key: 'affiliate',
-        name: 'Independent Contractor Agreement',
-        url: '/docs/1010/AffiliateAgreement.pdf'
+        name: 'Independent Consultant Agreement',
+        url: '/docs/1010/Independent-Consultant-Agreement.pdf'
       },
       {
         key: 'policies',
         name: 'Policies and Procedures',
-        url: '/docs/1010/PoliciesProcedures.pdf'
+        url: '/docs/1010/Policies-and-Procedures.pdf'
       }
     ],
+    privacyPolicy: '/docs/1010/Privacy-Policy.pdf',
     features: {
       sales: false,
       team: false,

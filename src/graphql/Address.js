@@ -26,6 +26,7 @@ export const ADDRESS_BY_CONTACT_ID = gql`
       province
       postalCode
       country
+      type
     }
   }
 `

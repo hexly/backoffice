@@ -35,7 +35,7 @@
         label="Postal Code"
         name="Postal Code"
         v-model="address.postalCode"
-        :rules="digitsOnlyRule"
+        :rules="requiredRule"
         required
       ></v-text-field>
       <v-select
@@ -66,7 +66,10 @@ export default {
   name: 'AddressForm',
   data () {
     return {
-      SELECT_ITEMS: [{ text: 'United States of America', value: 'US' }],
+      SELECT_ITEMS: [
+        { text: 'United States of America', value: 'US' },
+        { text: 'United Kingdom', value: 'UK' }
+      ],
       address: {
         id: null,
         name: null,
