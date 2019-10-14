@@ -30,6 +30,8 @@
             type="text"
             :rules="rules.requiredRule"/>
           <v-text-field
+            ref="dobInput"
+            :error="dobError"
             label="Date of Birth"
             v-model="birthdate"
             placeholder="MM/DD/YYYY"
@@ -49,7 +51,8 @@
             label="Routing Number"
             v-model="routingNumber"
             type="text"
-            :rules="rules.requiredRule"/>
+            validate-on-blur
+            :rules="rules.routingNumberRule"/>
           <v-checkbox
             v-model="stripeToS"
             :rules="rules.requiredRule">
@@ -94,7 +97,8 @@ export default {
       ssnLastFour: '',
       stripeToS: false,
       localError: '',
-      attemptingStripeSetup: false
+      attemptingStripeSetup: false,
+      dobError: false
     }
   },
   mounted() {
@@ -148,17 +152,22 @@ export default {
       if (this.$refs.informationForm.validate()) {
         this.attemptingStripeSetup = true
         this.localError = ''
+        this.dobError = false
         const integrationMetadata = this.tenant.integrations.find((i) => {
           return i.key === 'stripe_connect'
         }).metadata
 
         const stripe = Stripe(integrationMetadata.publishableKey)
-        const url = (this.member.slugs.length > 0) ? this.$tenantInfo.storeUrl.replace('{slug}', this.member.slugs[0].slug) : ''
+        const url = `${window.location.origin}?memberId=${this.member.id}`
 
         let accountToken
         try {
           accountToken = await this.accountToken({ stripe })
           if (accountToken.error) {
+            if (accountToken.error.param && accountToken.error.param.includes("dob")){
+              this.dobError = true
+              this.$refs.dobInput.focus()
+            }
             this.localError = accountToken.error.message
             this.attemptingStripeSetup = false
             return
@@ -173,6 +182,7 @@ export default {
         try {
           bankToken = await this.bankToken({ stripe })
           if (bankToken.error) {
+            console.log(bankToken.error)
             this.localError = bankToken.error.message
             this.attemptingStripeSetup = false
             return
