@@ -57,7 +57,7 @@
               I agree to the Stripe <a href='https://stripe.com/connect-account/legal' target="_blank">Terms of Service</a>
             </div>
           </v-checkbox>
-          <v-btn type="submit" color="primary">
+          <v-btn :loading="attemptingStripeSetup" :disabled="attemptingStripeSetup" type="submit" color="primary">
             Create Account
           </v-btn>
         </v-form>
@@ -93,7 +93,8 @@ export default {
       routingNumber: '',
       ssnLastFour: '',
       stripeToS: false,
-      localError: ''
+      localError: '',
+      attemptingStripeSetup: false
     }
   },
   mounted() {
@@ -105,89 +106,92 @@ export default {
     beginSetup() {
       this.setup = true
     },
-    accountToken({stripe}) {
+    accountToken({ stripe }) {
       const bdate = this.$moment(this.birthdate, 'MM/DD/YYYY')
       try {
         return stripe.createToken('account', {
-            business_type: 'individual',
-            individual: {
-              first_name: this.firstName,
-              last_name: this.lastName,
-              dob: {
-                day: bdate.date(),
-                month: bdate.month(),
-                year: bdate.year()
-              },
-              ssn_last_4: this.ssnLastFour,
+          business_type: 'individual',
+          individual: {
+            first_name: this.firstName,
+            last_name: this.lastName,
+            dob: {
+              day: bdate.date(),
+              month: bdate.month(),
+              year: bdate.year()
             },
-            tos_shown_and_accepted: true
+            ssn_last_4: this.ssnLastFour
+          },
+          tos_shown_and_accepted: true
         })
       } catch (e) {
-        console.log("account error!", e)
+        console.warn('account error!', e)
         throw new Error(e)
       }
     },
-    bankToken({stripe}){
+    bankToken({ stripe }) {
       try {
         return stripe.createToken('bank_account', {
-            bank_account: {
-              country: 'US',
-              currency: 'usd',
-              account_holder_type: 'individual',
-              routing_number: this.routingNumber,
-              account_number: this.accountNumber
-            }
+          bank_account: {
+            country: 'US',
+            currency: 'usd',
+            account_holder_type: 'individual',
+            routing_number: this.routingNumber,
+            account_number: this.accountNumber
+          }
         })
       } catch (e) {
-        console.log("bank error!", e)
+        console.warn('bank error!', e)
         throw new Error(e)
       }
     },
     async setupStripe() {
-      if (this.$refs.informationForm.validate()){
+      if (this.$refs.informationForm.validate()) {
+        this.attemptingStripeSetup = true
         this.localError = ''
-        const integrationMetadata = this.tenant.integrations.find(function(i){
-          return i.key ==='stripe_connect'
+        const integrationMetadata = this.tenant.integrations.find((i) => {
+          return i.key === 'stripe_connect'
         }).metadata
-        
+
         const stripe = Stripe(integrationMetadata.publishableKey)
         const url = (this.member.slugs.length > 0) ? this.$tenantInfo.storeUrl.replace('{slug}', this.member.slugs[0].slug) : ''
 
         let accountToken
         try {
-          accountToken = await this.accountToken({stripe})
+          accountToken = await this.accountToken({ stripe })
           if (accountToken.error) {
             this.localError = accountToken.error.message
+            this.attemptingStripeSetup = false
             return
           }
         } catch (e) {
           this.localError = e.message
+          this.attemptingStripeSetup = false
           return
         }
 
         let bankToken
         try {
-          bankToken = await this.bankToken({stripe})
+          bankToken = await this.bankToken({ stripe })
           if (bankToken.error) {
             this.localError = bankToken.error.message
+            this.attemptingStripeSetup = false
             return
           }
         } catch (e) {
           this.localError = e.message
+          this.attemptingStripeSetup = false
           return
         }
 
+        this.attemptingStripeSetup = false
         this.$emit('create', {
-            command: 'stripe_connect',
-            tenantIntegrationId: this.details.id,
-            data: {accountToken: accountToken.token, bankToken: bankToken.token, url}
-          })
+          command: 'stripe_connect',
+          tenantIntegrationId: this.details.id,
+          data: { accountToken: accountToken.token, bankToken: bankToken.token, url }
+        })
       }
     },
     reload() {
-      console.log(this.integrations)
-      console.log(this.tenant)
-      console.log(this.member)
       this.integrations.forEach(i => {
         if (i.key === 'stripe_connect') {
           this.setup = false
@@ -197,7 +201,6 @@ export default {
       this.firstName = this.member.firstName
       this.lastName = this.member.lastName
       this.birthdate = this.$moment(this.member.birthdate, 'YYYY-MM-DD').format('MM/DD/YYYY')
-        console.log()
     }
   },
   computed: {
