@@ -25,6 +25,7 @@
 import { mapState, mapMutations } from 'vuex'
 import xomly from '@/components/integrations/xomly.vue'
 import paychex from '@/components/integrations/paychex.vue'
+import stripe_connect from '@/components/integrations/stripe.vue'
 import { CREATE_MEMBER_INTEGRATION } from '@/graphql/Integrations'
 import { UserMutations } from '@/stores/UserStore'
 
@@ -32,16 +33,22 @@ export default {
   name: 'IntegrationsView',
   components: {
     xomly,
-    paychex
+    paychex,
+    stripe_connect
   },
   data() {
     return {
       errors: {
         paychex: null,
-        xomly: null
+        xomly: null,
+        stripe: null
       },
       icons: {
         paychex: {
+          type: 'icon',
+          value: 'attach_money'
+        },
+        stripe_connect: {
           type: 'icon',
           value: 'attach_money'
         },
