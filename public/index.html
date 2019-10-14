@@ -16,6 +16,7 @@
       href="https://api.tiles.mapbox.com/mapbox-gl-js/v0.53.0/mapbox-gl.css"
       rel="stylesheet"
     />
+    <script src="https://js.stripe.com/v3/"></script>
     <%= process.env.VUE_APP_ZENDESK_WIDGET_URL ? ` <script id="ze-snippet" src="${process.env.VUE_APP_ZENDESK_WIDGET_URL}"></script> ` : '' %>
     <%= process.env.VUE_APP_TITLE_NAME ? ` <title>${process.env.VUE_APP_TITLE_NAME}</title> ` : '<title>Backoffice</title>' %>
   </head>
