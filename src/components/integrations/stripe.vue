@@ -182,7 +182,6 @@ export default {
         try {
           bankToken = await this.bankToken({ stripe })
           if (bankToken.error) {
-            console.log(bankToken.error)
             this.localError = bankToken.error.message
             this.attemptingStripeSetup = false
             return
