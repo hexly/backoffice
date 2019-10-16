@@ -7,3 +7,26 @@ export const ADJUST_TAGS = gql`
     }
   }
 `
+
+export const GET_MEMBER_PAYOUTS = gql`
+  query payoutsThroughPrincipal {
+    getPrincipal {
+      member{
+        id
+        payouts {
+          id
+          status
+          currency
+          amount
+          note
+          params
+          metadata
+          holdUntil
+          issuedOn
+          releasedOn
+          acceptedOn
+        }
+      }
+    }
+  }
+`

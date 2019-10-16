@@ -1,5 +1,5 @@
 <template>
-  <span>{{formatCurrency(amount)}}</span>
+  <span>{{formatCurrency}}</span>
 </template>
 
 <script>
@@ -9,13 +9,17 @@ export default {
     amount: {
       type: Number,
       default: 0
+    },
+    currency: {
+      type: String,
+      default: 'USD'
     }
   },
-  methods: {
-    formatCurrency (total) {
-      return total.toLocaleString('us-EN', {
+  computed: {
+    formatCurrency() {
+      return this.amount.toLocaleString('us-EN', {
         style: 'currency',
-        currency: 'USD'
+        currency: this.currency
       })
     }
   }

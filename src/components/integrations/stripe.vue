@@ -69,6 +69,7 @@
 </template>
 
 <script>
+/* global Stripe */
 
 import Rules from '@/views/Rules.js'
 import { mapState } from 'vuex'

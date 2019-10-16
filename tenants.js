@@ -128,7 +128,8 @@ const tenantOptions = {
     features: {
       sales: true,
       team: true,
-      legal: true
+      legal: true,
+      payouts: true
     }
   },
   1010: {
