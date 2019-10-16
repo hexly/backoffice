@@ -10,6 +10,7 @@ import Integrations from './views/Integrations.vue'
 import Profile from './views/Profile.vue'
 import Assets from './views/Assets.vue'
 import Team from './views/Team.vue'
+import Payouts from './views/Payouts.vue'
 import Sales from './views/Sales.vue'
 import Impersonate from './views/Impersonate.vue'
 import Redirect from './views/Redirect.vue'
@@ -100,6 +101,11 @@ export default new Router({
           path: 'sales',
           name: 'sales',
           component: Sales
+        },
+        {
+          path: 'payouts',
+          name: 'payouts',
+          component: Payouts
         },
         {
           path: 'team',
