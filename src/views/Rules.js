@@ -19,7 +19,12 @@ export default {
   ],
   ssnLastFourRule: [
     v => !!v || 'This field is required',
-    v => (v && v.length === 4) || 'Last 4 of digits of SSN required'
+    // v => (v && v.length == 4) || 'Last 4 of digits of SSN required',
+    v => (v && /^\d{4}$/.test(v)) || 'Last 4 digits of SSN required'
+  ],
+  routingNumberRule: [
+    v => !!v || 'This field is required',
+    v => (v && /^\d{9}$/.test(v)) || 'Routing number must be 9 digits long'
   ],
   slugRule: [
     v => !!v || 'Field is required and cannot be changed once submitted',
