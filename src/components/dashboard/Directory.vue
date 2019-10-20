@@ -6,9 +6,24 @@
       </v-card-title>
       <v-layout justify-space-between row wrap>
         <v-flex xs12 sm5>
+          <v-sheet class="pa-3 accent">
+            <v-text-field
+              v-model="search"
+              :label="`Search ${title}`"
+              @keyup="searchDirectory"
+              dark
+              flat
+              solo-inverted
+              hide-details
+              clearable
+              clear-icon="cancel"
+              loading="searchLoading"
+              @click:clear="clearSearch"
+            ></v-text-field>
+          </v-sheet>
           <v-treeview
             :active.sync="active"
-            :items="items"
+            :items="searchResults.length ? searchResults : items"
             :load-children="fetchUsers"
             :open.sync="open"
             activatable
@@ -72,6 +87,7 @@
 import Badges from '@/components/Badges.vue'
 import { MEMBER_STATS_BY_DEPTH } from '@/graphql/MemberStats.gql'
 import { mapGetters } from 'vuex'
+import { debounce } from 'lodash'
 
 export default {
   components: {
@@ -97,7 +113,10 @@ export default {
       open: [],
       users: [],
       allPeople: [],
-      addedToUsers: []
+      addedToUsers: [],
+      search: null,
+      searchLoading: false,
+      searchResults: []
     }
   },
   computed: {
@@ -117,6 +136,60 @@ export default {
     }
   },
   methods: {
+    clearSearch() {
+      this.open = []
+      this.searchResults = []
+    },
+    searchDirectory: debounce(function(searchTerm) {
+      this.searchLoading = true
+      if (this.search) {
+        // Hardcoded for testing... this will come from the server
+        this.searchResults = [
+          {
+            id: 1,
+            displayName: 'test',
+            emails: ['dasfds'],
+            mrn: 324,
+            slugs: ['test'],
+            profileUrl: 'https://api.adorable.io/avatars/285/abott@adorable.png',
+            children: [
+              {
+                id: 2,
+                displayName: 'test1',
+                emails: ['dasfds'],
+                mrn: 324,
+                slugs: ['test'],
+                profileUrl: 'https://api.adorable.io/avatars/285/abott@adorable.png',
+                children: [
+                  {
+                    id: 3,
+                    displayName: 'Brenda Kradolfer',
+                    emails: ['dasfds'],
+                    mrn: 324,
+                    slugs: ['test'],
+                    profileUrl: 'https://api.adorable.io/avatars/285/abott@adorable.png'
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+        this.addSearchPeopleToList(this.searchResults)
+      }
+      this.searchLoading = false
+    }, 500),
+    addSearchPeopleToList(people) {
+      people.forEach(p => {
+        if (p.children) {
+          this.addSearchPeopleToList(p.children)
+        }
+        this.open.push(p.id)
+        if (this.addedToUsers.indexOf(p.id) === -1) {
+          this.addedToUsers.push(p.id)
+          this.allPeople.push(p)
+        }
+      })
+    },
     async fetchUsers (item) {
       if (!item.id) {
         item.id = this.memberId

@@ -3,6 +3,7 @@ import Vuetify from 'vuetify'
 import VueClipboard from 'vue-clipboard2'
 import Gravatar from 'vue-gravatar'
 import 'vuetify/dist/vuetify.min.css'
+import Facebook from '@/plugins/Facebook'
 
 import moment from 'moment'
 
@@ -27,7 +28,11 @@ VueClipboard.config.autoSetContainer = true // add this line
 Vue.use(VueClipboard)
 Vue.component('v-gravatar', Gravatar)
 
-// Vue.use(Vuetify)
+if (process.env.VUE_APP_FACEBOOK_APP_ID) {
+  Vue.use(Facebook, {
+    appId: process.env.VUE_APP_FACEBOOK_APP_ID
+  })
+}
 Vue.use(Vuetify, {
   theme: {
     primary: tenantInfo.primaryColor,

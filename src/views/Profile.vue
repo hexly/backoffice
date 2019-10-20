@@ -31,17 +31,13 @@
         </v-tab>
 
         <v-tab-item value="profile" class="py-3">
+          <div>
+            <h3>Link Social Accounts</h3>
+            <div>
+              <Facebook />
+            </div>
+          </div>
           <v-layout row wrap justify-space-around>
-            <v-flex xs12 sm3>
-              <div class="mx-auto">
-                <img class="image" :src="getAvatar">
-              </div>
-              <FileUpload
-                @profile="makeProfilePic"
-                label="Upload Profile"
-                :isProfilePic="true"
-              />
-            </v-flex>
             <v-flex xs12 sm6>
               <PersonalForm
                 ref="personal"
@@ -50,9 +46,20 @@
                 :saveData="saveData"
                 :saving="saving"
                 @hasBirthday="checkAlert"
-              />
+              >
+                <v-avatar slot="profilePic" size="124" class="avatar" color="white" @click="showProfilePicDialog = true">
+                  <v-img v-if="principal.member.profileUrl || $tenantInfo.placeholder" :src="principal.member.profileUrl || $tenantInfo.placeholder" class="mb-4" ></v-img>
+                  <v-gravatar v-else default-img="mp" :email="principal.member.contacts[0].emails[0].email" class="mb-4"/>
+                </v-avatar>
+              </PersonalForm>
             </v-flex>
           </v-layout>
+          <FileUpload
+            @dialogClosed="showProfilePicDialog = false"
+            @profile="makeProfilePic"
+            :isProfilePic="true"
+            :shouldShow="showProfilePicDialog"
+          />
         </v-tab-item>
 
         <v-tab-item value="address" class="px-4">
@@ -85,6 +92,7 @@
 </template>
 
 <script>
+import Facebook from '@/components/profile/Facebook.vue'
 import PersonalForm from '@/components/profile/Personal.vue'
 import LegalForm from '@/components/profile/Legal.vue'
 import AddressForm from '@/components/AddressForm.vue'
@@ -105,12 +113,14 @@ const SUCCESS_COLOR = 'primary'
 export default {
   components: {
     PersonalForm,
+    Facebook,
     AddressForm,
     LegalForm,
     FileUpload
   },
   data() {
     return {
+      showProfilePicDialog: false,
       modal: false,
       visible: false,
       password: '',
@@ -361,5 +371,31 @@ export default {
 <style scoped>
 .image {
   width: 100%;
+}
+.profile .avatar {
+  position: relative;
+  padding-top: 19px;
+}
+.profile .avatar .v-responsive,
+.profile .avatar img {
+  border: 3px solid white;
+}
+
+.profile .avatar::after{
+  content: 'camera_alt';
+  font-family: 'Material Icons';
+  font-size: 78px;
+  display: none;
+  position: absolute;
+  top: 0px;
+  right: 2px;
+  bottom: 2px;
+  left: 2px;
+  background-color: rgba(255,255,255,0.5);
+  border-radius: 100%;
+  cursor: pointer;
+}
+.profile .avatar:hover::after{
+  display: block;
 }
 </style>
