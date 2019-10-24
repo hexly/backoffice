@@ -22,12 +22,11 @@
 </template>
 
 <script>
-import { mapState, mapMutations } from 'vuex'
+import { mapState, mapActions } from 'vuex'
 import xomly from '@/components/integrations/xomly.vue'
 import paychex from '@/components/integrations/paychex.vue'
 import stripeConnect from '@/components/integrations/stripe.vue'
-import { CREATE_MEMBER_INTEGRATION } from '@/graphql/Integrations'
-import { UserMutations } from '@/stores/UserStore'
+import { UserActions } from '@/stores/UserStore'
 
 export default {
   name: 'IntegrationsView',
@@ -60,26 +59,14 @@ export default {
     }
   },
   methods: {
-    ...mapMutations({
-      addIntegration: UserMutations.ADD_INTEGRATION
+    ...mapActions({
+      addIntegration: UserActions.CREATE_INTEGRATION
     }),
     async createIntegration({ command, tenantIntegrationId, data }) {
       this.errors[command] = null
       try {
-        await this.$apollo.mutate({
-          mutation: CREATE_MEMBER_INTEGRATION,
-          variables: {
-            input: {
-              command,
-              tenantIntegrationId,
-              data
-            }
-          },
-          update: (store, { data }) => {
-            this.addIntegration({ ...data, key: command })
-            this.$refs[command][0].reload()
-          }
-        })
+        await this.addIntegration({ command, tenantIntegrationId, data })
+        this.$refs[command][0].reload()
       } catch (e) {
         const { graphQLErrors } = e
         this.errors[command] = graphQLErrors[0].message

@@ -30,3 +30,9 @@ export const GET_MEMBER_PAYOUTS = gql`
     }
   }
 `
+
+export const SEARCH_MEMBER_DIRECTORY = gql`
+  query searchMemberDirectory($input: searchTeamWithUplineInput!) {
+    searchTeamWithUpline(input: $input)
+  }
+`

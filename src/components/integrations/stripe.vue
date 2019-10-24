@@ -165,7 +165,7 @@ export default {
         try {
           accountToken = await this.accountToken({ stripe })
           if (accountToken.error) {
-            if (accountToken.error.param && accountToken.error.param.includes("dob")){
+            if (accountToken.error.param && accountToken.error.param.includes('dob')) {
               this.dobError = true
               this.$refs.dobInput.focus()
             }

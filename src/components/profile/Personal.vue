@@ -1,18 +1,25 @@
 <template>
   <div>
     <v-form ref="informationForm" @submit.prevent="saveData">
-      <v-text-field
-        label="First Name"
-        v-model.trim="value.firstName"
-        :rules="requiredRule"
-        required
-      ></v-text-field>
-      <v-text-field
-        label="Last Name"
-        v-model.trim="value.lastName"
-        :rules="requiredRule"
-        required
-      ></v-text-field>
+      <v-layout row wrap>
+        <v-flex xs12 md4>
+          <slot name="profilePic"></slot>
+        </v-flex>
+        <v-flex xs12 md8>
+          <v-text-field
+            label="First Name"
+            v-model.trim="value.firstName"
+            :rules="requiredRule"
+            required
+          ></v-text-field>
+          <v-text-field
+            label="Last Name"
+            v-model.trim="value.lastName"
+            :rules="requiredRule"
+            required
+          ></v-text-field>
+        </v-flex>
+      </v-layout>
       <v-text-field
         class="pb-2"
         label="Legal Name"

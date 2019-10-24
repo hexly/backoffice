@@ -27,7 +27,6 @@ VueClipboard.config.autoSetContainer = true // add this line
 Vue.use(VueClipboard)
 Vue.component('v-gravatar', Gravatar)
 
-// Vue.use(Vuetify)
 Vue.use(Vuetify, {
   theme: {
     primary: tenantInfo.primaryColor,
