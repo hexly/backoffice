@@ -1,6 +1,5 @@
 const install = function (Vue, options) {
   window.fbAsyncInit = function () {
-    console.log('SETTING UP FACEBOOK')
     window.FB.init({
       appId: options.appId,
       cookie: true,
@@ -11,26 +10,18 @@ const install = function (Vue, options) {
     window.FB.AppEvents.logPageView()
 
     window.FB.getLoginStatus((response) => {
-      console.log('status', response)
+      options.ready()
     })
-
-    Vue.$FB = window.FB
   }
-  Vue.$FB = null
 
   ;(function (d, s, id) {
-    console.log('starting', d, s, id)
     var js; var fjs = d.getElementsByTagName(s)[0]
-    console.log({ fjs })
     if (d.getElementById(id)) { return }
     js = d.createElement(s)
     js.id = id
-    js.src = 'https://connect.facebook.net/en_US/sdk.js'
     js.async = true
+    js.src = 'https://connect.facebook.net/en_US/sdk.js'
     fjs.parentNode.insertBefore(js, fjs)
-    console.log({ js })
-    console.log({ fjs })
-    console.log('ending')
   }(window.document, 'script', 'facebook-jssdk'))
 }
 

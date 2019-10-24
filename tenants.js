@@ -170,7 +170,8 @@ const tenantOptions = {
       legal: {
         docs: true,
         ssn: false
-      }
+      },
+      social: true
     }
   }
 }

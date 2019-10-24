@@ -15,6 +15,7 @@
               flat
               solo-inverted
               hide-details
+              :suffix="searchSuffix"
               clearable
               clear-icon="cancel"
               loading="searchLoading"
@@ -28,7 +29,7 @@
             :open.sync="open"
             activatable
             active-class="primary--text"
-            class="grey lighten-5"
+            class="grey lighten-5 pr-2"
             transition
           >
             <template slot="prepend" slot-scope="{ item, active }">
@@ -40,6 +41,9 @@
                 <span v-if="item.counts && item.counts.level1" :color="active ? 'primary' : ''" > ({{item.counts.level1}}) </span>
                 <span v-else-if="!item.id && frontline && frontline.length" :color="active ? 'primary' : ''" > ({{frontline.length}}) </span>
               </span>
+            </template>
+            <template slot="append" slot-scope="{ item }">
+              <span v-if="item.searchMatched" class="font-weight-black text-uppercase grey--text">Matched</span>
             </template>
           </v-treeview>
         </v-flex>
@@ -64,11 +68,11 @@
                 <h3 class="headline mb-2">
                   {{ selected.name }}
                 </h3>
-                <div class="primary--text mb-2">{{ selected.emails[0] }}</div>
+                <div v-if="selected.emails && selected.emails[0]" class="primary--text mb-2">{{ selected.emails[0] }}</div>
                 <div class="primary--text subheading font-weight-bold">{{membersTypeName}} #<b>{{selected.mrn}}</b></div>
               </v-card-text>
               <v-divider class="mb-3"></v-divider>
-              <div class="text-xs-center pa-2" v-if="selected.slugs[0]">
+              <div class="text-xs-center pa-2" v-if="selected.slugs && selected.slugs[0]">
                 <h3>Website</h3>
                 <a target="_blank" :href="$tenantInfo.storeUrl.replace('{slug}', selected.slugs[0])">
                   {{$tenantInfo.storeUrl.replace('{slug}', selected.slugs[0])}}
@@ -86,6 +90,7 @@
 <script>
 import Badges from '@/components/Badges.vue'
 import { MEMBER_STATS_BY_DEPTH } from '@/graphql/MemberStats.gql'
+import { SEARCH_MEMBER_DIRECTORY } from '@/graphql/Member.gql'
 import { mapGetters } from 'vuex'
 import { debounce } from 'lodash'
 
@@ -108,6 +113,7 @@ export default {
   },
   data() {
     return {
+      searchSuffix: null,
       active: [],
       avatar: null,
       open: [],
@@ -139,45 +145,34 @@ export default {
     clearSearch() {
       this.open = []
       this.searchResults = []
+      this.searchSuffix = null
     },
-    searchDirectory: debounce(function(searchTerm) {
+    searchDirectory: debounce(async function(searchTerm) {
       this.searchLoading = true
+      this.searchSuffix = null
       if (this.search) {
-        // Hardcoded for testing... this will come from the server
-        this.searchResults = [
-          {
-            id: 1,
-            displayName: 'test',
-            emails: ['dasfds'],
-            mrn: 324,
-            slugs: ['test'],
-            profileUrl: 'https://api.adorable.io/avatars/285/abott@adorable.png',
-            children: [
-              {
-                id: 2,
-                displayName: 'test1',
-                emails: ['dasfds'],
-                mrn: 324,
-                slugs: ['test'],
-                profileUrl: 'https://api.adorable.io/avatars/285/abott@adorable.png',
-                children: [
-                  {
-                    id: 3,
-                    displayName: 'Brenda Kradolfer',
-                    emails: ['dasfds'],
-                    mrn: 324,
-                    slugs: ['test'],
-                    profileUrl: 'https://api.adorable.io/avatars/285/abott@adorable.png'
-                  }
-                ]
-              }
-            ]
+        const { data } = await this.$apollo.query({
+          query: SEARCH_MEMBER_DIRECTORY,
+          variables: {
+            input: {
+              searchTerm: this.search,
+              showEmail: true
+            }
           }
-        ]
-        this.addSearchPeopleToList(this.searchResults)
+        })
+        const { searchTeamWithUpline } = data
+        if (Object.keys(searchTeamWithUpline).length > 0) {
+          this.searchResults = [searchTeamWithUpline]
+          this.addSearchPeopleToList(this.searchResults)
+        } else {
+          this.searchSuffix = '0 Results Found'
+        }
+      } else {
+        this.clearSearch()
       }
       this.searchLoading = false
     }, 500),
+
     addSearchPeopleToList(people) {
       people.forEach(p => {
         if (p.children) {

@@ -1,6 +1,7 @@
 import { apolloClient } from '@/vue-apollo'
 import LOGIN from '@/graphql/Login.gql'
 import UPDATE_PROFILE from '@/graphql/MemberPartialUpdate.gql'
+import { CREATE_MEMBER_INTEGRATION } from '@/graphql/Integrations'
 import { ADJUST_TAGS } from '@/graphql/Member.gql'
 import _ from 'lodash'
 
@@ -8,7 +9,9 @@ export const UserActions = {
   LOGIN: 'login',
   LOGIN_SUCCESS: 'loginSuccess',
   SAVE_PROFILE: 'saveProfile',
-  ADJUST_TAGS: 'adjustTags'
+  ADJUST_TAGS: 'adjustTags',
+  CREATE_INTEGRATION: 'createIntegration',
+  REMOVE_INTEGRATION: 'removeIntegration'
 }
 
 export const UserMutations = {
@@ -19,6 +22,7 @@ export const UserMutations = {
   TOGGLE_IMPERSONATION: 'toggleImpersonation',
   SET_PROFILE: 'setProfilePic',
   ADD_INTEGRATION: 'addTenantIntegration',
+  REMOVE_INTEGRATION: 'removeTenantIntegration',
   SET_SLUG: 'user:setSlug',
   SET_TAGS: 'user:setTags'
 }
@@ -35,7 +39,16 @@ export const UserStore = {
   state: {
     jwt: null,
     loginError: null,
-    principal: null,
+    principal: {
+      memberId: null,
+      member: {
+        tenantIntegrations: [],
+        displayName: null,
+        contacts: [],
+        slugs: [],
+        customer: null
+      }
+    },
     isImpersonating: false,
     version: 2
   },
@@ -62,6 +75,10 @@ export const UserStore = {
     },
     [UserMutations.ADD_INTEGRATION]: (state, integration) => {
       state.principal.member.tenantIntegrations.push(integration)
+    },
+    [UserMutations.REMOVE_INTEGRATION]: (state, integration) => {
+      const index = state.principal.member.tenantIntegrations.findIndex(i => integration.id === i.id)
+      state.principal.member.tenantIntegrations.splice(index, 1)
     },
     [UserMutations.SET_SLUG]: (state, slug) => {
       state.principal = {
@@ -122,10 +139,39 @@ export const UserStore = {
           input
         }
       })
-      console.log({ data })
 
       commit(UserMutations.SET_TAGS, data.adjustTags.tags)
       return data.adjustTags.tags
+    },
+    async [UserActions.CREATE_INTEGRATION]({ commit }, { command, tenantIntegrationId, data }) {
+      return apolloClient.mutate({
+        mutation: CREATE_MEMBER_INTEGRATION,
+        variables: {
+          input: {
+            command,
+            tenantIntegrationId,
+            data
+          }
+        },
+        update: (store, { data: { integrationCommand } }) => {
+          commit(UserMutations.ADD_INTEGRATION, integrationCommand)
+        }
+      })
+    },
+    async [UserActions.REMOVE_INTEGRATION]({ commit }, { command, tenantIntegrationId, data }) {
+      return apolloClient.mutate({
+        mutation: CREATE_MEMBER_INTEGRATION,
+        variables: {
+          input: {
+            command,
+            tenantIntegrationId,
+            data
+          }
+        },
+        update: (store, { data: { integrationCommand } }) => {
+          commit(UserMutations.REMOVE_INTEGRATION, integrationCommand)
+        }
+      })
     }
   },
   getters: {
@@ -158,6 +204,7 @@ export const UserStore = {
         state.principal.member.customer &&
         state.principal.member.customer.subscriptions
       )
-    }
+    },
+    tenantIntegrations: state => state.principal && state.principal.member && state.principal.member.tenantIntegrations
   }
 }
