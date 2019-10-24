@@ -9,6 +9,8 @@ export const CREATE_MEMBER_INTEGRATION = gql`
       integrationStatusId
       metadata
       priority
+      key
+      name
     }
   }
 `

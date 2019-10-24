@@ -31,17 +31,8 @@
         </v-tab>
 
         <v-tab-item value="profile" class="py-3">
+          <h3>Personal Information</h3>
           <v-layout row wrap justify-space-around>
-            <v-flex xs12 sm3>
-              <div class="mx-auto">
-                <img class="image" :src="getAvatar">
-              </div>
-              <FileUpload
-                @profile="makeProfilePic"
-                label="Upload Profile"
-                :isProfilePic="true"
-              />
-            </v-flex>
             <v-flex xs12 sm6>
               <PersonalForm
                 ref="personal"
@@ -50,9 +41,25 @@
                 :saveData="saveData"
                 :saving="saving"
                 @hasBirthday="checkAlert"
-              />
+              >
+                <v-avatar slot="profilePic" size="124" class="avatar" color="white" @click="showProfilePicDialog = true">
+                  <v-img v-if="principal.member.profileUrl || $tenantInfo.placeholder" :src="principal.member.profileUrl || $tenantInfo.placeholder" class="mb-4" ></v-img>
+                  <v-gravatar v-else default-img="mp" :email="principal.member.contacts[0].emails[0].email" class="mb-4"/>
+                </v-avatar>
+              </PersonalForm>
             </v-flex>
           </v-layout>
+          <div v-if="$tenantInfo.features.social">
+            <v-divider class="my-5"/>
+            <h3>Social Accounts</h3>
+            <Social :key="tenantIntegrations.length"/>
+          </div>
+          <FileUpload
+            @dialogClosed="showProfilePicDialog = false"
+            @profile="makeProfilePic"
+            :isProfilePic="true"
+            :shouldShow="showProfilePicDialog"
+          />
         </v-tab-item>
 
         <v-tab-item value="address" class="px-4">
@@ -85,6 +92,7 @@
 </template>
 
 <script>
+import Social from '@/components/profile/Social.vue'
 import PersonalForm from '@/components/profile/Personal.vue'
 import LegalForm from '@/components/profile/Legal.vue'
 import AddressForm from '@/components/AddressForm.vue'
@@ -93,8 +101,8 @@ import UPDATE_PROFILE from '@/graphql/MemberPartialUpdate.gql'
 import FileUpload from '@/components/FileUpload.vue'
 import Rules from './Rules.js'
 import { Mutations } from '@/store'
-import { UserMutations } from '@/stores/UserStore'
-import { mapMutations, mapGetters, mapState } from 'vuex'
+import { UserMutations, UserActions } from '@/stores/UserStore'
+import { mapMutations, mapGetters, mapState, mapActions } from 'vuex'
 import { getAsset } from '@/utils/AssetService'
 import { CONTACT_UPSERT, CONTACT_EMAIL_UPSERT } from '@/graphql/Contacts.js'
 import { USERNAME_UPSERT } from '@/graphql/iam.js'
@@ -105,12 +113,14 @@ const SUCCESS_COLOR = 'primary'
 export default {
   components: {
     PersonalForm,
+    Social,
     AddressForm,
     LegalForm,
     FileUpload
   },
   data() {
     return {
+      showProfilePicDialog: false,
       modal: false,
       visible: false,
       password: '',
@@ -154,11 +164,15 @@ export default {
         address: false,
         birthday: false,
         legal: false
+      },
+      social: {
+        facebook: null
       }
     }
   },
   methods: {
     ...mapMutations([Mutations.SET_GATE, UserMutations.SET_PROFILE, UserMutations.SET_PRINCIPAL, Mutations.SET_LOADING]),
+    ...mapActions([UserActions.SAVE_PROFILE]),
     checkAlert (value) {
       this.alert[value.type] = !value.isSet
       if (!this.alert.address && !this.alert.legal) {
@@ -169,17 +183,8 @@ export default {
       try {
         this.setLoading(true)
         this.editMember.profileUrl = getAsset(asset.id)
-        await this.$apollo.mutate({
-          mutation: UPDATE_PROFILE,
-          variables: {
-            input: {
-              id: this.editMember.id,
-              profileUrl: this.editMember.profileUrl
-            }
-          }
-        })
+        await this.saveProfile({ memberId: this.principal.member.id, profileUrl: this.editMember.profileUrl })
         this.setLoading(false)
-        this.setProfilePic(this.editMember.profileUrl)
         this.isFalse = false
         this.isUploading = false
         this.isSaving = false
@@ -326,7 +331,7 @@ export default {
       this.snackbar = true
     }
   },
-  async mounted() {
+  async created() {
     await this.getMembers()
   },
   watch: {
@@ -339,7 +344,7 @@ export default {
       principal: state => state.user.principal,
       loading: state => state.loading
     }),
-    ...mapGetters(['contactId']),
+    ...mapGetters(['contactId', 'tenantIntegrations']),
     birthdate () {
       return this.editMember.birthdate
     },
@@ -361,5 +366,31 @@ export default {
 <style scoped>
 .image {
   width: 100%;
+}
+.profile .avatar {
+  position: relative;
+  padding-top: 19px;
+}
+.profile .avatar .v-responsive,
+.profile .avatar img {
+  border: 3px solid white;
+}
+
+.profile .avatar::after{
+  content: 'camera_alt';
+  font-family: 'Material Icons';
+  font-size: 78px;
+  display: none;
+  position: absolute;
+  top: 0px;
+  right: 2px;
+  bottom: 2px;
+  left: 2px;
+  background-color: rgba(255,255,255,0.5);
+  border-radius: 100%;
+  cursor: pointer;
+}
+.profile .avatar:hover::after{
+  display: block;
 }
 </style>

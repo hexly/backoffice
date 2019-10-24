@@ -6,14 +6,30 @@
       </v-card-title>
       <v-layout justify-space-between row wrap>
         <v-flex xs12 sm5>
+          <v-sheet class="pa-3 accent">
+            <v-text-field
+              v-model="search"
+              :label="`Search ${title}`"
+              @keyup="searchDirectory"
+              dark
+              flat
+              solo-inverted
+              hide-details
+              :suffix="searchSuffix"
+              clearable
+              clear-icon="cancel"
+              loading="searchLoading"
+              @click:clear="clearSearch"
+            ></v-text-field>
+          </v-sheet>
           <v-treeview
             :active.sync="active"
-            :items="items"
+            :items="searchResults.length ? searchResults : items"
             :load-children="fetchUsers"
             :open.sync="open"
             activatable
             active-class="primary--text"
-            class="grey lighten-5"
+            class="grey lighten-5 pr-2"
             transition
           >
             <template slot="prepend" slot-scope="{ item, active }">
@@ -25,6 +41,9 @@
                 <span v-if="item.counts && item.counts.level1" :color="active ? 'primary' : ''" > ({{item.counts.level1}}) </span>
                 <span v-else-if="!item.id && frontline && frontline.length" :color="active ? 'primary' : ''" > ({{frontline.length}}) </span>
               </span>
+            </template>
+            <template slot="append" slot-scope="{ item }">
+              <span v-if="item.searchMatched" class="font-weight-black text-uppercase grey--text">Matched</span>
             </template>
           </v-treeview>
         </v-flex>
@@ -49,11 +68,11 @@
                 <h3 class="headline mb-2">
                   {{ selected.name }}
                 </h3>
-                <div class="primary--text mb-2">{{ selected.emails[0] }}</div>
+                <div v-if="selected.emails && selected.emails[0]" class="primary--text mb-2">{{ selected.emails[0] }}</div>
                 <div class="primary--text subheading font-weight-bold">{{membersTypeName}} #<b>{{selected.mrn}}</b></div>
               </v-card-text>
               <v-divider class="mb-3"></v-divider>
-              <div class="text-xs-center pa-2" v-if="selected.slugs[0]">
+              <div class="text-xs-center pa-2" v-if="selected.slugs && selected.slugs[0]">
                 <h3>Website</h3>
                 <a target="_blank" :href="$tenantInfo.storeUrl.replace('{slug}', selected.slugs[0])">
                   {{$tenantInfo.storeUrl.replace('{slug}', selected.slugs[0])}}
@@ -71,7 +90,9 @@
 <script>
 import Badges from '@/components/Badges.vue'
 import { MEMBER_STATS_BY_DEPTH } from '@/graphql/MemberStats.gql'
+import { SEARCH_MEMBER_DIRECTORY } from '@/graphql/Member.gql'
 import { mapGetters } from 'vuex'
+import { debounce } from 'lodash'
 
 export default {
   components: {
@@ -92,12 +113,16 @@ export default {
   },
   data() {
     return {
+      searchSuffix: null,
       active: [],
       avatar: null,
       open: [],
       users: [],
       allPeople: [],
-      addedToUsers: []
+      addedToUsers: [],
+      search: null,
+      searchLoading: false,
+      searchResults: []
     }
   },
   computed: {
@@ -117,6 +142,49 @@ export default {
     }
   },
   methods: {
+    clearSearch() {
+      this.open = []
+      this.searchResults = []
+      this.searchSuffix = null
+    },
+    searchDirectory: debounce(async function(searchTerm) {
+      this.searchLoading = true
+      this.searchSuffix = null
+      if (this.search) {
+        const { data } = await this.$apollo.query({
+          query: SEARCH_MEMBER_DIRECTORY,
+          variables: {
+            input: {
+              searchTerm: this.search,
+              showEmail: true
+            }
+          }
+        })
+        const { searchTeamWithUpline } = data
+        if (Object.keys(searchTeamWithUpline).length > 0) {
+          this.searchResults = [searchTeamWithUpline]
+          this.addSearchPeopleToList(this.searchResults)
+        } else {
+          this.searchSuffix = '0 Results Found'
+        }
+      } else {
+        this.clearSearch()
+      }
+      this.searchLoading = false
+    }, 500),
+
+    addSearchPeopleToList(people) {
+      people.forEach(p => {
+        if (p.children) {
+          this.addSearchPeopleToList(p.children)
+        }
+        this.open.push(p.id)
+        if (this.addedToUsers.indexOf(p.id) === -1) {
+          this.addedToUsers.push(p.id)
+          this.allPeople.push(p)
+        }
+      })
+    },
     async fetchUsers (item) {
       if (!item.id) {
         item.id = this.memberId

@@ -41,8 +41,8 @@
     <v-divider v-if="actions" class="primary"/>
     <v-card-actions v-if="actions" class="justify-space-between">
       <v-btn flat color="secondary" @click="viewTeam">View Team</v-btn>
-      <v-btn flat color="primary" v-if="isQualified">Qualified</v-btn>
-      <v-btn flat color=white disabled v-else>Unqualified</v-btn>
+      <!-- <v-btn flat color="primary" v-if="isQualified">Qualified</v-btn>
+      <v-btn flat color=white disabled v-else>Unqualified</v-btn> -->
     </v-card-actions>
 
   </v-card>
