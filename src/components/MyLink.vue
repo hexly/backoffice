@@ -25,12 +25,11 @@
       </v-alert>
       <v-text-field
         ref="slugField"
-        :loading="checkingSlug > 0"
+        :loading="checkingSlug"
         placeholder="my-personal-link"
         class="mb-3 slug-field edit-link"
         v-model="generateSlug"
-        @keyup.native="slugChanged"
-        @change="slugChanged"
+        @keyup="slugChanged"
         :rules="slugRule"
         :error-messages="slugErrors"
         outline
@@ -42,6 +41,7 @@
 </template>
 
 <script>
+import { debounce } from 'lodash'
 import { mapMutations, mapGetters } from 'vuex'
 import Rules from '@/views/Rules.js'
 import { CHECK_IF_UNIQUE_SLUG, ADD_MEMBER_SLUG } from '@/graphql/Slug'
@@ -56,7 +56,7 @@ export default {
     return {
       tempSlug: '',
       slugUnique: true,
-      checkingSlug: 0,
+      checkingSlug: false,
       slugErrors: [],
       slugRule: Rules.slugRule,
       checkSlug: null,
@@ -72,11 +72,30 @@ export default {
         this.copyTooltipText = 'Copy'
       }, 3000)
     },
-    slugChanged(event) {
+    slugChanged: debounce(async function(searchTerm) {
+      console.log(searchTerm)
       this.slugUnique = false
       this.slugErrors = []
-      this.$apollo.queries.checkSlug.refresh()
-    },
+      this.checkingSlug = true
+      const { data } = await this.$apollo.query({
+        query: CHECK_IF_UNIQUE_SLUG,
+        variables: {
+          input: {
+            tenantId,
+            slug: this.generateSlug
+          }
+        },
+        fetchPolicy: 'network-only'
+      })
+      const { checkSlug } = data
+      if (!checkSlug && this.generateSlug) {
+        this.slugUnique = true
+      } else if (checkSlug) {
+        this.slugErrors = ['Your link needs to be unique']
+      }
+      this.checkSlug = checkSlug
+      this.checkingSlug = false
+    }, 500),
     async saveSlug() {
       if (this.generateSlug) {
         this.savingSlug = true
@@ -108,32 +127,6 @@ export default {
       },
       set(val) {
         this.tempSlug = val.toLowerCase()
-      }
-    }
-  },
-  apollo: {
-    checkSlug: {
-      query: CHECK_IF_UNIQUE_SLUG,
-      variables() {
-        return {
-          input: {
-            tenantId,
-            slug: this.generateSlug
-          }
-        }
-      },
-      fetchPolicy: 'network-only',
-      loadingKey: 'checkingSlug',
-      skip() {
-        return !(!this.slug && this.generateSlug)
-      },
-      update({ checkSlug }) {
-        if (!checkSlug && this.generateSlug) {
-          this.slugUnique = true
-        } else if (checkSlug) {
-          this.slugErrors = ['Your link needs to be unique']
-        }
-        return checkSlug
       }
     }
   }
