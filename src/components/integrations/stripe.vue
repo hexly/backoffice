@@ -1,6 +1,6 @@
 <template>
   <div class="stripe-connect-integration">
-    <h2>Stripe Connect {{error}}</h2>
+    <h2>Stripe Connect</h2>
     <h3>Stripe Connect provides {{tenant.name}} the ability to send money directly to your bank account.</h3>
     <br />
     <v-alert type="error" :value="(error || localError)">{{error || localError}}</v-alert>
