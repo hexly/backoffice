@@ -1,20 +1,8 @@
 <template>
-  <v-app
-    id="backoffice"
-    :class="'tenant-' + tenant"
-  >
-    <v-snackbar
-      :timeout="0"
-      bottom
-      right
-      v-model="newVersionAvailable"
-    >
+  <v-app id="backoffice" :class="'tenant-' + tenant">
+    <v-snackbar :timeout="0" bottom right v-model="newVersionAvailable">
       New Version Available!
-      <v-btn
-        flat
-        @click="update"
-        color="primary"
-      >Click to update</v-btn>
+      <v-btn flat @click="update" color="primary">Click to update</v-btn>
     </v-snackbar>
     <router-view />
   </v-app>
@@ -37,6 +25,9 @@ export default {
   },
   methods: {
     async checkAppVersion () {
+      if (window.location.host.indexOf('localhost') >= 0) {
+        return false
+      }
       const response = await fetch('/manifest.json')
       const json = await response.json()
 
@@ -95,7 +86,7 @@ export default {
 
 #backoffice.tenant-1010 {
   background-image: none;
-  background-color: #14244C;
+  background-color: #14244c;
 }
 
 #nav {
@@ -111,8 +102,8 @@ export default {
   color: #42b983;
 }
 
-@media only screen and (max-width: 959px){
-  .container{
+@media only screen and (max-width: 959px) {
+  .container {
     padding: 2px !important;
   }
 }
