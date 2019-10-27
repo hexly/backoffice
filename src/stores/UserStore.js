@@ -74,10 +74,15 @@ export const UserStore = {
       state.principal.member.profileUrl = profileUrl
     },
     [UserMutations.ADD_INTEGRATION]: (state, integration) => {
-      state.principal.member.tenantIntegrations.push(integration)
+      const principal = _.cloneDeep(state.principal)
+      const arr = _.get(principal, 'member.tenantIntegrations', [])
+      principal.member.tenantIntegrations = [...arr, integration]
+      state.principal = principal
     },
     [UserMutations.REMOVE_INTEGRATION]: (state, integration) => {
-      const index = state.principal.member.tenantIntegrations.findIndex(i => integration.id === i.id)
+      const index = state.principal.member.tenantIntegrations.findIndex(
+        i => integration.id === i.id
+      )
       state.principal.member.tenantIntegrations.splice(index, 1)
     },
     [UserMutations.SET_SLUG]: (state, slug) => {
@@ -143,7 +148,10 @@ export const UserStore = {
       commit(UserMutations.SET_TAGS, data.adjustTags.tags)
       return data.adjustTags.tags
     },
-    async [UserActions.CREATE_INTEGRATION]({ commit }, { command, tenantIntegrationId, data }) {
+    async [UserActions.CREATE_INTEGRATION](
+      { commit },
+      { command, tenantIntegrationId, data }
+    ) {
       return apolloClient.mutate({
         mutation: CREATE_MEMBER_INTEGRATION,
         variables: {
@@ -155,10 +163,14 @@ export const UserStore = {
         },
         update: (store, { data: { integrationCommand } }) => {
           commit(UserMutations.ADD_INTEGRATION, integrationCommand)
+          return integrationCommand
         }
       })
     },
-    async [UserActions.REMOVE_INTEGRATION]({ commit }, { command, tenantIntegrationId, data }) {
+    async [UserActions.REMOVE_INTEGRATION](
+      { commit },
+      { command, tenantIntegrationId, data }
+    ) {
       return apolloClient.mutate({
         mutation: CREATE_MEMBER_INTEGRATION,
         variables: {
@@ -205,6 +217,9 @@ export const UserStore = {
         state.principal.member.customer.subscriptions
       )
     },
-    tenantIntegrations: state => state.principal && state.principal.member && state.principal.member.tenantIntegrations
+    tenantIntegrations: state =>
+      state.principal &&
+      state.principal.member &&
+      state.principal.member.tenantIntegrations
   }
 }
