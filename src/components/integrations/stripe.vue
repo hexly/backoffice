@@ -139,7 +139,7 @@ export default {
             last_name: this.lastName,
             dob: {
               day: bdate.date(),
-              month: bdate.month(),
+              month: bdate.month() + 1,
               year: bdate.year()
             },
             ssn_last_4: this.ssnLastFour
