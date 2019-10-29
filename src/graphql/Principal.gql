@@ -31,16 +31,6 @@ query principal {
           id
           email
         }
-        addresses {
-          id
-          name
-          street
-          street2
-          city
-          province
-          postalCode
-          country
-        }
       }
       profileUrl
       tenantIntegrations {

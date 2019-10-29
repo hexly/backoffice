@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="main">
     <v-navigation-drawer fixed v-model="drawer" app>
       <div v-if="$tenantInfo.logoPath" class="text-xs-center">
         <img :src="$tenantInfo.logoPath" class="logo" />
@@ -146,7 +146,7 @@
       ></v-progress-linear>
     </v-toolbar>
     <v-content>
-      <div class="main">
+      <div>
         <router-view />
       </div>
     </v-content>
@@ -294,9 +294,7 @@ export default {
 }
 
 .main {
-  margin: auto;
   background-color: #e5e5e5;
-  box-shadow: 1px 2px 6px -2px #000;
   min-height: 100vh;
 }
 

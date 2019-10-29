@@ -63,11 +63,13 @@
         </v-tab-item>
 
         <v-tab-item value="address" class="px-4">
-          <AddressForm
+          <!-- <AddressForm
             @addressSnackBarEmitSuccess="addressSnackBarEmitSuccess"
             @addressSnackBarEmitError="addressSnackBarEmitError"
             @hasAddress="checkAlert"
-          />
+          /> -->
+          <h3>Your Addresses</h3>
+          <Addresses />
         </v-tab-item>
         <v-tab-item  v-if="$tenantInfo.features.legal" value="legal" class="px-4">
           <LegalForm @hasLegal="checkAlert" :value="legal" />
@@ -95,6 +97,7 @@
 import Social from '@/components/profile/Social.vue'
 import PersonalForm from '@/components/profile/Personal.vue'
 import LegalForm from '@/components/profile/Legal.vue'
+import Addresses from '@/components/profile/Addresses.vue'
 import AddressForm from '@/components/AddressForm.vue'
 import GET_MEMBERS from '@/graphql/GetMembers.gql'
 import UPDATE_PROFILE from '@/graphql/MemberPartialUpdate.gql'
@@ -116,7 +119,8 @@ export default {
     Social,
     AddressForm,
     LegalForm,
-    FileUpload
+    FileUpload,
+    Addresses
   },
   data() {
     return {

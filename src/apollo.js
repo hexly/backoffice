@@ -64,7 +64,9 @@ export default function createApolloClient ({
   )
 
   // Apollo cache
-  const cache = new InMemoryCache()
+  const cache = new InMemoryCache({
+    addTypename: false
+  })
 
   const apolloClient = new ApolloClient({
     link,
