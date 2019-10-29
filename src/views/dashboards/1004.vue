@@ -27,6 +27,18 @@
         </v-card>
       </v-flex>
     </v-layout>
+    <v-subheader>My Link</v-subheader>
+    <v-layout row wrap justify-center class="pa-3">
+      <v-flex xs12 sm6>
+        <v-card>
+          <v-card-text>
+            <p class="title">Your Personal Store Link</p>
+            This is your personal link to your store. Share this link to sell products and to recruit people.
+            <MyLink />
+          </v-card-text>
+        </v-card>
+      </v-flex>
+    </v-layout>
     <v-subheader>Monthly Personal Stats</v-subheader>
     <v-layout row wrap justify-center fill-height>
       <v-flex xs12 sm4 md4 lg3 class="pa-3">
@@ -211,6 +223,7 @@ import LeaderBoard from '@/components/Leaderboard.vue'
 import FrontlineQualifiers from '@/components/FrontlineQualifiers.vue'
 import CompPlanLevel from '@/components/CompPlanLevel.vue'
 import MonthSelector from '@/components/MonthSelector.vue'
+import MyLink from '@/components/MyLink.vue'
 
 import { pathOr } from 'rambda'
 import { mapMutations, mapState, mapGetters } from 'vuex'
@@ -222,6 +235,7 @@ const tenantId = ~~process.env.VUE_APP_TENANT_ID
 export default {
   name: 'dashboard',
   components: {
+    MyLink,
     DashCard,
     MonthSelector,
     LeaderBoard,

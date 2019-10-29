@@ -1,5 +1,13 @@
 import gql from 'graphql-tag'
 
+export const DELETE_ADDRESS = gql`
+  mutation removeAddress($addressInput: AddressInput!) {
+    deleteAddress(input: $addressInput) {
+      id
+    }
+  }
+`
+
 export const UPDATE_ADDRESS = gql`
   mutation updateAddress($addressInput: AddressInput!) {
     updateAddress(input: $addressInput) {
@@ -11,6 +19,8 @@ export const UPDATE_ADDRESS = gql`
       province
       postalCode
       country
+      type
+      priority
     }
   }
 `
@@ -27,6 +37,7 @@ export const ADDRESS_BY_CONTACT_ID = gql`
       postalCode
       country
       type
+      priority
     }
   }
 `

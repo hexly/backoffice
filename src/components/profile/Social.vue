@@ -67,7 +67,6 @@ export default {
     }
   },
   mounted() {
-    console.log('Mounted... doing a thing')
     this.load()
   },
   methods: {
