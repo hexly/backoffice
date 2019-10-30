@@ -256,10 +256,6 @@ export default {
       update ({ getPrincipal }) {
         if (getPrincipal) {
           this.setPrincipal(getPrincipal)
-          const address = get(getPrincipal, 'member.contacts[0].addresses[0]')
-          if (!address) {
-            this.setGate(true)
-          }
           const integrations = get(getPrincipal, 'tenant.integrations')
           this.activeIntegrations = integrations.filter(i => {
             return this.integrations.indexOf(i.key) > -1 && i.statusId === 200
