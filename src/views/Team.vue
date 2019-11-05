@@ -134,7 +134,6 @@ export default {
         }
       },
       update ({ targetStats, firstLevelStats }) {
-        console.log({ firstLevelStats })
         if (targetStats.nodes.length > 0) {
           this.minDate = targetStats.nodes[0].joinedOn
         }
