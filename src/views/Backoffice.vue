@@ -228,7 +228,7 @@ export default {
   methods: {
     logout () {
       this.$store.dispatch(Actions.LOGOUT)
-      this.$router.go('/login')
+      window.location.reload(true)
     },
     ...mapMutations([Mutations.SET_GATE, UserMutations.SET_PRINCIPAL, Mutations.SET_LOADING]),
     ...mapActions({
