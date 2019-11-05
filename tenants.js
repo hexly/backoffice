@@ -133,7 +133,7 @@ const tenantOptions = {
     }
   },
   1010: {
-    name: 'Early Access Beauty',
+    name: 'Everra',
     // logoPath: '/img/1009/logo.jpg',
     // logoLoginPath: '/img/1009/logo.jpg',
     placeholder: '/img/1010/placeholder.png',
@@ -144,11 +144,11 @@ const tenantOptions = {
     accentColor: '#EB8381',
     storeUrl: 'https://www.earlyaccessbeauty.com/store/{slug}',
     corporateUrl: 'https://www.earlyaccessbeauty.com/',
-    encryptKey: 'luccii',
+    encryptKey: 'luccii', // leave this, it is important
     social: [
       {
         key: 'facebook',
-        url: 'https://www.facebook.com/groups/543677573058327/'
+        url: 'https://www.facebook.com/groups/EverraOfficial/'
       }
     ],
     agreements: [

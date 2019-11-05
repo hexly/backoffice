@@ -4,13 +4,13 @@
       <v-flex xs12 class="pa-2">
         <v-card>
           <v-card-title>
-            <p class="headline">Welcome to your Early Access Beauty Influencer Hub!</p>
+            <p class="headline">Welcome to your Everra Influencer Hub!</p>
           </v-card-title>
           <v-card-text>
             <p class="subheading">
-              Please also join our exclusive Early Access Beauty Facebook Group
+              Please also join our exclusive Everra Facebook Group
               where we can meet you and discuss what the future holds:
-              <a :href="$tenantInfo.social[0].url">Early Access Beauty Facebook Group</a>
+              <a :href="$tenantInfo.social[0].url">Everra Facebook Group</a>
             </p>
             <p v-if="!slug" class="subheading">
               Please also set your Personal Link (below). After setting your Personal Link,
@@ -18,11 +18,11 @@
               that may also be interested in joining this venture!
             </p>
             <p class="subheading">
-            Questions? Please email <a href="mailto:support@earlyaccessbeauty.com">support@earlyaccessbeauty.com</a>
+            Questions? Please email <a href="mailto:support@everra.com">support@everra.com</a>
             </p>
             Best,
             <br/>
-            Your Early Access Beauty Team
+            Team Everra
           </v-card-text>
         </v-card>
       </v-flex>
@@ -64,6 +64,31 @@
               icon="account_tree"
               :loading="loadingStats > 0"
             />
+          </v-flex>
+          <v-flex class="pa-2">
+            <v-card>
+              <v-card-text>
+                <p class="title">Early Access Incentive</p>
+                <p>To qualify, sponsor at least two Influencers during the Early Access period and help them become "Active" (or sell $50) during the first month of sales (you must also be Active). </p>
+                <ol>
+                  <li>$20/£16 for EVERY personally sponsored Active Influencer</li>
+                  <li>$5/£4 for EVERY Active Influencer on your Second Line.</li>
+                </ol>
+                <p>The qualification period begins on your enrollment date and ends when the company begins selling product.</p>
+                <v-layout row class="incentive">
+                  <v-flex class="incentive-count" xs6>
+                    {{personalStats.counts.level1}}
+                    <br/>
+                    Personally Sponsored
+                  </v-flex>
+                  <v-flex class="incentive-count" xs6>
+                    {{personalStats.counts.level2}}
+                    <br/>
+                    Second Line
+                  </v-flex>
+                </v-layout>
+              </v-card-text>
+            </v-card>
           </v-flex>
         </v-layout>
       </v-flex>
@@ -185,5 +210,17 @@ section .stat {
   font-size: 24px;
   color: #000000;
   font-weight: normal;
+}
+.dashboard .incentive{
+  margin: 15px -16px -16px -16px;
+}
+.dashboard .incentive-count{
+  border: 1px solid #eb8381;
+  text-align: center;
+  background-color: #eb8381;
+  color: white;
+  font-weight: bold;
+  text-transform: uppercase;
+  padding: 5px 0;
 }
 </style>

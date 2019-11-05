@@ -6,6 +6,8 @@ import { ClaimStore } from '@/stores/ClaimStore'
 import MemberStore from '@/Members/Store'
 import ContentStore from '@/modules/content/store'
 
+let loggedOut = false
+
 const {
   VUE_APP_API_ENDPOINT = 'http://localhost:3000',
   VUE_APP_TENANT_ID,
@@ -40,6 +42,7 @@ export const Actions = {
 
 const verifyPrincipal = async hydratedState => {
   if (!hydratedState || !hydratedState.principal) {
+    loggedOut = true
     localStorage.clear()
     window.location = '/'
   }
@@ -49,7 +52,9 @@ const DejaVue = {
   plugin: (init, localStorageName) => store => {
     store.commit(init)
     store.subscribe((mutation, state) => {
-      localStorage.setItem(localStorageName, JSON.stringify(state.user))
+      if (!loggedOut) {
+        localStorage.setItem(localStorageName, JSON.stringify(state.user))
+      }
     })
   },
   mutation: (localStorageName, setup) => state => {
@@ -89,6 +94,7 @@ export default new Vuex.Store({
   },
   actions: {
     [Actions.LOGOUT]: () => {
+      loggedOut = true
       localStorage.clear()
     },
     [Actions.AVATAR_UPLOAD]: async (context, { file }) => {

@@ -21,7 +21,7 @@ export const TEAM_QUERY = gql`
         profileUrl
       }
     }
-    team: members(first: 100, condition: $bySponsor) {
+    team: members(first: 500, condition: $bySponsor) {
       nodes {
         id
         tenantId
@@ -42,7 +42,7 @@ export const TEAM_QUERY = gql`
 
 export const TEAM_SPONSOR_QUERY = gql`
   query TeamByMemberId($bySponsor: MemberSearchCondition!) {
-    team: members(first: 100, condition: $bySponsor) {
+    team: members(first: 500, condition: $bySponsor) {
       nodes {
         id
         tenantId

@@ -1,36 +1,34 @@
 <template>
-  <div class="personal-card">
-    <v-card class="mx-auto">
-      <v-img
-          v-if="!$tenantInfo.profileColor"
-          class="white--text"
-          height="125px"
-          :src="$tenantInfo.profileCover || '/img/default-profile-cover.jpg'"
-        />
-      <div v-else class="profile-color" :style="`background-color: ${$tenantInfo.profileColor}`"></div>
-      <v-card-text class="text-xs-center">
-        <v-avatar size="124" class="avatar" color="white" @click="showProfilePicDialog = true">
-          <v-img v-if="user.principal.member.profileUrl || $tenantInfo.placeholder" :src="user.principal.member.profileUrl || $tenantInfo.placeholder" class="mb-4" ></v-img>
-          <v-gravatar v-else default-img="mp" :email="user.principal.member.contacts[0].emails[0].email" class="mb-4"/>
-        </v-avatar>
-        <h3 class="headline mb-2"> {{ user.principal.member.name }}</h3>
-        <div class="primary--text mb-2">{{ user.principal.member.email }}</div>
-        <div v-if="showMrn" class="primary--text subheading font-weight-bold">{{memberName || 'Member'}} #<b>{{user.principal.member.mrn}}</b></div>
-        <div v-if="user.principal.member.sponsor">
-          <b>{{sponsorName || 'Sponsor'}}:</b> {{user.principal.member.sponsor.displayName}}
-        </div>
-      </v-card-text>
+  <v-card class="personal-card mx-auto" height="100%">
+    <v-img
+        v-if="!$tenantInfo.profileColor"
+        class="white--text"
+        height="125px"
+        :src="$tenantInfo.profileCover || '/img/default-profile-cover.jpg'"
+      />
+    <div v-else class="profile-color" :style="`background-color: ${$tenantInfo.profileColor}`"></div>
+    <v-card-text class="text-xs-center">
+      <v-avatar size="124" class="avatar" color="white" @click="showProfilePicDialog = true">
+        <v-img v-if="user.principal.member.profileUrl || $tenantInfo.placeholder" :src="user.principal.member.profileUrl || $tenantInfo.placeholder" class="mb-4" ></v-img>
+        <v-gravatar v-else default-img="mp" :email="user.principal.member.contacts[0].emails[0].email" class="mb-4"/>
+      </v-avatar>
+      <h3 class="headline mb-2"> {{ user.principal.member.name }}</h3>
+      <div class="primary--text mb-2">{{ user.principal.member.email }}</div>
+      <div v-if="showMrn" class="primary--text subheading font-weight-bold">{{memberName || 'Member'}} #<b>{{user.principal.member.mrn}}</b></div>
+      <div v-if="user.principal.member.sponsor">
+        <b>{{sponsorName || 'Sponsor'}}:</b> {{user.principal.member.sponsor.displayName}}
+      </div>
+    </v-card-text>
+    <v-divider class="mb-3"></v-divider>
+      <div class="text-xs-center pa-2">
+        <h3 class="mb-4">Your Personal Link</h3>
+        <MyLink />
+        <PrivateProfile />
+      </div>
       <v-divider class="mb-3"></v-divider>
-        <div class="text-xs-center pa-2">
-          <h3 class="mb-4">Your Personal Link</h3>
-          <MyLink />
-          <PrivateProfile />
-        </div>
-        <v-divider class="mb-3"></v-divider>
-        <slot name="footer"></slot>
-    </v-card>
+      <slot name="footer"></slot>
     <FileUpload @dialogClosed="uploadDialogClosed" :shouldShow="showProfilePicDialog" @profile="makeProfilePic" :isProfilePic="true" />
-  </div>
+  </v-card>
 </template>
 
 <script>
