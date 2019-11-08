@@ -12,7 +12,7 @@
         @click="checkLoginState"
         :loading="loading"
         :disabled="loading"
-      > Link A Facebook Account
+      > Link Facebook
       </v-btn>
     </div>
   </div>
@@ -68,7 +68,7 @@ export default {
       return (res) => {
         if (res && res.data) {
           const ids = res.data.map(e => e.id)
-          this.$emit('sync', { auth, ids, key: 'facebook', profileUrl: this.pic(auth.userId) })
+          this.$emit('sync', { auth, ids, key: 'facebook', profileUrl: this.pic(auth.userID) })
         }
       }
     },

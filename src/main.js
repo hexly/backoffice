@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Vuetify from 'vuetify'
 import VueClipboard from 'vue-clipboard2'
 import Gravatar from 'vue-gravatar'
+import VueAnalytics from 'vue-analytics'
 import 'vuetify/dist/vuetify.min.css'
 
 import moment from 'moment'
@@ -84,6 +85,13 @@ window.zE &&
       })
     }
   })
+
+if (process.env.VUE_APP_GA_ID) {
+  Vue.use(VueAnalytics, {
+    id: process.env.VUE_APP_GA_ID,
+    router
+  })
+}
 
 Vue.prototype.$tenantInfo = tenantInfo
 Vue.prototype.$moment = moment
