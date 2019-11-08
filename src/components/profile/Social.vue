@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-layout row wrap justify-center class="my-2">
-      <v-flex xs12 md4>
+      <v-flex xs12 md6 lg4 class="text-xs-center">
         <Facebook
           ref="facebook"
           v-if="social['facebook']"
