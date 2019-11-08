@@ -30,7 +30,16 @@
     <v-layout row wrap>
       <v-flex xs12 md6 class="pa-2">
         <PersonalCard memberName="Your Influencer Number:">
-          <Badges slot="footer" v-if="member.joinedOn" :joinedOn="member.joinedOn"/>
+          <div slot="footer">
+            <Badges v-if="member.joinedOn" :joinedOn="member.joinedOn"/>
+            <div v-if="tenantIntegrations.length === 0">
+              <h3 class="text-xs-center">Social Accounts<sup>*</sup></h3>
+              <div class="text-xs-center">
+                <small> Once linked, you can access your social accounts in your profile page </small>
+              </div>
+              <Social :key="tenantIntegrations.length"/>
+            </div>
+          </div>
         </PersonalCard>
       </v-flex>
       <v-flex xs12 md6>
@@ -99,6 +108,7 @@
 </template>
 
 <script>
+import Social from '@/components/profile/Social.vue'
 import PersonalCard from '@/components/dashboard/PersonalCard.vue'
 import Directory from '@/components/dashboard/Directory.vue'
 import DashCard from '@/components/DashboardCard.vue'
@@ -119,7 +129,8 @@ export default {
     PersonalCard,
     Directory,
     CompanyMap,
-    Badges
+    Badges,
+    Social
   },
   data() {
     return {
@@ -154,7 +165,7 @@ export default {
     ...mapState({
       user: state => state.user
     }),
-    ...mapGetters(['contactId', 'memberId', 'member', 'slug'])
+    ...mapGetters(['contactId', 'memberId', 'member', 'slug', 'tenantIntegrations'])
   },
   apollo: {
     team: {
