@@ -51,14 +51,21 @@ if ('serviceWorker' in navigator) {
 window.zE &&
   window.zE('webWidget:on', 'open', () => {
     const principal = _.get(store, 'state.user.principal', {})
-    if (principal) {
+    if (principal && principal.member) {
       const {
-        displayName,
+        member: {
+          displayName,
+          contacts
+        },
         memberId,
         identityId,
-        username,
-        contactEmail
+        username
       } = principal
+
+      let contactEmail
+      if (contacts && Array.isArray(contacts) && Array.isArray(contacts[0].emails)) {
+        contactEmail = contacts[0].emails[0].email
+      }
 
       const name = displayName
       const email = contactEmail || username
@@ -77,10 +84,6 @@ window.zE &&
         email: {
           value: email,
           readOnly: true // optional
-          // },
-          // phone: {
-          //   value: '61431909749',
-          //   readOnly: true // optional
         }
       })
     }
