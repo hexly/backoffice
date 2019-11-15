@@ -24,7 +24,8 @@ export const UserMutations = {
   ADD_INTEGRATION: 'addTenantIntegration',
   REMOVE_INTEGRATION: 'removeTenantIntegration',
   SET_SLUG: 'user:setSlug',
-  SET_TAGS: 'user:setTags'
+  SET_TAGS: 'user:setTags',
+  RESET: 'user:reset'
 }
 
 const parseLegacyPrincipal = principal => {
@@ -35,8 +36,8 @@ const parseLegacyPrincipal = principal => {
   return updated
 }
 
-export const UserStore = {
-  state: {
+const defaultState = () => {
+  return {
     jwt: null,
     loginError: null,
     principal: {
@@ -51,11 +52,21 @@ export const UserStore = {
     },
     isImpersonating: false,
     version: 2
-  },
+  }
+}
+
+export const UserStore = {
+  state: defaultState(),
   mutations: {
     storeInit: (state, a, b, c) => {
       // TODO: check state for principal / jwt; if exists, fetch JWT and set the principal again...
       // if call fails, logout / dump state / whatever we do on logout
+    },
+    [UserMutations.RESET]: (state) => {
+      const defState = defaultState()
+      Object.keys(state).forEach(key => {
+        state[key] = defState[key]
+      })
     },
     [UserMutations.SET_JWT]: (state, jwt) => {
       state.jwt = jwt
