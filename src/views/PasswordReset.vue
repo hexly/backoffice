@@ -5,7 +5,7 @@
         <v-flex xs12 sm8 md8>
           <v-card class="elevation-12">
             <v-toolbar dark color="secondary">
-              <v-toolbar-title>Account Creation</v-toolbar-title>
+              <v-toolbar-title>Password Reset</v-toolbar-title>
             </v-toolbar>
             <v-card-text>
               <img class="logo" :src="logoPath"/>
