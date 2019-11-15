@@ -47,7 +47,6 @@ export default new Router({
       component: PasswordReset,
       beforeEnter: (_, __, next) => {
         store.commit(`user:reset`)
-        debugger
         next()
       }
     },
