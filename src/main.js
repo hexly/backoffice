@@ -63,7 +63,7 @@ window.zE &&
       } = principal
 
       let contactEmail
-      if (contacts && Array.isArray(contacts) && Array.isArray(contacts[0].emails)) {
+      if (contacts && contacts.length && contacts[0].emails.length) {
         contactEmail = contacts[0].emails[0].email
       }
 
