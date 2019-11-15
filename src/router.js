@@ -45,8 +45,11 @@ export default new Router({
       path: '/account/reset/:token/:email',
       name: 'password-rest',
       component: PasswordReset,
-      beforeEnter: (_, __, next) =>
-        store.state.user.jwt ? next('/dashboard') : next()
+      beforeEnter: (_, __, next) => {
+        store.commit(`user:reset`)
+        debugger
+        next()
+      }
     },
     {
       path: '/zendesk/',
