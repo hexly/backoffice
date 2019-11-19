@@ -51,7 +51,7 @@
         </v-layout>
       </v-flex>
     </v-layout>
-    <Directory class="pa-2" :self="personalStats" :frontline="team" title="Your Kyngdom" :badges="false" membersTypeName="Affiliate"/>
+    <Directory class="pa-2" :self="personalStats" :frontline="team" title="My Team" :badges="false" membersTypeName="Affiliate"/>
     <v-subheader>Statistics</v-subheader>
     <v-layout row wrap justify-space-between fill-height>
       <v-flex xs12 md4 class="pa-4">
