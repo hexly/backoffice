@@ -42,7 +42,7 @@ export default {
       return this.$moment(this.joinedOn).isBefore('2020-04-01')
     },
     isEarlyAccess() {
-      return this.$moment(this.joinedOn).isBefore('2019-11-25')
+      return this.$moment(this.joinedOn).isBefore('2019-11-21T00:00:00.000Z')
     }
   }
 }

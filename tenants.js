@@ -142,8 +142,8 @@ const tenantOptions = {
     primaryColor: '#3e5b06',
     secondaryColor: '#F2AE45',
     accentColor: '#EB8381',
-    storeUrl: 'https://www.earlyaccessbeauty.com/store/{slug}',
-    corporateUrl: 'https://www.earlyaccessbeauty.com/',
+    storeUrl: 'https://www.everra.com/store/{slug}',
+    corporateUrl: 'https://www.everra.com/',
     encryptKey: 'luccii', // leave this, it is important
     social: [
       {
