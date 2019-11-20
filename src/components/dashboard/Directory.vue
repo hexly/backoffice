@@ -72,6 +72,35 @@
                 <div class="primary--text subheading font-weight-bold">{{membersTypeName}} #<b>{{selected.mrn}}</b></div>
               </v-card-text>
               <v-divider class="mb-3"></v-divider>
+              <div class="text-xs-center pa-2">
+                <h3>Team</h3>
+                <v-layout row wrap class="text-xs-center">
+                  <v-flex xs3>
+                    <span v-if="!loadingCounts" class="font-weight-black title">{{selected.counts.total}}</span>
+                    <v-progress-circular v-else indeterminate :size="15" :width="2" color="black"></v-progress-circular>
+                    <br/>
+                    Team Size
+                  </v-flex>
+                  <v-flex xs3>
+                    <span v-if="!loadingCounts" class="font-weight-black title">{{selected.counts.level1}}</span>
+                    <v-progress-circular v-else indeterminate :size="15" :width="2" color="black"></v-progress-circular>
+                    <br/>
+                    Front-Line
+                  </v-flex>
+                  <v-flex xs3>
+                    <span v-if="!loadingCounts" class="font-weight-black title">{{selected.counts.level2}}</span>
+                    <v-progress-circular v-else indeterminate :size="15" :width="2" color="black"></v-progress-circular>
+                    <br/>
+                    Second line
+                  </v-flex>
+                  <v-flex xs3>
+                    <span v-if="!loadingCounts" class="font-weight-black title">{{selected.counts.level3}}</span>
+                    <v-progress-circular v-else indeterminate :size="15" :width="2" color="black"></v-progress-circular>
+                    <br/>
+                    Third line
+                  </v-flex>
+                </v-layout>
+              </div>
               <div class="text-xs-center pa-2" v-if="selected.slugs && selected.slugs[0]">
                 <h3>Website</h3>
                 <a target="_blank" :href="$tenantInfo.storeUrl.replace('{slug}', selected.slugs[0])">
@@ -122,7 +151,8 @@ export default {
       addedToUsers: [],
       search: null,
       searchLoading: false,
-      searchResults: []
+      searchResults: [],
+      loadingCounts: false
     }
   },
   computed: {
@@ -138,7 +168,12 @@ export default {
     selected () {
       if (!this.active.length) return undefined
       const id = this.active[0]
-      return this.allPeople.find(user => user.id === id)
+      const selectedMember = this.allPeople.find(user => user.id === id)
+      if (!selectedMember.counts) {
+        selectedMember.counts = {}
+        this.loadMoreMemberInfo(selectedMember)
+      }
+      return selectedMember
     }
   },
   methods: {
@@ -184,6 +219,20 @@ export default {
           this.allPeople.push(p)
         }
       })
+    },
+    async loadMoreMemberInfo (member) {
+      this.loadingCounts = true
+      const { data: { getTeamDataByDepth } } = await this.$apollo.query({
+        query: MEMBER_STATS_BY_DEPTH,
+        variables: {
+          input: {
+            relativeDepthIn: [0],
+            targetId: member.id
+          }
+        }
+      })
+      member.counts = getTeamDataByDepth[0].counts
+      this.loadingCounts = false
     },
     async fetchUsers (item) {
       if (!item.id) {

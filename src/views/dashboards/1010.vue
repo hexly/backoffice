@@ -28,19 +28,48 @@
       </v-flex>
     </v-layout>
     <v-layout row wrap>
-      <v-flex xs12 md6 class="pa-2">
-        <PersonalCard memberName="Your Influencer Number:">
-          <div slot="footer">
-            <Badges v-if="member.joinedOn" :joinedOn="member.joinedOn"/>
-            <div v-if="tenantIntegrations.length === 0">
-              <h3 class="text-xs-center">Social Accounts<sup>*</sup></h3>
-              <div class="text-xs-center">
-                <small> Once linked, you can access your social accounts in your profile page </small>
+      <v-flex xs12 md6>
+        <v-layout column>
+          <v-flex  class="pa-2">
+            <PersonalCard memberName="Your Influencer Number:">
+              <div slot="footer">
+                <Badges v-if="member.joinedOn" :joinedOn="member.joinedOn"/>
+                <div v-if="tenantIntegrations.length === 0">
+                  <h3 class="text-xs-center">Social Accounts<sup>*</sup></h3>
+                  <div class="text-xs-center">
+                    <small> Once linked, you can access your social accounts in your profile page </small>
+                  </div>
+                  <Social :key="tenantIntegrations.length"/>
+                </div>
               </div>
-              <Social :key="tenantIntegrations.length"/>
-            </div>
-          </div>
-        </PersonalCard>
+            </PersonalCard>
+          </v-flex>
+          <v-flex class="pa-2">
+            <v-card>
+              <v-card-text>
+                <p class="title">Early Access Incentive</p>
+                <p>To qualify, sponsor at least two Influencers during the Early Access period and help them become "Active" (or sell $50) during the first month of sales (you must also be Active). </p>
+                <ol>
+                  <li>$20/£16 for EVERY personally sponsored Active Influencer</li>
+                  <li>$5/£4 for EVERY Active Influencer on your Second Line.</li>
+                </ol>
+                <p>The qualification period begins on your enrollment date and ends when the company begins selling product.</p>
+                <v-layout row class="incentive">
+                  <v-flex class="incentive-count" xs6>
+                    {{personalStats.counts.level1}}
+                    <br/>
+                    Personally Sponsored
+                  </v-flex>
+                  <v-flex class="incentive-count" xs6>
+                    {{personalStats.counts.level2}}
+                    <br/>
+                    Second Line
+                  </v-flex>
+                </v-layout>
+              </v-card-text>
+            </v-card>
+          </v-flex>
+        </v-layout>
       </v-flex>
       <v-flex xs12 md6>
         <v-layout fill-height column justify-space-between>
@@ -69,35 +98,30 @@
               color="white"
               darken="1"
               :display="personalStats.counts.level1"
-              subheading="Your Front-Line Size"
+              subheading="Personally Sponsored"
               icon="account_tree"
               :loading="loadingStats > 0"
             />
           </v-flex>
           <v-flex class="pa-2">
-            <v-card>
-              <v-card-text>
-                <p class="title">Early Access Incentive</p>
-                <p>To qualify, sponsor at least two Influencers during the Early Access period and help them become "Active" (or sell $50) during the first month of sales (you must also be Active). </p>
-                <ol>
-                  <li>$20/£16 for EVERY personally sponsored Active Influencer</li>
-                  <li>$5/£4 for EVERY Active Influencer on your Second Line.</li>
-                </ol>
-                <p>The qualification period begins on your enrollment date and ends when the company begins selling product.</p>
-                <v-layout row class="incentive">
-                  <v-flex class="incentive-count" xs6>
-                    {{personalStats.counts.level1}}
-                    <br/>
-                    Personally Sponsored
-                  </v-flex>
-                  <v-flex class="incentive-count" xs6>
-                    {{personalStats.counts.level2}}
-                    <br/>
-                    Second Line
-                  </v-flex>
-                </v-layout>
-              </v-card-text>
-            </v-card>
+            <DashCard
+              color="white"
+              darken="1"
+              :display="personalStats.counts.level2"
+              subheading="Second Line Size"
+              icon="looks_two"
+              :loading="loadingStats > 0"
+            />
+          </v-flex>
+          <v-flex class="pa-2">
+            <DashCard
+              color="white"
+              darken="1"
+              :display="personalStats.counts.level3"
+              subheading="Third Line Size"
+              icon="looks_3"
+              :loading="loadingStats > 0"
+            />
           </v-flex>
         </v-layout>
       </v-flex>
