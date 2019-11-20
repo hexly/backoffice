@@ -137,7 +137,7 @@ const tenantOptions = {
     // logoPath: '/img/1009/logo.jpg',
     // logoLoginPath: '/img/1009/logo.jpg',
     placeholder: '/img/1010/placeholder.png',
-    profileColor: '#fee541',
+    profileColor: '#FFFA77',
     baseColor: '#14244C',
     primaryColor: '#3e5b06',
     secondaryColor: '#F2AE45',
