@@ -33,16 +33,13 @@ export default {
   computed: {
     birthday() {
       const time = this.$moment(this.joinedOn).toNow(true)
-      if (time === 'a year') {
-        return '1 year'
-      }
-      return time
+      return time.replace('a ', '1 ')
     },
     isFounder() {
       return this.$moment(this.joinedOn).isBefore('2020-04-01')
     },
     isEarlyAccess() {
-      return this.$moment(this.joinedOn).isBefore('2019-11-21T00:00:00.000Z')
+      return this.$moment(this.joinedOn).isBefore('2019-11-20T20:00:00.000Z')
     }
   }
 }
