@@ -12,6 +12,8 @@
   },
   "dependencies": {
     "@babel/plugin-syntax-dynamic-import": "7.2.0",
+    "@sentry/browser": "5.9.1",
+    "@sentry/integrations": "5.8.0",
     "@vue/cli-plugin-babel": "3.11.0",
     "@vue/cli-plugin-eslint": "3.11.0",
     "@vue/cli-plugin-pwa": "3.11.0",

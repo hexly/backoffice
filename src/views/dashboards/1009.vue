@@ -7,12 +7,6 @@
           <div slot="footer" class="text-xs-center">
             <p class="headline">Badges</p>
             <BirthdayBadge :joinedOn="member.joinedOn" />
-            <v-chip v-if="subscriptionLevel" color="secondary" text-color="white">
-              <v-avatar class="secondary darken-4">
-                <v-icon>star</v-icon>
-              </v-avatar>
-              {{subscriptionLevel}}
-            </v-chip>
           </div>
         </PersonalCard>
       </v-flex>

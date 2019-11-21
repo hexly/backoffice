@@ -9,6 +9,9 @@ import moment from 'moment'
 
 import _ from 'lodash'
 
+import * as Sentry from '@sentry/browser'
+import * as Integrations from '@sentry/integrations'
+
 import App from './App.vue'
 import router from './router'
 import store from './store'
@@ -93,6 +96,13 @@ if (process.env.VUE_APP_GA_ID) {
   Vue.use(VueAnalytics, {
     id: process.env.VUE_APP_GA_ID,
     router
+  })
+}
+
+if (process.env.VUE_APP_SENTRY_DSN) {
+  Sentry.init({
+    dsn: process.env.VUE_APP_SENTRY_DSN,
+    integrations: [new Integrations.Vue({ Vue, attachProps: true })]
   })
 }
 
