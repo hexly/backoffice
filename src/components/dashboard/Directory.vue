@@ -72,7 +72,7 @@
                 <div class="primary--text subheading font-weight-bold">{{membersTypeName}} #<b>{{selected.mrn}}</b></div>
               </v-card-text>
               <v-divider class="mb-3"></v-divider>
-              <div class="text-xs-center pa-2">
+              <div class="text-xs-center pa-2" v-if="selected && (selected.counts || loadingCounts)">
                 <h3>Team</h3>
                 <v-layout row wrap class="text-xs-center">
                   <v-flex xs3>
@@ -169,7 +169,7 @@ export default {
       if (!this.active.length) return undefined
       const id = this.active[0]
       const selectedMember = this.allPeople.find(user => user.id === id)
-      if (!selectedMember.counts) {
+      if (selectedMember && !selectedMember.counts) {
         selectedMember.counts = {}
         this.loadMoreMemberInfo(selectedMember)
       }
