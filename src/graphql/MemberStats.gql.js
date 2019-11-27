@@ -34,3 +34,17 @@ export const MAX_MRN = gql`
     memberGetMaxMrnForTenant(input: $input)
   }
 `
+
+export const TEAM_RECRUITS_BY_DATE = gql`
+  query Stats($input:CommerceStatsRangedTeamStatsSearchInput!) {
+  commerceStatsRangedTeamStatsSearch(input:$input){
+    stats{
+      contributors {
+        name
+        relativeDepth
+        recruited
+      }
+    }
+  }
+}
+`
