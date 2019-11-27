@@ -44,7 +44,7 @@
                 <v-list-tile-content>
                   <v-list-tile-title>1st Level</v-list-tile-title>
                   <v-list-tile-sub-title>
-                    You have <b>{{info[1]}} Qualifications</b> in you 1st Level.
+                    You have <b>{{info[1]}} Qualifications</b> in your 1st Level.
                     <span v-if="info[1] > 0">You have <b>{{3*info[1]}} entries</b> in the draw!</span>
                   </v-list-tile-sub-title>
                 </v-list-tile-content>
