@@ -111,9 +111,7 @@ export default {
         commerceStatsRangedTeamStatsSearch.stats.forEach(c => {
           temp.push(...c.contributors)
         })
-        console.log(temp)
         temp.forEach(i => {
-          console.log(i.name, i.relativeDepth, i.recruited)
           if (i.relativeDepth === 0) {
             this.info.personal = i.recruited
           }
