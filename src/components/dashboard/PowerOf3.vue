@@ -44,7 +44,7 @@
                 <v-list-tile-content>
                   <v-list-tile-title>1st Level</v-list-tile-title>
                   <v-list-tile-sub-title>
-                    You have <b>{{info[1]}} Qualifying</b> 1st Level Influencer.
+                    You have <b>{{info[1]}} Qualifications</b> in you 1st Level.
                     <span v-if="info[1] > 0">You have <b>{{3*info[1]}} entries</b> in the draw!</span>
                   </v-list-tile-sub-title>
                 </v-list-tile-content>
@@ -58,7 +58,7 @@
                 <v-list-tile-content>
                   <v-list-tile-title>2nd Level</v-list-tile-title>
                   <v-list-tile-sub-title>
-                    You have <b>{{info[2]}} Qualifying</b> 2nd Level Influencers.
+                    You have <b>{{info[2]}} Qualifications</b> in your 2nd Level.
                     <span v-if="info[2] > 0">have <b>{{1*info[2]}} {{info[2] > 1 ? 'entries': 'entry'}}</b> in the draw!</span>
                   </v-list-tile-sub-title>
                 </v-list-tile-content>
@@ -107,6 +107,12 @@ export default {
         }
       },
       update({ commerceStatsRangedTeamStatsSearch }) {
+        this.info = {
+          personal: 0,
+          0: 0,
+          1: 0,
+          2: 0
+        }
         const temp = []
         commerceStatsRangedTeamStatsSearch.stats.forEach(c => {
           temp.push(...c.contributors)
@@ -116,7 +122,7 @@ export default {
             this.info.personal = i.recruited
           }
           if (i.recruited >= 3) {
-            this.info[i.relativeDepth]++
+            this.info[i.relativeDepth] += Math.floor(i.recruited / 3)
           }
         })
         return temp
