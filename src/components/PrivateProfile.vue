@@ -7,7 +7,7 @@
       color="primary"
       @change="change"
       persistent-hint
-      hint="Note: Your link will still work. You will not be searchable."
+      :hint="member.tags.indexOf(tagName) > -1 ? privateHint: publicHint"
     ></v-switch>
   </div>
 </template>
@@ -20,13 +20,15 @@ export default {
   name: 'PrivateProfile',
   data() {
     return {
-      tagName: 'omit:publicsearch'
+      tagName: 'omit:publicsearch',
+      publicHint: 'Note: Your link will still work. You will not be searchable.',
+      privateHint: 'Your Profile is currently not searchable.'
     }
   },
   methods: {
     ...mapActions([UserActions.ADJUST_TAGS]),
     async change(value) {
-      if (value.length === 0) {
+      if (value.indexOf(this.tagName) === -1) {
         // Remove
         await this.adjustTags({
           memberId: this.member.id,
