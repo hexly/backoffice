@@ -101,7 +101,7 @@ export default {
             depth: 3,
             range: {
               start: '2019-11-26T08:00:00Z', // These times are in UTC
-              end: '2019-12-02T07:59:59Z' // These times are in UTC
+              end: '2019-12-03T07:59:59Z' // These times are in UTC
             }
           }
         }
