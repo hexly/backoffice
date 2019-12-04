@@ -7,7 +7,7 @@
         <small>(Thanksgiving, Black Friday & Cyber Monday and price drop to $5/£4 registration fee)</small>
         <v-divider class="my-3"/>
         <h4>Time Period:</h4>
-        <p>Tuesday (Nov 26) – Monday (Dec 2) at midnight PT.</p>
+        <p>Tuesday (Nov 26) – Monday (Dec 3) at midnight PT.</p>
         <h4>Qualifying Achievement:</h4>
         <p>Sponsor 3 Influencers during the Time Period.</p>
         <h4>Incentives:</h4>
@@ -101,7 +101,7 @@ export default {
             depth: 3,
             range: {
               start: '2019-11-26T08:00:00Z', // These times are in UTC
-              end: '2019-12-03T07:59:59Z' // These times are in UTC
+              end: '2019-12-04T07:59:59Z' // These times are in UTC
             }
           }
         }
