@@ -108,6 +108,8 @@ export default {
             type: a.type
           }
         }
+
+        this.$apollo.queries.addresses.refetch()
         return a
       })
     },
@@ -136,6 +138,8 @@ export default {
         })
         this.addresses = this.addresses.filter(a => a.id !== deleteAddress.id)
       }
+
+      this.$apollo.queries.addresses.refetch()
     }
   },
   apollo: {
