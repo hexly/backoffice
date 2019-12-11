@@ -17,13 +17,13 @@
       </v-flex>
     </v-layout>
     <v-layout v-else row wrap justify-left>
-      <v-flex xs12 md4 v-for="(a,i) in addresses" :key="i">
+      <v-flex xs12 md4 v-for="(a,i) in model" :key="i">
         <AddressCard
           :address="a"
           :saving="a.saving"
           @save="save"
           @remove="remove"
-          :canDelete="addresses.length > 1"
+          :canDelete="model.length > 1"
         />
       </v-flex>
     </v-layout>
@@ -43,6 +43,8 @@
 
 <script>
 import { mapGetters, mapState } from 'vuex'
+import { cloneDeep } from 'lodash'
+
 import { ADDRESS_BY_CONTACT_ID, UPDATE_ADDRESS, DELETE_ADDRESS } from '@/graphql/Address.js'
 import AddressCard from '@/components/profile/AddressCard.vue'
 
@@ -56,14 +58,15 @@ export default {
   data() {
     return {
       addresses: [],
+      model: [],
       loadingAddresses: 0
     }
   },
   methods: {
     add() {
-      const newAddress = this.addresses.find(a => a.new)
+      const newAddress = this.model.find(a => a.new)
       if (!newAddress) {
-        this.addresses.push({
+        this.model.push({
           name: '',
           street: '',
           city: '',
@@ -160,6 +163,11 @@ export default {
       principal: state => state.user.principal
     }),
     ...mapGetters(['contactId'])
+  },
+  watch: {
+    addresses(newVal) {
+      this.model = cloneDeep(newVal)
+    }
   }
 }
 </script>
