@@ -16,6 +16,7 @@ import Impersonate from './views/Impersonate.vue'
 import Redirect from './views/Redirect.vue'
 import Zendesk from './zendesk/Zendesk.vue'
 import ZendeskRoot from './zendesk/root.vue'
+import TeamGraph from './components/TeamGraph.vue'
 
 Vue.use(Router)
 
@@ -118,6 +119,11 @@ export default new Router({
           path: 'integrations',
           name: 'integrations',
           component: Integrations
+        },
+        {
+          path: 'graph/:id',
+          name: 'graph',
+          component: TeamGraph
         }
       ]
     },
