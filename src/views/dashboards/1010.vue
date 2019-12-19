@@ -2,29 +2,7 @@
   <div class="full-wrapper dashboard">
     <v-layout row>
       <v-flex xs12 class="pa-2">
-        <v-card>
-          <v-card-title>
-            <p class="headline">Welcome to your Everra Influencer Hub!</p>
-          </v-card-title>
-          <v-card-text>
-            <p class="subheading">
-              Please also join our exclusive Everra Facebook Group
-              where we can meet you and discuss what the future holds:
-              <a :href="$tenantInfo.social[0].url">Everra Facebook Group</a>
-            </p>
-            <p v-if="!slug" class="subheading">
-              Please also set your Personal Link (below). After setting your Personal Link,
-              feel free to share it with anyone else (located in either the U.K. or the U.S.)
-              that may also be interested in joining this venture!
-            </p>
-            <p class="subheading">
-            Questions? Please email <a href="mailto:support@everra.com">support@everra.com</a>
-            </p>
-            Best,
-            <br/>
-            Team Everra
-          </v-card-text>
-        </v-card>
+        <Announcement />
       </v-flex>
     </v-layout>
     <v-layout row wrap>
@@ -137,6 +115,7 @@ import PersonalCard from '@/components/dashboard/PersonalCard.vue'
 import Directory from '@/components/dashboard/Directory.vue'
 import DashCard from '@/components/DashboardCard.vue'
 import CompanyMap from '@/components/dashboard/CompanyMap.vue'
+import Announcement from '@/components/dashboard/Announcement.vue'
 import Badges from '@/components/Badges.vue'
 
 import { MEMBER_STATS_BY_DEPTH, MAX_MRN } from '@/graphql/MemberStats.gql'
@@ -153,6 +132,7 @@ export default {
     PersonalCard,
     Directory,
     CompanyMap,
+    Announcement,
     Badges,
     Social
   },

@@ -17,7 +17,7 @@ function getAuth () {
 }
 
 // Create the apollo client
-export default function createApolloClient ({
+export function createHexlyApolloClient ({
   ssr,
   base,
   endpoints,
@@ -74,6 +74,29 @@ export default function createApolloClient ({
     connectToDevTools: process.env.NODE_ENV !== 'production',
     name: tenantInfo.name,
     version: mf.buildTime
+  })
+
+  return apolloClient
+}
+
+// Create the apollo client
+export function createApolloClient ({
+  ssr,
+  base,
+  endpoints,
+  persisting
+}) {
+  const link = new HttpLink({ uri: base + endpoints.graphql })
+
+  // Apollo cache
+  const cache = new InMemoryCache({
+    addTypename: false
+  })
+
+  const apolloClient = new ApolloClient({
+    link,
+    cache,
+    connectToDevTools: process.env.NODE_ENV !== 'production'
   })
 
   return apolloClient

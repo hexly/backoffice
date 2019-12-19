@@ -1,4 +1,4 @@
-import { apolloClient } from '@/vue-apollo'
+import { apolloHexlyClient } from '@/vue-apollo'
 import LOGIN from '@/graphql/Login.gql'
 import UPDATE_PROFILE from '@/graphql/MemberPartialUpdate.gql'
 import { CREATE_MEMBER_INTEGRATION } from '@/graphql/Integrations'
@@ -117,7 +117,7 @@ export const UserStore = {
   },
   actions: {
     async [UserActions.LOGIN]({ commit }, creds) {
-      const response = await apolloClient.mutate({
+      const response = await apolloHexlyClient.mutate({
         mutation: LOGIN,
         variables: { creds },
         fetchPolicy: 'no-cache'
@@ -135,7 +135,7 @@ export const UserStore = {
       return { success, token, principal, reason, issued }
     },
     async [UserActions.SAVE_PROFILE]({ commit }, { memberId, profileUrl }) {
-      await apolloClient.mutate({
+      await apolloHexlyClient.mutate({
         mutation: UPDATE_PROFILE,
         variables: {
           input: {
@@ -149,7 +149,7 @@ export const UserStore = {
       return profileUrl
     },
     async [UserActions.ADJUST_TAGS]({ commit }, input) {
-      const { data } = await apolloClient.mutate({
+      const { data } = await apolloHexlyClient.mutate({
         mutation: ADJUST_TAGS,
         variables: {
           input
@@ -163,7 +163,7 @@ export const UserStore = {
       { commit },
       { command, tenantIntegrationId, data }
     ) {
-      return apolloClient.mutate({
+      return apolloHexlyClient.mutate({
         mutation: CREATE_MEMBER_INTEGRATION,
         variables: {
           input: {
@@ -182,7 +182,7 @@ export const UserStore = {
       { commit },
       { command, tenantIntegrationId, data }
     ) {
-      return apolloClient.mutate({
+      return apolloHexlyClient.mutate({
         mutation: CREATE_MEMBER_INTEGRATION,
         variables: {
           input: {

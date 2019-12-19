@@ -1,10 +1,10 @@
 import { get } from 'lodash'
 
 import { assetMeta, assetCreate, seachAllAssets, getAssets } from './content.gql'
-import { apolloClient } from '@/vue-apollo'
+import { apolloHexlyClient } from '@/vue-apollo'
 
 const doQuery = (query, args = {}) => {
-  return apolloClient.query({
+  return apolloHexlyClient.query({
     query: query,
     variables: args,
     fetchPolicy: 'network-only'
@@ -12,7 +12,7 @@ const doQuery = (query, args = {}) => {
 }
 
 const doMutate = (mutation, args = {}) =>
-  apolloClient.mutate({ mutation, variables: args })
+  apolloHexlyClient.mutate({ mutation, variables: args })
 
 export const getAssetMeta = async avail => {
   const result = await doQuery(assetMeta)
