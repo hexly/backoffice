@@ -1,4 +1,4 @@
-import { apolloClient } from '@/vue-apollo'
+import { apolloHexlyClient } from '@/vue-apollo'
 
 import {
   CONSUME_TOKEN,
@@ -20,32 +20,32 @@ export const ClaimStore = {
   mutations: {},
   actions: {
     [ClaimActions.GET_TOKEN]: ({ commit }, token) => {
-      return apolloClient.query({
+      return apolloHexlyClient.query({
         query: VALIDATE_TOKEN,
         fetchPolicy: 'network-only',
         variables: { token }
       })
     },
     [ClaimActions.CREATE_ACCOUNT]: ({ commit }, input) => {
-      return apolloClient.mutate({
+      return apolloHexlyClient.mutate({
         mutation: CONSUME_TOKEN,
         variables: { input }
       })
     },
     [ClaimActions.RESET_PASSWORD]: ({ commit }, input) => {
-      return apolloClient.mutate({
+      return apolloHexlyClient.mutate({
         mutation: RESET_TOKEN,
         variables: { input }
       })
     },
     [ClaimActions.CLAIM]: async ({ commit }, input) => {
-      return apolloClient.mutate({
+      return apolloHexlyClient.mutate({
         mutation: GENERATE_TOKEN,
         variables: { input }
       })
     },
     [ClaimActions.RESET]: ({ commit }, input) => {
-      return apolloClient.mutate({
+      return apolloHexlyClient.mutate({
         mutation: GENERATE_TOKEN,
         variables: { input }
       })

@@ -1,66 +1,51 @@
 <template>
-  <v-flex xs12>
-    <div class="team py-4">
-      <v-layout row wrap justify-space-between>
-        <v-flex xs12 sm6>
-          <h1 :target="currentId">Team</h1>
-        </v-flex>
-        <v-flex xs12 sm3 md2>
-          <month-selector
-            :year="year"
-            :month="month"
-            :minDate="minDate"
-            @date-changed="dateChanged"
-          />
-        </v-flex>
+  <div class="team py-4">
+    <div>
+      <v-layout
+        v-if="results.target"
+        row
+        wrap
+        justify-center
+      >
+        <TeamCard
+          :loading="loading"
+          @viewTeam="showTeam"
+          :user="results.target"
+          :stats="statsMap[results.target.id]"
+        />
       </v-layout>
-      <div>
-        <v-layout
-          v-if="results.target"
-          row
-          wrap
-          justify-center
+      <v-breadcrumbs divider="/">
+        <v-breadcrumbs-item
+          v-for="(user, index) in lineage"
+          :key="user.contactEmail"
+          :disabled="index === (lineage.length - 1)"
         >
-          <TeamCard
-            :loading="loading"
-            @viewTeam="showTeam"
-            :user="results.target"
-            :stats="statsMap[results.target.id]"
-          />
+          <span @click="updateLineage(user, index)">{{user.displayName}}</span>
+        </v-breadcrumbs-item>
+      </v-breadcrumbs>
+      <div v-if="!loading">
+        <v-layout row wrap>
+          <template v-for="(i, index) in results.team">
+            <v-flex xs12 sm4 md3 :key="index">
+              <TeamCard
+                :loading="loading"
+                @viewTeam="showTeam"
+                :user="i"
+                :actions="true"
+                :stats="statsMap[i.id]"
+                noData="No data available"
+              />
+            </v-flex>
+          </template>
         </v-layout>
-        <v-breadcrumbs divider="/">
-          <v-breadcrumbs-item
-            v-for="(user, index) in lineage"
-            :key="user.contactEmail"
-            :disabled="index === (lineage.length - 1)"
-          >
-            <span @click="updateLineage(user, index)">{{user.displayName}}</span>
-          </v-breadcrumbs-item>
-        </v-breadcrumbs>
-        <div v-if="!loading">
-          <v-layout row wrap>
-            <template v-for="(i, index) in results.team">
-              <v-flex xs12 sm6 md4 :key="index">
-                <TeamCard
-                  :loading="loading"
-                  @viewTeam="showTeam"
-                  :user="i"
-                  :actions="true"
-                  :stats="statsMap[i.id]"
-                  noData="No data available"
-                />
-              </v-flex>
-            </template>
-          </v-layout>
-        </div>
       </div>
     </div>
-  </v-flex>
+  </div>
 </template>
 
 <script>
 import MonthSelector from '@/components/MonthSelector.vue'
-import TeamCard from '../components/TeamCard.vue'
+import TeamCard from '@/components/TeamCard.vue'
 import getTeamByMemberId from '@/graphql/GetTeam'
 import MONTHLY_STATS_QUERY from '@/graphql/GetMonthlyStats.gql'
 import { Mutations } from '@/store'
@@ -69,7 +54,7 @@ import { mapMutations, mapState, mapGetters } from 'vuex'
 const tenantId = ~~process.env.VUE_APP_TENANT_ID
 
 export default {
-  name: 'Team',
+  name: 'HierarchyCards',
   data() {
     return {
       root: {},

@@ -3,7 +3,6 @@
   max-width="350"
   class="ma-2 pa-2"
   >
-
     <v-img
       :src="getAvatar"
       cover
@@ -26,6 +25,20 @@
 
       <v-flex row>
         <v-card-text v-if="!loading">
+          <v-subheader>Relation</v-subheader>
+          <v-layout align-center justify-start row>
+            <template v-for="parent in user.relativePathMembers">
+              <v-flex :shrink="true" :key="parent.profileUrl">
+                  <v-tooltip top slot="append">
+                    <v-avatar class="mx-1" size="36px" slot="activator">
+                      <img :src="parent.profileUrl || $tenantInfo.placeholder" alt="Avatar" >
+                    </v-avatar>
+                    <span>{{parent.name}}</span>
+                  </v-tooltip>
+              </v-flex>
+            </template>
+          </v-layout>
+          <v-subheader>Sales Stats</v-subheader>
           <div v-if="stats && stats.joinedOn">
             <div>
               <span>Joined {{formatDate(stats.joinedOn)}}</span>
