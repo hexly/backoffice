@@ -1,7 +1,9 @@
 <template>
   <div class="text-xs-center pb-3 badges">
     <h3>Awards</h3>
-    <v-flex tag="strong" xs5 text-xs-right mr-3 mb-2>
+    <h5 v-if="loading">Loading Awards</h5>
+    <v-progress-circular v-if="loading" indeterminate :size="30" :width="3" color="grey"></v-progress-circular>
+    <v-flex tag="strong" xs5 text-xs-right mr-3 mb-2 v-if="!loading">
       <v-chip color="primary" text-color="white">
         <v-avatar class="primary darken-4">
           <v-icon>cake</v-icon>
@@ -34,7 +36,8 @@ export default {
   },
   data() {
     return {
-      awards: []
+      awards: [],
+      loading: 0
     }
   },
   computed: {
@@ -51,7 +54,8 @@ export default {
       query: MEMBER_AWARDS,
       update({ iamPrincipal: { member: { awards } } }) {
         return awards
-      }
+      },
+      loadingKey: 'loading'
     }
   }
 }
