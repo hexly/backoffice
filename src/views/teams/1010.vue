@@ -1,5 +1,5 @@
 <template>
-  <div class="profile text-xs-center">
+  <div class="profile">
       <v-tabs centered color="secondary" dark icons-and-text>
         <v-tabs-slider color="white"></v-tabs-slider>
 
@@ -9,12 +9,18 @@
         <v-tab to="#search">Search Team
           <v-icon>search</v-icon>
         </v-tab>
+        <v-tab to="#graph">Graph
+          <v-icon>scatter_plot</v-icon>
+        </v-tab>
 
-        <v-tab-item value="hierarchy" class="py-3">
+        <v-tab-item lazy value="hierarchy" class="py-3">
           <HierarchyCards />
         </v-tab-item>
-        <v-tab-item value="search" class="py-3">
+        <v-tab-item lazy value="search" class="py-3">
           <TeamSearch />
+        </v-tab-item>
+        <v-tab-item lazy value="graph" class="py-3">
+          <TeamGraph />
         </v-tab-item>
       </v-tabs>
   </div>
@@ -23,12 +29,14 @@
 <script>
 import HierarchyCards from '@/components/team/HierarchyCards.vue'
 import TeamSearch from '@/components/team/Search.vue'
+import TeamGraph from '@/components/team/Graph.vue'
 
 export default {
   name: 'Team',
   components: {
     HierarchyCards,
-    TeamSearch
+    TeamSearch,
+    TeamGraph
   }
 }
 </script>

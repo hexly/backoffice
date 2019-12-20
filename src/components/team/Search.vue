@@ -1,13 +1,16 @@
 <template>
-  <div>
+  <div class="pa-2">
     <div>
-      <h2>Team Search</h2>
       <form>
-
+        <v-text-field
+          solo
+          v-model="query"
+          placeholder="Influecer Name"
+        />
       </form>
     </div>
     <div v-if="!loading">
-      <v-layout row wrap align-center justify-space-around>
+      <v-layout row wrap justify-start>
         <v-flex v-for="(i, index) in memberTeamSearch.team" xs12 sm4 md3 :key="index">
           <TeamCard
             :loading="loading"
@@ -17,7 +20,7 @@
           />
         </v-flex>
       </v-layout>
-      <div class="text-xs-center">
+      <div class="text-xs-center" v-if="length > 0">
         <v-pagination
           v-model="page"
           :length="length"

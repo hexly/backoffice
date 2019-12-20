@@ -1,57 +1,58 @@
 <template>
-  <v-card
-  max-width="350"
-  class="ma-2 pa-2"
-  >
-    <v-img
-      :src="getAvatar"
-      cover
-      top
-      aspect-ratio="1"
-      class="cardImg white--text"
-      gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
-    >
-    <v-card-title class="fill-height align-end">
-      <v-flex row>
-        <h2>{{(user.name).toUpperCase()}}</h2>
-        <h4 v-if="email">{{(email).toLowerCase()}}</h4>
-      </v-flex>
+  <v-card max-width="350" class="ma-2" >
+    <v-card-title primary-title>
+      <div style="width: 100%;">
+        <h2>{{user.name}}</h2>
+        <small>Influencer Since: {{$moment(user.joinedOn).format('ll')}}</small>
+      </div>
     </v-card-title>
-    </v-img>
+    <v-progress-circular v-if="loading" indeterminate :size="50" :width="5" color="primary"></v-progress-circular>
 
-      <v-flex v-if="loading" d-flex justify-center align-center class="text-xs-center">
-        <v-progress-circular indeterminate :size="50" :width="5" color="primary"></v-progress-circular>
-      </v-flex>
-
-      <v-flex row>
-        <v-card-text v-if="!loading">
-          <v-subheader>Relation</v-subheader>
-          <v-layout align-center justify-start row>
-            <template v-for="parent in user.relativePathMembers">
-              <v-flex :shrink="true" :key="parent.profileUrl">
-                  <v-tooltip top slot="append">
-                    <v-avatar class="mx-1" size="36px" slot="activator">
-                      <img :src="parent.profileUrl || $tenantInfo.placeholder" alt="Avatar" >
-                    </v-avatar>
-                    <span>{{parent.name}}</span>
-                  </v-tooltip>
-              </v-flex>
-            </template>
-          </v-layout>
-          <v-subheader>Sales Stats</v-subheader>
-          <div v-if="stats && stats.joinedOn">
-            <div>
-              <span>Joined {{formatDate(stats.joinedOn)}}</span>
-              <span> on </span>
-              <span>{{$moment(stats.joinedOn).format('ll')}}</span>
-            </div>
-            <div>Tribe Size: {{stats.teamSize || 0}}</div>
-            <div>Front Line: {{stats.firstLevelSize || 0}}</div>
-            <div>Total Points: {{stats.totalPoints ? stats.totalPoints.toFixed(2) : 0}}</div>
+    <v-card-text v-if="!loading" class="dense">
+      <div class="text-xs-center">
+        <v-avatar size="124" class="avatar" color="white" @click="showProfilePicDialog = true">
+          <v-img v-if="user.profileUrl || $tenantInfo.placeholder" :src="user.profileUrl || $tenantInfo.placeholder"></v-img>
+          <v-gravatar v-else default-img="mp" :email="user.email"/>
+        </v-avatar>
+      </div>
+      <v-subheader>Information</v-subheader>
+        <div class="px-3">
+          <p>{{(user.email).toLowerCase()}}</p>
+          <a target="_blank" :href="$tenantInfo.storeUrl.replace('{slug}', user.slug)">
+            {{$tenantInfo.storeUrl.replace('{slug}', user.slug)}}
+          </a>
+        </div>
+      <v-subheader>Relation</v-subheader>
+      <div class="px-3">
+        <p>Level: {{user.relativeDepth}}</p>
+        <v-layout align-center justify-start row>
+          <template v-for="parent in user.relativePathMembers">
+            <v-flex :shrink="true" :key="parent.profileUrl">
+                <v-tooltip top slot="append">
+                  <v-avatar class="mx-1" size="36px" slot="activator">
+                    <img :src="parent.profileUrl || $tenantInfo.placeholder" alt="Avatar" >
+                  </v-avatar>
+                  <span>{{parent.name}}</span>
+                </v-tooltip>
+            </v-flex>
+          </template>
+        </v-layout>
+      </div>
+      <v-subheader>Sales Stats</v-subheader>
+      <div class="px-3">
+        <div v-if="stats && stats.joinedOn">
+          <div>
+            <span>Joined {{formatDate(stats.joinedOn)}}</span>
+            <span> on </span>
+            <span>{{$moment(stats.joinedOn).format('ll')}}</span>
           </div>
-          <div v-else>{{noData}}</div>
-        </v-card-text>
-      </v-flex>
+          <div>Tribe Size: {{stats.teamSize || 0}}</div>
+          <div>Front Line: {{stats.firstLevelSize || 0}}</div>
+          <div>Total Points: {{stats.totalPoints ? stats.totalPoints.toFixed(2) : 0}}</div>
+        </div>
+        <div v-else>{{noData}}</div>
+      </div>
+    </v-card-text>
 
     <v-divider v-if="actions" class="primary"/>
     <v-card-actions v-if="actions" class="justify-space-between">
@@ -118,5 +119,8 @@ export default {
   margin: auto;
   max-height: 100%;
   max-width: 100%;
+}
+.dense {
+  padding: 0;
 }
 </style>

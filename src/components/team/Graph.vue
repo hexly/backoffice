@@ -1,10 +1,10 @@
 <template>
-  <div>
-    <v-layout row justify-space-between style="margin-left: 12.5%; margin-right: 12.5%;">
-      <v-flex xs3>
+  <div class="graph-view">
+    <v-layout row justify-space-between>
+      <!-- <v-flex xs3>
         <MonthSelector :year="year" :month="month" @date-changed="dateChanged"/>
-      </v-flex>
-      <v-flex xs5>
+      </v-flex> -->
+      <!-- <v-flex xs5>
         <form @submit.prevent="search" autocomplete="off">
           <v-flex>
             <v-layout row>
@@ -23,7 +23,7 @@
             </v-layout>
           </v-flex>
         </form>
-      </v-flex>
+      </v-flex> -->
       <v-flex xs2>
         <v-select
           v-model="select"
@@ -36,7 +36,7 @@
     </v-layout>
     <div ref="graph"></div>
     <v-progress-linear v-if="loading" :indeterminate="true" color="grey"></v-progress-linear>
-    <v-data-table :headers="tableColumns" :items="items" item-key="id" class="elevation-1" expand>
+    <!-- <v-data-table :headers="tableColumns" :items="items" item-key="id" class="elevation-1" expand>
       <template slot="items" slot-scope="props">
         <tr @click="props.expanded = !props.expanded">
           <td>
@@ -96,15 +96,15 @@
           </v-container>
         </div>
       </template>
-    </v-data-table>
+    </v-data-table> -->
   </div>
 </template>
 
 <script>
-import MonthSelector from '@/components/MonthSelector'
+// import MonthSelector from '@/components/MonthSelector'
 
 import { initialize, updateHeightDepth, collapse,
-  checkParentOfPinned } from './TeamGraph.d3.js'
+  checkParentOfPinned } from './Graph.d3.js'
 // import { OLD_QUERY } from '@/graphql/GetTeam'
 import searchSalesBySellerId from '@/graphql/searchSalesBySellerId.gql'
 import SalesStats from '@/graphql/SalesStats.gql'
@@ -112,8 +112,10 @@ import SalesStats from '@/graphql/SalesStats.gql'
 import moment from 'moment'
 import { map } from 'ramda'
 import * as d3 from 'd3'
+import { mapGetters } from 'vuex'
 
 export default {
+  name: 'TeamGraph',
   data () {
     return {
       searchTerm: '',
@@ -239,9 +241,9 @@ export default {
       this.changeGraphType(newSelection)
     }
   },
-  components: {
-    MonthSelector
-  },
+  // components: {
+  //   MonthSelector
+  // },
   async mounted () {
     const cfg = {
       el: this.$refs.graph,
@@ -260,7 +262,7 @@ export default {
       getRadialRoot: this.getRadialRoot
     }
     this.loading = true
-    this.memberId = ~~this.$route.params.id
+    this.memberId = this.member.id
     this.sellerId = this.memberId
     this.fetchedData = await this.fetchData({ memberId: this.memberId })
     this.graph = initialize(cfg, this.fetchedData)
@@ -386,7 +388,7 @@ export default {
     },
     contextMenuFunc (data) {
       const menu = []
-      menu.push(this.contextMenuOptions[`displaySales`])
+      // menu.push(this.contextMenuOptions[`displaySales`])
       menu.push(this.contextMenuOptions[`center`])
 
       if (data.children) menu.push(this.contextMenuOptions[`collapseMenu`])
@@ -554,6 +556,7 @@ export default {
     }
   },
   computed: {
+    ...mapGetters(['member']),
     items () {
       return map(sale => {
         return {
@@ -601,6 +604,10 @@ export default {
 </script>
 
 <style>
+.graph-view {
+ padding: 15px;
+}
+
 .imgCircle {
   fill: #fafafa;
   stroke: #828282;

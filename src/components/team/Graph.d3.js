@@ -86,8 +86,7 @@ const initializerExported = (cfg, data) => {
     .select(cfg.el)
     .append(`svg`)
     .attr(`viewBox`, `0 0 ${width} ${height}`)
-    .attr(`width`, `75%`)
-    .style(`margin-left`, `12.5%`)
+    .attr(`width`, `100%`)
     .on(`contextmenu`, () => d3.event.preventDefault())
 
   zoomer = svgContainer
