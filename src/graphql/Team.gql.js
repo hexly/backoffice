@@ -11,6 +11,7 @@ export const TEAM_SEARCH_QUERY = gql`
         slug
         email
         joinedOn
+        relativeDepth
         relativePathMembers {
           profileUrl
           name
