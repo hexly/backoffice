@@ -1,7 +1,9 @@
 <template>
   <div class="text-xs-center pb-3 badges">
     <h3>Awards</h3>
-    <v-flex tag="strong" xs5 text-xs-right mr-3 mb-2>
+    <h5 v-if="loading">Loading Awards</h5>
+    <v-progress-circular v-if="loading" indeterminate :size="30" :width="3" color="grey"></v-progress-circular>
+    <v-flex tag="strong" xs5 text-xs-right mr-3 mb-2 v-if="!loading">
       <v-chip color="primary" text-color="white">
         <v-avatar class="primary darken-4">
           <v-icon>cake</v-icon>
@@ -14,21 +16,29 @@
         </v-avatar>
         Founding Influencer
       </v-chip>
-      <v-chip v-if="isEarlyAccess" color="accent" text-color="white">
-        <v-avatar class="secondary darken-4">
-          <v-icon>alarm</v-icon>
+      <v-chip v-for="award in awards" :color="award.metadata.color" :text-color="award.metadata.text" :key="award.name">
+        <v-avatar :color="award.metadata.accent">
+          <v-icon>{{award.metadata.icon}}</v-icon>
         </v-avatar>
-        Early Access
+        {{award.name}}
       </v-chip>
     </v-flex>
   </div>
 </template>
 
 <script>
+import { MEMBER_AWARDS } from '@/graphql/Member.gql.js'
+
 export default {
   name: 'Badges',
   props: {
     joinedOn: String // Just leave it... I know
+  },
+  data() {
+    return {
+      awards: [],
+      loading: 0
+    }
   },
   computed: {
     birthday() {
@@ -37,9 +47,15 @@ export default {
     },
     isFounder() {
       return this.$moment(this.joinedOn).isBefore('2020-04-01')
-    },
-    isEarlyAccess() {
-      return this.$moment(this.joinedOn).isBefore('2019-11-20T20:00:00.000Z')
+    }
+  },
+  apollo: {
+    awards: {
+      query: MEMBER_AWARDS,
+      update({ iamPrincipal: { member: { awards } } }) {
+        return awards
+      },
+      loadingKey: 'loading'
     }
   }
 }

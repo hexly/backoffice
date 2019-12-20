@@ -36,3 +36,16 @@ export const SEARCH_MEMBER_DIRECTORY = gql`
     searchTeamWithUpline(input: $input)
   }
 `
+
+export const MEMBER_AWARDS = gql`
+  query memberAwards {
+    iamPrincipal{
+      member {
+        awards {
+          name
+          metadata
+        }
+      }
+    }
+  }
+`
