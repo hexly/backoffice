@@ -4,6 +4,7 @@ import VueClipboard from 'vue-clipboard2'
 import Gravatar from 'vue-gravatar'
 import VueAnalytics from 'vue-analytics'
 import 'vuetify/dist/vuetify.min.css'
+import '@mdi/font/css/materialdesignicons.min.css'
 
 import moment from 'moment'
 

@@ -14,21 +14,28 @@
         </v-avatar>
         Founding Influencer
       </v-chip>
-      <v-chip v-if="isEarlyAccess" color="accent" text-color="white">
-        <v-avatar class="secondary darken-4">
-          <v-icon>alarm</v-icon>
+      <v-chip v-for="award in awards" :color="award.metadata.color" :text-color="award.metadata.text" :key="award.name">
+        <v-avatar :color="award.metadata.accent">
+          <v-icon>{{award.metadata.icon}}</v-icon>
         </v-avatar>
-        Early Access
+        {{award.name}}
       </v-chip>
     </v-flex>
   </div>
 </template>
 
 <script>
+import { MEMBER_AWARDS } from '@/graphql/Member.gql.js'
+
 export default {
   name: 'Badges',
   props: {
     joinedOn: String // Just leave it... I know
+  },
+  data() {
+    return {
+      awards: []
+    }
   },
   computed: {
     birthday() {
@@ -37,9 +44,14 @@ export default {
     },
     isFounder() {
       return this.$moment(this.joinedOn).isBefore('2020-04-01')
-    },
-    isEarlyAccess() {
-      return this.$moment(this.joinedOn).isBefore('2019-11-20T20:00:00.000Z')
+    }
+  },
+  apollo: {
+    awards: {
+      query: MEMBER_AWARDS,
+      update({ iamPrincipal: { member: { awards } } }) {
+        return awards
+      }
     }
   }
 }
