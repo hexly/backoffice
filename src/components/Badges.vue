@@ -52,7 +52,7 @@ export default {
   apollo: {
     awards: {
       query: MEMBER_AWARDS,
-      update({ iamPrincipal: { member: { awards } } }) {
+      update({ getPrincipal: { member: { awards } } }) {
         return awards
       },
       loadingKey: 'loading'
