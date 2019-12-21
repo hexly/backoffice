@@ -44,7 +44,31 @@
               </div>
             </PersonalCard>
           </v-flex>
-          <PowerOf3 :memberId="member.id"/>
+          <v-flex class="pa-2">
+            <v-card style="height: 100%;">
+              <v-card-text>
+                <p class="title">Early Access Incentive</p>
+                <p>To qualify, sponsor at least two Influencers during the Early Access period and help them become "Active" (or sell $50) during the first month of sales (you must also be Active). </p>
+                <ol>
+                  <li>$20/£16 for EVERY personally sponsored Active Influencer</li>
+                  <li>$5/£4 for EVERY Active Influencer on your Second Line.</li>
+                </ol>
+                <p>The qualification period begins on your enrollment date and ends when the company begins selling product.</p>
+                <v-layout row class="incentive">
+                  <v-flex class="incentive-count" xs6>
+                    {{personalStats.counts.level1}}
+                    <br/>
+                    Personally Sponsored
+                  </v-flex>
+                  <v-flex class="incentive-count" xs6>
+                    {{personalStats.counts.level2}}
+                    <br/>
+                    Second Line
+                  </v-flex>
+                </v-layout>
+              </v-card-text>
+            </v-card>
+          </v-flex>
         </v-layout>
       </v-flex>
       <v-flex xs12 md6>
@@ -99,31 +123,6 @@
               :loading="loadingStats > 0"
             />
           </v-flex>
-          <v-flex class="pa-2">
-            <v-card style="height: 100%;">
-              <v-card-text>
-                <p class="title">Early Access Incentive</p>
-                <p>To qualify, sponsor at least two Influencers during the Early Access period and help them become "Active" (or sell $50) during the first month of sales (you must also be Active). </p>
-                <ol>
-                  <li>$20/£16 for EVERY personally sponsored Active Influencer</li>
-                  <li>$5/£4 for EVERY Active Influencer on your Second Line.</li>
-                </ol>
-                <p>The qualification period begins on your enrollment date and ends when the company begins selling product.</p>
-                <v-layout row class="incentive">
-                  <v-flex class="incentive-count" xs6>
-                    {{personalStats.counts.level1}}
-                    <br/>
-                    Personally Sponsored
-                  </v-flex>
-                  <v-flex class="incentive-count" xs6>
-                    {{personalStats.counts.level2}}
-                    <br/>
-                    Second Line
-                  </v-flex>
-                </v-layout>
-              </v-card-text>
-            </v-card>
-          </v-flex>
         </v-layout>
       </v-flex>
     </v-layout>
@@ -138,7 +137,6 @@ import PersonalCard from '@/components/dashboard/PersonalCard.vue'
 import Directory from '@/components/dashboard/Directory.vue'
 import DashCard from '@/components/DashboardCard.vue'
 import CompanyMap from '@/components/dashboard/CompanyMap.vue'
-import PowerOf3 from '@/components/dashboard/PowerOf3.vue'
 import Badges from '@/components/Badges.vue'
 
 import { MEMBER_STATS_BY_DEPTH, MAX_MRN } from '@/graphql/MemberStats.gql'
@@ -155,7 +153,6 @@ export default {
     PersonalCard,
     Directory,
     CompanyMap,
-    PowerOf3,
     Badges,
     Social
   },
@@ -250,7 +247,7 @@ section .stat {
   font-weight: normal;
 }
 .dashboard .incentive{
-  margin: 55px -16px -86px -16px;
+  margin: 55px -16px -16px -16px;
 }
 .dashboard .incentive-count{
   border: 1px solid #eb8381;
