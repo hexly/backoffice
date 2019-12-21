@@ -7,6 +7,14 @@
           v-model="query"
           placeholder="Influecer Name"
         />
+        <v-select
+          v-model="sort"
+          :items="sorts"
+          item-text="label"
+          solo
+          :return-object="true"
+          @change="checkStuff"
+        ></v-select>
       </form>
     </div>
     <div v-if="!loading">
@@ -48,15 +56,45 @@ export default {
       },
       statsMap: {},
       query: null,
-      orderDirection: 'asc',
-      orderByColumn: 'mrn',
+      sort: {
+        label: 'Levels: Closest - Furthest',
+        orderDirection: 'asc',
+        orderByColumn: 'depth'
+      },
       limit: 25,
-      loading: false
+      loading: false,
+      sorts: [
+        {
+          label: 'Levels: Closest - Furthest',
+          orderDirection: 'asc',
+          orderByColumn: 'depth'
+        },
+        {
+          label: 'Levels: Furthest - Closest',
+          orderDirection: 'desc',
+          orderByColumn: 'depth'
+        },
+        {
+          label: 'Joined Date: Oldest - Newest',
+          orderDirection: 'asc',
+          orderByColumn: 'mrn'
+        },
+        {
+          label: 'Joined Date: Newest - Oldest',
+          orderDirection: 'desc',
+          orderByColumn: 'mrn'
+        }
+      ]
     }
   },
   computed: {
     length() {
       return Math.ceil(this.memberTeamSearch.totalCount / this.limit)
+    }
+  },
+  methods: {
+    checkStuff() {
+      console.log(this.sort)
     }
   },
   apollo: {
@@ -66,8 +104,8 @@ export default {
         return {
           input: {
             query: this.query,
-            orderDirection: this.orderDirection,
-            orderByColumn: this.orderByColumn,
+            orderDirection: this.sort.orderDirection,
+            orderByColumn: this.sort.orderByColumn,
             limit: this.limit,
             offset: (this.page - 1) * this.limit
           }
