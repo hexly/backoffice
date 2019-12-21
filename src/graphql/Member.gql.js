@@ -39,7 +39,7 @@ export const SEARCH_MEMBER_DIRECTORY = gql`
 
 export const MEMBER_AWARDS = gql`
   query memberAwards {
-    iamPrincipal{
+    getPrincipal{
       member {
         awards {
           name
