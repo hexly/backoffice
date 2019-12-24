@@ -1,8 +1,8 @@
-import { apolloClient } from '@/vue-apollo'
+import { apolloHexlyClient } from '@/vue-apollo'
 import { GET_MEMBER_ATTRIBUTE, SET_MEMBER_ATTRIBUTE, GET_MEMBER_ATTRIBUTES } from './Api.js'
 
 export const getMemberAttribute = (input) => {
-  return apolloClient.query({
+  return apolloHexlyClient.query({
     query: GET_MEMBER_ATTRIBUTE,
     variables: { input }
   })
@@ -10,7 +10,7 @@ export const getMemberAttribute = (input) => {
 }
 
 export const setMemberAttributes = (payload) => {
-  return apolloClient.mutate({
+  return apolloHexlyClient.mutate({
     mutation: SET_MEMBER_ATTRIBUTE,
     variables: { input: payload },
     fetchPolicy: 'no-cache'
@@ -18,7 +18,7 @@ export const setMemberAttributes = (payload) => {
 }
 
 export const getMemberAttributes = (payload) => {
-  return apolloClient.query({
+  return apolloHexlyClient.query({
     query: GET_MEMBER_ATTRIBUTES,
     variables: { input: payload },
     fetchPolicy: 'no-cache'

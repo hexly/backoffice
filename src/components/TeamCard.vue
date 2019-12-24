@@ -6,14 +6,16 @@
 
     <v-img
       :src="getAvatar"
-      contain
+      cover
+      top
+      aspect-ratio="1"
       class="cardImg white--text"
       gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
     >
     <v-card-title class="fill-height align-end">
       <v-flex row>
         <h2>{{(user.name).toUpperCase()}}</h2>
-        <h4 v-if="hasEmail">{{(user.contacts[0].emails[0].email).toLowerCase()}}</h4>
+        <h4 v-if="email">{{(email).toLowerCase()}}</h4>
       </v-flex>
     </v-card-title>
     </v-img>
@@ -22,7 +24,7 @@
         <v-progress-circular indeterminate :size="50" :width="5" color="primary"></v-progress-circular>
       </v-flex>
 
-      <v-flex row>
+      <!-- <v-flex row>
         <v-card-text v-if="!loading">
           <div v-if="stats && stats.joinedOn">
             <div>
@@ -36,7 +38,7 @@
           </div>
           <div v-else>{{noData}}</div>
         </v-card-text>
-      </v-flex>
+      </v-flex> -->
 
     <v-divider v-if="actions" class="primary"/>
     <v-card-actions v-if="actions" class="justify-space-between">
@@ -49,6 +51,7 @@
 </template>
 
 <script>
+import { get } from 'lodash'
 
 export default {
   name: 'TeamCard',
@@ -90,10 +93,8 @@ export default {
       }
       return false
     },
-    hasEmail () {
-      if (this.user.contacts[0].emails[0].email) {
-        return true
-      } else return false
+    email () {
+      return get(this.user, 'contacts[0].emails[0].email', this.user.email)
     }
   }
 }

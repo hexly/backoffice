@@ -107,7 +107,7 @@
                   {{$tenantInfo.storeUrl.replace('{slug}', selected.slugs[0])}}
                 </a>
               </div>
-              <Badges v-if="selected.joinedOn && badges" :joinedOn="selected.joinedOn" />
+              <Badges v-if="badges" :memberId="selected.id" />
             </v-card>
           </v-scroll-y-transition>
         </v-flex>
