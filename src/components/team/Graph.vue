@@ -646,7 +646,7 @@ export default {
   stroke: #ccc;
   stroke-width: 2px;
 }
-svg {
+.graph-view svg {
   border: 2px solid #ccc;
 }
 
