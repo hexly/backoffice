@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import VueApollo from 'vue-apollo'
-import createApolloClient from './apollo'
+import { createHexlyApolloClient, createApolloClient } from './apollo'
 const NETWORK_ERROR = 'Network error'
 
 // Install the vue plugin
@@ -18,15 +18,36 @@ const options = {
 }
 
 // Create apollo client
-export const apolloClient = createApolloClient(options)
+export const apolloHexlyClient = createHexlyApolloClient(options)
 
-// Create vue apollo provider
-export const apolloProvider = new VueApollo({
-  defaultClient: apolloClient,
+const apolloProviderOptions = {
+  defaultClient: apolloHexlyClient,
+  clients: {
+    hexly: apolloHexlyClient
+  },
   errorHandler (err) {
+    console.log('ERRORLLLLLLLL:::', err)
     if (err.message.toString().indexOf(NETWORK_ERROR) > -1) {
       // localStorage.clear()
       // window.location = '/'
     }
   }
-})
+}
+
+if (process.env.VUE_APP_WP_GRAPHQL_ENDPOINT) {
+  // Config
+  const wpOptions = {
+    ssr: false,
+    base: process.env.VUE_APP_WP_GRAPHQL_ENDPOINT,
+    endpoints: {
+      graphql: process.env.VUE_APP_WP_GRAPHQL_PATH || '/graphql',
+      subscription: process.env.VUE_APP_WP_GRAPHQL_SUBSCRIPTIONS_PATH || '/graphql'
+    },
+    persisting: false
+  }
+
+  apolloProviderOptions.clients.wordpress = createApolloClient(wpOptions)
+}
+
+// Create vue apollo provider
+export const apolloProvider = new VueApollo(apolloProviderOptions)

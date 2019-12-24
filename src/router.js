@@ -9,7 +9,7 @@ import Backoffice from './views/Backoffice.vue'
 import Integrations from './views/Integrations.vue'
 import Profile from './views/Profile.vue'
 import Assets from './views/Assets.vue'
-import Team from './views/Team.vue'
+// import Team from './views/Team.vue'
 import Payouts from './views/Payouts.vue'
 import Sales from './views/Sales.vue'
 import Impersonate from './views/Impersonate.vue'
@@ -112,7 +112,7 @@ export default new Router({
         {
           path: 'team',
           name: 'team',
-          component: Team
+          component: () => import(`./views/teams/${process.env.VUE_APP_TENANT_ID}.vue`)
         },
         {
           path: 'integrations',

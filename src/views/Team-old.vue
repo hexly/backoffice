@@ -40,7 +40,7 @@
         <div v-if="!loading">
           <v-layout row wrap>
             <template v-for="(i, index) in results.team">
-              <v-flex xs12 sm6 md4 v-if="statsMap[i.id]" :key="index">
+              <v-flex xs12 sm6 md4 :key="index">
                 <TeamCard
                   :loading="loading"
                   @viewTeam="showTeam"
@@ -64,7 +64,7 @@ import TeamCard from '../components/TeamCard.vue'
 import getTeamByMemberId from '@/graphql/GetTeam'
 import MONTHLY_STATS_QUERY from '@/graphql/GetMonthlyStats.gql'
 import { Mutations } from '@/store'
-import { mapMutations, mapState } from 'vuex'
+import { mapMutations, mapState, mapGetters } from 'vuex'
 
 const tenantId = ~~process.env.VUE_APP_TENANT_ID
 
@@ -89,7 +89,8 @@ export default {
   computed: {
     ...mapState({
       loading: state => state.loading
-    })
+    }),
+    ...mapGetters(['member'])
   },
   components: {
     TeamCard,
@@ -151,9 +152,9 @@ export default {
     }
   },
   mounted () {
-    const { principal: member } = this.$store.state.user
-    this.currentId = member.memberId
-    this.lineage.push({ memberId: this.currentId, displayName: member.displayName })
+    console.log()
+    this.currentId = this.member.memberId
+    this.lineage.push({ memberId: this.currentId, displayName: this.member.displayName })
   }
 }
 </script>
