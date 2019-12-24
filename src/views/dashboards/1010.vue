@@ -11,7 +11,7 @@
           <v-flex  class="pa-2">
             <PersonalCard memberName="Your Influencer Number:">
               <div slot="footer">
-                <Badges v-if="member.joinedOn" :joinedOn="member.joinedOn"/>
+                <Badges :memberId="member.id"/>
                 <div v-if="tenantIntegrations.length === 0">
                   <h3 class="text-xs-center">Social Accounts<sup>*</sup></h3>
                   <div class="text-xs-center">

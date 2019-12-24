@@ -1,5 +1,5 @@
 <template>
-  <v-card max-width="350" class="ma-2" >
+  <v-card class="ma-2 search-card" >
     <v-card-title primary-title>
       <div style="width: 100%;">
         <h2>{{user.name}}</h2>
@@ -18,14 +18,15 @@
       <v-subheader>Information</v-subheader>
         <div class="px-3">
           <p>{{(user.email).toLowerCase()}}</p>
-          <a target="_blank" :href="$tenantInfo.storeUrl.replace('{slug}', user.slug)">
+          <a v-if="user.slug" target="_blank" :href="$tenantInfo.storeUrl.replace('{slug}', user.slug)">
             {{$tenantInfo.storeUrl.replace('{slug}', user.slug)}}
           </a>
+          <span v-else>Store Not Set</span>
         </div>
       <v-subheader>Relation</v-subheader>
       <div class="px-3">
         <p>Level: {{user.relativeDepth}}</p>
-        <v-layout align-center justify-start row>
+        <v-layout align-center justify-start row wrap>
           <template v-for="parent in user.relativePathMembers">
             <v-flex :shrink="true" :key="parent.profileUrl">
                 <v-tooltip top slot="append">
@@ -38,7 +39,7 @@
           </template>
         </v-layout>
       </div>
-      <v-subheader>Sales Stats</v-subheader>
+      <!-- <v-subheader>Sales Stats</v-subheader>
       <div class="px-3">
         <div v-if="stats && stats.joinedOn">
           <div>
@@ -51,7 +52,7 @@
           <div>Total Points: {{stats.totalPoints ? stats.totalPoints.toFixed(2) : 0}}</div>
         </div>
         <div v-else>{{noData}}</div>
-      </div>
+      </div> -->
     </v-card-text>
 
     <v-divider v-if="actions" class="primary"/>
@@ -122,5 +123,11 @@ export default {
 }
 .dense {
   padding: 0;
+}
+
+.search-card{
+  width: 350px;
+  margin-left: auto !important;
+  margin-right: auto !important;
 }
 </style>

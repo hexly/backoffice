@@ -2,26 +2,29 @@
   <div class="pa-2">
     <div>
       <form>
+        <h5>Search By Name:</h5>
         <v-text-field
           solo
           v-model="query"
           placeholder="Influecer Name"
         />
+        <h5>Sort Name By:</h5>
         <v-select
           v-model="sort"
           :items="sorts"
           item-text="label"
           solo
           :return-object="true"
-          @change="checkStuff"
         ></v-select>
       </form>
     </div>
-    <div v-if="!loading">
-      <v-layout row wrap justify-start>
-        <v-flex v-for="(i, index) in memberTeamSearch.team" xs12 sm4 md3 :key="index">
+    <div class="search-results" :class="{'loading': !!loading}">
+      <div class="loader-overlay text-xs-center">
+        <v-progress-circular class="loader" indeterminate :size="60" :width="6" color="black"></v-progress-circular>
+      </div>
+      <v-layout wrap align-space-between justify-center row fill-height pb-2>
+        <v-flex v-for="(i, index) in memberTeamSearch.team" :key="index">
           <TeamCard
-            :loading="loading"
             :user="i"
             :stats="statsMap[i.id]"
             noData="No data available"
@@ -61,8 +64,8 @@ export default {
         orderDirection: 'asc',
         orderByColumn: 'depth'
       },
-      limit: 25,
-      loading: false,
+      limit: 28,
+      loading: 0,
       sorts: [
         {
           label: 'Levels: Closest - Furthest',
@@ -92,11 +95,6 @@ export default {
       return Math.ceil(this.memberTeamSearch.totalCount / this.limit)
     }
   },
-  methods: {
-    checkStuff() {
-      console.log(this.sort)
-    }
-  },
   apollo: {
     memberTeamSearch: {
       query: TEAM_SEARCH_QUERY,
@@ -111,8 +109,31 @@ export default {
           }
         }
       },
-      loadingKey: 'loading'
+      loadingKey: 'loading',
+      debounce: 500
     }
   }
 }
 </script>
+
+<style scoped>
+.search-results{
+  position: relative;
+  min-height: calc(100vh - 272px);
+}
+
+.loader-overlay {
+  display: none;
+}
+
+.loading .loader-overlay {
+  display: block;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: rgba(0,0,0,0.4);
+  z-index: 1000;
+}
+</style>

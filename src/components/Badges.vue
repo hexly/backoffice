@@ -3,19 +3,21 @@
     <h3>Awards</h3>
     <h5 v-if="loading">Loading Awards</h5>
     <v-progress-circular v-if="loading" indeterminate :size="30" :width="3" color="grey"></v-progress-circular>
-    <v-flex tag="strong" xs5 text-xs-right mr-3 mb-2 v-if="!loading">
-      <v-chip color="primary" text-color="white">
-        <v-avatar class="primary darken-4">
-          <v-icon>cake</v-icon>
-        </v-avatar>
-        {{birthday}}
-      </v-chip>
-      <v-chip v-if="isFounder" color="secondary" text-color="white">
-        <v-avatar class="secondary darken-4">
-          <v-icon>star</v-icon>
-        </v-avatar>
-        Founding Influencer
-      </v-chip>
+    <v-flex v-else tag="strong" xs5 text-xs-right mr-3 mb-2 >
+      <template v-if="joinedOn">
+        <v-chip color="primary" text-color="white">
+          <v-avatar class="primary darken-4">
+            <v-icon>cake</v-icon>
+          </v-avatar>
+          {{birthday}}
+        </v-chip>
+        <v-chip v-if="isFounder" color="secondary" text-color="white">
+          <v-avatar class="secondary darken-4">
+            <v-icon>star</v-icon>
+          </v-avatar>
+          Founding Influencer
+        </v-chip>
+      </template>
       <v-chip v-for="award in awards" :color="award.metadata.color" :text-color="award.metadata.text" :key="award.name">
         <v-avatar :color="award.metadata.accent">
           <v-icon>{{award.metadata.icon}}</v-icon>
@@ -32,12 +34,13 @@ import { MEMBER_AWARDS } from '@/graphql/Member.gql.js'
 export default {
   name: 'Badges',
   props: {
-    joinedOn: String // Just leave it... I know
+    memberId: Number
   },
   data() {
     return {
       awards: [],
-      loading: 0
+      loading: 0,
+      joinedOn: null
     }
   },
   computed: {
@@ -52,8 +55,14 @@ export default {
   apollo: {
     awards: {
       query: MEMBER_AWARDS,
-      update({ getPrincipal: { member: { awards } } }) {
-        return awards
+      variables() {
+        return {
+          memberId: this.memberId
+        }
+      },
+      update({ member }) {
+        this.joinedOn = member.joinedOn
+        return member.awards
       },
       loadingKey: 'loading'
     }

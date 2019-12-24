@@ -24,7 +24,7 @@
         <v-progress-circular indeterminate :size="50" :width="5" color="primary"></v-progress-circular>
       </v-flex>
 
-      <v-flex row>
+      <!-- <v-flex row>
         <v-card-text v-if="!loading">
           <div v-if="stats && stats.joinedOn">
             <div>
@@ -38,7 +38,7 @@
           </div>
           <div v-else>{{noData}}</div>
         </v-card-text>
-      </v-flex>
+      </v-flex> -->
 
     <v-divider v-if="actions" class="primary"/>
     <v-card-actions v-if="actions" class="justify-space-between">
