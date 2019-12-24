@@ -26,7 +26,7 @@
       <v-subheader>Relation</v-subheader>
       <div class="px-3">
         <p>Level: {{user.relativeDepth}}</p>
-        <v-layout align-center justify-start row wrap>
+        <v-layout align-center justify-start row wrap pb-4>
           <template v-for="parent in user.relativePathMembers">
             <v-flex :shrink="true" :key="parent.profileUrl">
                 <v-tooltip top slot="append">
