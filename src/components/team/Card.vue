@@ -124,7 +124,6 @@ export default {
 .dense {
   padding: 0;
 }
-
 .search-card{
   width: 350px;
   margin-left: auto !important;

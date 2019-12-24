@@ -2,19 +2,26 @@
   <div class="pa-2">
     <div>
       <form>
+<<<<<<< HEAD
         <h5>Search By Name:</h5>
+=======
+>>>>>>> 57a96037767f4d5d943b63f968d4d52269e8a8bb
         <v-text-field
           solo
           v-model="query"
           placeholder="Influecer Name"
         />
+<<<<<<< HEAD
         <h5>Sort Name By:</h5>
+=======
+>>>>>>> 57a96037767f4d5d943b63f968d4d52269e8a8bb
         <v-select
           v-model="sort"
           :items="sorts"
           item-text="label"
           solo
           :return-object="true"
+<<<<<<< HEAD
         ></v-select>
       </form>
     </div>
@@ -25,6 +32,17 @@
       <v-layout wrap align-space-between justify-center row fill-height pb-2>
         <v-flex v-for="(i, index) in memberTeamSearch.team" :key="index">
           <TeamCard
+=======
+          @change="checkStuff"
+        ></v-select>
+      </form>
+    </div>
+    <div v-if="!loading">
+      <v-layout row wrap justify-start>
+        <v-flex v-for="(i, index) in memberTeamSearch.team" xs12 sm4 md3 :key="index">
+          <TeamCard
+            :loading="loading"
+>>>>>>> 57a96037767f4d5d943b63f968d4d52269e8a8bb
             :user="i"
             :stats="statsMap[i.id]"
             noData="No data available"
@@ -64,8 +82,13 @@ export default {
         orderDirection: 'asc',
         orderByColumn: 'depth'
       },
+<<<<<<< HEAD
       limit: 28,
       loading: 0,
+=======
+      limit: 25,
+      loading: false,
+>>>>>>> 57a96037767f4d5d943b63f968d4d52269e8a8bb
       sorts: [
         {
           label: 'Levels: Closest - Furthest',
@@ -95,6 +118,14 @@ export default {
       return Math.ceil(this.memberTeamSearch.totalCount / this.limit)
     }
   },
+<<<<<<< HEAD
+=======
+  methods: {
+    checkStuff() {
+      console.log(this.sort)
+    }
+  },
+>>>>>>> 57a96037767f4d5d943b63f968d4d52269e8a8bb
   apollo: {
     memberTeamSearch: {
       query: TEAM_SEARCH_QUERY,
@@ -109,12 +140,17 @@ export default {
           }
         }
       },
+<<<<<<< HEAD
       loadingKey: 'loading',
       debounce: 500
+=======
+      loadingKey: 'loading'
+>>>>>>> 57a96037767f4d5d943b63f968d4d52269e8a8bb
     }
   }
 }
 </script>
+<<<<<<< HEAD
 
 <style scoped>
 .search-results{
@@ -137,3 +173,5 @@ export default {
   z-index: 1000;
 }
 </style>
+=======
+>>>>>>> 57a96037767f4d5d943b63f968d4d52269e8a8bb
