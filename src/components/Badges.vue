@@ -11,12 +11,6 @@
           </v-avatar>
           {{birthday}}
         </v-chip>
-        <v-chip v-if="isFounder" color="secondary" text-color="white">
-          <v-avatar class="secondary darken-4">
-            <v-icon>star</v-icon>
-          </v-avatar>
-          Founding Influencer
-        </v-chip>
       </template>
       <v-chip v-for="award in awards" :color="award.metadata.color" :text-color="award.metadata.text" :key="award.name">
         <v-avatar :color="award.metadata.accent">
@@ -47,9 +41,6 @@ export default {
     birthday() {
       const time = this.$moment(this.joinedOn).toNow(true)
       return time.replace('a ', '1 ')
-    },
-    isFounder() {
-      return this.$moment(this.joinedOn).isBefore('2020-04-01')
     }
   },
   apollo: {
