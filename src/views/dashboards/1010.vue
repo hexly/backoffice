@@ -22,6 +22,60 @@
               </div>
             </PersonalCard>
           </v-flex>
+        </v-layout>
+      </v-flex>
+      <v-flex xs12 md6>
+        <v-layout row wrap justify-space-between>
+          <v-flex xs12 class="pa-2">
+            <DashCard
+              color="white"
+              darken="1"
+              :display="memberCount"
+              subheading="Total Influencers"
+              icon="location_city"
+              :loading="loadingCount > 0"
+            />
+          </v-flex>
+          <v-flex xs12 sm6 class="pa-2">
+            <DashCard
+              color="white"
+              darken="1"
+              :display="personalStats.counts.total"
+              subheading="Your Circle of Influence"
+              icon="supervised_user_circle"
+              :loading="loadingStats > 0"
+            />
+          </v-flex>
+          <v-flex xs12 sm6 class="pa-2">
+            <DashCard
+              color="white"
+              darken="1"
+              :display="personalStats.counts.level1"
+              subheading="Personally Sponsored"
+              icon="account_tree"
+              :loading="loadingStats > 0"
+            />
+          </v-flex>
+          <v-flex xs12 sm6 class="pa-2">
+            <DashCard
+              color="white"
+              darken="1"
+              :display="personalStats.counts.level2"
+              subheading="Second Line Size"
+              icon="looks_two"
+              :loading="loadingStats > 0"
+            />
+          </v-flex>
+          <v-flex xs12 sm6 class="pa-2">
+            <DashCard
+              color="white"
+              darken="1"
+              :display="personalStats.counts.level3"
+              subheading="Third Line Size"
+              icon="looks_3"
+              :loading="loadingStats > 0"
+            />
+          </v-flex>
           <v-flex class="pa-2">
             <v-card style="height: 100%;">
               <v-card-text>
@@ -49,58 +103,193 @@
           </v-flex>
         </v-layout>
       </v-flex>
-      <v-flex xs12 md6>
-        <v-layout fill-height column justify-space-between>
-          <v-flex class="pa-2">
-            <DashCard
-              color="white"
-              darken="1"
-              :display="memberCount"
-              subheading="Total Influencers"
-              icon="location_city"
-              :loading="loadingCount > 0"
-            />
-          </v-flex>
-          <v-flex class="pa-2">
-            <DashCard
-              color="white"
-              darken="1"
-              :display="personalStats.counts.total"
-              subheading="Your Circle of Influence"
-              icon="supervised_user_circle"
-              :loading="loadingStats > 0"
-            />
-          </v-flex>
-          <v-flex class="pa-2">
-            <DashCard
-              color="white"
-              darken="1"
-              :display="personalStats.counts.level1"
-              subheading="Personally Sponsored"
-              icon="account_tree"
-              :loading="loadingStats > 0"
-            />
-          </v-flex>
-          <v-flex class="pa-2">
-            <DashCard
-              color="white"
-              darken="1"
-              :display="personalStats.counts.level2"
-              subheading="Second Line Size"
-              icon="looks_two"
-              :loading="loadingStats > 0"
-            />
-          </v-flex>
-          <v-flex class="pa-2">
-            <DashCard
-              color="white"
-              darken="1"
-              :display="personalStats.counts.level3"
-              subheading="Third Line Size"
-              icon="looks_3"
-              :loading="loadingStats > 0"
-            />
-          </v-flex>
+    </v-layout>
+    <v-layout row wrap>
+      <v-flex xs12 sm6 pa-2>
+        <v-card>
+          <v-toolbar color="secondary" dark>
+            <v-toolbar-title>Recent Sales</v-toolbar-title>
+          </v-toolbar>
+          <v-card-content>
+            <table>
+              <thead>
+                <tr>
+                  <th>Customer</th>
+                  <th>Date</th>
+                  <th>Amount</th>
+                  <th>Points</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Jon Doe</td>
+                  <td>12/03/2019</td>
+                  <td>$132.87</td>
+                  <td>120</td>
+                </tr>
+                <tr>
+                  <td>Jon Doe</td>
+                  <td>12/03/2019</td>
+                  <td>$132.87</td>
+                  <td>120</td>
+                </tr>
+                <tr>
+                  <td>Jon Doe</td>
+                  <td>12/03/2019</td>
+                  <td>$132.87</td>
+                  <td>120</td>
+                </tr>
+                <tr>
+                  <td>Jon Doe</td>
+                  <td>12/03/2019</td>
+                  <td>$132.87</td>
+                  <td>120</td>
+                </tr>
+              </tbody>
+            </table>
+          </v-card-content>
+        </v-card>
+      </v-flex>
+      <v-flex xs12 sm6 pa-2>
+        <v-layout row wrap>
+          <v-card width="100%">
+            <v-toolbar color="secondary" dark>
+              <v-toolbar-title>Rank Requirements</v-toolbar-title>
+            </v-toolbar>
+            <v-card-content class="pa-3">
+              <v-layout row justify-space-between pb-4>
+                <v-flex px-3>
+                  <div class="title">Rank</div>
+                </v-flex>
+                <v-spacer></v-spacer>
+                <v-flex px-3 text-xs-right>
+                  <div class="title">Rank 4</div>
+                </v-flex>
+              </v-layout>
+              <v-layout row justify-space-between wrap>
+                <v-flex px-3>
+                  <div class="title">PSV</div>
+                  <div class="caption grey--text darken-1">Personal Sales Volume</div>
+                </v-flex>
+                <v-spacer></v-spacer>
+                <v-flex px-3 text-xs-right>
+                  <div class="title">75</div>
+                  <div class="caption grey--text darken-1">75% of 100</div>
+                </v-flex>
+                <v-flex xs12 px-3>
+                  <v-progress-linear  color="success" height="5" value="60"></v-progress-linear>
+                </v-flex>
+              </v-layout>
+              <v-layout row justify-space-between wrap>
+                <v-flex px-3>
+                  <div class="title">CPSV</div>
+                  <div class="caption grey--text darken-1">Career PSV</div>
+                </v-flex>
+                <v-spacer></v-spacer>
+                <v-flex px-3 text-xs-right>
+                  <div class="title">500</div>
+                  <div class="caption grey--text darken-1">100% of 500</div>
+                </v-flex>
+                <v-flex xs12 px-3>
+                  <v-progress-linear  color="success" height="5" value="100"></v-progress-linear>
+                </v-flex>
+              </v-layout>
+              <v-layout row justify-space-between wrap>
+                <v-flex px-3>
+                  <div class="title">GSV</div>
+                  <div class="caption grey--text darken-1">Group Sales Volume</div>
+                </v-flex>
+                <v-spacer></v-spacer>
+                <v-flex px-3 text-xs-right>
+                  <div class="title">683</div>
+                  <div class="caption grey--text darken-1">68.3% of 1000</div>
+                </v-flex>
+                <v-flex xs12 px-3>
+                  <v-progress-linear  color="success" height="5" value="68.6"></v-progress-linear>
+                </v-flex>
+              </v-layout>
+              <v-layout row justify-space-between wrap>
+                <v-flex px-3>
+                  <div class="title">AL</div>
+                  <div class="caption grey--text darken-1">Active Legs</div>
+                </v-flex>
+                <v-spacer></v-spacer>
+                <v-flex px-3 text-xs-right>
+                  <div class="title">3</div>
+                  <div class="caption grey--text darken-1">75% of 4</div>
+                </v-flex>
+                <v-flex xs12 px-3>
+                  <v-progress-linear  color="success" height="5" value="75"></v-progress-linear>
+                </v-flex>
+              </v-layout>
+              <v-layout row justify-space-between wrap>
+                <v-flex px-3>
+                  <div class="title">PABQL</div>
+                  <div class="caption grey--text darken-1">Paid-As Bonus Qualified Legs</div>
+                </v-flex>
+                <v-spacer></v-spacer>
+                <v-flex px-3 text-xs-right>
+                  <div class="title">0</div>
+                  <div class="caption grey--text darken-1">
+                    N/A
+                    <v-tooltip slot="append" left>
+                        <v-icon slot="activator" small>info</v-icon>
+                        <span>Not applicable for next rank</span>
+                    </v-tooltip>
+                  </div>
+                </v-flex>
+                <v-flex xs12 px-3>
+                  <v-progress-linear  color="success" height="5" value="0"></v-progress-linear>
+                </v-flex>
+              </v-layout>
+              <v-layout row justify-space-between wrap>
+                <v-flex px-3>
+                  <div class="title">DSV</div>
+                  <div class="caption grey--text darken-1">Downline Sales Volume</div>
+                </v-flex>
+                <v-spacer></v-spacer>
+                <v-flex px-3 text-xs-right>
+                  <div class="title">685</div>
+                  <div class="caption grey--text darken-1">
+                    N/A
+                    <v-tooltip slot="append" left>
+                        <v-icon slot="activator" small>info</v-icon>
+                        <span>Not applicable for next rank</span>
+                    </v-tooltip>
+                  </div>
+                </v-flex>
+                <v-flex xs12 px-3>
+                  <v-progress-linear  color="success" height="5" value="0"></v-progress-linear>
+                </v-flex>
+              </v-layout>
+              <v-layout row justify-space-between wrap>
+                <v-flex px-3>
+                  <div class="title">ADSV</div>
+                  <div class="caption grey--text darken-1">
+                    Adjusted Downline Sales Volume
+                    <v-tooltip slot="append" right>
+                        <v-icon slot="activator" small>help</v-icon>
+                        <span>Maximum 60% DSV from any one leg</span>
+                    </v-tooltip>
+                  </div>
+                </v-flex>
+                <v-spacer></v-spacer>
+                <v-flex px-3 text-xs-right>
+                  <div class="title">500</div>
+                  <div class="caption grey--text darken-1">
+                    N/A
+                    <v-tooltip slot="append" left>
+                        <v-icon slot="activator" small>info</v-icon>
+                        <span>Not applicable for next rank</span>
+                    </v-tooltip>
+                  </div>
+                </v-flex>
+                <v-flex xs12 px-3>
+                  <v-progress-linear  color="success" height="5" value="0"></v-progress-linear>
+                </v-flex>
+              </v-layout>
+            </v-card-content>
+          </v-card>
         </v-layout>
       </v-flex>
     </v-layout>
@@ -227,7 +416,7 @@ section .stat {
   font-weight: normal;
 }
 .dashboard .incentive{
-  margin: 55px -16px -16px -16px;
+  margin: 16px -16px -16px -16px;
 }
 .dashboard .incentive-count{
   border: 1px solid #eb8381;

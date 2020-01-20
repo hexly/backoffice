@@ -3,7 +3,7 @@
      <v-switch
       v-model="member.tags"
       :value="tagName"
-      label="Private Profile"
+      :label="labelName"
       color="primary"
       @change="change"
       persistent-hint
@@ -44,7 +44,10 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['member'])
+    ...mapGetters(['member']),
+    labelName() {
+      return `Private Profile: ${this.member.tags.indexOf(this.tagName) >= 0 ? 'on' : 'off'}`
+    }
   }
 
 }
