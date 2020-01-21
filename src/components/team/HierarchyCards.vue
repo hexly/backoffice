@@ -44,12 +44,14 @@
 </template>
 
 <script>
+import _ from 'lodash'
+import { mapMutations, mapState, mapGetters } from 'vuex'
+
 import MonthSelector from '@/components/MonthSelector.vue'
 import TeamCard from '@/components/TeamCard.vue'
-import getTeamByMemberId from '@/graphql/GetTeam'
+import { TEAM_QUERY } from '@/graphql/Team.gql'
 import MONTHLY_STATS_QUERY from '@/graphql/GetMonthlyStats.gql'
 import { Mutations } from '@/store'
-import { mapMutations, mapState, mapGetters } from 'vuex'
 
 const tenantId = ~~process.env.VUE_APP_TENANT_ID
 
@@ -98,9 +100,22 @@ export default {
     }
   },
   apollo: {
-    results: getTeamByMemberId('currentId', function (isLoading, countModifier) {
-      this.setLoading(isLoading)
-    }),
+    results: {
+      query: TEAM_QUERY,
+      variables() {
+        const id = this.currentId || _.get(this, '$store.state.user.principal.memberId') // WTF check this state
+        return {
+          byTarget: { ids: [id] }, // get me the target
+          bySponsor: { sponsorIds: [id] } // get me anyone who belongs to the target
+        }
+      },
+      update ({ target, team }) {
+        return {
+          target: target.nodes[0],
+          team: team.nodes
+        }
+      }
+    },
     stats: {
       query: MONTHLY_STATS_QUERY,
       variables () {
@@ -138,7 +153,7 @@ export default {
   },
   mounted () {
     console.log()
-    this.currentId = this.member.memberId
+    this.currentId = this.member.memberId || this.member.id
     this.lineage.push({ memberId: this.currentId, displayName: this.member.displayName })
   }
 }

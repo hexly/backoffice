@@ -165,13 +165,14 @@ const tenantOptions = {
     ],
     privacyPolicy: '/docs/1010/Privacy-Policy.pdf',
     features: {
-      sales: false,
+      sales: true,
       team: true,
       legal: {
         docs: true,
         ssn: false
       },
-      social: true
+      social: true,
+      payouts: true
     }
   }
 }
