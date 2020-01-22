@@ -254,7 +254,7 @@ export default {
   transition: ease-out 700ms;
 }
 .expand-enter-active {
-  transition: opacity ease-out 700ms;
+  transition: opacity ease-out 350ms;
 }
 .expand-enter, .expand-leave-to /* .fade-leave-active below version 2.1.8 */ {
   opacity: 0;
