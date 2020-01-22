@@ -77,13 +77,14 @@
               :key        ="award.name"
               @mouseover  ="handleHover($event, award.name)"
               @mouseleave ="handleHover($event, award.name)"
+              @mouseout   ="handleHover($event, award.name)"
             >
               <v-avatar :color="award.metadata.accent">
                 <v-icon>{{award.metadata.icon}}</v-icon>
               </v-avatar>
               <transition
                 css
-                name        ="expand"
+                name         ="expand"
                 @after-leave ="afterLeaveHandler(award.name)"
               >
                 <span v-show="awardHover[award.name]">{{award.name}}</span>
@@ -143,30 +144,26 @@ export default {
       }
     },
     handleHover(e, awardName) {
-      const awardHoverClone = {...this.awardHover}
+      let awardHoverClone = {...this.awardHover}
+      const awardAlreadyHovering = awardHoverClone.hasOwnProperty(awardName)
       const objKeysLength = Object.keys(awardHoverClone).length
-      // console.log({objKeysLength, thisAwardHover: this.awardHover})
       const { type } = e
+
       switch (type) {
       case 'mouseover':
-        if (objKeysLength > 1) {
-          this.awardHover = {}
+        if (objKeysLength) {
           break
         }
-        if (objKeysLength) {
-          this.awardHover = {}
-        }
         awardHoverClone[awardName] = true
-        this.awardHover = awardHoverClone
+        this.awardHover = {...awardHoverClone}
         break
 
-      case 'mouseleave':
-        if (objKeysLength > 1) {
-          this.awardHover = {}
+      case 'mouseleave' || 'mouseout':
+        if (!awardAlreadyHovering) {
           break
         }
         awardHoverClone[awardName] = false
-        this.awardHover = awardHoverClone
+        this.awardHover = {...awardHoverClone}
         break
 
       default:
@@ -174,13 +171,7 @@ export default {
       }
     },
     afterLeaveHandler(awardName) {
-      const awardHoverClone = {...this.awardHover}
-      const awardHoverKeys = Object.keys(this.awardHover)
-      awardHoverKeys.forEach(key => {
-        delete awardHoverClone[key]
-      })
-      this.awardHover = awardHoverClone
-      console.log({thisAwardHover: this.awardHover, awardHoverKeys})
+      this.awardHover = {}
     }
   },
   computed: {
@@ -255,15 +246,20 @@ export default {
   justify-content: space-evenly;
 }
 .badge {
-  max-width: 31px;
+  max-width: 29px;
+  transition: ease-out 350ms;
 }
 .badge-hover {
   max-width: 100%;
+  transition: ease-out 700ms;
 }
-.expand-enter-active, .expand-leave-active {
-  transition: opacity .5s;
+.expand-enter-active {
+  transition: opacity ease-out 700ms;
 }
 .expand-enter, .expand-leave-to /* .fade-leave-active below version 2.1.8 */ {
   opacity: 0;
+}
+.expand-leave-active {
+  transition: ease-out 350ms;
 }
 </style>
