@@ -419,9 +419,9 @@ section .stat {
   margin: 16px -16px -16px -16px;
 }
 .dashboard .incentive-count{
-  border: 1px solid #eb8381;
+  border: 1px solid #a1213b;
   text-align: center;
-  background-color: #eb8381;
+  background-color: #a1213b;
   color: white;
   font-weight: bold;
   text-transform: uppercase;

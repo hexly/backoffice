@@ -69,21 +69,26 @@
         </v-tab-item>
         <v-tab-item>
           <v-card class="badge-card" d-flex justify-center wrap flat>
-            <v-hover v-for="award in user.awards" :key="award.name">
-              <v-chip slot-scope="{ hover }" class="chip-transition elevation-3" :color="award.metadata.color" :text-color="award.metadata.text">
-                <v-avatar :color="award.metadata.accent">
-                  <v-icon>{{award.metadata.icon}}</v-icon>
-                </v-avatar>
-                <v-expand-transition>
-                  <span
-                    v-if="hover"
-                    class="d-flex v-card--reveal transition-fast-in-fast-out"
-                  >
-                    {{award.name}}
-                  </span>
-                </v-expand-transition>
-              </v-chip>
-            </v-hover>
+            <v-chip
+              v-for       ="award in user.awards"
+              :class       ="'badge elevation-3' + (awardHover[award.name] ? ' badge-hover' : '')"
+              :color      ="award.metadata.color"
+              :text-color ="award.metadata.text"
+              :key        ="award.name"
+              @mouseover  ="handleHover($event, award.name)"
+              @mouseleave ="handleHover($event, award.name)"
+            >
+              <v-avatar :color="award.metadata.accent">
+                <v-icon>{{award.metadata.icon}}</v-icon>
+              </v-avatar>
+              <transition
+                css
+                name        ="expand"
+                @after-leave ="afterLeaveHandler(award.name)"
+              >
+                <span v-show="awardHover[award.name]">{{award.name}}</span>
+              </transition>
+            </v-chip>
           </v-card>
         </v-tab-item>
       </v-tabs>
@@ -103,6 +108,7 @@ export default {
   data() {
     return {
       show: false,
+      awardHover: {},
       skipTeamQuery: true,
       tabHeadings: [
         'Info',
@@ -135,6 +141,46 @@ export default {
       if (e === 1) {
         this.skipTeamQuery = false
       }
+    },
+    handleHover(e, awardName) {
+      const awardHoverClone = {...this.awardHover}
+      const objKeysLength = Object.keys(awardHoverClone).length
+      // console.log({objKeysLength, thisAwardHover: this.awardHover})
+      const { type } = e
+      switch (type) {
+      case 'mouseover':
+        if (objKeysLength > 1) {
+          this.awardHover = {}
+          break
+        }
+        if (objKeysLength) {
+          this.awardHover = {}
+        }
+        awardHoverClone[awardName] = true
+        this.awardHover = awardHoverClone
+        break
+
+      case 'mouseleave':
+        if (objKeysLength > 1) {
+          this.awardHover = {}
+          break
+        }
+        awardHoverClone[awardName] = false
+        this.awardHover = awardHoverClone
+        break
+
+      default:
+        break
+      }
+    },
+    afterLeaveHandler(awardName) {
+      const awardHoverClone = {...this.awardHover}
+      const awardHoverKeys = Object.keys(this.awardHover)
+      awardHoverKeys.forEach(key => {
+        delete awardHoverClone[key]
+      })
+      this.awardHover = awardHoverClone
+      console.log({thisAwardHover: this.awardHover, awardHoverKeys})
     }
   },
   computed: {
@@ -206,19 +252,18 @@ export default {
 .badge-card {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
+  justify-content: space-evenly;
 }
-.v-card--reveal {
-  align-items: center;
-  bottom: 0;
-  justify-content: center;
-  /* position: absolute; */
-  /* width: 100%; */
+.badge {
+  max-width: 31px;
 }
-.chip-transition {
-  max-width: 24px;
-}
-.chip-transition:hover {
+.badge-hover {
   max-width: 100%;
+}
+.expand-enter-active, .expand-leave-active {
+  transition: opacity .5s;
+}
+.expand-enter, .expand-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  opacity: 0;
 }
 </style>
