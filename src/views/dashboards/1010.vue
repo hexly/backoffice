@@ -106,45 +106,34 @@
     </v-layout>
     <v-layout row wrap>
       <v-flex xs12 sm6 pa-2>
-        <v-card>
+        <v-card id="recent-sales-card">
           <v-toolbar color="secondary" dark>
             <v-toolbar-title>Recent Sales</v-toolbar-title>
           </v-toolbar>
           <v-card-content>
+            <v-data-table
+              :headers ="dataTableHeaders"
+              :items   ="dataTableItems"
+              hide-actions
+            >
+              <template
+                slot="items"
+                slot-scope="props"
+              >
+                <tr @click="props.expanded = !props.expanded">
+                  <td>{{props.item.name}}</td>
+                  <td>{{props.item.date}}</td>
+                  <td>{{props.item.amount}}</td>
+                  <td>{{props.item.points}}</td>
+                </tr>
+              </template>
+            </v-data-table>
             <table>
               <thead>
                 <tr>
-                  <th>Customer</th>
-                  <th>Date</th>
-                  <th>Amount</th>
-                  <th>Points</th>
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td>Jon Doe</td>
-                  <td>12/03/2019</td>
-                  <td>$132.87</td>
-                  <td>120</td>
-                </tr>
-                <tr>
-                  <td>Jon Doe</td>
-                  <td>12/03/2019</td>
-                  <td>$132.87</td>
-                  <td>120</td>
-                </tr>
-                <tr>
-                  <td>Jon Doe</td>
-                  <td>12/03/2019</td>
-                  <td>$132.87</td>
-                  <td>120</td>
-                </tr>
-                <tr>
-                  <td>Jon Doe</td>
-                  <td>12/03/2019</td>
-                  <td>$132.87</td>
-                  <td>120</td>
-                </tr>
               </tbody>
             </table>
           </v-card-content>
@@ -333,6 +322,38 @@ export default {
           level1: 0
         }
       },
+      dataTableHeaders: [
+        { text: 'Customer', value: 'name', sortable: false },
+        { text: 'Date', value: 'date', sortable: false },
+        { text: 'Amount', value: 'amount', sortable: false },
+        { text: 'Points', value: 'points', sortable: false }
+      ],
+      dataTableItems: [
+        {
+          name: 'Jon Doe',
+          date: '12/03/2019',
+          amount: '$132.87',
+          points: '120'
+        },
+        {
+          name: 'Jon Doe',
+          date: '12/03/2019',
+          amount: '$132.87',
+          points: '120'
+        },
+        {
+          name: 'Jon Doe',
+          date: '12/03/2019',
+          amount: '$132.87',
+          points: '120'
+        },
+        {
+          name: 'Jon Doe',
+          date: '12/03/2019',
+          amount: '$132.87',
+          points: '120'
+        }
+      ],
       memberCount: 0,
       team: [],
       loadingStats: 0,
@@ -426,5 +447,8 @@ section .stat {
   font-weight: bold;
   text-transform: uppercase;
   padding: 5px 0;
+}
+#recent-sales-card {
+  height: 100%;
 }
 </style>

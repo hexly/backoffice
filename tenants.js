@@ -21,6 +21,7 @@ const tenantOptions = {
         url: 'http://www.veridian-dynamics.org/'
       }
     ],
+    strings: {},
     features: {
       team: true,
       legal: true
@@ -32,7 +33,8 @@ const tenantOptions = {
     features: {
       team: true,
       legal: true
-    }
+    },
+    strings: {}
   },
   1004: {
     name: 'Green HoriZen',
@@ -64,6 +66,7 @@ const tenantOptions = {
         url: '/docs/1004/Policies_and_Procedures_(April_2018).pdf'
       }
     ],
+    strings: {},
     features: {
       sales: true,
       team: true,
@@ -88,6 +91,7 @@ const tenantOptions = {
         url: 'http://www.veridian-dynamics.org/'
       }
     ],
+    strings: {},
     features: {
       sales: true,
       team: false,
@@ -113,6 +117,7 @@ const tenantOptions = {
         url: 'https://www.facebook.com/Kyngdom-Organizer-187348015476222/'
       }
     ],
+    strings: {},
     agreements: [
       {
         key: 'affiliate',
@@ -151,6 +156,9 @@ const tenantOptions = {
         url: 'https://www.facebook.com/groups/EverraOfficial/'
       }
     ],
+    strings: {
+      stripeConnect: 'Everra Connect'
+    },
     agreements: [
       {
         key: 'affiliate',
