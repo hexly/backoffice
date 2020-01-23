@@ -313,8 +313,8 @@ export default {
   margin-bottom: -23px !important;
 }
 .generation-avatar:hover {
-  transform: scale(1) translateY(-12px);
-  z-index: 100;
+  transform: scale(1) translateY(-5px);
+  z-index: 1;
   transition: 300ms cubic-bezier(0.075, 0.82, 0.165, 1);
 }
 </style>
