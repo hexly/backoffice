@@ -44,7 +44,7 @@ export const TEAM_QUERY = gql`
         profileUrl
       }
     }
-    team: members(first: 500, condition: $bySponsor) {
+    team: members(first: 10000, condition: $bySponsor) {
       nodes {
         awards {
           name

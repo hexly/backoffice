@@ -198,6 +198,10 @@ export default {
           }
         }
       },
+      update({ memberTeamSearch }) {
+        this.$apollo.queries.results.refetch()
+        return memberTeamSearch
+      },
       loadingKey: 'loading',
       debounce: 500
     }

@@ -1,6 +1,7 @@
 <template>
   <v-card
-  max-width="350"
+  max-width="320"
+  min-width="320"
   class="ma-2 pa-2"
   >
 
@@ -42,16 +43,13 @@
             <div class="generation-container">
               <h4>Generation: {{user.relativeDepth}}</h4>
               <v-layout class="generation-badge-container" align-center row wrap>
-                <template v-for="(parent, pIndex) in user.relativePathMembers">
-                  <v-icon v-if="pIndex > 0" :key="pIndex">arrow_right_alt</v-icon>
-                  <v-flex :shrink="true" :key="parent.profileUrl">
-                    <v-tooltip top slot="append">
-                      <v-avatar class="ma-1 elevation-3" size="36px" slot="activator">
-                        <img :src="parent.profileUrl || $tenantInfo.placeholder" alt="Avatar" >
-                      </v-avatar>
-                      <span>{{parent.name}}</span>
-                    </v-tooltip>
-                  </v-flex>
+                <template v-for="parent in user.relativePathMembers">
+                  <v-tooltip top slot="append" :key="parent.profileUrl">
+                    <v-avatar class="generation-avatar ma-1 elevation-3" size="60px" slot="activator">
+                      <img :src="parent.profileUrl || $tenantInfo.placeholder" alt="Avatar" >
+                    </v-avatar>
+                    <span>{{parent.name}}</span>
+                  </v-tooltip>
                 </template>
               </v-layout>
             </div>
@@ -304,5 +302,19 @@ export default {
 {
   max-width: 200px;
   justify-content: center;
+  position: relative;
+  left: -24px;
+}
+.generation-avatar {
+  transform: scale(.5);
+  z-index: unset;
+  transition: 300ms cubic-bezier(0.075, 0.82, 0.165, 1);
+  margin-right: -40px !important;
+  margin-bottom: -23px !important;
+}
+.generation-avatar:hover {
+  transform: scale(1) translateY(-12px);
+  z-index: 100;
+  transition: 300ms cubic-bezier(0.075, 0.82, 0.165, 1);
 }
 </style>
