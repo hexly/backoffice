@@ -33,7 +33,9 @@ export const TEAM_QUERY = gql`
         name
         displayName
         mrn
-        slug
+        slugs {
+          slug
+        }
         contacts {
           emails {
             email
@@ -53,7 +55,9 @@ export const TEAM_QUERY = gql`
         name
         displayName
         mrn
-        slug
+        slugs {
+          slug
+        }
         contacts {
           emails {
             email

@@ -25,7 +25,7 @@
       </v-breadcrumbs>
       <div v-if="!loading">
         <v-layout row wrap>
-          <template v-for="(i, index) in results.team">
+          <template v-for="(i, index) in mergedTeamArr">
             <v-flex xs12 sm4 md3 :key="index">
               <TeamCard
                 :loading="loading"
@@ -49,7 +49,7 @@ import { mapMutations, mapState, mapGetters } from 'vuex'
 
 import MonthSelector from '@/components/MonthSelector.vue'
 import TeamCard from '@/components/TeamCard.vue'
-import { TEAM_QUERY } from '@/graphql/Team.gql'
+import { TEAM_QUERY, TEAM_SEARCH_QUERY } from '@/graphql/Team.gql'
 import MONTHLY_STATS_QUERY from '@/graphql/GetMonthlyStats.gql'
 import { Mutations } from '@/store'
 
@@ -70,7 +70,9 @@ export default {
         team: []
       },
       stats: [],
-      statsMap: {}
+      statsMap: {},
+      mergedTeamArr: [],
+      hashResTeam: []
     }
   },
   computed: {
@@ -97,6 +99,50 @@ export default {
       const dateSplit = date.split('-')
       this.month = parseInt(dateSplit[1])
       this.year = parseInt(dateSplit[0])
+    },
+    hashResultsTeam(results, memberTeamSearch) {
+      let matchArr = []
+
+      if (!memberTeamSearch || !results) {
+        return
+      }
+
+      results.team.forEach(member => {
+        const matchIndex = memberTeamSearch.team.findIndex(element => member.id === element.id)
+        matchArr.push(matchIndex)
+      })
+
+      this.hashResTeam = matchArr
+
+      this.mergeUserTeam()
+    },
+    mergeUserTeam() {
+      let mergedArr = []
+      const { results: { team: resTeam }, memberTeamSearch: { team: mtsTeam }, hashResTeam } = this
+      if (!hashResTeam || !hashResTeam.length || !resTeam) {
+        this.mergedTeamArr = resTeam
+        return
+      }
+
+      resTeam.forEach((resObject, index) => {
+        let newResObj = {...resObject}
+        const mtsObject = mtsTeam[hashResTeam[index]]
+        if (!mtsObject) {
+          mergedArr.push(newResObj)
+          return
+        }
+        const mtsObjectKeys = Object.keys(mtsObject)
+
+        mtsObjectKeys.forEach(mtsKey => {
+          const resObjHasProp = resObject.hasOwnProperty(mtsKey)
+
+          if (!resObjHasProp) {
+            newResObj[mtsKey] = mtsObject[mtsKey]
+          }
+        })
+        mergedArr.push(newResObj)
+      })
+      this.mergedTeamArr = mergedArr
     }
   },
   apollo: {
@@ -115,6 +161,23 @@ export default {
           team: team.nodes
         }
       }
+    },
+    memberTeamSearch: {
+      query: TEAM_SEARCH_QUERY,
+      variables() {
+        return {
+          input: {
+            MemberId: this.currentId,
+            query: null,
+            orderDirection: 'asc',
+            orderByColumn: 'depth',
+            limit: 10000,
+            offset: 0
+          }
+        }
+      },
+      loadingKey: 'loading',
+      debounce: 500
     },
     stats: {
       query: MONTHLY_STATS_QUERY,
@@ -152,9 +215,20 @@ export default {
     }
   },
   mounted () {
-    console.log()
     this.currentId = this.member.memberId || this.member.id
     this.lineage.push({ memberId: this.currentId, displayName: this.member.displayName })
+  },
+  watch: {
+    results(newVal) {
+      const { memberTeamSearch } = this
+
+      this.hashResultsTeam(newVal, memberTeamSearch)
+    },
+    memberTeamSearch(newVal) {
+      const { results } = this
+
+      this.hashResultsTeam(results, newVal)
+    }
   }
 }
 </script>

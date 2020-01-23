@@ -23,10 +23,12 @@
         <v-progress-circular class="loader" indeterminate :size="60" :width="6" color="black"></v-progress-circular>
       </div>
       <v-layout wrap align-space-between justify-center row fill-height>
-        <v-flex v-for="(i, index) in memberTeamSearch.team" :key="index">
+        <v-flex v-for="(i, index) in mergedTeamArr" :key="index">
           <TeamCard
+            @viewTeam="showTeam"
             :user="i"
             :stats="statsMap[i.id]"
+            :actions="true"
             noData="No data available"
           />
         </v-flex>
@@ -42,8 +44,11 @@
 </template>
 
 <script>
-import { TEAM_SEARCH_QUERY } from '@/graphql/Team.gql'
-import TeamCard from '@/components/team/Card.vue'
+import { TEAM_QUERY, TEAM_SEARCH_QUERY } from '@/graphql/Team.gql'
+import TeamCard from '@/components/TeamCard.vue'
+
+import _ from 'lodash'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'TeamSearch',
@@ -52,6 +57,10 @@ export default {
   },
   data() {
     return {
+      lineage: [],
+      currentId: null,
+      mergedTeamArr: [],
+      hashResTeam: [],
       page: 1,
       memberTeamSearch: {
         team: [],
@@ -90,12 +99,92 @@ export default {
       ]
     }
   },
+  methods: {
+    showTeam (user) {
+      this.lineage.push(user)
+      this.currentId = user.id || user.memberId
+    },
+    hashResultsTeam(results, memberTeamSearch) {
+      let matchArr = []
+
+      if (!memberTeamSearch || !results) {
+        return
+      }
+
+      memberTeamSearch.team.forEach(member => {
+        const matchIndex = results.team.findIndex(element => member.id === element.id)
+        matchArr.push(matchIndex)
+      })
+
+      this.hashResTeam = matchArr
+
+      this.mergeUserTeam()
+    },
+    mergeUserTeam() {
+      let mergedArr = []
+      const { results: { team: resTeam }, memberTeamSearch: { team: mtsTeam }, hashResTeam } = this
+
+      if (!hashResTeam || !hashResTeam.length || !mtsTeam) {
+        this.mergedTeamArr = mtsTeam
+        return
+      }
+
+      mtsTeam.forEach((mtsObject, index) => {
+        let newMtsObj = {...mtsObject}
+        const resObject = resTeam[hashResTeam[index]]
+        if (!resObject) {
+          mergedArr.push(newMtsObj)
+          return
+        }
+        const resObjectKeys = Object.keys(resObject)
+
+        resObjectKeys.forEach(resKey => {
+          const mtsObjHasProp = mtsObject.hasOwnProperty(resKey)
+
+          if (!mtsObjHasProp) {
+            newMtsObj[resKey] = resObject[resKey]
+          }
+        })
+        mergedArr.push(newMtsObj)
+      })
+      this.mergedTeamArr = mergedArr
+    }
+  },
   computed: {
+    ...mapGetters(['member']),
     length() {
       return Math.ceil(this.memberTeamSearch.totalCount / this.limit)
     }
   },
+  watch: {
+    results(newVal) {
+      const { memberTeamSearch } = this
+
+      this.hashResultsTeam(newVal, memberTeamSearch)
+    },
+    memberTeamSearch(newVal) {
+      const { results } = this
+
+      this.hashResultsTeam(results, newVal)
+    }
+  },
   apollo: {
+    results: {
+      query: TEAM_QUERY,
+      variables() {
+        const id = this.currentId || _.get(this, '$store.state.user.principal.memberId') // WTF check this state
+        return {
+          byTarget: { ids: [id] }, // get me the target
+          bySponsor: { sponsorIds: [id] } // get me anyone who belongs to the target
+        }
+      },
+      update ({ target, team }) {
+        return {
+          target: target.nodes[0],
+          team: team.nodes
+        }
+      }
+    },
     memberTeamSearch: {
       query: TEAM_SEARCH_QUERY,
       variables() {
@@ -112,6 +201,10 @@ export default {
       loadingKey: 'loading',
       debounce: 500
     }
+  },
+  mounted () {
+    this.currentId = this.member.memberId || this.member.id
+    this.lineage.push({ memberId: this.currentId, displayName: this.member.displayName })
   }
 }
 </script>

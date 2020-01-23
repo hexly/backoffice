@@ -32,43 +32,69 @@
           {{ heading }}
         </v-tab>
         <v-tab-item>
-          <v-card flat>
+          <v-card class="item-container-card" flat>
             <h4 class="text-xs-center" v-if="email">{{(email).toLowerCase()}}</h4>
-            <h4 class="text-xs-center" v-if="slug">{{(slug).toLowerCase()}}</h4>
+            <h4 class="text-xs-center" v-if="slug">
+              Store: <a target="_blank" :href="$tenantInfo.storeUrl.replace('{slug}', slug)">
+              {{slug}}
+              </a>
+            </h4>
+            <div class="generation-container">
+              <h4>Generation: {{user.relativeDepth}}</h4>
+              <v-layout class="generation-badge-container" align-center row wrap>
+                <template v-for="(parent, pIndex) in user.relativePathMembers">
+                  <v-icon v-if="pIndex > 0" :key="pIndex">arrow_right_alt</v-icon>
+                  <v-flex :shrink="true" :key="parent.profileUrl">
+                    <v-tooltip top slot="append">
+                      <v-avatar class="ma-1 elevation-3" size="36px" slot="activator">
+                        <img :src="parent.profileUrl || $tenantInfo.placeholder" alt="Avatar" >
+                      </v-avatar>
+                      <span>{{parent.name}}</span>
+                    </v-tooltip>
+                  </v-flex>
+                </template>
+              </v-layout>
+            </div>
           </v-card>
         </v-tab-item>
         <v-tab-item>
-          <v-card v-if="!$apolloData.loading" flat>
-            <v-layout justify-center row wrap class="text-xs-center">
-              <v-flex xs3>
-                <span class="font-weight-black title">{{tabContent.teamSize}}</span>
-                <br/>
-                Team Size
-              </v-flex>
-              <v-flex xs3>
-                <span class="font-weight-black title">{{tabContent.frontLine}}</span>
-                <br/>
-                Front-Line
-              </v-flex>
-              <v-flex xs3>
-                <span class="font-weight-black title">{{tabContent.secondLine}}</span>
-                <br/>
-                Second line
-              </v-flex>
-              <v-flex xs3>
-                <span class="font-weight-black title">{{tabContent.thirdLine}}</span>
-                <br/>
-                Third line
-              </v-flex>
-              <v-btn flat color="secondary" @click="viewTeam">View Team</v-btn>
-            </v-layout>
-          </v-card>
-          <v-flex v-else d-flex justify-center align-center class="text-xs-center">
-            <v-progress-circular indeterminate :size="50" :width="5" color="primary"></v-progress-circular>
-          </v-flex>
+          <div class="item-container-card">
+            <v-card v-if="!$apolloData.loading" flat>
+              <v-layout justify-center row wrap class="text-xs-center">
+                <v-flex xs3>
+                  <span class="font-weight-black title">{{tabContent.teamSize}}</span>
+                  <br/>
+                  Team Size
+                </v-flex>
+                <v-flex xs3>
+                  <span class="font-weight-black title">{{tabContent.frontLine}}</span>
+                  <br/>
+                  Front-Line
+                </v-flex>
+                <v-flex xs3>
+                  <span class="font-weight-black title">{{tabContent.secondLine}}</span>
+                  <br/>
+                  Second line
+                </v-flex>
+                <v-flex xs3>
+                  <span class="font-weight-black title">{{tabContent.thirdLine}}</span>
+                  <br/>
+                  Third line
+                </v-flex>
+              </v-layout>
+            </v-card>
+            <v-flex v-else d-flex justify-center align-center class="text-xs-center">
+              <v-progress-circular indeterminate :size="50" :width="5" color="primary"></v-progress-circular>
+            </v-flex>
+            <v-card flat>
+              <v-layout justify-center row wrap class="text-xs-center">
+                <v-btn flat color="secondary" @click="viewTeam()">View Team</v-btn>
+              </v-layout>
+            </v-card>
+          </div>
         </v-tab-item>
         <v-tab-item>
-          <v-card class="badge-card" d-flex justify-center wrap flat>
+          <v-card v-if="user.awards" class="badge-card" d-flex justify-center wrap flat>
             <v-chip
               v-for       ="award in user.awards"
               :class       ="'badge elevation-3' + (awardHover[award.name] ? ' badge-hover' : '')"
@@ -94,8 +120,6 @@
         </v-tab-item>
       </v-tabs>
     </div>
-    <v-card-actions v-if="actions" class="justify-space-between">
-    </v-card-actions>
 
   </v-card>
 </template>
@@ -126,6 +150,7 @@ export default {
   },
   props: {
     user: Object,
+    team: Object,
     actions: Boolean,
     stats: Object,
     loading: Boolean,
@@ -135,8 +160,8 @@ export default {
     formatDate (value) {
       return this.$moment(value, 'YYYY-MM-DD').from(this.$moment())
     },
-    viewTeam () {
-      this.$emit('viewTeam', this.user)
+    viewTeam (user = this.user) {
+      this.$emit('viewTeam', user)
     },
     handleTabChange(e) {
       if (e === 1) {
@@ -196,7 +221,7 @@ export default {
       return get(this.user, 'contacts[0].emails[0].email', this.user.email)
     },
     slug () {
-      return this.user.slug
+      return get(this, 'user.slugs[0].slug')
     },
     id () {
       return this.user.id
@@ -244,6 +269,8 @@ export default {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-evenly;
+  min-height: 157px;
+  align-items: center;
 }
 .badge {
   max-width: 29px;
@@ -261,5 +288,21 @@ export default {
 }
 .expand-leave-active {
   transition: ease-out 350ms;
+}
+.item-container-card {
+  min-height: 157px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+}
+.generation-container {
+  flex-direction: column;
+  display: flex;
+  align-items: center;
+}
+.generation-badge-container
+{
+  max-width: 200px;
+  justify-content: center;
 }
 </style>
