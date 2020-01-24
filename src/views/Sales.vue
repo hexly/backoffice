@@ -84,6 +84,7 @@
         >
           <tr @click="props.expanded = !props.expanded">
             <td>{{ props.item.date }}</td>
+            <td>{{ props.item.displayName }}</td>
             <td>${{ props.item.total }}</td>
             <td>{{ props.item.totalPoints }}</td>
             <td>{{ props.item.status }}</td>
@@ -174,6 +175,7 @@ export default {
         .format('MM/DD/YYYY'),
       headers: [
         { text: 'Date', value: 'date' },
+        { text: 'Name', value: 'name' },
         { text: 'Sale Total', value: 'total' },
         { text: 'Total Points', value: 'points' },
         { text: 'Status', value: 'staus' },
