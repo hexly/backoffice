@@ -31,7 +31,7 @@
                       label="Date of Birth"
                       prepend-icon="event"
                       readonly
-                      :placeholder="this.birthdayFormat"
+                      :placeholder="birthdayFormat"
                       :rules="birthdateRule"
                     ></v-text-field>
                     <v-date-picker
