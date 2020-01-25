@@ -125,7 +125,7 @@
 <script>
 import { get } from 'lodash'
 
-import { MEMBER_STATS_BY_DEPTH } from '@/graphql/MemberStats.gql'
+import { TEAM_SIZE_BY_GENERATION } from '@/graphql/MemberStats.gql'
 export default {
   name: 'TeamCard',
   data() {
@@ -167,7 +167,7 @@ export default {
       }
     },
     handleHover(e, awardName) {
-      let awardHoverClone = {...this.awardHover}
+      let awardHoverClone = { ...this.awardHover }
       const awardAlreadyHovering = awardHoverClone.hasOwnProperty(awardName)
       const objKeysLength = Object.keys(awardHoverClone).length
       const { type } = e
@@ -178,7 +178,7 @@ export default {
           break
         }
         awardHoverClone[awardName] = true
-        this.awardHover = {...awardHoverClone}
+        this.awardHover = { ...awardHoverClone }
         break
 
       case 'mouseleave' || 'mouseout':
@@ -186,7 +186,7 @@ export default {
           break
         }
         awardHoverClone[awardName] = false
-        this.awardHover = {...awardHoverClone}
+        this.awardHover = { ...awardHoverClone }
         break
 
       default:
@@ -227,29 +227,27 @@ export default {
   },
   apollo: {
     counts: {
-      query: MEMBER_STATS_BY_DEPTH,
+      query: TEAM_SIZE_BY_GENERATION,
       variables() {
         return {
           input: {
-            relativeDepthIn: [0],
-            targetId: this.user.id
+            memberId: this.user.id
           }
         }
       },
       skip() {
         return this.skipTeamQuery
       },
-      update(data) {
-        if (!data) {
-          return
-        }
-        const { getTeamDataByDepth } = data
-
+      update({ membershipTeamSizes }) {
+        const getTeamDataByDepth = membershipTeamSizes.reduce((all, s) => {
+          all[s.generation || 'all'] = s.count
+          return all
+        }, {})
         this.tabContent = {
-          teamSize: getTeamDataByDepth[0].counts.total,
-          frontLine: getTeamDataByDepth[0].counts.level1,
-          secondLine: getTeamDataByDepth[0].counts.level2,
-          thirdLine: getTeamDataByDepth[0].counts.level3
+          teamSize: getTeamDataByDepth.all || 0,
+          frontLine: getTeamDataByDepth['1'] || 0,
+          secondLine: getTeamDataByDepth['2'] || 0,
+          thirdLine: getTeamDataByDepth['3'] || 0
         }
       }
     }

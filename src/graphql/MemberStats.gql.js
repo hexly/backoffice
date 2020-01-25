@@ -48,3 +48,12 @@ export const TEAM_RECRUITS_BY_DATE = gql`
   }
 }
 `
+
+export const TEAM_SIZE_BY_GENERATION = gql`
+  query teamSizes($input:MembershipTeamSizesInput!) {
+    membershipTeamSizes(input:$input){
+      count
+      generation
+  }
+}
+`

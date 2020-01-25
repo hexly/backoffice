@@ -40,40 +40,40 @@
             <DashCard
               color="white"
               darken="1"
-              :display="personalStats.counts.total"
+              :display="generationCount.all"
               subheading="Your Circle of Influence"
               icon="supervised_user_circle"
-              :loading="loadingStats > 0"
+              :loading="generationCountLoading > 0"
             />
           </v-flex>
           <v-flex xs12 sm6 class="pa-2">
             <DashCard
               color="white"
               darken="1"
-              :display="personalStats.counts.level1"
+              :display="generationCount['1']"
               subheading="Personally Sponsored"
               icon="account_tree"
-              :loading="loadingStats > 0"
+              :loading="generationCountLoading > 0"
             />
           </v-flex>
           <v-flex xs12 sm6 class="pa-2">
             <DashCard
               color="white"
               darken="1"
-              :display="personalStats.counts.level2"
+              :display="generationCount['2']"
               subheading="Second Line Size"
               icon="looks_two"
-              :loading="loadingStats > 0"
+              :loading="generationCountLoading > 0"
             />
           </v-flex>
           <v-flex xs12 sm6 class="pa-2">
             <DashCard
               color="white"
               darken="1"
-              :display="personalStats.counts.level3"
+              :display="generationCount['3']"
               subheading="Third Line Size"
               icon="looks_3"
-              :loading="loadingStats > 0"
+              :loading="generationCountLoading > 0"
             />
           </v-flex>
           <v-flex class="pa-2">
@@ -88,12 +88,12 @@
                 <p>The qualification period begins on your enrollment date and ends when the company begins selling product.</p>
                 <v-layout row class="incentive">
                   <v-flex class="incentive-count" xs6>
-                    {{personalStats.counts.level1}}
+                    {{generationCount['1']}}
                     <br/>
                     Personally Sponsored
                   </v-flex>
                   <v-flex class="incentive-count" xs6>
-                    {{personalStats.counts.level2}}
+                    {{generationCount['2']}}
                     <br/>
                     Second Line
                   </v-flex>
@@ -152,7 +152,7 @@ import Announcement from '@/components/dashboard/Announcement.vue'
 import Badges from '@/components/Badges.vue'
 import RankRequirementsCard from '@/components/RankRequirementsCard.vue'
 
-import { MEMBER_STATS_BY_DEPTH, MAX_MRN } from '@/graphql/MemberStats.gql'
+import { MEMBER_STATS_BY_DEPTH, MAX_MRN, TEAM_SIZE_BY_GENERATION } from '@/graphql/MemberStats.gql'
 import { mapMutations, mapState, mapGetters } from 'vuex'
 import { UserMutations } from '@/stores/UserStore'
 import { Mutations } from '@/store'
@@ -230,8 +230,10 @@ export default {
       },
       memberCount: 0,
       team: [],
+      generationCount: {},
       loadingStats: 0,
-      loadingCount: 0
+      loadingCount: 0,
+      generationCountLoading: 0
     }
   },
   async mounted() {
@@ -284,6 +286,23 @@ export default {
       loadingKey: 'loadingCount',
       update({ memberGetMaxMrnForTenant }) {
         return memberGetMaxMrnForTenant
+      }
+    },
+    generationCount: {
+      query: TEAM_SIZE_BY_GENERATION,
+      variables() {
+        return {
+          input: {
+            memberId: this.$store.state.user.principal.memberId
+          }
+        }
+      },
+      loadingKey: 'generationCountLoading',
+      update({ membershipTeamSizes }) {
+        return membershipTeamSizes.reduce((all, s) => {
+          all[s.generation || 'all'] = s.count
+          return all
+        }, {})
       }
     }
   }

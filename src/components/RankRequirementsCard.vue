@@ -4,7 +4,7 @@
       <v-toolbar color="secondary" dark>
         <v-toolbar-title>Rank Requirements</v-toolbar-title>
       </v-toolbar>
-      <v-card-content v-if="Object.keys(stats).length" class="pa-3">
+      <v-card-text v-if="Object.keys(stats).length" class="pa-3">
         <v-layout row justify-space-between pb-4>
           <v-flex px-3>
             <div class="title">Rank</div>
@@ -167,14 +167,14 @@
             <v-progress-linear  color="success" height="5" value="0"></v-progress-linear>
           </v-flex>
         </v-layout>
-      </v-card-content>
-      <v-card-content v-else class="pa-3">
+      </v-card-text>
+      <v-card-text v-else class="pa-3">
         <v-layout row justify-space-between pb-4>
           <v-flex px-3>
             <div class="title">No Rank Data Found</div>
           </v-flex>
         </v-layout>
-      </v-card-content>
+      </v-card-text>
     </v-card>
   </v-layout>
 </template>

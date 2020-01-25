@@ -54,6 +54,7 @@ export function createHexlyApolloClient ({
 
   // Concat all the http link parts
   const dontBatch = [
+    'teamDataByDepth',
     'teamStatsByLevel',
     'principal'
   ]

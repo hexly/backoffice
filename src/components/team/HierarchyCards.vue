@@ -125,7 +125,7 @@ export default {
       }
 
       resTeam.forEach((resObject, index) => {
-        let newResObj = {...resObject}
+        let newResObj = { ...resObject }
         const mtsObject = mtsTeam[hashResTeam[index]]
         if (!mtsObject) {
           mergedArr.push(newResObj)
@@ -210,7 +210,6 @@ export default {
       },
       fetchPolicy: 'cache-and-network',
       watchLoading(isLoading, countModifier) {
-        console.log({isLoading, countModifier})
         this.setLoading(isLoading)
       }
     }
@@ -229,9 +228,6 @@ export default {
       const { results } = this
 
       this.hashResultsTeam(results, newVal)
-    },
-    '$apollo.loading'(newVal) {
-      console.log({newVal})
     }
   }
 }

@@ -130,7 +130,7 @@ export default {
       }
 
       mtsTeam.forEach((mtsObject, index) => {
-        let newMtsObj = {...mtsObject}
+        let newMtsObj = { ...mtsObject }
         const resObject = resTeam[hashResTeam[index]]
         if (!resObject) {
           mergedArr.push(newMtsObj)
