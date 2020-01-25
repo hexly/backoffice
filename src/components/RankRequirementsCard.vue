@@ -22,7 +22,14 @@
           <v-spacer></v-spacer>
           <v-flex px-3 text-xs-right>
             <div class="title">{{stats.psv}}</div>
-            <div class="caption grey--text darken-1">{{Number.parseFloat(stats.psv / stats.psvMax).toFixed(2) * 100}}% of {{stats.psvMax}}</div>
+            <div v-if="stats.psvMax < 0" class="caption grey--text darken-1">
+              N/A
+              <v-tooltip slot="append" left>
+                  <v-icon slot="activator" small>info</v-icon>
+                  <span>Not applicable for next rank</span>
+              </v-tooltip>
+            </div>
+            <div v-else class="caption grey--text darken-1">{{Number.parseFloat(stats.psv / stats.psvMax).toFixed(2) * 100}}% of {{stats.psvMax}}</div>
           </v-flex>
           <v-flex xs12 px-3>
             <v-progress-linear  color="success" height="5" :value="(stats.psv / stats.psvMax) * 100"></v-progress-linear>
@@ -36,7 +43,14 @@
           <v-spacer></v-spacer>
           <v-flex px-3 text-xs-right>
             <div class="title">{{stats.cpsv}}</div>
-            <div class="caption grey--text darken-1">{{Number.parseFloat(stats.cpsv / stats.cpsvMax).toFixed(2) * 100}}% of {{stats.cpsvMax}}</div>
+            <div v-if="stats.cpsvMax < 0" class="caption grey--text darken-1">
+              N/A
+              <v-tooltip slot="append" left>
+                  <v-icon slot="activator" small>info</v-icon>
+                  <span>Not applicable for next rank</span>
+              </v-tooltip>
+            </div>
+            <div v-else class="caption grey--text darken-1">{{Number.parseFloat(stats.cpsv / stats.cpsvMax).toFixed(2) * 100}}% of {{stats.cpsvMax}}</div>
           </v-flex>
           <v-flex xs12 px-3>
             <v-progress-linear  color="success" height="5" :value="(stats.psv / stats.cpsvMax) * 100"></v-progress-linear>
@@ -50,7 +64,14 @@
           <v-spacer></v-spacer>
           <v-flex px-3 text-xs-right>
             <div class="title">{{stats.gsv}}</div>
-            <div class="caption grey--text darken-1">{{Number.parseFloat(stats.gsv / stats.gsvMax).toFixed(2) * 100}}% of {{stats.gsvMax}}</div>
+            <div v-if="stats.gsvMax < 0" class="caption grey--text darken-1">
+              N/A
+              <v-tooltip slot="append" left>
+                  <v-icon slot="activator" small>info</v-icon>
+                  <span>Not applicable for next rank</span>
+              </v-tooltip>
+            </div>
+            <div v-else class="caption grey--text darken-1">{{Number.parseFloat(stats.gsv / stats.gsvMax).toFixed(2) * 100}}% of {{stats.gsvMax}}</div>
           </v-flex>
           <v-flex xs12 px-3>
             <v-progress-linear  color="success" height="5" :value="(stats.gsv / stats.gsvMax) * 100"></v-progress-linear>
@@ -64,7 +85,14 @@
           <v-spacer></v-spacer>
           <v-flex px-3 text-xs-right>
             <div class="title">{{stats.al}}</div>
-            <div class="caption grey--text darken-1">{{Number.parseFloat(stats.al / stats.alMax).toFixed(2) * 100}}% of {{stats.alMax}}</div>
+            <div v-if="stats.alMax < 0" class="caption grey--text darken-1">
+              N/A
+              <v-tooltip slot="append" left>
+                  <v-icon slot="activator" small>info</v-icon>
+                  <span>Not applicable for next rank</span>
+              </v-tooltip>
+            </div>
+            <div v-else class="caption grey--text darken-1">{{Number.parseFloat(stats.al / stats.alMax).toFixed(2) * 100}}% of {{stats.alMax}}</div>
           </v-flex>
           <v-flex xs12 px-3>
             <v-progress-linear  color="success" height="5" :value="(stats.al / stats.alMax) * 100"></v-progress-linear>
@@ -78,13 +106,14 @@
           <v-spacer></v-spacer>
           <v-flex px-3 text-xs-right>
             <div class="title">{{stats.pabql}}</div>
-            <div class="caption grey--text darken-1">
+            <div v-if="stats.pabqlMax < 0" class="caption grey--text darken-1">
               N/A
               <v-tooltip slot="append" left>
                   <v-icon slot="activator" small>info</v-icon>
                   <span>Not applicable for next rank</span>
               </v-tooltip>
             </div>
+            <div v-else class="caption grey--text darken-1">{{Number.parseFloat(stats.pabql / stats.pabqlMax).toFixed(2) * 100}}% of {{stats.pabqlMax}}</div>
           </v-flex>
           <v-flex xs12 px-3>
             <v-progress-linear  color="success" height="5" value="0"></v-progress-linear>
@@ -98,13 +127,14 @@
           <v-spacer></v-spacer>
           <v-flex px-3 text-xs-right>
             <div class="title">{{stats.dsv}}</div>
-            <div class="caption grey--text darken-1">
+            <div v-if="stats.dsvMax < 0" class="caption grey--text darken-1">
               N/A
               <v-tooltip slot="append" left>
                   <v-icon slot="activator" small>info</v-icon>
                   <span>Not applicable for next rank</span>
               </v-tooltip>
             </div>
+            <div v-else class="caption grey--text darken-1">{{Number.parseFloat(stats.dsv / stats.dsvMax).toFixed(2) * 100}}% of {{stats.dsvMax}}</div>
           </v-flex>
           <v-flex xs12 px-3>
             <v-progress-linear  color="success" height="5" value="0"></v-progress-linear>
@@ -124,13 +154,14 @@
           <v-spacer></v-spacer>
           <v-flex px-3 text-xs-right>
             <div class="title">{{stats.adsv}}</div>
-            <div class="caption grey--text darken-1">
+            <div v-if="stats.adsvMax < 0" class="caption grey--text darken-1">
               N/A
               <v-tooltip slot="append" left>
                   <v-icon slot="activator" small>info</v-icon>
                   <span>Not applicable for next rank</span>
               </v-tooltip>
             </div>
+            <div v-else class="caption grey--text darken-1">{{Number.parseFloat(stats.adsv / stats.adsvMax).toFixed(2) * 100}}% of {{stats.adsvMax}}</div>
           </v-flex>
           <v-flex xs12 px-3>
             <v-progress-linear  color="success" height="5" value="0"></v-progress-linear>

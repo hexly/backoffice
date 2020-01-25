@@ -210,6 +210,7 @@ export default {
       },
       fetchPolicy: 'cache-and-network',
       watchLoading(isLoading, countModifier) {
+        console.log({isLoading, countModifier})
         this.setLoading(isLoading)
       }
     }
@@ -228,6 +229,9 @@ export default {
       const { results } = this
 
       this.hashResultsTeam(results, newVal)
+    },
+    '$apollo.loading'(newVal) {
+      console.log({newVal})
     }
   }
 }
