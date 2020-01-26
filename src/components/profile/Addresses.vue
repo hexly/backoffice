@@ -86,45 +86,10 @@ export default {
         }
         return a
       })
-      const { data: { updateAddress } } = await this.$apollo.mutate({
-        mutation: UPDATE_ADDRESS,
-        variables: {
-          addressInput: {
-            ...address,
-            saving: undefined, // removing from query
-            new: undefined, // removing from query
-            type: address.type.toUpperCase(),
-            contactId: this.contactId,
-            memberId: this.principal.memberId
-          }
-        }
-      })
-      this.addresses = this.addresses.map(a => {
-        if (a.id === updateAddress.id || (address.new && !a.id)) {
-          return {
-            ...updateAddress,
-            saving: false,
-            new: false,
-            type: a.type
-          }
-        }
 
-        this.$apollo.queries.addresses.refetch()
-        return a
-      })
-    },
-    async remove(address) {
-      if (address.new && !address.id) {
-        this.addresses = this.addresses.filter(a => !a.new)
-      } else {
-        this.addresses = this.addresses.map(a => {
-          if (a.id === address.id) {
-            return { ...address, saving: true }
-          }
-          return a
-        })
-        const { data: { deleteAddress } } = await this.$apollo.mutate({
-          mutation: DELETE_ADDRESS,
+      try {
+        const { data: { updateAddress } } = await this.$apollo.mutate({
+          mutation: UPDATE_ADDRESS,
           variables: {
             addressInput: {
               ...address,
@@ -136,10 +101,69 @@ export default {
             }
           }
         })
-        this.addresses = this.addresses.filter(a => a.id !== deleteAddress.id)
+
+        this.addresses = this.addresses.map(a => {
+          if (a.id === updateAddress.id || (address.new && !a.id)) {
+            return {
+              ...updateAddress,
+              saving: false,
+              new: false,
+              type: a.type
+            }
+          }
+
+          return a
+        })
+
+        await this.$apollo.queries.addresses.refetch()
+        this.$emit('addressSnackBarEmitSuccess', 'Address successfully updated')
+        this.$emit('hasAddress', { type: 'address', isSet: true })
+      } catch (err) {
+        console.error({ err })
+        this.$emit(
+          'addressSnackBarEmitError',
+          'Unable to save address information'
+        )
+      }
+    },
+    async remove(address) {
+      if (address.new && !address.id) {
+        this.addresses = this.addresses.filter(a => !a.new)
+      } else {
+        this.addresses = this.addresses.map(a => {
+          if (a.id === address.id) {
+            return { ...address, saving: true }
+          }
+          return a
+        })
+
+        try {
+          const { data: { deleteAddress } } = await this.$apollo.mutate({
+            mutation: DELETE_ADDRESS,
+            variables: {
+              addressInput: {
+                ...address,
+                saving: undefined, // removing from query
+                new: undefined, // removing from query
+                type: address.type.toUpperCase(),
+                contactId: this.contactId,
+                memberId: this.principal.memberId
+              }
+            }
+          })
+          this.addresses = this.addresses.filter(a => a.id !== deleteAddress.id)
+
+          this.$emit('addressSnackBarEmitSuccess', 'Address successfully updated')
+        } catch (err) {
+          console.error({ err })
+          this.$emit(
+            'addressSnackBarEmitError',
+            'Unable to save address information'
+          )
+        }
       }
 
-      this.$apollo.queries.addresses.refetch()
+      await this.$apollo.queries.addresses.refetch()
     }
   },
   apollo: {

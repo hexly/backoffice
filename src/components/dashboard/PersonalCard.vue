@@ -12,21 +12,38 @@
         <v-img v-if="user.principal.member.profileUrl || $tenantInfo.placeholder" :src="user.principal.member.profileUrl || $tenantInfo.placeholder" class="mb-4" ></v-img>
         <v-gravatar v-else default-img="mp" :email="user.principal.member.contacts[0].emails[0].email" class="mb-4"/>
       </v-avatar>
-      <h3 class="headline mb-2"> {{ user.principal.member.name }}</h3>
-      <div class="primary--text mb-2">{{ user.principal.member.email }}</div>
+      <h3 class="headline"> {{ user.principal.member.name }}</h3>
       <div v-if="showMrn" class="primary--text subheading font-weight-bold">{{memberName || 'Member'}} #<b>{{user.principal.member.mrn}}</b></div>
-      <div v-if="user.principal.member.sponsor">
-        <b>{{sponsorName || 'Sponsor'}}:</b> {{user.principal.member.sponsor.displayName}}
+      <div v-if="user.principal.member.sponsor" class="mt-3">
+        <b>{{sponsorName || 'Your Sponsor'}}:</b>
+        <v-layout row align-center>
+          <v-flex mx-2 class="text-xs-right">
+            <v-avatar>
+              <v-img v-if="user.principal.member.sponsor.profileUrl || $tenantInfo.placeholder" :src="user.principal.member.sponsor.profileUrl || $tenantInfo.placeholder"></v-img>
+            </v-avatar>
+          </v-flex>
+          <v-flex mx-2 class="text-xs-left">
+            <div>
+              <b>{{user.principal.member.sponsor.displayName}} </b>
+              <br/>
+              <small>{{user.principal.member.sponsor.contacts[0].emails[0].email}}</small>
+            </div>
+          </v-flex>
+        </v-layout>
       </div>
     </v-card-text>
     <v-divider class="mb-3"></v-divider>
-      <div class="text-xs-center pa-2">
-        <h3 class="mb-4">Your Personal Link</h3>
-        <MyLink />
-        <PrivateProfile />
-      </div>
-      <v-divider class="mb-3"></v-divider>
-      <slot name="footer"></slot>
+    <div class="text-xs-center pa-2">
+      <h3 class="mb-4">Your Personal Link</h3>
+      <MyLink />
+    </div>
+    <v-divider class="mb-3"></v-divider>
+    <div class="text-xs-center pa-2">
+      <h3 class="mb-4">Profile Settings</h3>
+      <PrivateProfile />
+    </div>
+    <v-divider class="mb-3"></v-divider>
+    <slot name="footer"></slot>
     <FileUpload @dialogClosed="uploadDialogClosed" :shouldShow="showProfilePicDialog" @profile="makeProfilePic" :isProfilePic="true" />
   </v-card>
 </template>

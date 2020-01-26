@@ -22,6 +22,14 @@ query principal {
       }
       sponsor {
         displayName
+        profileUrl
+        contacts {
+          id
+          emails {
+            id
+            email
+          }
+        }
       }
       joinedOn
       tags

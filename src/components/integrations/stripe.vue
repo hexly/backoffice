@@ -1,12 +1,12 @@
 <template>
   <div class="stripe-connect-integration">
-    <h2>Stripe Connect</h2>
-    <h3>Stripe Connect provides {{tenant.name}} the ability to send money directly to your bank account.</h3>
+    <h2>{{$tenantInfo.strings['stripeConnect'] || 'Stripe'}} </h2>
+    <h3>{{$tenantInfo.strings['stripeConnect'] || 'Stripe'}} provides {{tenant.name}} the ability to send money directly to your bank account.</h3>
     <br />
     <v-alert type="error" :value="(error || localError)">{{error || localError}}</v-alert>
     <div v-if="!integrationDetails && !loading && !setup">
       <p>
-        It looks like you do not yet have Stripe configured.
+        It looks like you do not yet have {{$tenantInfo.strings['stripeConnect'] || 'Stripe'}} configured.
         <br />Please click the button below to begin your account setup!
       </p>
       <v-btn @click="beginSetup" color="primary">Setup Account</v-btn>
@@ -67,7 +67,7 @@
           :disabled="attemptingStripeSetup"
         >
           <div slot="label">
-            I agree to the Stripe
+            I agree to the {{$tenantInfo.strings['stripeConnect'] || 'Stripe'}}
             <a
               href="https://stripe.com/connect-account/legal"
               target="_blank"
@@ -83,7 +83,7 @@
       </v-form>
     </div>
     <div v-if="integrationDetails">
-      <p>Your stripe account has been created!</p>
+      <p>Your {{$tenantInfo.strings['stripeConnect'] || 'Stripe'}} account has been created!</p>
     </div>
   </div>
 </template>

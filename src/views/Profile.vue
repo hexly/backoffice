@@ -69,7 +69,11 @@
             @hasAddress="checkAlert"
           /> -->
           <h3>Your Addresses</h3>
-          <Addresses />
+          <Addresses
+            @addressSnackBarEmitSuccess="addressSnackBarEmitSuccess"
+            @addressSnackBarEmitError="addressSnackBarEmitError"
+            @hasAddress="checkAlert"
+          />
         </v-tab-item>
         <v-tab-item  v-if="$tenantInfo.features.legal" value="legal" class="px-4">
           <LegalForm @hasLegal="checkAlert" :value="legal" />

@@ -4,7 +4,7 @@
       <v-tabs-slider color="white"></v-tabs-slider>
 
       <v-tab v-for="i in availableIntegrations" :to="`#${i.key}`" :key="i.key">
-        {{i.name}}
+        {{$tenantInfo.strings['stripeConnect'] || i.name}}
         <template v-if="icons[i.key].type === 'icon'">
           <v-icon>{{icons[i.key].value}}</v-icon>
         </template>

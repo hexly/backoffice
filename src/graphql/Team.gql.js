@@ -20,3 +20,51 @@ export const TEAM_SEARCH_QUERY = gql`
     }
   }
 `
+
+export const TEAM_QUERY = gql`
+  query TeamByMemberId(
+    $bySponsor: MemberSearchCondition!
+    $byTarget: MemberSearchCondition!
+  ) {
+    target: members(condition: $byTarget) {
+      nodes {
+        id
+        tenantId
+        name
+        displayName
+        mrn
+        slugs {
+          slug
+        }
+        contacts {
+          emails {
+            email
+          }
+        }
+        profileUrl
+      }
+    }
+    team: members(first: 10000, condition: $bySponsor) {
+      nodes {
+        awards {
+          name
+          metadata
+        }
+        id
+        tenantId
+        name
+        displayName
+        mrn
+        slugs {
+          slug
+        }
+        contacts {
+          emails {
+            email
+          }
+        }
+        profileUrl
+      }
+    }
+  }
+`

@@ -1,6 +1,7 @@
 <template>
   <v-card
-  max-width="350"
+  max-width="320"
+  min-width="320"
   class="ma-2 pa-2"
   >
 
@@ -15,37 +16,108 @@
     <v-card-title class="fill-height align-end">
       <v-flex row>
         <h2>{{(user.name).toUpperCase()}}</h2>
-        <h4 v-if="email">{{(email).toLowerCase()}}</h4>
       </v-flex>
     </v-card-title>
     </v-img>
 
-      <v-flex v-if="loading" d-flex justify-center align-center class="text-xs-center">
-        <v-progress-circular indeterminate :size="50" :width="5" color="primary"></v-progress-circular>
-      </v-flex>
-
-      <!-- <v-flex row>
-        <v-card-text v-if="!loading">
-          <div v-if="stats && stats.joinedOn">
-            <div>
-              <span>Joined {{formatDate(stats.joinedOn)}}</span>
-              <span> on </span>
-              <span>{{$moment(stats.joinedOn).format('ll')}}</span>
+    <div v-if="actions">
+      <v-tabs
+        hide-slider
+        centered
+        @change ="handleTabChange"
+      >
+        <v-tab
+          v-for="heading in tabHeadings"
+          :key="heading"
+        >
+          {{ heading }}
+        </v-tab>
+        <v-tab-item>
+          <v-card class="item-container-card" flat>
+            <h4 class="text-xs-center" v-if="email">{{(email).toLowerCase()}}</h4>
+            <h4 class="text-xs-center" v-if="slug">
+              Store: <a target="_blank" :href="$tenantInfo.storeUrl.replace('{slug}', slug)">
+              {{slug}}
+              </a>
+            </h4>
+            <div class="generation-container">
+              <h4>Generation: {{user.relativeDepth}}</h4>
+              <v-layout class="generation-badge-container" align-center row wrap>
+                <template v-for="parent in user.relativePathMembers">
+                  <v-tooltip top slot="append" :key="parent.profileUrl">
+                    <v-avatar class="generation-avatar ma-1 elevation-3" size="60px" slot="activator">
+                      <img :src="parent.profileUrl || $tenantInfo.placeholder" alt="Avatar" >
+                    </v-avatar>
+                    <span>{{parent.name}}</span>
+                  </v-tooltip>
+                </template>
+              </v-layout>
             </div>
-            <div>Tribe Size: {{stats.teamSize || 0}}</div>
-            <div>Front Line: {{stats.firstLevelSize || 0}}</div>
-            <div>Total Points: {{stats.totalPoints ? stats.totalPoints.toFixed(2) : 0}}</div>
+          </v-card>
+        </v-tab-item>
+        <v-tab-item>
+          <div class="item-container-card">
+            <v-card v-if="!$apolloData.loading" flat>
+              <v-layout justify-center row wrap class="text-xs-center">
+                <v-flex xs3>
+                  <span class="font-weight-black title">{{tabContent.teamSize}}</span>
+                  <br/>
+                  Team Size
+                </v-flex>
+                <v-flex xs3>
+                  <span class="font-weight-black title">{{tabContent.frontLine}}</span>
+                  <br/>
+                  Front-Line
+                </v-flex>
+                <v-flex xs3>
+                  <span class="font-weight-black title">{{tabContent.secondLine}}</span>
+                  <br/>
+                  Second line
+                </v-flex>
+                <v-flex xs3>
+                  <span class="font-weight-black title">{{tabContent.thirdLine}}</span>
+                  <br/>
+                  Third line
+                </v-flex>
+              </v-layout>
+            </v-card>
+            <v-flex v-else d-flex justify-center align-center class="text-xs-center">
+              <v-progress-circular indeterminate :size="50" :width="5" color="primary"></v-progress-circular>
+            </v-flex>
+            <v-card flat>
+              <v-layout justify-center row wrap class="text-xs-center">
+                <v-btn flat color="secondary" @click="viewTeam()">View Team</v-btn>
+              </v-layout>
+            </v-card>
           </div>
-          <div v-else>{{noData}}</div>
-        </v-card-text>
-      </v-flex> -->
-
-    <v-divider v-if="actions" class="primary"/>
-    <v-card-actions v-if="actions" class="justify-space-between">
-      <v-btn flat color="secondary" @click="viewTeam">View Team</v-btn>
-      <!-- <v-btn flat color="primary" v-if="isQualified">Qualified</v-btn>
-      <v-btn flat color=white disabled v-else>Unqualified</v-btn> -->
-    </v-card-actions>
+        </v-tab-item>
+        <v-tab-item>
+          <v-card v-if="user.awards" class="badge-card" d-flex justify-center wrap flat>
+            <v-chip
+              v-for       ="award in user.awards"
+              :class       ="'badge elevation-3' + (awardHover[award.name] ? ' badge-hover' : '')"
+              :color      ="award.metadata.color"
+              :text-color ="award.metadata.text"
+              :key        ="award.name"
+              @mouseover  ="handleHover($event, award.name)"
+              @mouseleave ="handleHover($event, award.name)"
+              @mouseout   ="handleHover($event, award.name)"
+            >
+              <v-avatar :color="award.metadata.accent">
+                <v-icon>{{award.metadata.icon}}</v-icon>
+              </v-avatar>
+              <transition
+                css
+                name         ="expand"
+                @after-leave ="afterLeaveHandler(award.name)"
+              >
+                <span v-show="awardHover[award.name]">{{award.name}}</span>
+              </transition>
+            </v-chip>
+          </v-card>
+        </v-tab-item>
+      </v-tabs>
+    </div>
 
   </v-card>
 </template>
@@ -53,15 +125,30 @@
 <script>
 import { get } from 'lodash'
 
+import { TEAM_SIZE_BY_GENERATION } from '@/graphql/MemberStats.gql'
 export default {
   name: 'TeamCard',
   data() {
     return {
-      show: false
+      show: false,
+      awardHover: {},
+      skipTeamQuery: true,
+      tabHeadings: [
+        'Info',
+        'Team',
+        'Awards'
+      ],
+      tabContent: {
+        teamSize: null,
+        frontLine: null,
+        secondLine: null,
+        thirdLine: null
+      }
     }
   },
   props: {
     user: Object,
+    team: Object,
     actions: Boolean,
     stats: Object,
     loading: Boolean,
@@ -71,8 +158,43 @@ export default {
     formatDate (value) {
       return this.$moment(value, 'YYYY-MM-DD').from(this.$moment())
     },
-    viewTeam () {
-      this.$emit('viewTeam', this.user)
+    viewTeam (user = this.user) {
+      this.$emit('viewTeam', user)
+    },
+    handleTabChange(e) {
+      if (e === 1) {
+        this.skipTeamQuery = false
+      }
+    },
+    handleHover(e, awardName) {
+      let awardHoverClone = { ...this.awardHover }
+      const awardAlreadyHovering = awardHoverClone.hasOwnProperty(awardName)
+      const objKeysLength = Object.keys(awardHoverClone).length
+      const { type } = e
+
+      switch (type) {
+      case 'mouseover':
+        if (objKeysLength) {
+          break
+        }
+        awardHoverClone[awardName] = true
+        this.awardHover = { ...awardHoverClone }
+        break
+
+      case 'mouseleave' || 'mouseout':
+        if (!awardAlreadyHovering) {
+          break
+        }
+        awardHoverClone[awardName] = false
+        this.awardHover = { ...awardHoverClone }
+        break
+
+      default:
+        break
+      }
+    },
+    afterLeaveHandler(awardName) {
+      this.awardHover = {}
     }
   },
   computed: {
@@ -95,6 +217,39 @@ export default {
     },
     email () {
       return get(this.user, 'contacts[0].emails[0].email', this.user.email)
+    },
+    slug () {
+      return get(this, 'user.slugs[0].slug')
+    },
+    id () {
+      return this.user.id
+    }
+  },
+  apollo: {
+    counts: {
+      query: TEAM_SIZE_BY_GENERATION,
+      variables() {
+        return {
+          input: {
+            memberId: this.user.id
+          }
+        }
+      },
+      skip() {
+        return this.skipTeamQuery
+      },
+      update({ membershipTeamSizes }) {
+        const getTeamDataByDepth = membershipTeamSizes.reduce((all, s) => {
+          all[s.generation || 'all'] = s.count
+          return all
+        }, {})
+        this.tabContent = {
+          teamSize: getTeamDataByDepth.all || 0,
+          frontLine: getTeamDataByDepth['1'] || 0,
+          secondLine: getTeamDataByDepth['2'] || 0,
+          thirdLine: getTeamDataByDepth['3'] || 0
+        }
+      }
     }
   }
 }
@@ -105,5 +260,59 @@ export default {
   margin: auto;
   max-height: 100%;
   max-width: 100%;
+}
+.badge-card {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+  min-height: 157px;
+  align-items: center;
+}
+.badge {
+  max-width: 29px;
+  transition: ease-out 350ms;
+}
+.badge-hover {
+  max-width: 100%;
+  transition: ease-out 700ms;
+}
+.expand-enter-active {
+  transition: opacity ease-out 350ms;
+}
+.expand-enter, .expand-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  opacity: 0;
+}
+.expand-leave-active {
+  transition: ease-out 350ms;
+}
+.item-container-card {
+  min-height: 157px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+}
+.generation-container {
+  flex-direction: column;
+  display: flex;
+  align-items: center;
+}
+.generation-badge-container
+{
+  max-width: 200px;
+  justify-content: center;
+  position: relative;
+  left: -24px;
+}
+.generation-avatar {
+  transform: scale(.5);
+  z-index: unset;
+  transition: 300ms cubic-bezier(0.075, 0.82, 0.165, 1);
+  margin-right: -40px !important;
+  margin-bottom: -23px !important;
+}
+.generation-avatar:hover {
+  transform: scale(1) translateY(-5px);
+  z-index: 1;
+  transition: 300ms cubic-bezier(0.075, 0.82, 0.165, 1);
 }
 </style>
