@@ -19,15 +19,13 @@
         >
           <tr @click="props.expanded = !props.expanded">
             <td><Currency :amount="props.item.amount / 100" :currency="props.item.currency" /></td>
-            <td>
+            <td class="status-td">
+              {{ props.item.status }}
               <v-tooltip v-if="statuses[props.item.status]" bottom>
                 <template slot="activator">
-                  <v-badge class="hint-tip" color="grey">
-                    <template slot="badge">
-                      <span>?</span>
-                    </template>
-                    {{ props.item.status }}
-                  </v-badge>
+                  <v-chip class="hint-tip" color="grey lighten-2">
+                    <span>?</span>
+                  </v-chip>
                 </template>
                 <span>{{statuses[props.item.status]}}</span>
               </v-tooltip>
@@ -63,6 +61,50 @@ export default {
         { text: 'Issued Date', value: 'issuedOn' },
         { text: 'Released Date', value: 'releasedOn' },
         { text: 'notes', value: 'notes' }
+      ],
+      mockData: [
+        {
+          amount: 100,
+          status: 'PENDING_RELEASE',
+          issuedOn: this.$moment(),
+          releasedOn: this.$moment(),
+          notes: 'note'
+        },
+        {
+          amount: 100,
+          status: 'RELEASED',
+          issuedOn: this.$moment(),
+          releasedOn: this.$moment(),
+          notes: 'note'
+        },
+        {
+          amount: 100,
+          status: 'SUBMITTED',
+          issuedOn: this.$moment(),
+          releasedOn: this.$moment(),
+          notes: 'note'
+        },
+        {
+          amount: 100,
+          status: 'PROCESSING',
+          issuedOn: this.$moment(),
+          releasedOn: this.$moment(),
+          notes: 'note'
+        },
+        {
+          amount: 100,
+          status: 'FAILED',
+          issuedOn: this.$moment(),
+          releasedOn: this.$moment(),
+          notes: 'note'
+        },
+        {
+          amount: 100,
+          status: 'NEEDS_ATTENTION',
+          issuedOn: this.$moment(),
+          releasedOn: this.$moment(),
+          notes: 'note'
+        }
       ],
       payouts: [],
       statuses: {
@@ -129,5 +171,10 @@ export default {
 }
 a {
   cursor: pointer;
+}
+.status-td {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 </style>

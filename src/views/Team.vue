@@ -1,28 +1,28 @@
 <template>
   <div class="profile">
-      <v-tabs centered color="secondary" dark icons-and-text>
-        <v-tabs-slider color="white"></v-tabs-slider>
+    <v-tabs centered color="secondary" dark icons-and-text>
+      <v-tabs-slider color="white"></v-tabs-slider>
 
-        <v-tab to="#hierarchy">Generations
-          <v-icon>portrait</v-icon>
-        </v-tab>
-        <v-tab to="#search">Search
-          <v-icon>search</v-icon>
-        </v-tab>
-        <v-tab to="#graph">Graph
-          <v-icon>scatter_plot</v-icon>
-        </v-tab>
+      <v-tab to="#hierarchy">Generations
+        <v-icon>portrait</v-icon>
+      </v-tab>
+      <v-tab to="#search">Search
+        <v-icon>search</v-icon>
+      </v-tab>
+      <v-tab to="#graph">Graph
+        <v-icon>scatter_plot</v-icon>
+      </v-tab>
 
-        <v-tab-item lazy value="hierarchy" class="py-3">
-          <HierarchyCards />
-        </v-tab-item>
-        <v-tab-item lazy value="search" class="py-3">
-          <TeamSearch />
-        </v-tab-item>
-        <v-tab-item lazy value="graph" class="py-3">
-          <TeamGraph />
-        </v-tab-item>
-      </v-tabs>
+      <v-tab-item lazy value="hierarchy" class="py-3">
+        <HierarchyCards />
+      </v-tab-item>
+      <v-tab-item lazy value="search" class="py-3">
+        <TeamSearch />
+      </v-tab-item>
+      <v-tab-item lazy value="graph" class="py-3">
+        <TeamGraph />
+      </v-tab-item>
+    </v-tabs>
   </div>
 </template>
 

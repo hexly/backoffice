@@ -9,10 +9,12 @@
 </template>
 
 <script>
+// 30 MIN
 const MIN_IN_SECONDS = 60
 const SECONDS_IN_MS = 1000
 
-const INTERVAL_VAL = 30 * MIN_IN_SECONDS * SECONDS_IN_MS // 30 MIN
+const INTERVAL_VAL = 30 * MIN_IN_SECONDS * SECONDS_IN_MS
+
 export default {
   data () {
     return {
@@ -86,7 +88,7 @@ export default {
 
 #backoffice.tenant-1010 {
   background-image: none;
-  background-color: #14244c;
+  background-color: #292425;
 }
 
 #nav {

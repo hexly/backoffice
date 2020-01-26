@@ -18,12 +18,32 @@
                 <p class="headline">Welcome {{editMember.name}}!</p>
                 <p>Please fill out the following information to finish setting up your account.</p>
                 <v-form ref="claim" @submit.prevent="onSubmit" lazy-validation>
-                  <v-text-field
-                    v-model="editMember.birthday"
-                    label="Date of Birth"
-                    :placeholder="this.birthdayFormat"
-                    :rules="birthdateRule"
-                  ></v-text-field>
+                  <v-dialog
+                    ref="dialog"
+                    v-model="datePickerModal"
+                    lazy
+                    full-width
+                    width="290px"
+                  >
+                    <v-text-field
+                      slot="activator"
+                      v-model="editMember.birthday"
+                      label="Date of Birth"
+                      prepend-icon="event"
+                      readonly
+                      :placeholder="birthdayFormat"
+                      :rules="birthdateRule"
+                    ></v-text-field>
+                    <v-date-picker
+                      scrollable
+                      v-model ="datePickerDate"
+                      ref     ="picker"
+                    >
+                      <v-spacer></v-spacer>
+                      <v-btn flat color="primary" @click="datePickerModal = false">Cancel</v-btn>
+                      <v-btn flat color="primary" @click="dateSave(datePickerDate); $refs.dialog.save()">OK</v-btn>
+                    </v-date-picker>
+                  </v-dialog>
                   <v-text-field
                     name="password"
                     label="Verify Password"
@@ -60,13 +80,10 @@
                     item-value="id"
                   />
                   <v-flex xs12>
-                    <p>To Continue, please click on the link to review the document.</p>
                     <v-checkbox
                       v-model="agreement.affiliate"
                       :rules="requiredRule"
-                      :readonly="!affiliate"
                       :persistent-hint="!affiliate"
-                      hint="Note: Please click the link before agreeing"
                     >
                       <div slot="label">
                         I agree to the
@@ -82,13 +99,10 @@
                     <AgreementCheckbox :agreement="agreement" />
                   </v-flex> -->
                   <v-flex xs12>
-                    <p>To Continue, please click on the link to review the document.</p>
                     <v-checkbox
                       v-model="agreement.policies"
                       :rules="requiredRule"
-                      :readonly="!policies"
                       :persistent-hint="!policies"
-                      hint="Note: Please click the link before agreeing"
                     >
                       <div slot="label">
                         I agree to the
@@ -126,11 +140,14 @@ import AgreementCheckbox from '@/components/Agreement'
 import Rules from '@/views/Rules.js'
 
 export default {
+  name: 'Account Claim',
   components: {
     AgreementCheckbox
   },
   data () {
     return {
+      datePickerModal: false,
+      datePickerDate: null,
       loading: true,
       visible: false,
       error: null,
@@ -221,6 +238,11 @@ export default {
       }
     }
   },
+  watch: {
+    datePickerModal (val) {
+      val && setTimeout(() => (this.$refs.picker.activePicker = 'YEAR'))
+    }
+  },
   methods: {
     ...mapMutations({
       setJwt: UserMutations.SET_JWT
@@ -230,6 +252,9 @@ export default {
       upsertAttribute: Actions.SET_ATTRIBUTE,
       login: UserActions.LOGIN
     }),
+    dateSave(datePickerDate) {
+      this.editMember.birthday = this.$moment(datePickerDate).format('MM/DD/YYYY')
+    },
     accept (value) {
       this[value] = this.$moment.utc()
       this.agreement[value] = true

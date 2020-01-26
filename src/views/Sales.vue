@@ -18,7 +18,6 @@
               <v-dialog
                 ref="dialogStart"
                 v-model="modalStart"
-                :return-value.sync="startDate"
                 lazy
                 full-width
                 width="290px"
@@ -33,15 +32,17 @@
                 <v-date-picker
                   ref="pickerStart"
                   color="secondary"
-                  v-model="startDate"
+                  v-model="datePickerStartDate"
                   :reactive="true"
-                  @change="startDateChanged"
-                />
+                >
+                  <v-spacer></v-spacer>
+                  <v-btn flat color="primary" @click="modalStart = false">Cancel</v-btn>
+                  <v-btn flat color="primary" @click="dateSave(datePickerStartDate, 'start'); $refs.dialogStart.save()">OK</v-btn>
+                </v-date-picker>
               </v-dialog>
               <v-dialog
                 ref="dialogEnd"
                 v-model="modalEnd"
-                :return-value.sync="endDate"
                 lazy
                 full-width
                 width="290px"
@@ -56,10 +57,13 @@
                 <v-date-picker
                   ref="pickerEnd"
                   color="secondary"
-                  v-model="endDate"
+                  v-model="datePickerEndDate"
                   :reactive="true"
-                  @change="endDateChanged"
-                />
+                >
+                  <v-spacer></v-spacer>
+                  <v-btn flat color="primary" @click="modalEnd = false">Cancel</v-btn>
+                  <v-btn flat color="primary" @click="dateSave(datePickerEndDate, 'end'); $refs.dialogEnd.save()">OK</v-btn>
+                </v-date-picker>
               </v-dialog>
             </v-layout>
           </v-container>
@@ -80,9 +84,9 @@
         >
           <tr @click="props.expanded = !props.expanded">
             <td>{{ props.item.date }}</td>
+            <td>{{ props.item.displayName }}</td>
             <td>${{ props.item.total }}</td>
             <td>{{ props.item.totalPoints }}</td>
-            <td>{{ props.item.commissionableAmount }}</td>
             <td>{{ props.item.status }}</td>
             <td>
               <v-icon v-if="props.expanded">expand_less</v-icon>
@@ -159,19 +163,21 @@ export default {
   },
   data() {
     return {
+      datePickerStartDate: null,
+      datePickerEndDate: null,
       modalStart: false,
       modalEnd: false,
       startDate: this.$moment()
         .startOf('month')
-        .format('YYYY-MM-DD'),
+        .format('MM/DD/YYYY'),
       endDate: this.$moment()
         .endOf('month')
-        .format('YYYY-MM-DD'),
+        .format('MM/DD/YYYY'),
       headers: [
         { text: 'Date', value: 'date' },
+        { text: 'Name', value: 'name' },
         { text: 'Sale Total', value: 'total' },
         { text: 'Total Points', value: 'points' },
-        { text: 'Commissionable Total', value: 'comTotal' },
         { text: 'Status', value: 'staus' },
         {
           text: 'Actions',
@@ -218,11 +224,23 @@ export default {
   },
   methods: {
     ...mapMutations([ Mutations.SET_LOADING ]),
+    dateSave(datePickerDate, startOrEnd) {
+      const varName = `${startOrEnd}Date`
+      this[varName] = this.$moment(datePickerDate).format('MM/DD/YYYY')
+    },
     startDateChanged(date) {
       this.$refs.dialogStart.save(date)
     },
     endDateChanged(date) {
       this.$refs.dialogEnd.save(date)
+    }
+  },
+  watch: {
+    modalStart (val) {
+      val && setTimeout(() => (this.$refs.pickerStart.activePicker = 'YEAR'))
+    },
+    modalEnd (val) {
+      val && setTimeout(() => (this.$refs.pickerEnd.activePicker = 'YEAR'))
     }
   },
   computed: {

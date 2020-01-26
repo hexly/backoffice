@@ -6,21 +6,21 @@
       </v-card-title>
       <v-layout justify-space-between row wrap>
         <v-flex xs12 sm5>
-          <v-sheet class="pa-3 accent">
+          <v-sheet class="pa-3">
             <v-text-field
               v-model="search"
-              :label="`Search ${title}`"
               @keyup="searchDirectory"
-              dark
               flat
-              solo-inverted
+              outline
               hide-details
               :suffix="searchSuffix"
               clearable
               clear-icon="cancel"
               loading="searchLoading"
               @click:clear="clearSearch"
-            ></v-text-field>
+            >
+              <template slot="label" class="black--text">Search {{title}}</template>
+            </v-text-field>
           </v-sheet>
           <v-treeview
             :active.sync="active"
@@ -142,6 +142,7 @@ export default {
   },
   data() {
     return {
+      console,
       searchSuffix: null,
       active: [],
       avatar: null,

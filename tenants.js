@@ -21,6 +21,7 @@ const tenantOptions = {
         url: 'http://www.veridian-dynamics.org/'
       }
     ],
+    strings: {},
     features: {
       team: true,
       legal: true
@@ -32,7 +33,8 @@ const tenantOptions = {
     features: {
       team: true,
       legal: true
-    }
+    },
+    strings: {}
   },
   1004: {
     name: 'Green HoriZen',
@@ -64,6 +66,7 @@ const tenantOptions = {
         url: '/docs/1004/Policies_and_Procedures_(April_2018).pdf'
       }
     ],
+    strings: {},
     features: {
       sales: true,
       team: true,
@@ -88,6 +91,7 @@ const tenantOptions = {
         url: 'http://www.veridian-dynamics.org/'
       }
     ],
+    strings: {},
     features: {
       sales: true,
       team: false,
@@ -113,6 +117,7 @@ const tenantOptions = {
         url: 'https://www.facebook.com/Kyngdom-Organizer-187348015476222/'
       }
     ],
+    strings: {},
     agreements: [
       {
         key: 'affiliate',
@@ -137,11 +142,11 @@ const tenantOptions = {
     // logoPath: '/img/1009/logo.jpg',
     // logoLoginPath: '/img/1009/logo.jpg',
     placeholder: '/img/1010/placeholder.png',
-    profileColor: '#FFFA77',
-    baseColor: '#14244C',
-    primaryColor: '#3e5b06',
-    secondaryColor: '#F2AE45',
-    accentColor: '#EB8381',
+    profileColor: '#FFEFAC',
+    baseColor: '#292425',
+    primaryColor: '#a1213b',
+    secondaryColor: '#a1213b',
+    accentColor: '#FFEFAC',
     storeUrl: 'https://www.everra.com/store/{slug}',
     corporateUrl: 'https://www.everra.com/',
     encryptKey: 'luccii', // leave this, it is important
@@ -151,6 +156,9 @@ const tenantOptions = {
         url: 'https://www.facebook.com/groups/EverraOfficial/'
       }
     ],
+    strings: {
+      stripeConnect: 'Everra Connect'
+    },
     agreements: [
       {
         key: 'affiliate',
@@ -171,7 +179,8 @@ const tenantOptions = {
         docs: true,
         ssn: false
       },
-      social: true
+      social: true,
+      payouts: true
     }
   }
 }
