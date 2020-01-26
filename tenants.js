@@ -139,8 +139,8 @@ const tenantOptions = {
   },
   1010: {
     name: 'Everra',
-    // logoPath: '/img/1009/logo.jpg',
-    // logoLoginPath: '/img/1009/logo.jpg',
+    logoPath: '/img/1010/logo.png',
+    logoLoginPath: '/img/1010/logo.png',
     placeholder: '/img/1010/placeholder.png',
     profileColor: '#FFEFAC',
     baseColor: '#292425',
