@@ -106,7 +106,7 @@
     </v-layout>
     <v-layout row wrap>
       <v-flex xs12 sm6 pa-2>
-        <v-card id="recent-sales-card">
+        <!-- <v-card id="recent-sales-card">
           <v-toolbar color="secondary" dark>
             <v-toolbar-title>Recent Sales</v-toolbar-title>
           </v-toolbar>
@@ -129,7 +129,7 @@
               </template>
             </v-data-table>
           </v-card-media>
-        </v-card>
+        </v-card> -->
       </v-flex>
       <v-flex xs12 sm6 pa-2>
         <RankRequirementsCard

@@ -173,7 +173,7 @@ const tenantOptions = {
     ],
     privacyPolicy: '/docs/1010/Privacy-Policy.pdf',
     features: {
-      sales: true,
+      sales: false,
       team: true,
       legal: {
         docs: true,
