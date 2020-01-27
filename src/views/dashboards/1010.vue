@@ -7,8 +7,8 @@
     </v-layout>
     <v-layout row wrap>
       <v-flex xs12 md6>
-        <v-layout column>
-          <v-flex  class="pa-2">
+        <v-layout id="personal-card-layout" column>
+          <v-flex class="pa-2">
             <PersonalCard memberName="Your Influencer Number:">
               <div slot="footer">
                 <Badges :memberId="member.id"/>
@@ -344,6 +344,9 @@ section .stat {
   padding: 5px 0;
 }
 #recent-sales-card {
+  height: 100%;
+}
+#personal-card-layout {
   height: 100%;
 }
 </style>
