@@ -169,6 +169,7 @@ export default {
     handleHover(e, awardName) {
       let awardHoverClone = { ...this.awardHover }
       const awardAlreadyHovering = awardHoverClone.hasOwnProperty(awardName)
+      console.log({awardAlreadyHovering, awardHoverClone})
       const objKeysLength = Object.keys(awardHoverClone).length
       const { type } = e
 
@@ -183,6 +184,10 @@ export default {
 
       case 'mouseleave' || 'mouseout':
         if (!awardAlreadyHovering) {
+          break
+        }
+        if (awardHoverClone[awardName] === false) {
+          this.awardHover = {}
           break
         }
         awardHoverClone[awardName] = false
