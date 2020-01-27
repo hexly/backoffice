@@ -1,10 +1,10 @@
 <template>
-  <v-layout row wrap>
+  <v-layout id="rank-card" row wrap>
     <v-card width="100%">
       <v-toolbar color="secondary" dark>
         <v-toolbar-title>Rank Requirements</v-toolbar-title>
       </v-toolbar>
-      <v-card-text v-if="Object.keys(stats).length" class="pa-3">
+      <v-card-text v-if="Object.keys(stats).length && !statsDisabled" class="pa-3">
         <v-layout row justify-space-between pb-4>
           <v-flex px-3>
             <div class="title">Rank</div>
@@ -168,10 +168,17 @@
           </v-flex>
         </v-layout>
       </v-card-text>
-      <v-card-text v-else class="pa-3">
+      <v-card-text v-else-if="!statsDisabled" class="pa-3">
         <v-layout row justify-space-between pb-4>
           <v-flex px-3>
-            <div class="title">No Rank Data Found</div>
+            <div class="title text-xs-center">No Rank Data Found</div>
+          </v-flex>
+        </v-layout>
+      </v-card-text>
+      <v-card-text v-else-if="statsDisabled" class="pa-3">
+        <v-layout row justify-space-between pb-4>
+          <v-flex px-3>
+            <div class="title text-xs-center">Realtime Stats Temporarily Unavailable</div>
           </v-flex>
         </v-layout>
       </v-card-text>
@@ -183,7 +190,14 @@
 export default {
   name: 'RankRequirementsCard',
   props: {
-    stats: Object
+    stats: Object,
+    statsDisabled: Boolean
   }
 }
 </script>
+
+<style scoped>
+#rank-card {
+  height: 100%;
+}
+</style>

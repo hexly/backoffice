@@ -133,7 +133,8 @@
       </v-flex>
       <v-flex xs12 sm6 pa-2>
         <RankRequirementsCard
-          :stats="rankRequirementsStats"
+          :stats         ="rankRequirementsStats"
+          :statsDisabled ="statsDisabled"
         />
       </v-flex>
     </v-layout>
@@ -233,7 +234,8 @@ export default {
       generationCount: {},
       loadingStats: 0,
       loadingCount: 0,
-      generationCountLoading: 0
+      generationCountLoading: 0,
+      statsDisabled: false
     }
   },
   async mounted() {
