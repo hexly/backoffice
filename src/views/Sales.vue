@@ -30,10 +30,11 @@
                   readonly
                 />
                 <v-date-picker
-                  ref="pickerStart"
-                  color="secondary"
-                  v-model="datePickerStartDate"
-                  :reactive="true"
+                  ref       ="pickerStart"
+                  color     ="secondary"
+                  v-model   ="datePickerStartDate"
+                  :reactive ="true"
+                  min      ="2020-02-01"
                 >
                   <v-spacer></v-spacer>
                   <v-btn flat color="primary" @click="modalStart = false">Cancel</v-btn>
@@ -59,6 +60,7 @@
                   color="secondary"
                   v-model="datePickerEndDate"
                   :reactive="true"
+                  min      ="2020-02-01"
                 >
                   <v-spacer></v-spacer>
                   <v-btn flat color="primary" @click="modalEnd = false">Cancel</v-btn>
