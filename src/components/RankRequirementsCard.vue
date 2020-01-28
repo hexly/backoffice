@@ -187,10 +187,13 @@
 </template>
 
 <script>
+import { COMP_STATS_QUERY } from '@/graphql/CompStats.gql'
+
+import _ from 'lodash'
+
 export default {
   name: 'RankRequirementsCard',
   props: {
-    stats: Object,
     statsDisabled: Boolean
   },
   data() {
@@ -198,7 +201,9 @@ export default {
       rank: null,
       nextRankReqs: {},
       nextRankSatisfied: {},
-      currentProgress: {}
+      currentProgress: {},
+      year: ~~this.$moment().format('Y'),
+      month: ~~this.$moment().format('M')
     }
   },
   methods: {
@@ -214,13 +219,29 @@ export default {
       })
     }
   },
+  apollo: {
+    stats: {
+      query: COMP_STATS_QUERY,
+      variables() {
+        return {
+          input: {
+            year: this.year,
+            month: this.month,
+            membersIn: [1]
+          }
+        }
+      },
+      update(data) {
+        const result = _.get(data, 'compStatsQuery.results[0]')
+
+        return result
+      }
+    }
+  },
   watch: {
     stats(newVal) {
       this.parseStats(newVal)
     }
-  },
-  mounted() {
-    this.parseStats(this.stats)
   }
 }
 </script>

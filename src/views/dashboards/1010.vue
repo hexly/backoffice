@@ -133,7 +133,6 @@
       </v-flex>
       <v-flex xs12 sm6 pa-2>
         <RankRequirementsCard
-          :stats         ="rankRequirementsStats"
           :statsDisabled ="statsDisabled"
         />
       </v-flex>
