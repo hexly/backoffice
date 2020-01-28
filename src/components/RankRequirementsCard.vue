@@ -16,7 +16,7 @@
         </v-layout>
         <v-layout row justify-space-between wrap>
           <v-flex px-3>
-            <div class="title">PSV</div>
+            <div class="title">PSV<v-icon color="green" v-if="nextRankSatisfied.personalTotalPoints">check_circle</v-icon></div>
             <div class="caption grey--text darken-1">Personal Sales Volume</div>
           </v-flex>
           <v-spacer></v-spacer>
@@ -37,7 +37,7 @@
         </v-layout>
         <v-layout row justify-space-between wrap>
           <v-flex px-3>
-            <div class="title">CPSV</div>
+            <div class="title">CPSV<v-icon color="green" v-if="nextRankSatisfied.lifetimeTotalPoints">check_circle</v-icon></div>
             <div class="caption grey--text darken-1">Career PSV</div>
           </v-flex>
           <v-spacer></v-spacer>
@@ -58,7 +58,7 @@
         </v-layout>
         <v-layout row justify-space-between wrap>
           <v-flex px-3>
-            <div class="title">GSV</div>
+            <div class="title">GSV<v-icon color="green" v-if="nextRankSatisfied.groupPoints">check_circle</v-icon></div>
             <div class="caption grey--text darken-1">Group Sales Volume</div>
           </v-flex>
           <v-spacer></v-spacer>
@@ -79,7 +79,7 @@
         </v-layout>
         <v-layout row justify-space-between wrap>
           <v-flex px-3>
-            <div class="title">AL</div>
+            <div class="title">AL<v-icon color="green" v-if="nextRankSatisfied.activeLeg">check_circle</v-icon></div>
             <div class="caption grey--text darken-1">Active Legs</div>
           </v-flex>
           <v-spacer></v-spacer>
@@ -121,7 +121,7 @@
         </v-layout>
         <v-layout row justify-space-between wrap>
           <v-flex px-3>
-            <div class="title">DSV</div>
+            <div class="title">DSV<v-icon color="green" v-if="nextRankSatisfied.downlinePoints">check_circle</v-icon></div>
             <div class="caption grey--text darken-1">Downline Sales Volume</div>
           </v-flex>
           <v-spacer></v-spacer>
@@ -142,7 +142,7 @@
         </v-layout>
         <v-layout row justify-space-between wrap>
           <v-flex px-3>
-            <div class="title">ADSV</div>
+            <div class="title">ADSV<v-icon color="green" v-if="nextRankSatisfied.downlineAdjustedPoints">check_circle</v-icon></div>
             <div class="caption grey--text darken-1">
               Adjusted Downline Sales Volume
               <v-tooltip slot="append" right>
