@@ -213,21 +213,87 @@ export default {
         }
       ],
       rankRequirementsStats: {
-        rank: 0,
-        psv: 0,
-        psvMax: 50,
-        cpsv: 0,
-        cpsvMax: -1,
-        gsv: 0,
-        gsvMax: -1,
-        al: 0,
-        alMax: -1,
-        pabql: 0,
-        pabqlMax: -1,
-        dsv: 0,
-        dsvMax: -1,
-        adsv: 0,
-        adsvMax: -1
+        'memberId': 15,
+        'rank': {
+          'rank': 3,
+          'achieved': true,
+          'satisfied': {
+            'activeLeg': true,
+            'genOption1Rank': null,
+            'genOption1Value': true,
+            'genOption2Rank': null,
+            'genOption2Value': true,
+            'personalTotalPoints': true,
+            'lifetimeTotalPoints': true,
+            'groupPoints': true,
+            'downlinePoints': true,
+            'downlineAdjustedPoints': true
+          },
+          'deltas': {
+            'activeLeg': 1,
+            'genOption1Rank': null,
+            'genOption1Value': 0,
+            'genOption2Rank': null,
+            'genOption2Value': 0,
+            'personalTotalPoints': 16265.37703,
+            'lifetimeTotalPoints': 15815.37703,
+            'groupPoints': 72856.70018,
+            'downlinePoints': 41841.32315,
+            'downlineAdjustedPoints': 56841.32315
+          },
+          'requirements': {
+            'activeLeg': 2,
+            'genOption1Rank': null,
+            'genOption1Value': 0,
+            'genOption2Rank': null,
+            'genOption2Value': 0,
+            'personalTotalPoints': 50,
+            'lifetimeTotalPoints': 500,
+            'groupPoints': 300,
+            'downlinePoints': 15000,
+            'downlineAdjustedPoints': 0
+          }
+        },
+        'nextRank': {
+          'rank': 4,
+          'achieved': false,
+          'satisfied': {
+            'activeLeg': false,
+            'genOption1Rank': null,
+            'genOption1Value': true,
+            'genOption2Rank': null,
+            'genOption2Value': true,
+            'personalTotalPoints': true,
+            'lifetimeTotalPoints': true,
+            'groupPoints': true,
+            'downlinePoints': true,
+            'downlineAdjustedPoints': true
+          },
+          'deltas': {
+            'activeLeg': -1,
+            'genOption1Rank': null,
+            'genOption1Value': 0,
+            'genOption2Rank': null,
+            'genOption2Value': 0,
+            'personalTotalPoints': 16215.37703,
+            'lifetimeTotalPoints': 15815.37703,
+            'groupPoints': 72156.70018,
+            'downlinePoints': 41841.32315,
+            'downlineAdjustedPoints': 56841.32315
+          },
+          'requirements': {
+            'activeLeg': 4,
+            'genOption1Rank': null,
+            'genOption1Value': 0,
+            'genOption2Rank': null,
+            'genOption2Value': 0,
+            'personalTotalPoints': 100,
+            'lifetimeTotalPoints': 500,
+            'groupPoints': 1000,
+            'downlinePoints': 15000,
+            'downlineAdjustedPoints': 0
+          }
+        }
       },
       memberCount: 0,
       team: [],

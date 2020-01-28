@@ -11,7 +11,7 @@
           </v-flex>
           <v-spacer></v-spacer>
           <v-flex px-3 text-xs-right>
-            <div class="title">Rank {{stats.rank}}</div>
+            <div class="title">Rank {{rank}}</div>
           </v-flex>
         </v-layout>
         <v-layout row justify-space-between wrap>
@@ -21,18 +21,18 @@
           </v-flex>
           <v-spacer></v-spacer>
           <v-flex px-3 text-xs-right>
-            <div class="title">{{stats.psv}}</div>
-            <div v-if="stats.psvMax < 0" class="caption grey--text darken-1">
+            <div class="title">{{currentProgress.personalTotalPoints}}</div>
+            <div v-if="nextRankSatisfied.personalTotalPoints === null" class="caption grey--text darken-1">
               N/A
               <v-tooltip slot="append" left>
                   <v-icon slot="activator" small>info</v-icon>
                   <span>Not applicable for next rank</span>
               </v-tooltip>
             </div>
-            <div v-else class="caption grey--text darken-1">{{Number.parseFloat(stats.psv / stats.psvMax).toFixed(2) * 100}}% of {{stats.psvMax}}</div>
+            <div v-else class="caption grey--text darken-1">{{Number.parseFloat((nextRankSatisfied.personalTotalPoints ? nextRankReqs.personalTotalPoints : currentProgress.personalTotalPoints ) / nextRankReqs.personalTotalPoints).toFixed(2) * 100}}% of {{nextRankReqs.personalTotalPoints}}</div>
           </v-flex>
           <v-flex xs12 px-3>
-            <v-progress-linear  color="success" height="5" :value="(stats.psv / stats.psvMax) * 100"></v-progress-linear>
+            <v-progress-linear  color="success" height="5" :value="(currentProgress.personalTotalPoints / nextRankReqs.personalTotalPoints) * 100"></v-progress-linear>
           </v-flex>
         </v-layout>
         <v-layout row justify-space-between wrap>
@@ -42,18 +42,18 @@
           </v-flex>
           <v-spacer></v-spacer>
           <v-flex px-3 text-xs-right>
-            <div class="title">{{stats.cpsv}}</div>
-            <div v-if="stats.cpsvMax < 0" class="caption grey--text darken-1">
+            <div class="title">{{currentProgress.lifetimeTotalPoints}}</div>
+            <div v-if="nextRankSatisfied.lifetimeTotalPoints === null" class="caption grey--text darken-1">
               N/A
               <v-tooltip slot="append" left>
                   <v-icon slot="activator" small>info</v-icon>
                   <span>Not applicable for next rank</span>
               </v-tooltip>
             </div>
-            <div v-else class="caption grey--text darken-1">{{Number.parseFloat(stats.cpsv / stats.cpsvMax).toFixed(2) * 100}}% of {{stats.cpsvMax}}</div>
+            <div v-else class="caption grey--text darken-1">{{Number.parseFloat((nextRankSatisfied.lifetimeTotalPoints ? nextRankReqs.lifetimeTotalPoints : currentProgress.lifetimeTotalPoints ) / nextRankReqs.lifetimeTotalPoints).toFixed(2) * 100}}% of {{nextRankReqs.lifetimeTotalPoints}}</div>
           </v-flex>
           <v-flex xs12 px-3>
-            <v-progress-linear  color="success" height="5" :value="(stats.psv / stats.cpsvMax) * 100"></v-progress-linear>
+            <v-progress-linear  color="success" height="5" :value="(currentProgress.lifetimeTotalPoints / nextRankReqs.lifetimeTotalPoints) * 100"></v-progress-linear>
           </v-flex>
         </v-layout>
         <v-layout row justify-space-between wrap>
@@ -63,18 +63,18 @@
           </v-flex>
           <v-spacer></v-spacer>
           <v-flex px-3 text-xs-right>
-            <div class="title">{{stats.gsv}}</div>
-            <div v-if="stats.gsvMax < 0" class="caption grey--text darken-1">
+            <div class="title">{{currentProgress.groupPoints}}</div>
+            <div v-if="nextRankSatisfied.groupPoints === null" class="caption grey--text darken-1">
               N/A
               <v-tooltip slot="append" left>
                   <v-icon slot="activator" small>info</v-icon>
                   <span>Not applicable for next rank</span>
               </v-tooltip>
             </div>
-            <div v-else class="caption grey--text darken-1">{{Number.parseFloat(stats.gsv / stats.gsvMax).toFixed(2) * 100}}% of {{stats.gsvMax}}</div>
+            <div v-else class="caption grey--text darken-1">{{Number.parseFloat((nextRankSatisfied.groupPoints ? nextRankReqs.groupPoints : currentProgress.groupPoints ) / nextRankReqs.groupPoints).toFixed(2) * 100}}% of {{nextRankReqs.groupPoints}}</div>
           </v-flex>
           <v-flex xs12 px-3>
-            <v-progress-linear  color="success" height="5" :value="(stats.gsv / stats.gsvMax) * 100"></v-progress-linear>
+            <v-progress-linear  color="success" height="5" :value="(currentProgress.groupPoints / nextRankReqs.groupPoints) * 100"></v-progress-linear>
           </v-flex>
         </v-layout>
         <v-layout row justify-space-between wrap>
@@ -84,18 +84,18 @@
           </v-flex>
           <v-spacer></v-spacer>
           <v-flex px-3 text-xs-right>
-            <div class="title">{{stats.al}}</div>
-            <div v-if="stats.alMax < 0" class="caption grey--text darken-1">
+            <div class="title">{{currentProgress.activeLeg}}</div>
+            <div v-if="nextRankSatisfied.activeLeg === null" class="caption grey--text darken-1">
               N/A
               <v-tooltip slot="append" left>
                   <v-icon slot="activator" small>info</v-icon>
                   <span>Not applicable for next rank</span>
               </v-tooltip>
             </div>
-            <div v-else class="caption grey--text darken-1">{{Number.parseFloat(stats.al / stats.alMax).toFixed(2) * 100}}% of {{stats.alMax}}</div>
+            <div v-else class="caption grey--text darken-1">{{Number.parseFloat((nextRankSatisfied.activeLeg ? nextRankReqs.activeLeg : currentProgress.activeLeg ) / nextRankReqs.activeLeg).toFixed(2) * 100}}% of {{nextRankReqs.activeLeg}}</div>
           </v-flex>
           <v-flex xs12 px-3>
-            <v-progress-linear  color="success" height="5" :value="(stats.al / stats.alMax) * 100"></v-progress-linear>
+            <v-progress-linear  color="success" height="5" :value="(currentProgress.activeLeg / nextRankReqs.activeLeg) * 100"></v-progress-linear>
           </v-flex>
         </v-layout>
         <v-layout row justify-space-between wrap>
@@ -126,18 +126,18 @@
           </v-flex>
           <v-spacer></v-spacer>
           <v-flex px-3 text-xs-right>
-            <div class="title">{{stats.dsv}}</div>
-            <div v-if="stats.dsvMax < 0" class="caption grey--text darken-1">
+            <div class="title">{{currentProgress.downlinePoints}}</div>
+            <div v-if="nextRankReqs.downlinePoints < 0" class="caption grey--text darken-1">
               N/A
               <v-tooltip slot="append" left>
                   <v-icon slot="activator" small>info</v-icon>
                   <span>Not applicable for next rank</span>
               </v-tooltip>
             </div>
-            <div v-else class="caption grey--text darken-1">{{Number.parseFloat(stats.dsv / stats.dsvMax).toFixed(2) * 100}}% of {{stats.dsvMax}}</div>
+            <div v-else class="caption grey--text darken-1">{{Number.parseFloat((nextRankSatisfied.downlinePoints ? nextRankReqs.downlinePoints : currentProgress.downlinePoints ) / nextRankReqs.downlinePoints).toFixed(2) * 100}}% of {{nextRankReqs.downlinePoints}}</div>
           </v-flex>
           <v-flex xs12 px-3>
-            <v-progress-linear  color="success" height="5" value="0"></v-progress-linear>
+            <v-progress-linear color="success" height="5" :value="currentProgress.downlinePoints / nextRankReqs.downlinePoints * 100"></v-progress-linear>
           </v-flex>
         </v-layout>
         <v-layout row justify-space-between wrap>
@@ -153,18 +153,18 @@
           </v-flex>
           <v-spacer></v-spacer>
           <v-flex px-3 text-xs-right>
-            <div class="title">{{stats.adsv}}</div>
-            <div v-if="stats.adsvMax < 0" class="caption grey--text darken-1">
+            <div class="title">{{currentProgress.downlineAdjustedPoints}}</div>
+            <div v-if="nextRankSatisfied.downlineAdjustedPoints === null || nextRankReqs.downlineAdjustedPoints === 0" class="caption grey--text darken-1">
               N/A
               <v-tooltip slot="append" left>
                   <v-icon slot="activator" small>info</v-icon>
                   <span>Not applicable for next rank</span>
               </v-tooltip>
             </div>
-            <div v-else class="caption grey--text darken-1">{{Number.parseFloat(stats.adsv / stats.adsvMax).toFixed(2) * 100}}% of {{stats.adsvMax}}</div>
+            <div v-else class="caption grey--text darken-1">{{Number.parseFloat((nextRankSatisfied.downlineAdjustedPoints ? nextRankReqs.downlineAdjustedPoints : currentProgress.downlineAdjustedPoints ) / nextRankReqs.downlineAdjustedPoints).toFixed(2) * 100}}% of {{nextRankReqs.downlineAdjustedPoints}}</div>
           </v-flex>
           <v-flex xs12 px-3>
-            <v-progress-linear  color="success" height="5" value="0"></v-progress-linear>
+            <v-progress-linear  color="success" height="5" :value="currentProgress.downlineAdjustedPoints / nextRankReqs.downlineAdjustedPoints"></v-progress-linear>
           </v-flex>
         </v-layout>
       </v-card-text>
@@ -192,6 +192,35 @@ export default {
   props: {
     stats: Object,
     statsDisabled: Boolean
+  },
+  data() {
+    return {
+      rank: null,
+      nextRankReqs: {},
+      nextRankSatisfied: {},
+      currentProgress: {}
+    }
+  },
+  methods: {
+    parseStats(stats) {
+      const { rank: { rank }, nextRank } = stats
+      const { deltas, requirements: nextRankReqs, satisfied: nextRankSatisfied } = nextRank
+
+      this.rank = rank
+      this.nextRankReqs = nextRankReqs
+      this.nextRankSatisfied = nextRankSatisfied
+      Object.keys(nextRankReqs).forEach(reqKey => {
+        this.currentProgress[reqKey] = nextRankReqs[reqKey] + deltas[reqKey]
+      })
+    }
+  },
+  watch: {
+    stats(newVal) {
+      this.parseStats(newVal)
+    }
+  },
+  mounted() {
+    this.parseStats(this.stats)
   }
 }
 </script>
