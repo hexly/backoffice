@@ -169,7 +169,6 @@ export default {
     handleHover(e, awardName) {
       let awardHoverClone = { ...this.awardHover }
       const awardAlreadyHovering = awardHoverClone.hasOwnProperty(awardName)
-      console.log({awardAlreadyHovering, awardHoverClone})
       const objKeysLength = Object.keys(awardHoverClone).length
       const { type } = e
 
@@ -279,7 +278,7 @@ export default {
 }
 .badge-hover {
   max-width: 100%;
-  transition: ease-out 700ms;
+  transition: ease-in 250ms;
 }
 .expand-enter-active {
   transition: opacity ease-out 350ms;
