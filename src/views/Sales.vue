@@ -154,7 +154,6 @@
 import DateSelector from '@/components/DateSelector.vue'
 import SEARCH_SALES_QUERY from '@/graphql/SearchSales.gql'
 import { Mutations } from '@/store'
-import * as _ from 'lodash'
 import { mapMutations, mapState } from 'vuex'
 
 const tenantId = ~~process.env.VUE_APP_TENANT_ID

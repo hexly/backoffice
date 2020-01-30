@@ -1,5 +1,29 @@
 import gql from 'graphql-tag'
 
+export const COMP_PAYOUTS_QUERY = gql`
+query compRecentEarnings {
+  compRecentEarnings{
+    earnings {
+      reason
+      payout
+      payeeMarket
+      
+      sellerId
+      seller
+      
+      integrationOid
+      tenantIntegrationId
+      awardedDate
+
+      base
+      modifier
+      peg
+      vat
+    }
+  }
+}
+`
+
 export const COMP_STATS_QUERY = gql`
   query compStatsQuery($input: CompStatsQueryInput) {
     compStatsQuery(input: $input) {
