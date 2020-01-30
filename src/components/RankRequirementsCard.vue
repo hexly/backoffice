@@ -137,15 +137,13 @@ export default {
   },
   methods: {
     parseStats(stats) {
-      if (!stats || !stats.length) {
-        return
-      }
       const { rank: { rank }, nextRank } = stats
       const { deltas, requirements: nextRankReqs, satisfied: nextRankSatisfied } = nextRank
 
       this.current = stats.rank
 
       this.rank = rank
+
       this.nextRankReqs = nextRankReqs
       this.nextRankSatisfied = nextRankSatisfied
       Object.keys(nextRankReqs).forEach(reqKey => {
