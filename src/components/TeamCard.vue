@@ -34,9 +34,9 @@
         </v-tab>
         <v-tab-item>
           <v-card class="item-container-card" flat>
-            <h4 class="text-xs-center" v-if="displayedRank">Current Rank: {{displayedRank}}</h4>
+            <!-- <h4 class="text-xs-center" v-if="displayedRank">Current Rank: {{displayedRank}}</h4>
             <v-btn
-              @click="getRank(user)"
+              @click="$emit('fetchRank')"
               class="get-rank-btn primary white--text"
               round
               small
@@ -44,7 +44,7 @@
             >
               <span v-if="!$apollo.loading">Get Rank</span>
               <v-progress-circular indeterminate v-else size="20" />
-            </v-btn>
+            </v-btn> -->
             <h4 class="text-xs-center" v-if="email">{{(email).toLowerCase()}}</h4>
             <h4 class="text-xs-center" v-if="slug">
               Store: <a target="_blank" :href="$tenantInfo.storeUrl.replace('{slug}', slug)">
