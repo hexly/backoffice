@@ -97,7 +97,15 @@
             </v-flex>
             <v-card flat>
               <v-layout justify-center row wrap class="text-xs-center">
-                <v-btn round small color="secondary white--text" @click="viewTeam()">View Team</v-btn>
+                <v-btn
+                  round
+                  small
+                  color="secondary white--text"
+                  @click="viewTeam()"
+                  :disabled="$route.hash === '#search'"
+                >
+                  View Team
+                </v-btn>
               </v-layout>
             </v-card>
           </div>
@@ -176,7 +184,7 @@ export default {
     },
     getRank (user = this.user) {
       // Query rank here
-      this.displayedRank = 4
+      // this.displayedRank = 4
     },
     handleTabChange(e) {
       if (e === 1) {

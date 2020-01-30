@@ -253,7 +253,7 @@ export default {
       login: UserActions.LOGIN
     }),
     dateSave(datePickerDate) {
-      this.editMember.birthday = this.$moment(datePickerDate).format('MM/DD/YYYY')
+      this.editMember.birthday = this.$moment(datePickerDate).format(this.birthdayFormat)
     },
     accept (value) {
       this[value] = this.$moment.utc()

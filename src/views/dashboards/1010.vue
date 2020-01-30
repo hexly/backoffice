@@ -130,9 +130,9 @@
             </v-data-table>
           </v-responsive>
         </v-card>
-      </v-flex> -->
-      <v-flex xs12 sm12 pa-2>
-        <RankRequirementsCard v-if="stats" :stats="stats" :statsDisabled ="statsDisabled" />
+      </v-flex>
+      <v-flex xs12 sm6 pa-2>
+        <RankRequirementsCard :stats="stats" :statsDisabled ="statsDisabled" />
       </v-flex>
     </v-layout>
     <Directory class="pa-2" :self="personalStats" :frontline="team" title="Your Circle of Influence" membersTypeName="Influencer"/>
