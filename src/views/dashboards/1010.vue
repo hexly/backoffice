@@ -105,7 +105,7 @@
       </v-flex>
     </v-layout>
     <v-layout row wrap>
-      <v-flex xs12 sm6 pa-2>
+      <!-- <v-flex xs12 sm6 pa-2>
         <v-card id="recent-sales-card">
           <v-toolbar color="secondary" dark>
             <v-toolbar-title>Recent Sales</v-toolbar-title>
@@ -130,8 +130,8 @@
             </v-data-table>
           </v-responsive>
         </v-card>
-      </v-flex>
-      <v-flex xs12 sm6 pa-2>
+      </v-flex> -->
+      <v-flex xs12 sm12 pa-2>
         <RankRequirementsCard v-if="stats" :stats="stats" :statsDisabled ="statsDisabled" />
       </v-flex>
     </v-layout>
