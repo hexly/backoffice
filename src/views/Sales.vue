@@ -154,7 +154,7 @@
 import DateSelector from '@/components/DateSelector.vue'
 import SEARCH_SALES_QUERY from '@/graphql/SearchSales.gql'
 import { Mutations } from '@/store'
-import { map } from 'ramda'
+import * as _ from 'lodash'
 import { mapMutations, mapState } from 'vuex'
 
 const tenantId = ~~process.env.VUE_APP_TENANT_ID
@@ -250,13 +250,11 @@ export default {
       loading: state => state.loading
     }),
     items() {
-      return map(sale => {
-        return {
-          ...sale,
-          id: sale.saleId,
-          date: this.$moment(sale.awardedDate, 'YYYY-MM-DD').format('MM/DD/YYYY')
-        }
-      }, this.sales)
+      return (this.sales || []).map(sale => ({
+        ...sale,
+        id: sale.saleId,
+        date: this.$moment(sale.awardedDate, 'YYYY-MM-DD').format('MM/DD/YYYY')
+      }))
     }
   }
 }

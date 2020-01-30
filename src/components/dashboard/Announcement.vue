@@ -13,6 +13,8 @@
 <script>
 import { GET_RECENT_POST } from '@/graphql/wordpress/Posts.gql'
 
+import * as _ from 'lodash'
+
 export default {
   name: 'Announcement',
   data() {
@@ -39,7 +41,10 @@ export default {
         const { posts: { edges } } = data
         return edges[0].node
       },
-      client: 'wordpress'
+      client: 'wordpress',
+      skip: function() {
+        return _.get(this, '$apolloProvider.clients')
+      }
     }
   }
 }

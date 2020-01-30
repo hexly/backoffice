@@ -5,7 +5,7 @@
         <v-toolbar-title>Rank Requirements</v-toolbar-title>
         <v-spacer></v-spacer>
         <v-toolbar-items>
-          <v-tooltip class="rank-tooltip" slot="append" left>
+          <!-- <v-tooltip class="rank-tooltip" slot="append" left>
             <v-btn
               slot   ="activator"
               @click ="handleRefreshClick"
@@ -16,172 +16,54 @@
               <v-icon>refresh</v-icon>
             </v-btn>
             <span>{{'Stats refreshed ' + $moment(lastRefreshed).fromNow()}}</span>
-          </v-tooltip>
+          </v-tooltip> -->
         </v-toolbar-items>
       </v-toolbar>
       <v-card-text v-if="Object.keys(stats).length && !statsDisabled && !$apollo.loading" class="pa-3">
         <v-layout row justify-space-between pb-4>
           <v-flex px-3>
-            <div class="title">Rank</div>
+            <div v-if="!rank" class="title">Unranked</div>
+            <div v-else class="title">Rank {{rank}}</div>
+            <div class="caption grey--text darken-1"> Current Rank </div>
           </v-flex>
           <v-spacer></v-spacer>
-          <v-flex px-3 text-xs-right>
-            <div class="title">Rank {{rank}}</div>
+          <v-flex px-3 text-xs-right v-if="next && next.rank">
+            <div class="title">Rank {{next.rank.rank}}</div>
+            <div class="caption grey--text darken-1"> Next Rank </div>
           </v-flex>
         </v-layout>
-        <v-layout row justify-space-between wrap>
-          <v-flex px-3>
-            <div :class="(nextRankSatisfied.personalTotalPoints === null ? 'grey--text' : '') + ' title'">PSV<v-icon color="green" v-if="nextRankSatisfied.personalTotalPoints">check_circle</v-icon></div>
-            <div class="caption grey--text darken-1">Personal Sales Volume</div>
-          </v-flex>
-          <v-spacer></v-spacer>
-          <v-flex px-3 text-xs-right>
-            <div class="title">{{currentProgress.personalTotalPoints}}</div>
-            <div v-if="nextRankSatisfied.personalTotalPoints === null" class="caption grey--text darken-1">
-              N/A
-              <v-tooltip slot="append" left>
-                  <v-icon slot="activator" small>info</v-icon>
-                  <span>Not applicable for next rank</span>
-              </v-tooltip>
-            </div>
-            <div v-else class="caption grey--text darken-1">{{Number.parseFloat((nextRankSatisfied.personalTotalPoints ? nextRankReqs.personalTotalPoints : currentProgress.personalTotalPoints ) / nextRankReqs.personalTotalPoints).toFixed(2) * 100}}% of {{nextRankReqs.personalTotalPoints}}</div>
-          </v-flex>
-          <v-flex xs12 px-3>
-            <v-progress-linear :color="nextRankSatisfied.downlinePoints === null ? 'grey' : 'success'" height="5" :value="(currentProgress.personalTotalPoints / nextRankReqs.personalTotalPoints) * 100"></v-progress-linear>
-          </v-flex>
-        </v-layout>
-        <v-layout row justify-space-between wrap>
-          <v-flex px-3>
-            <div :class="(nextRankSatisfied.lifetimeTotalPoints === null ? 'grey--text' : '') + ' title'">CPSV<v-icon color="green" v-if="nextRankSatisfied.lifetimeTotalPoints">check_circle</v-icon></div>
-            <div class="caption grey--text darken-1">Career PSV</div>
-          </v-flex>
-          <v-spacer></v-spacer>
-          <v-flex px-3 text-xs-right>
-            <div class="title">{{currentProgress.lifetimeTotalPoints}}</div>
-            <div v-if="nextRankSatisfied.lifetimeTotalPoints === null" class="caption grey--text darken-1">
-              N/A
-              <v-tooltip slot="append" left>
-                  <v-icon slot="activator" small>info</v-icon>
-                  <span>Not applicable for next rank</span>
-              </v-tooltip>
-            </div>
-            <div v-else class="caption grey--text darken-1">{{Number.parseFloat((nextRankSatisfied.lifetimeTotalPoints ? nextRankReqs.lifetimeTotalPoints : currentProgress.lifetimeTotalPoints ) / nextRankReqs.lifetimeTotalPoints).toFixed(2) * 100}}% of {{nextRankReqs.lifetimeTotalPoints}}</div>
-          </v-flex>
-          <v-flex xs12 px-3>
-            <v-progress-linear :color="nextRankSatisfied.lifetimeTotalPoints === null ? 'grey' : 'success'" height="5" :value="(currentProgress.lifetimeTotalPoints / nextRankReqs.lifetimeTotalPoints) * 100"></v-progress-linear>
-          </v-flex>
-        </v-layout>
-        <v-layout row justify-space-between wrap>
-          <v-flex px-3>
-            <div :class="(nextRankSatisfied.groupPoints === null ? 'grey--text' : '') + ' title'">GSV<v-icon color="green" v-if="nextRankSatisfied.groupPoints">check_circle</v-icon></div>
-            <div class="caption grey--text darken-1">Group Sales Volume</div>
-          </v-flex>
-          <v-spacer></v-spacer>
-          <v-flex px-3 text-xs-right>
-            <div class="title">{{currentProgress.groupPoints}}</div>
-            <div v-if="nextRankSatisfied.groupPoints === null" class="caption grey--text darken-1">
-              N/A
-              <v-tooltip slot="append" left>
-                  <v-icon slot="activator" small>info</v-icon>
-                  <span>Not applicable for next rank</span>
-              </v-tooltip>
-            </div>
-            <div v-else class="caption grey--text darken-1">{{Number.parseFloat((nextRankSatisfied.groupPoints ? nextRankReqs.groupPoints : currentProgress.groupPoints ) / nextRankReqs.groupPoints).toFixed(2) * 100}}% of {{nextRankReqs.groupPoints}}</div>
-          </v-flex>
-          <v-flex xs12 px-3>
-            <v-progress-linear :color="nextRankSatisfied.groupPoints === null ? 'grey' : 'success'" height="5" :value="(currentProgress.groupPoints / nextRankReqs.groupPoints) * 100"></v-progress-linear>
-          </v-flex>
-        </v-layout>
-        <v-layout row justify-space-between wrap>
-          <v-flex px-3>
-            <div class="title">AL<v-icon color="green" v-if="nextRankSatisfied.activeLeg">check_circle</v-icon></div>
-            <div class="caption grey--text darken-1">Active Legs</div>
-          </v-flex>
-          <v-spacer></v-spacer>
-          <v-flex px-3 text-xs-right>
-            <div class="title">{{currentProgress.activeLeg}}</div>
-            <div v-if="nextRankSatisfied.activeLeg === null" class="caption grey--text darken-1">
-              N/A
-              <v-tooltip slot="append" left>
-                  <v-icon slot="activator" small>info</v-icon>
-                  <span>Not applicable for next rank</span>
-              </v-tooltip>
-            </div>
-            <div v-else class="caption grey--text darken-1">{{Number.parseFloat((nextRankSatisfied.activeLeg ? nextRankReqs.activeLeg : currentProgress.activeLeg ) / nextRankReqs.activeLeg).toFixed(2) * 100}}% of {{nextRankReqs.activeLeg}}</div>
-          </v-flex>
-          <v-flex xs12 px-3>
-            <v-progress-linear :color="nextRankSatisfied.activeLeg === null ? 'grey' : 'success'" height="5" :value="(currentProgress.activeLeg / nextRankReqs.activeLeg) * 100"></v-progress-linear>
-          </v-flex>
-        </v-layout>
-        <!-- <v-layout row justify-space-between wrap>
-          <v-flex px-3>
-            <div class="title">PABQL</div>
-            <div class="caption grey--text darken-1">Paid-As Bonus Qualified Legs</div>
-          </v-flex>
-          <v-spacer></v-spacer>
-          <v-flex px-3 text-xs-right>
-            <div class="title">{{stats.pabql}}</div>
-            <div v-if="stats.pabqlMax < 0" class="caption grey--text darken-1">
-              N/A
-              <v-tooltip slot="append" left>
-                  <v-icon slot="activator" small>info</v-icon>
-                  <span>Not applicable for next rank</span>
-              </v-tooltip>
-            </div>
-            <div v-else class="caption grey--text darken-1">{{Number.parseFloat(stats.pabql / stats.pabqlMax).toFixed(2) * 100}}% of {{stats.pabqlMax}}</div>
-          </v-flex>
-          <v-flex xs12 px-3>
-            <v-progress-linear  color="success" height="5" value="0"></v-progress-linear>
-          </v-flex>
-        </v-layout> -->
-        <v-layout row justify-space-between wrap>
-          <v-flex px-3>
-            <div :class="(nextRankSatisfied.downlinePoints === null ? 'grey--text' : '') + ' title'">DSV<v-icon color="green" v-if="nextRankSatisfied.downlinePoints">check_circle</v-icon></div>
-            <div class="caption grey--text darken-1">Downline Sales Volume</div>
-          </v-flex>
-          <v-spacer></v-spacer>
-          <v-flex px-3 text-xs-right>
-            <div class="title">{{currentProgress.downlinePoints}}</div>
-            <div v-if="true || nextRankSatisfied.downlinePoints === null" class="caption grey--text darken-1">
-              N/A
-              <v-tooltip slot="append" left>
-                  <v-icon slot="activator" small>info</v-icon>
-                  <span>Not applicable for next rank</span>
-              </v-tooltip>
-            </div>
-            <div v-else class="caption grey--text darken-1">{{Number.parseFloat((nextRankSatisfied.downlinePoints ? nextRankReqs.downlinePoints : currentProgress.downlinePoints ) / nextRankReqs.downlinePoints).toFixed(2) * 100}}% of {{nextRankReqs.downlinePoints}}</div>
-          </v-flex>
-          <v-flex xs12 px-3>
-            <v-progress-linear :color="nextRankSatisfied.downlinePoints === null ? 'grey' : 'success'" height="5" :value="currentProgress.downlinePoints / nextRankReqs.downlinePoints * 100"></v-progress-linear>
-          </v-flex>
-        </v-layout>
-        <!-- <v-layout row justify-space-between wrap>
-          <v-flex px-3>
-            <div class="title">ADSV<v-icon color="green" v-if="nextRankSatisfied.downlineAdjustedPoints">check_circle</v-icon></div>
-            <div class="caption grey--text darken-1">
-              Adjusted Downline Sales Volume
-              <v-tooltip slot="append" right>
-                  <v-icon slot="activator" small>help</v-icon>
-                  <span>Maximum 60% DSV from any one leg</span>
-              </v-tooltip>
-            </div>
-          </v-flex>
-          <v-spacer></v-spacer>
-          <v-flex px-3 text-xs-right>
-            <div class="title">{{currentProgress.downlineAdjustedPoints}}</div>
-            <div v-if="nextRankSatisfied.downlineAdjustedPoints === null || nextRankReqs.downlineAdjustedPoints === 0" class="caption grey--text darken-1">
-              N/A
-              <v-tooltip slot="append" left>
-                  <v-icon slot="activator" small>info</v-icon>
-                  <span>Not applicable for next rank</span>
-              </v-tooltip>
-            </div>
-            <div v-else class="caption grey--text darken-1">{{Number.parseFloat((nextRankSatisfied.downlineAdjustedPoints ? nextRankReqs.downlineAdjustedPoints : currentProgress.downlineAdjustedPoints ) / nextRankReqs.downlineAdjustedPoints).toFixed(2) * 100}}% of {{nextRankReqs.downlineAdjustedPoints}}</div>
-          </v-flex>
-          <v-flex xs12 px-3>
-            <v-progress-linear  color="success" height="5" :value="currentProgress.downlineAdjustedPoints / nextRankReqs.downlineAdjustedPoints"></v-progress-linear>
-          </v-flex>
-        </v-layout> -->
+
+        <template v-if="next && next.properties">
+          <v-layout row justify-space-between wrap v-for="stat in next.properties" :key="stat.property">
+            <v-flex px-3>
+              <div :class="( stat.necessary  ? '' : 'grey--text') + ' title'">
+                {{stat.title}}
+                <v-icon color="green" v-if="stat.satisfied && stat.necessary">check_circle</v-icon>
+              </div>
+              <div class="caption grey--text darken-1"> {{stat.description}} </div>
+            </v-flex>
+            <v-spacer></v-spacer>
+            <v-flex px-3 text-xs-right>
+              <div class="title">{{stat.property}}</div>
+              <div v-if="stat.necessary" class="caption grey--text darken-1">
+                {{Math.round(stat.percentage)}}% <br>
+                {{Math.round(stat.value)}} of {{Math.round(stat.required)}}
+              </div>
+              <div v-else class="caption grey--text darken-1">
+                N/A <br>
+                {{ Math.round(stat.value)}}
+                <v-tooltip slot="append" left>
+                    <v-icon slot="activator" small>info</v-icon>
+                    <span>Not applicable for next rank</span>
+                </v-tooltip>
+              </div>
+            </v-flex>
+            <v-flex xs12 px-3>
+              <v-progress-linear :color="stat.necessary ? 'success' : 'grey' " height="5" :value="stat.percentage"></v-progress-linear>
+            </v-flex>
+          </v-layout>
+        </template>
+
       </v-card-text>
       <v-card-text v-else-if="!statsDisabled && !$apollo.loading" class="pa-3">
         <v-layout row justify-space-between pb-4>
@@ -209,30 +91,56 @@
 </template>
 
 <script>
-import { COMP_STATS_QUERY } from '@/graphql/CompStats.gql'
+// import { COMP_STATS_QUERY } from '@/graphql/CompStats.gql'
 
-import _ from 'lodash'
+// import _ from 'lodash'
 
 export default {
   name: 'RankRequirementsCard',
   props: {
+    stats: Object,
     statsDisabled: Boolean
   },
   data() {
     return {
       rank: null,
+      current: null,
       nextRankReqs: {},
       nextRankSatisfied: {},
       currentProgress: {},
       year: ~~this.$moment().format('Y'),
       month: ~~this.$moment().format('M'),
-      lastRefreshed: null
+      lastRefreshed: null,
+      statMapping: {
+        personalTotalPoints: {
+          title: 'PSV',
+          description: 'Personal Sales Volume'
+        },
+        lifetimeTotalPoints: {
+          title: 'CPSV',
+          description: 'Career Personal Sales Volume'
+        },
+        groupPoints: {
+          title: 'GSV',
+          description: 'Group Sales Volume'
+        },
+        activeLeg: {
+          title: 'Active Legs',
+          description: 'Active Legs'
+        },
+        downlinePoints: {
+          title: 'DSV',
+          description: 'Downline Sales volume'
+        }
+      }
     }
   },
   methods: {
     parseStats(stats) {
       const { rank: { rank }, nextRank } = stats
       const { deltas, requirements: nextRankReqs, satisfied: nextRankSatisfied } = nextRank
+
+      this.current = stats.rank
 
       this.rank = rank
       this.nextRankReqs = nextRankReqs
@@ -245,24 +153,64 @@ export default {
       this.$apollo.queries.stats.refetch()
     }
   },
-  apollo: {
-    stats: {
-      query: COMP_STATS_QUERY,
-      variables() {
-        return {
-          input: {
-            year: this.year,
-            month: this.month,
-            membersIn: [1]
-          }
-        }
-      },
-      update(data) {
-        const result = _.get(data, 'compStatsQuery.results[0]')
+  // apollo: {
+  //   stats: {
+  //     query: COMP_STATS_QUERY,
+  //     variables() {
+  //       return {
+  //         input: {
+  //           year: this.year,
+  //           month: this.month,
+  //           membersIn: [1]
+  //         }
+  //       }
+  //     },
+  //     update(data) {
+  //       // debugger
+  //       const result = _.get(data, 'compStatsQuery.results[0]')
 
-        this.lastRefreshed = this.$moment().format()
+  //       this.lastRefreshed = this.$moment().format()
 
-        return result
+  //       return result
+  //     }
+  //   }
+  // },
+  mounted() {
+    this.parseStats(this.stats)
+  },
+  computed: {
+    next() {
+      if (!this.stats || !this.stats.nextRank) {
+        return null
+      }
+      let { deltas: d, requirements: req, satisfied: sat } = this.stats.nextRank
+
+      const properties = Object.keys(this.statMapping)
+        .reduce((carry, property) => {
+          const satisfied = sat[property]
+          const required = req[property]
+          const delta = d[property]
+          const missing = satisfied ? required : delta
+          const value = required + delta
+          const necessary = [null, 0].indexOf(required) < 1
+          const { title, description } = this.statMapping[property]
+          carry.push({
+            title,
+            description,
+            value,
+            missing,
+            satisfied,
+            required,
+            delta,
+            necessary,
+            percentage: Math.round(100 * (satisfied ? 1 : value / required))
+          })
+          return carry
+        }, [])
+
+      return {
+        rank: this.stats.nextRank,
+        properties
       }
     }
   },

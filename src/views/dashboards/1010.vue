@@ -110,7 +110,7 @@
           <v-toolbar color="secondary" dark>
             <v-toolbar-title>Recent Sales</v-toolbar-title>
           </v-toolbar>
-          <v-card-media>
+          <v-responsive>
             <v-data-table
               :headers ="dataTableHeaders"
               :items   ="dataTableItems"
@@ -128,13 +128,11 @@
                 </tr>
               </template>
             </v-data-table>
-          </v-card-media>
+          </v-responsive>
         </v-card>
       </v-flex>
       <v-flex xs12 sm6 pa-2>
-        <RankRequirementsCard
-          :statsDisabled ="statsDisabled"
-        />
+        <RankRequirementsCard v-if="stats" :stats="stats" :statsDisabled ="statsDisabled" />
       </v-flex>
     </v-layout>
     <Directory class="pa-2" :self="personalStats" :frontline="team" title="Your Circle of Influence" membersTypeName="Influencer"/>
@@ -143,6 +141,9 @@
 </template>
 
 <script>
+
+import * as _ from 'lodash'
+
 import Social from '@/components/profile/Social.vue'
 import PersonalCard from '@/components/dashboard/PersonalCard.vue'
 import Directory from '@/components/dashboard/Directory.vue'
@@ -152,6 +153,7 @@ import Announcement from '@/components/dashboard/Announcement.vue'
 import Badges from '@/components/Badges.vue'
 import RankRequirementsCard from '@/components/RankRequirementsCard.vue'
 
+import { COMP_STATS_QUERY } from '@/graphql/CompStats.gql'
 import { MEMBER_STATS_BY_DEPTH, MAX_MRN, TEAM_SIZE_BY_GENERATION } from '@/graphql/MemberStats.gql'
 import { mapMutations, mapState, mapGetters } from 'vuex'
 import { UserMutations } from '@/stores/UserStore'
@@ -173,6 +175,8 @@ export default {
   },
   data() {
     return {
+      stats: null,
+      year: ~~this.$moment().format('Y'),
       personalStats: {
         counts: {
           total: 0,
@@ -211,89 +215,6 @@ export default {
           points: '120'
         }
       ],
-      rankRequirementsStats: {
-        'memberId': 15,
-        'rank': {
-          'rank': 3,
-          'achieved': true,
-          'satisfied': {
-            'activeLeg': true,
-            'genOption1Rank': null,
-            'genOption1Value': true,
-            'genOption2Rank': null,
-            'genOption2Value': true,
-            'personalTotalPoints': true,
-            'lifetimeTotalPoints': true,
-            'groupPoints': true,
-            'downlinePoints': true,
-            'downlineAdjustedPoints': true
-          },
-          'deltas': {
-            'activeLeg': 1,
-            'genOption1Rank': null,
-            'genOption1Value': 0,
-            'genOption2Rank': null,
-            'genOption2Value': 0,
-            'personalTotalPoints': 16265.37703,
-            'lifetimeTotalPoints': 15815.37703,
-            'groupPoints': 72856.70018,
-            'downlinePoints': 41841.32315,
-            'downlineAdjustedPoints': 56841.32315
-          },
-          'requirements': {
-            'activeLeg': 2,
-            'genOption1Rank': null,
-            'genOption1Value': 0,
-            'genOption2Rank': null,
-            'genOption2Value': 0,
-            'personalTotalPoints': 50,
-            'lifetimeTotalPoints': 500,
-            'groupPoints': 300,
-            'downlinePoints': 15000,
-            'downlineAdjustedPoints': 0
-          }
-        },
-        'nextRank': {
-          'rank': 4,
-          'achieved': false,
-          'satisfied': {
-            'activeLeg': false,
-            'genOption1Rank': null,
-            'genOption1Value': true,
-            'genOption2Rank': null,
-            'genOption2Value': true,
-            'personalTotalPoints': true,
-            'lifetimeTotalPoints': true,
-            'groupPoints': true,
-            'downlinePoints': true,
-            'downlineAdjustedPoints': true
-          },
-          'deltas': {
-            'activeLeg': -1,
-            'genOption1Rank': null,
-            'genOption1Value': 0,
-            'genOption2Rank': null,
-            'genOption2Value': 0,
-            'personalTotalPoints': 16215.37703,
-            'lifetimeTotalPoints': 15815.37703,
-            'groupPoints': 72156.70018,
-            'downlinePoints': 41841.32315,
-            'downlineAdjustedPoints': 56841.32315
-          },
-          'requirements': {
-            'activeLeg': 4,
-            'genOption1Rank': null,
-            'genOption1Value': 0,
-            'genOption2Rank': null,
-            'genOption2Value': 0,
-            'personalTotalPoints': 100,
-            'lifetimeTotalPoints': 500,
-            'groupPoints': 1000,
-            'downlinePoints': 15000,
-            'downlineAdjustedPoints': 0
-          }
-        }
-      },
       memberCount: 0,
       team: [],
       generationCount: {},
@@ -319,12 +240,39 @@ export default {
     ])
   },
   computed: {
+    month() {
+      let month = ~~this.$moment().format('M')
+      if (this.year === 2020) {
+        month = Math.max(month, 2)
+      }
+      return month
+    },
+    memberId() {
+      return _.get(this, 'user.memberId')
+    },
     ...mapState({
       user: state => state.user
     }),
     ...mapGetters(['contactId', 'memberId', 'member', 'slug', 'tenantIntegrations'])
   },
   apollo: {
+    stats: {
+      query: COMP_STATS_QUERY,
+      variables() {
+        return {
+          input: {
+            year: this.year,
+            month: this.month,
+            membersIn: [this.memberId]
+          }
+        }
+      },
+      update(data) {
+        const result = _.get(data, 'compStatsQuery.results[0]')
+        this.lastRefreshed = this.$moment().format()
+        return result
+      }
+    },
     team: {
       query: MEMBER_STATS_BY_DEPTH,
       variables () {
