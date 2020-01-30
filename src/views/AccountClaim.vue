@@ -199,7 +199,8 @@ export default {
       this.loading = false
     } catch (err) {
       console.error('ERROR getting token', err)
-      this.$router.push('/login')
+      this.loading = false
+      // this.$router.push('/login')
     }
   },
   apollo: {
@@ -253,7 +254,7 @@ export default {
       login: UserActions.LOGIN
     }),
     dateSave(datePickerDate) {
-      this.editMember.birthday = this.$moment(datePickerDate).format('MM/DD/YYYY')
+      this.editMember.birthday = this.$moment(datePickerDate).format(this.birthdayFormat)
     },
     accept (value) {
       this[value] = this.$moment.utc()
