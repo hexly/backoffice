@@ -37,9 +37,9 @@ export default new Router({
     {
       path: '/account/claim/:token',
       name: 'account-claim',
-      component: AccountClaim
-      // beforeEnter: (_, __, next) =>
-      // store.state.user.jwt ? next('/dashboard') : next()
+      component: AccountClaim,
+      beforeEnter: (_, __, next) =>
+        store.state.user.jwt ? next('/dashboard') : next()
     },
     {
       path: '/account/reset/:token/:email',
