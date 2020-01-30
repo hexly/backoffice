@@ -199,8 +199,7 @@ export default {
       this.loading = false
     } catch (err) {
       console.error('ERROR getting token', err)
-      this.loading = false
-      // this.$router.push('/login')
+      this.$router.push('/login')
     }
   },
   apollo: {
