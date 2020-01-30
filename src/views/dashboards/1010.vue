@@ -190,30 +190,30 @@ export default {
         { text: 'Points', value: 'points', sortable: false }
       ],
       dataTableItems: [
-        {
-          name: 'Jon Doe',
-          date: '12/03/2019',
-          amount: '$132.87',
-          points: '120'
-        },
-        {
-          name: 'Jon Doe',
-          date: '12/03/2019',
-          amount: '$132.87',
-          points: '120'
-        },
-        {
-          name: 'Jon Doe',
-          date: '12/03/2019',
-          amount: '$132.87',
-          points: '120'
-        },
-        {
-          name: 'Jon Doe',
-          date: '12/03/2019',
-          amount: '$132.87',
-          points: '120'
-        }
+        // {
+        //   name: 'Jon Doe',
+        //   date: '12/03/2019',
+        //   amount: '$132.87',
+        //   points: '120'
+        // },
+        // {
+        //   name: 'Jon Doe',
+        //   date: '12/03/2019',
+        //   amount: '$132.87',
+        //   points: '120'
+        // },
+        // {
+        //   name: 'Jon Doe',
+        //   date: '12/03/2019',
+        //   amount: '$132.87',
+        //   points: '120'
+        // },
+        // {
+        //   name: 'Jon Doe',
+        //   date: '12/03/2019',
+        //   amount: '$132.87',
+        //   points: '120'
+        // }
       ],
       memberCount: 0,
       team: [],
