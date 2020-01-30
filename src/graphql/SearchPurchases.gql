@@ -1,0 +1,49 @@
+query orderSearch($input:PurchaseSearchOrderInput!){
+  purchaseSearchOrders(input:$input){
+    id
+    customerId
+    type
+    total
+    currency
+    totalTax
+    shippingTotal
+    metadata
+    discountTotal
+    customer{
+      displayName
+      email
+    }
+    lines {
+      itemPrice
+      compStats
+      name
+      quantity
+      metadata
+    }
+  }
+}
+
+query recentOrders($input:PurchaseRecentOrderInput!){
+  purchaseRecentOrders(input:$input){
+    id
+    customerId
+    type
+    total
+    currency
+    totalTax
+    shippingTotal
+    metadata
+    discountTotal
+    customer{
+      displayName
+      email
+    }
+    lines {
+      itemPrice
+      compStats
+      name
+      quantity
+      metadata
+    }
+  }
+}

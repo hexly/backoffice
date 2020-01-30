@@ -39,6 +39,9 @@
           </template>
         </v-layout>
       </div>
+      <div class="loading-container" v-else>
+        <v-progress-circular indeterminate/>
+      </div>
     </div>
   </div>
 </template>
@@ -176,6 +179,9 @@ export default {
           }
         }
       },
+      watchLoading(isLoading, countModifier) {
+        // this.setLoading(isLoading || this.$apollo.loading)
+      },
       loadingKey: 'loading',
       debounce: 500
     },
@@ -210,7 +216,7 @@ export default {
       },
       fetchPolicy: 'cache-and-network',
       watchLoading(isLoading, countModifier) {
-        this.setLoading(isLoading)
+        // this.setLoading(isLoading || this.$apollo.loading)
       }
     }
   },
@@ -228,6 +234,9 @@ export default {
       const { results } = this
 
       this.hashResultsTeam(results, newVal)
+    },
+    '$apollo.loading' (newVal) {
+      this.setLoading(newVal)
     }
   }
 }
@@ -238,5 +247,9 @@ export default {
   max-width: 1440px;
   margin: auto;
   padding: 0 25px;
+}
+.loading-container {
+  display: flex;
+  justify-content: center;
 }
 </style>

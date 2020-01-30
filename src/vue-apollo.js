@@ -26,7 +26,7 @@ const apolloProviderOptions = {
     hexly: apolloHexlyClient
   },
   errorHandler (err) {
-    console.log('ERRORLLLLLLLL:::', err)
+    console.log('GraphQL error handler', err)
     if (err.message.toString().indexOf(NETWORK_ERROR) > -1) {
       // localStorage.clear()
       // window.location = '/'
