@@ -34,6 +34,17 @@
         </v-tab>
         <v-tab-item>
           <v-card class="item-container-card" flat>
+            <h4 class="text-xs-center" v-if="displayedRank">Current Rank: {{displayedRank}}</h4>
+            <v-btn
+              @click="getRank(user)"
+              class="get-rank-btn primary white--text"
+              round
+              small
+              v-else
+            >
+              <span v-if="!$apollo.loading">Get Rank</span>
+              <v-progress-circular indeterminate v-else size="20" />
+            </v-btn>
             <h4 class="text-xs-center" v-if="email">{{(email).toLowerCase()}}</h4>
             <h4 class="text-xs-center" v-if="slug">
               Store: <a target="_blank" :href="$tenantInfo.storeUrl.replace('{slug}', slug)">
@@ -86,7 +97,7 @@
             </v-flex>
             <v-card flat>
               <v-layout justify-center row wrap class="text-xs-center">
-                <v-btn flat color="secondary" @click="viewTeam()">View Team</v-btn>
+                <v-btn round small color="secondary white--text" @click="viewTeam()">View Team</v-btn>
               </v-layout>
             </v-card>
           </div>
@@ -130,6 +141,7 @@ export default {
   name: 'TeamCard',
   data() {
     return {
+      displayedRank: null,
       show: false,
       awardHover: {},
       skipTeamQuery: true,
@@ -152,7 +164,8 @@ export default {
     actions: Boolean,
     stats: Object,
     loading: Boolean,
-    noData: String
+    noData: String,
+    rank: Number
   },
   methods: {
     formatDate (value) {
@@ -160,6 +173,10 @@ export default {
     },
     viewTeam (user = this.user) {
       this.$emit('viewTeam', user)
+    },
+    getRank (user = this.user) {
+      // Query rank here
+      this.displayedRank = 4
     },
     handleTabChange(e) {
       if (e === 1) {
@@ -183,6 +200,10 @@ export default {
 
       case 'mouseleave' || 'mouseout':
         if (!awardAlreadyHovering) {
+          break
+        }
+        if (awardHoverClone[awardName] === false) {
+          this.awardHover = {}
           break
         }
         awardHoverClone[awardName] = false
@@ -225,6 +246,9 @@ export default {
       return this.user.id
     }
   },
+  mounted() {
+    this.displayedRank = this.rank
+  },
   apollo: {
     counts: {
       query: TEAM_SIZE_BY_GENERATION,
@@ -265,7 +289,7 @@ export default {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-evenly;
-  min-height: 157px;
+  min-height: 215px;
   align-items: center;
 }
 .badge {
@@ -274,7 +298,7 @@ export default {
 }
 .badge-hover {
   max-width: 100%;
-  transition: ease-out 700ms;
+  transition: ease-in 250ms;
 }
 .expand-enter-active {
   transition: opacity ease-out 350ms;
@@ -286,7 +310,7 @@ export default {
   transition: ease-out 350ms;
 }
 .item-container-card {
-  min-height: 157px;
+  min-height: 215px;
   display: flex;
   flex-direction: column;
   justify-content: space-evenly;
@@ -314,5 +338,8 @@ export default {
   transform: scale(1) translateY(-5px);
   z-index: 1;
   transition: 300ms cubic-bezier(0.075, 0.82, 0.165, 1);
+}
+.get-rank-btn {
+  align-self: center;
 }
 </style>

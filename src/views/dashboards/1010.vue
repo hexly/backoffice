@@ -7,8 +7,8 @@
     </v-layout>
     <v-layout row wrap>
       <v-flex xs12 md6>
-        <v-layout column>
-          <v-flex  class="pa-2">
+        <v-layout id="personal-card-layout" column>
+          <v-flex class="pa-2">
             <PersonalCard memberName="Your Influencer Number:">
               <div slot="footer">
                 <Badges :memberId="member.id"/>
@@ -106,11 +106,11 @@
     </v-layout>
     <v-layout row wrap>
       <v-flex xs12 sm6 pa-2>
-        <!-- <v-card id="recent-sales-card">
+        <v-card id="recent-sales-card">
           <v-toolbar color="secondary" dark>
             <v-toolbar-title>Recent Sales</v-toolbar-title>
           </v-toolbar>
-          <v-card-media>
+          <v-responsive>
             <v-data-table
               :headers ="dataTableHeaders"
               :items   ="dataTableItems"
@@ -128,13 +128,11 @@
                 </tr>
               </template>
             </v-data-table>
-          </v-card-media>
-        </v-card> -->
+          </v-responsive>
+        </v-card>
       </v-flex>
       <v-flex xs12 sm6 pa-2>
-        <RankRequirementsCard
-          :stats="rankRequirementsStats"
-        />
+        <RankRequirementsCard v-if="stats" :stats="stats" :statsDisabled ="statsDisabled" />
       </v-flex>
     </v-layout>
     <Directory class="pa-2" :self="personalStats" :frontline="team" title="Your Circle of Influence" membersTypeName="Influencer"/>
@@ -143,6 +141,9 @@
 </template>
 
 <script>
+
+import * as _ from 'lodash'
+
 import Social from '@/components/profile/Social.vue'
 import PersonalCard from '@/components/dashboard/PersonalCard.vue'
 import Directory from '@/components/dashboard/Directory.vue'
@@ -152,6 +153,7 @@ import Announcement from '@/components/dashboard/Announcement.vue'
 import Badges from '@/components/Badges.vue'
 import RankRequirementsCard from '@/components/RankRequirementsCard.vue'
 
+import { COMP_STATS_QUERY } from '@/graphql/CompStats.gql'
 import { MEMBER_STATS_BY_DEPTH, MAX_MRN, TEAM_SIZE_BY_GENERATION } from '@/graphql/MemberStats.gql'
 import { mapMutations, mapState, mapGetters } from 'vuex'
 import { UserMutations } from '@/stores/UserStore'
@@ -173,6 +175,8 @@ export default {
   },
   data() {
     return {
+      stats: null,
+      year: ~~this.$moment().format('Y'),
       personalStats: {
         counts: {
           total: 0,
@@ -211,29 +215,13 @@ export default {
           points: '120'
         }
       ],
-      rankRequirementsStats: {
-        rank: 0,
-        psv: 0,
-        psvMax: 50,
-        cpsv: 0,
-        cpsvMax: -1,
-        gsv: 0,
-        gsvMax: -1,
-        al: 0,
-        alMax: -1,
-        pabql: 0,
-        pabqlMax: -1,
-        dsv: 0,
-        dsvMax: -1,
-        adsv: 0,
-        adsvMax: -1
-      },
       memberCount: 0,
       team: [],
       generationCount: {},
       loadingStats: 0,
       loadingCount: 0,
-      generationCountLoading: 0
+      generationCountLoading: 0,
+      statsDisabled: false
     }
   },
   async mounted() {
@@ -252,12 +240,39 @@ export default {
     ])
   },
   computed: {
+    month() {
+      let month = ~~this.$moment().format('M')
+      if (this.year === 2020) {
+        month = Math.max(month, 2)
+      }
+      return month
+    },
+    memberId() {
+      return _.get(this, 'user.memberId')
+    },
     ...mapState({
       user: state => state.user
     }),
     ...mapGetters(['contactId', 'memberId', 'member', 'slug', 'tenantIntegrations'])
   },
   apollo: {
+    stats: {
+      query: COMP_STATS_QUERY,
+      variables() {
+        return {
+          input: {
+            year: this.year,
+            month: this.month,
+            membersIn: [this.memberId]
+          }
+        }
+      },
+      update(data) {
+        const result = _.get(data, 'compStatsQuery.results[0]')
+        this.lastRefreshed = this.$moment().format()
+        return result
+      }
+    },
     team: {
       query: MEMBER_STATS_BY_DEPTH,
       variables () {
@@ -342,6 +357,9 @@ section .stat {
   padding: 5px 0;
 }
 #recent-sales-card {
+  height: 100%;
+}
+#personal-card-layout {
   height: 100%;
 }
 </style>
