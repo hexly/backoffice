@@ -19,7 +19,7 @@
           </v-tooltip> -->
         </v-toolbar-items>
       </v-toolbar>
-      <v-card-text v-if="Object.keys(stats).length && !statsDisabled && !$apollo.loading" class="pa-3">
+      <v-card-text v-if="stats && Object.keys(stats).length && !statsDisabled && !$apollo.loading" class="pa-3">
         <v-layout row justify-space-between pb-4>
           <v-flex px-3>
             <div v-if="!rank" class="title">Unranked</div>
@@ -137,6 +137,9 @@ export default {
   },
   methods: {
     parseStats(stats) {
+      if (!stats || !stats.length) {
+        return
+      }
       const { rank: { rank }, nextRank } = stats
       const { deltas, requirements: nextRankReqs, satisfied: nextRankSatisfied } = nextRank
 
