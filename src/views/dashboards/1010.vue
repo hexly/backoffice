@@ -115,7 +115,6 @@
             <v-data-table
               :headers ="dataTableHeaders"
               :items   ="earnings"
-              hide-actions
             >
               <template
                 slot="items"
