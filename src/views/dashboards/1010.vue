@@ -217,7 +217,6 @@ export default {
   },
   methods: {
     formatEarning(earning) {
-      console.log({earning})
       let currency = '$'
       if (earning.payeeMarket === 'gbr') {
         currency = '£'
