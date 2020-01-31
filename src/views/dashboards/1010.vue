@@ -122,8 +122,8 @@
                 <tr @click="props.expanded = !props.expanded">
                   <td>{{props.item.integrationOid}}</td>
                   <td>{{props.item.awardedDate}}</td>
-                  <td>{{props.item.reason}}</td>
-                  <td>{{props.item.seller}}</td>
+                  <td v-if="!isMobile">{{props.item.reason}}</td>
+                  <td v-if="!isMobile">{{props.item.seller}}</td>
                   <td>{{formatEarning(props.item)}}</td>
                 </tr>
               </template>
@@ -143,6 +143,7 @@
 <script>
 
 import * as _ from 'lodash'
+import { isMobile } from '@/utils/isMobile'
 
 import Social from '@/components/profile/Social.vue'
 import PersonalCard from '@/components/dashboard/PersonalCard.vue'
@@ -196,11 +197,18 @@ export default {
       loadingStats: 0,
       loadingCount: 0,
       generationCountLoading: 0,
-      statsDisabled: false
+      statsDisabled: false,
+      isMobile: isMobile()
     }
   },
-  async mounted() {
-
+  mounted() {
+    if (this.isMobile) {
+      this.dataTableHeaders = [
+        { text: 'Order #', value: 'integrationOid', sortable: false },
+        { text: 'Date', value: 'awardedDate', sortable: false },
+        { text: 'Payout', value: 'payout', sortable: false }
+      ]
+    }
   },
   watch: {
     '$apollo.loading'(newVal) {
@@ -209,6 +217,7 @@ export default {
   },
   methods: {
     formatEarning(earning) {
+      console.log({earning})
       let currency = '$'
       if (earning.payeeMarket === 'gbr') {
         currency = '£'
