@@ -258,7 +258,7 @@ export default {
           this.setPrincipal(getPrincipal)
           const integrations = get(getPrincipal, 'tenant.integrations')
           this.activeIntegrations = integrations.filter(i => {
-            return this.integrations.indexOf(i.key) > -1 && i.statusId === 200
+            return this.integrations.indexOf(i.key) > -1 && i.statusId === 200 && get(i, 'metadata.mode') !== 'stealth'
           })
         }
       }
