@@ -110,7 +110,6 @@
           <v-toolbar color="secondary" dark>
             <v-toolbar-title>Recent Earnings</v-toolbar-title>
           </v-toolbar>
-          <p :style="{padding: '10px'}"><em><strong>Disclaimer</strong></em>: Currently certain UK payouts are displaying higher payout amounts than they should be. Our team is reviewing and the numbers will be corrected within the next 24 hours.</p>
           <v-responsive>
             <v-data-table
               :headers ="dataTableHeaders"

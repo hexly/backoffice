@@ -39,6 +39,7 @@
           :disabled="attemptingStripeSetup"
         />
         <v-text-field
+          v-if="country === 'US'"
           label="SSN Last Four"
           v-model="ssnLastFour"
           type="text"
@@ -58,8 +59,32 @@
           v-model="routingNumber"
           type="text"
           validate-on-blur
-          :rules="rules.routingNumberRule"
+          :rules="rules.requiredRule"
           :disabled="attemptingStripeSetup"
+        />
+        <v-text-field
+          label="email"
+          v-model="stripeEmail"
+          type="text"
+          validate-on-blur
+          :rules="rules.requiredRule"
+          :disabled="attemptingStripeSetup"
+        />
+        <v-text-field
+          label="phone"
+          v-model="stripePhone"
+          type="text"
+          validate-on-blur
+          :rules="rules.requiredRule"
+          :disabled="attemptingStripeSetup"
+        />
+        <small>If Any of the following information is wrong, please contact support</small>
+        <v-text-field
+          label="country"
+          v-model="country"
+          type="text"
+          readonly
+          disabled
         />
         <v-checkbox
           v-model="stripeToS"
@@ -84,15 +109,34 @@
     </div>
     <div v-if="integrationDetails">
       <p>Your {{$tenantInfo.strings['stripeConnect'] || 'Stripe'}} account has been created!</p>
+      <div v-if="country !== 'US' && payouts.length > 0">
+        <h3>To finish activating your Everra Connect account please email support@everra.com with photos<sup>*</sup> of 2 of the following forms of identification.</h3>
+        <br/>
+        <h4>Acceptable forms of identification are:</h4>
+        <ul class="text-xs-left">
+          <li>Passport</li>
+          <li>Driver license</li>
+          <li>ID card — scans of front and back are required</li>
+          <li>Resident permit ID/IND application registration card (ARC)/UK permanent residence document</li>
+          <li>Citizen Card</li>
+          <li>Electoral ID</li>
+          <li>Validate UK (proof of age card)</li>
+        </ul>
+        <small><sup>*</sup>Photos need to be in color</small>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
 /* global Stripe */
-
+import _ from 'lodash'
 import Rules from '@/views/Rules.js'
-import { mapState } from 'vuex'
+import { GET_MEMBER_PAYOUTS } from '@/graphql/Member.gql'
+import { ADDRESS_BY_CONTACT_ID } from '@/graphql/Address.js'
+import { mapState, mapGetters } from 'vuex'
+
+const tenantId = ~~process.env.VUE_APP_TENANT_ID
 
 export default {
   name: 'StripeIntegration',
@@ -111,13 +155,15 @@ export default {
       firstName: '',
       lastName: '',
       birthdate: '',
-      accountNumber: isHost ? '000123456789' : '',
-      routingNumber: isHost ? '110000000' : '',
+      accountNumber: isHost ? this.getTestAccount() : '',
+      routingNumber: isHost ? this.getTestRouting() : '',
       ssnLastFour: '',
       stripeToS: false,
       localError: '',
       attemptingStripeSetup: false,
-      dobError: false
+      dobError: false,
+      address: null,
+      payouts: []
     }
   },
   mounted () {
@@ -126,26 +172,51 @@ export default {
     this.loading = false
   },
   methods: {
+    getTestAccount() {
+      if (this.country === 'GB') {
+        return '00012345'
+      }
+      return '000123456789'
+    },
+    getTestRouting() {
+      if (this.country === 'GB') {
+        return '108800'
+      }
+      return '110000000'
+    },
     beginSetup () {
       this.setup = true
     },
     accountToken ({ stripe }) {
       const bdate = this.$moment(this.birthdate, 'MM/DD/YYYY')
       try {
-        return stripe.createToken('account', {
+        const params = {
           business_type: 'individual',
           individual: {
             first_name: this.firstName,
             last_name: this.lastName,
+            phone: this.country === 'US' ? `+1${this.stripePhone}` : `+44${this.stripePhone}`,
+            email: this.stripeEmail,
+            address: {
+              city: this.address.city,
+              country: this.country,
+              line1: this.address.street,
+              line2: this.address.street2,
+              postal_code: this.address.postalCode,
+              state: this.address.province
+            },
             dob: {
               day: bdate.date(),
               month: bdate.month() + 1,
               year: bdate.year()
-            },
-            ssn_last_4: this.ssnLastFour
+            }
           },
           tos_shown_and_accepted: true
-        })
+        }
+        if (this.country === 'US') {
+          params.individual.ssn_last_4 = this.ssnLastFour
+        }
+        return stripe.createToken('account', params)
       } catch (e) {
         console.warn('account error!', e)
         throw new Error(e)
@@ -155,8 +226,8 @@ export default {
       try {
         return stripe.createToken('bank_account', {
           bank_account: {
-            country: 'US',
-            currency: 'usd',
+            country: this.country,
+            currency: this.currency,
             account_holder_type: 'individual',
             routing_number: this.routingNumber,
             account_number: this.accountNumber
@@ -216,7 +287,7 @@ export default {
           this.$emit('create', {
             command: 'stripe_connect',
             tenantIntegrationId: this.details.id,
-            data: { accountToken: accountToken.token, bankToken: bankToken.token, url },
+            data: { accountToken: accountToken.token, bankToken: bankToken.token, url, country: this.country, email: this.email },
             resolve,
             reject
           })
@@ -232,15 +303,71 @@ export default {
     reload () {
       this.firstName = this.member.firstName
       this.lastName = this.member.lastName
+      this.stripePhone = this.phone
+      this.stripeEmail = this.email
       this.birthdate = this.$moment(this.member.birthdate, 'YYYY-MM-DD').format('MM/DD/YYYY')
     }
   },
+  apollo: {
+    address: {
+      query: ADDRESS_BY_CONTACT_ID,
+      variables () {
+        return {
+          addressContactId: {
+            contactId: this.contactId,
+            tenantId
+          }
+        }
+      },
+      update ({ addressByContactOrTenant }) {
+        return addressByContactOrTenant[0]
+      },
+      loadingKey: 'loadingAddresses',
+      skip() {
+        return !this.contactId
+      }
+    },
+    payouts: {
+      query: GET_MEMBER_PAYOUTS,
+      variables() {
+        return {
+          saleSearchInput: {
+            sellerId: this.member.id,
+            tenantId,
+            query: null
+          }
+        }
+      },
+      error(err) {
+        console.error({ err })
+      },
+      debounce: 500,
+      update({ getPrincipal }) {
+        return getPrincipal.member.payouts
+      }
+    }
+  },
   computed: {
+    ...mapGetters(['contactId']),
     ...mapState({
+      email: state => _.get(state, 'user.principal.member.contacts[0].emails[0].email'),
+      phone: state => _.get(state, 'user.principal.member.contacts[0].phoneNumbers[0].number'),
       member: state => state.user.principal.member,
       integrations: state => state.user.principal.member.tenantIntegrations,
       tenant: state => state.user.principal.tenant
     }),
+    currency() {
+      if (this.address && this.address.country === 'UK') {
+        return 'GBP'
+      }
+      return 'USD'
+    },
+    country() {
+      if (this.address && this.address.country === 'UK') {
+        return 'GB'
+      }
+      return 'US'
+    },
     integrationDetails () {
       const options = this.integrations || []
       return options.find(e => e.key === 'stripe_connect')
