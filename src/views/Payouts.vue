@@ -2,7 +2,17 @@
   <v-flex xs12>
     <div class="payouts">
       <v-card>
-        <v-card-title class="headline font-weight-regular white--text secondary">Payouts</v-card-title>
+        <v-card-title class="headline font-weight-regular white--text secondary">
+          Payouts
+        </v-card-title>
+        <v-card-text v-if="stripeConnect && currentBalance">
+            <h4>Available Funds:</h4>
+            <h2>
+              <Currency :amount="currentBalance.amount / 100" :currency="currentBalance.currency" />
+            </h2>
+            <small>Total payouts in paid status since last bank transfer</small>
+            <!-- <v-btn color="success" v-if="currentBalance.amount > 0" @click="transferFunds" small>Transfer To your bank</v-btn> -->
+        </v-card-text>
       </v-card>
       <v-data-table
         :headers="headers"
@@ -43,6 +53,7 @@
 
 <script>
 import Currency from '@/components/Currency'
+import { MEMBER_INTEGRATION_COMMAND } from '@/graphql/Integrations'
 import { GET_MEMBER_PAYOUTS } from '@/graphql/Member.gql'
 import { Mutations } from '@/store'
 import { mapMutations, mapState } from 'vuex'
@@ -53,8 +64,14 @@ export default {
   components: {
     Currency
   },
+  mounted() {
+    if (this.stripeConnect) {
+      this.loadBalance()
+    }
+  },
   data() {
     return {
+      balance: {},
       headers: [
         { text: 'Payout Total', value: 'amount' },
         { text: 'Status', value: 'status' },
@@ -152,12 +169,58 @@ export default {
     },
     endDateChanged(date) {
       this.$refs.dialogEnd.save(date)
+    },
+    transferFunds() {
+      this.$apollo.mutate({
+        mutation: MEMBER_INTEGRATION_COMMAND,
+        variables: {
+          input: {
+            command: 'stripe_connect_transfer',
+            tenantIntegrationId: this.stripeConnect.tenantIntegrationId,
+            data: {
+              accountOid: this.stripeConnect.integrationOid,
+              amount: this.currentBalance.amount,
+              currency: this.currentBalance.currency
+            }
+          }
+        },
+        update: (store, { data: { integrationCommand } }) => {
+          console.log(integrationCommand)
+          this.loadBalance()
+        }
+      })
+    },
+    loadBalance() {
+      this.$apollo.mutate({
+        mutation: MEMBER_INTEGRATION_COMMAND,
+        variables: {
+          input: {
+            command: 'stripe_connect_balance',
+            tenantIntegrationId: this.stripeConnect.tenantIntegrationId,
+            data: {
+              accountOid: this.stripeConnect.integrationOid
+            }
+          }
+        },
+        update: (store, { data: { integrationCommand } }) => {
+          this.balance = integrationCommand.metadata
+        }
+      })
     }
   },
   computed: {
     ...mapState({
-      loading: state => state.loading
-    })
+      loading: state => state.loading,
+      stripeConnect: state => {
+        return state.user.principal.member.tenantIntegrations.find(i => i.key === 'stripe_connect')
+      }
+    }),
+    currentBalance() {
+      if (this.balance.available && this.balance.available[0]) {
+        return this.balance.available[0]
+      }
+      return null
+    }
   }
 }
 </script>
