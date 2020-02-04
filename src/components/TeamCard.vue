@@ -67,6 +67,9 @@
           </v-card>
         </v-tab-item>
         <v-tab-item>
+          <RankRequirementsCard :stats="compStats" tabMode />
+        </v-tab-item>
+        <v-tab-item>
           <div class="item-container-card">
             <v-card v-if="!$apolloData.loading" flat>
               <v-layout justify-center row wrap class="text-xs-center">
@@ -145,8 +148,12 @@
 import { get } from 'lodash'
 
 import { TEAM_SIZE_BY_GENERATION } from '@/graphql/MemberStats.gql'
+import RankRequirementsCard from '@/components/RankRequirementsCard'
 export default {
   name: 'TeamCard',
+  components: {
+    RankRequirementsCard
+  },
   data() {
     return {
       displayedRank: null,
@@ -155,6 +162,7 @@ export default {
       skipTeamQuery: true,
       tabHeadings: [
         'Info',
+        'Rank',
         'Team',
         'Awards'
       ],
@@ -173,7 +181,8 @@ export default {
     stats: Object,
     loading: Boolean,
     noData: String,
-    rank: Number
+    rank: Number,
+    compStats: Object
   },
   methods: {
     formatDate (value) {
@@ -187,7 +196,7 @@ export default {
       // this.displayedRank = 4
     },
     handleTabChange(e) {
-      if (e === 1) {
+      if (e === 2) {
         this.skipTeamQuery = false
       }
     },

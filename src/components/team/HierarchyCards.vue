@@ -33,6 +33,7 @@
                 :user="i"
                 :actions="true"
                 :stats="statsMap[i.id]"
+                :compStats="compStats[teamIds.indexOf(i.id)]"
                 noData="No data available"
               />
             </v-flex>
@@ -54,6 +55,7 @@ import MonthSelector from '@/components/MonthSelector.vue'
 import TeamCard from '@/components/TeamCard.vue'
 import { TEAM_QUERY, TEAM_SEARCH_QUERY } from '@/graphql/Team.gql'
 import MONTHLY_STATS_QUERY from '@/graphql/GetMonthlyStats.gql'
+import { COMP_STATS_QUERY } from '@/graphql/CompStats.gql'
 import { Mutations } from '@/store'
 
 const tenantId = ~~process.env.VUE_APP_TENANT_ID
@@ -75,7 +77,8 @@ export default {
       stats: [],
       statsMap: {},
       mergedTeamArr: [],
-      hashResTeam: []
+      hashResTeam: [],
+      teamIds: []
     }
   },
   computed: {
@@ -159,6 +162,9 @@ export default {
         }
       },
       update ({ target, team }) {
+        if (team.nodes && team.nodes.length) {
+          this.teamIds = team.nodes.map(t => t.id)
+        }
         return {
           target: target.nodes[0],
           team: team.nodes
@@ -174,7 +180,7 @@ export default {
             query: null,
             orderDirection: 'asc',
             orderByColumn: 'depth',
-            limit: 10000,
+            limit: 500,
             offset: 0
           }
         }
@@ -218,6 +224,22 @@ export default {
       watchLoading(isLoading, countModifier) {
         // this.setLoading(isLoading || this.$apollo.loading)
       }
+    },
+    compStats: {
+      query: COMP_STATS_QUERY,
+      variables() {
+        return {
+          input: {
+            year: this.year,
+            month: this.month,
+            membersIn: this.teamIds
+          }
+        }
+      },
+      update({ compStatsQuery: { results } }) {
+        console.log({results})
+        return results
+      }
     }
   },
   mounted () {
@@ -237,6 +259,9 @@ export default {
     },
     '$apollo.loading' (newVal) {
       this.setLoading(newVal)
+    },
+    compStats(newVal) {
+      console.log({newVal})
     }
   }
 }

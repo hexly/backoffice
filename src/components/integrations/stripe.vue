@@ -78,6 +78,13 @@
           :rules="rules.requiredRule"
           :disabled="attemptingStripeSetup"
         />
+        <p class="text-xs-left caption phone-hint">
+          Please speficy your country code as follows:
+          <br/>
+          US: +1555....
+          <br/>
+          UK: +44555...
+        </p>
         <small>If Any of the following information is wrong, please contact support</small>
         <v-text-field
           label="country"
@@ -109,21 +116,6 @@
     </div>
     <div v-if="integrationDetails">
       <p>Your {{$tenantInfo.strings['stripeConnect'] || 'Stripe'}} account has been created!</p>
-      <div v-if="country !== 'US' && payouts.length > 0">
-        <h3>To finish activating your Everra Connect account please email support@everra.com with photos<sup>*</sup> of 2 of the following forms of identification.</h3>
-        <br/>
-        <h4>Acceptable forms of identification are:</h4>
-        <ul class="text-xs-left">
-          <li>Passport</li>
-          <li>Driver license</li>
-          <li>ID card — scans of front and back are required</li>
-          <li>Resident permit ID/IND application registration card (ARC)/UK permanent residence document</li>
-          <li>Citizen Card</li>
-          <li>Electoral ID</li>
-          <li>Validate UK (proof of age card)</li>
-        </ul>
-        <small><sup>*</sup>Photos need to be in color</small>
-      </div>
     </div>
   </div>
 </template>
@@ -188,14 +180,16 @@ export default {
       this.setup = true
     },
     accountToken ({ stripe }) {
-      const bdate = this.$moment(this.birthdate, 'MM/DD/YYYY')
+      const bdate = this.$moment(this.birthdate)
+      console.log({ bdate })
+      console.log(bdate.date())
       try {
         const params = {
           business_type: 'individual',
           individual: {
             first_name: this.firstName,
             last_name: this.lastName,
-            phone: this.country === 'US' ? `+1${this.stripePhone}` : `+44${this.stripePhone}`,
+            phone: this.stripePhone,
             email: this.stripeEmail,
             address: {
               city: this.address.city,
@@ -377,6 +371,10 @@ export default {
 </script>
 
 <style>
+.phone-hint {
+  position: relative;
+  top: -15px;
+}
 .stripe-connect-integration {
   width: 100%;
   max-width: 500px;
