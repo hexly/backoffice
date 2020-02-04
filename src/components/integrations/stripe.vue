@@ -116,21 +116,6 @@
     </div>
     <div v-if="integrationDetails">
       <p>Your {{$tenantInfo.strings['stripeConnect'] || 'Stripe'}} account has been created!</p>
-      <div v-if="country !== 'US' && payouts.length > 0">
-        <h3>To finish activating your Everra Connect account please email support@everra.com with photos<sup>*</sup> of 2 of the following forms of identification.</h3>
-        <br/>
-        <h4>Acceptable forms of identification are:</h4>
-        <ul class="text-xs-left">
-          <li>Passport</li>
-          <li>Driver license</li>
-          <li>ID card — scans of front and back are required</li>
-          <li>Resident permit ID/IND application registration card (ARC)/UK permanent residence document</li>
-          <li>Citizen Card</li>
-          <li>Electoral ID</li>
-          <li>Validate UK (proof of age card)</li>
-        </ul>
-        <small><sup>*</sup>Photos need to be in color</small>
-      </div>
     </div>
   </div>
 </template>
