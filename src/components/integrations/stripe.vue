@@ -78,6 +78,13 @@
           :rules="rules.requiredRule"
           :disabled="attemptingStripeSetup"
         />
+        <p class="text-xs-left caption phone-hint">
+          Please speficy your country code as follows:
+          <br/>
+          US: +1555....
+          <br/>
+          UK: +44555...
+        </p>
         <small>If Any of the following information is wrong, please contact support</small>
         <v-text-field
           label="country"
@@ -188,14 +195,16 @@ export default {
       this.setup = true
     },
     accountToken ({ stripe }) {
-      const bdate = this.$moment(this.birthdate, 'MM/DD/YYYY')
+      const bdate = this.$moment(this.birthdate)
+      console.log({ bdate })
+      console.log(bdate.date())
       try {
         const params = {
           business_type: 'individual',
           individual: {
             first_name: this.firstName,
             last_name: this.lastName,
-            phone: this.country === 'US' ? `+1${this.stripePhone}` : `+44${this.stripePhone}`,
+            phone: this.stripePhone,
             email: this.stripeEmail,
             address: {
               city: this.address.city,
@@ -377,6 +386,10 @@ export default {
 </script>
 
 <style>
+.phone-hint {
+  position: relative;
+  top: -15px;
+}
 .stripe-connect-integration {
   width: 100%;
   max-width: 500px;
