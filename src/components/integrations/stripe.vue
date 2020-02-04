@@ -55,7 +55,7 @@
           :disabled="attemptingStripeSetup"
         />
         <v-text-field
-          label="Routing Number"
+          label="Routing Number/ SORT Code"
           v-model="routingNumber"
           type="text"
           validate-on-blur
