@@ -39,6 +39,10 @@ query principal {
           id
           email
         }
+        phoneNumbers {
+          id
+          number
+        }
       }
       profileUrl
       tenantIntegrations {
