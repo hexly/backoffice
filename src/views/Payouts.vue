@@ -7,11 +7,29 @@
         </v-card-title>
         <v-card-text v-if="stripeConnect && currentBalance">
             <h4>Available Funds:</h4>
+            <small>Total payouts in paid status since last bank transfer</small>
             <h2>
               <Currency :amount="currentBalance.amount / 100" :currency="currentBalance.currency" />
             </h2>
-            <small>Total payouts in paid status since last bank transfer</small>
-            <!-- <v-btn color="success" v-if="currentBalance.amount > 0" @click="transferFunds" small>Transfer To your bank</v-btn> -->
+            <br/>
+            <v-dialog v-model="transferDialog" width="500" :disabled="currentBalance.amount < 500">
+              <v-btn color="success" slot="activator" small :disabled="currentBalance.amount < 500">Transfer To My Bank</v-btn>
+              <v-card>
+                <v-card-title class="headline grey lighten-2" primary-title >
+                  Funds Transfer Policy
+                </v-card-title>
+                <v-card-text>
+                  When transfering funds to your bank manually, you will be charged a processing fee of $0.25/£0.10. Would you like to continue to transfer funds?
+                </v-card-text>
+                <v-divider></v-divider>
+                <v-card-actions>
+                  <v-btn color="warning" flat @click="transferDialog = false">no, dont transfer </v-btn>
+                  <v-spacer></v-spacer>
+                  <v-btn color="success" flat @click="transferFunds">Yes, Transfer Funds </v-btn>
+                </v-card-actions>
+              </v-card>
+            </v-dialog>
+            <small v-if="currentBalance.amount < 500">$5/£5 minimum to transfer to your bank</small>
         </v-card-text>
       </v-card>
       <v-data-table
@@ -48,6 +66,14 @@
         </template>
       </v-data-table>
     </div>
+    <v-dialog
+      v-model="transferDialog"
+      lazy
+      full-width
+      width="290px"
+    >
+      <v-card></v-card>
+    </v-dialog>
   </v-flex>
 </template>
 
@@ -71,6 +97,7 @@ export default {
   },
   data() {
     return {
+      transferDialog: false,
       balance: {},
       headers: [
         { text: 'Payout Total', value: 'amount' },
@@ -185,8 +212,8 @@ export default {
           }
         },
         update: (store, { data: { integrationCommand } }) => {
-          console.log(integrationCommand)
           this.loadBalance()
+          this.transferDialog = false
         }
       })
     },
