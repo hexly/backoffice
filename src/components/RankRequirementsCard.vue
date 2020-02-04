@@ -1,7 +1,7 @@
 <template>
   <v-layout id="rank-card" row wrap>
-    <v-card width="100%">
-      <v-toolbar color="secondary" dark>
+    <v-card width="100%" :class="tabMode ? 'elevation-0 item-container-card' : null">
+      <v-toolbar v-if="!tabMode" color="secondary" dark>
         <v-toolbar-title>Rank Requirements</v-toolbar-title>
         <v-spacer></v-spacer>
         <v-toolbar-items>
@@ -19,8 +19,8 @@
           </v-tooltip> -->
         </v-toolbar-items>
       </v-toolbar>
-      <v-card-text v-if="stats && Object.keys(stats).length && !statsDisabled && !$apollo.loading" class="pa-3">
-        <v-layout row justify-space-between pb-4>
+      <v-card-text v-if="stats && Object.keys(stats).length && !statsDisabled && !loading" class="pa-1">
+        <v-layout row justify-space-between :class="tabMode ? 'rank-row' : 'py-4'">
           <v-flex px-3>
             <div v-if="!rank" class="title">Unranked</div>
             <div v-else class="title">Rank {{rank}}</div>
@@ -33,10 +33,10 @@
           </v-flex>
         </v-layout>
 
-        <template v-if="next && next.properties">
-          <v-layout row justify-space-between wrap v-for="stat in next.properties" :key="stat.property">
+        <template class="stats-container" v-if="next && next.properties">
+          <v-layout :class="tabMode ? 'rank-data-row' : null" row justify-space-between wrap v-for="stat in next.properties" :key="stat.property">
             <v-flex px-3>
-              <div :class="( stat.necessary  ? '' : 'grey--text') + ' title'">
+              <div v-if="!tabMode" :class="( stat.necessary  ? '' : 'grey--text') + ' title'">
                 {{stat.title}}
                 <v-icon color="green" v-if="stat.satisfied && stat.necessary">check_circle</v-icon>
               </div>
@@ -47,39 +47,41 @@
               <div class="title">{{stat.property}}</div>
               <div v-if="stat.necessary" class="caption grey--text darken-1">
                 {{Math.round(stat.percentage)}}% <br>
-                {{Math.round(stat.value)}} of {{Math.round(stat.required)}}
+                <span v-if="!tabMode">{{Math.round(stat.value)}} of {{Math.round(stat.required)}}</span>
               </div>
               <div v-else class="caption grey--text darken-1">
                 N/A <br>
-                {{ Math.round(stat.value)}}
-                <v-tooltip slot="append" left>
-                    <v-icon slot="activator" small>info</v-icon>
-                    <span>Not applicable for next rank</span>
-                </v-tooltip>
+                <span v-if="!tabMode">
+                  {{ Math.round(stat.value)}}
+                  <v-tooltip slot="append" left>
+                      <v-icon slot="activator" small>info</v-icon>
+                      <span>Not applicable for next rank</span>
+                  </v-tooltip>
+                </span>
               </div>
             </v-flex>
             <v-flex xs12 px-3>
-              <v-progress-linear :color="stat.necessary ? 'success' : 'grey' " height="5" :value="stat.percentage"></v-progress-linear>
+              <v-progress-linear :class="tabMode ? 'progress-bar' : null" :color="stat.necessary ? 'success' : 'grey' " :height="tabMode ? 2 : 5" :value="stat.percentage"></v-progress-linear>
             </v-flex>
           </v-layout>
         </template>
 
       </v-card-text>
-      <v-card-text v-else-if="!statsDisabled && !$apollo.loading" class="pa-3">
-        <v-layout row justify-space-between pb-4>
+      <v-card-text v-else-if="!statsDisabled && !loading" class="pa-3">
+        <v-layout row justify-space-between :class="tabMode ? null : 'pb-4'">
           <v-flex px-3>
             <div class="title text-xs-center">No Rank Data Found</div>
           </v-flex>
         </v-layout>
       </v-card-text>
-      <v-card-text v-else-if="statsDisabled && !$apollo.loading" class="pa-3">
+      <v-card-text v-else-if="statsDisabled && !loading" class="pa-3">
         <v-layout row justify-space-between pb-4>
           <v-flex px-3>
             <div class="title text-xs-center">Realtime Stats Temporarily Unavailable</div>
           </v-flex>
         </v-layout>
       </v-card-text>
-      <v-card-text v-else-if="$apollo.loading" class="pa-3">
+      <v-card-text v-else-if="loading" class="pa-3">
         <v-layout row justify-space-between pb-4>
           <v-flex id="loading-container" px-3>
             <v-progress-circular indeterminate />
@@ -99,7 +101,9 @@ export default {
   name: 'RankRequirementsCard',
   props: {
     stats: Object,
-    statsDisabled: Boolean
+    statsDisabled: Boolean,
+    tabMode: Boolean,
+    loading: Boolean
   },
   data() {
     return {
@@ -137,15 +141,17 @@ export default {
   },
   methods: {
     parseStats(stats) {
-      if (!stats || !stats.length) {
-        return
+      if (!this.stats || !this.stats.nextRank) {
+        return null
       }
+
       const { rank: { rank }, nextRank } = stats
       const { deltas, requirements: nextRankReqs, satisfied: nextRankSatisfied } = nextRank
 
       this.current = stats.rank
 
       this.rank = rank
+
       this.nextRankReqs = nextRankReqs
       this.nextRankSatisfied = nextRankSatisfied
       Object.keys(nextRankReqs).forEach(reqKey => {
@@ -236,5 +242,21 @@ export default {
 #loading-container {
   justify-content: center;
   display: flex;
+}
+.item-container-card {
+  min-height: 215px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+}
+.progress-bar {
+  margin: 0;
+  margin-bottom: 11px;
+}
+.stats-container {
+  max-height: unset;
+}
+.rank-row {
+  padding-bottom: 10px;
 }
 </style>

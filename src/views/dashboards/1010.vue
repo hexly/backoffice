@@ -108,23 +108,24 @@
       <v-flex xs12 sm6 pa-2>
         <v-card id="recent-sales-card">
           <v-toolbar color="secondary" dark>
-            <v-toolbar-title>Recent Sales</v-toolbar-title>
+            <v-toolbar-title>Recent Earnings</v-toolbar-title>
           </v-toolbar>
+          <p :style="{padding: '10px'}"><em><strong>Disclaimer</strong></em>: Currently certain UK payouts are displaying higher payout amounts than they should be. Our team is reviewing and the numbers will be corrected within the next 24 hours.</p>
           <v-responsive>
             <v-data-table
               :headers ="dataTableHeaders"
-              :items   ="dataTableItems"
-              hide-actions
+              :items   ="earnings"
             >
               <template
                 slot="items"
                 slot-scope="props"
               >
                 <tr @click="props.expanded = !props.expanded">
-                  <td>{{props.item.name}}</td>
-                  <td>{{props.item.date}}</td>
-                  <td>{{props.item.amount}}</td>
-                  <td>{{props.item.points}}</td>
+                  <td>{{props.item.integrationOid}}</td>
+                  <td>{{props.item.awardedDate}}</td>
+                  <td v-if="!isMobile">{{props.item.reason}}</td>
+                  <td v-if="!isMobile">{{props.item.seller}}</td>
+                  <td>{{formatEarning(props.item)}}</td>
                 </tr>
               </template>
             </v-data-table>
@@ -132,7 +133,11 @@
         </v-card>
       </v-flex>
       <v-flex xs12 sm6 pa-2>
-        <RankRequirementsCard :stats="stats" :statsDisabled ="statsDisabled" />
+        <RankRequirementsCard
+          :stats         ="stats"
+          :statsDisabled ="statsDisabled"
+          :loading       ="$apollo.queries.stats.loading"
+        />
       </v-flex>
     </v-layout>
     <Directory class="pa-2" :self="personalStats" :frontline="team" title="Your Circle of Influence" membersTypeName="Influencer"/>
@@ -143,6 +148,7 @@
 <script>
 
 import * as _ from 'lodash'
+import { isMobile } from '@/utils/isMobile'
 
 import Social from '@/components/profile/Social.vue'
 import PersonalCard from '@/components/dashboard/PersonalCard.vue'
@@ -153,7 +159,7 @@ import Announcement from '@/components/dashboard/Announcement.vue'
 import Badges from '@/components/Badges.vue'
 import RankRequirementsCard from '@/components/RankRequirementsCard.vue'
 
-import { COMP_STATS_QUERY } from '@/graphql/CompStats.gql'
+import { COMP_STATS_QUERY, COMP_PAYOUTS_QUERY } from '@/graphql/CompStats.gql'
 import { MEMBER_STATS_BY_DEPTH, MAX_MRN, TEAM_SIZE_BY_GENERATION } from '@/graphql/MemberStats.gql'
 import { mapMutations, mapState, mapGetters } from 'vuex'
 import { UserMutations } from '@/stores/UserStore'
@@ -184,36 +190,11 @@ export default {
         }
       },
       dataTableHeaders: [
-        { text: 'Customer', value: 'name', sortable: false },
-        { text: 'Date', value: 'date', sortable: false },
-        { text: 'Amount', value: 'amount', sortable: false },
-        { text: 'Points', value: 'points', sortable: false }
-      ],
-      dataTableItems: [
-        // {
-        //   name: 'Jon Doe',
-        //   date: '12/03/2019',
-        //   amount: '$132.87',
-        //   points: '120'
-        // },
-        // {
-        //   name: 'Jon Doe',
-        //   date: '12/03/2019',
-        //   amount: '$132.87',
-        //   points: '120'
-        // },
-        // {
-        //   name: 'Jon Doe',
-        //   date: '12/03/2019',
-        //   amount: '$132.87',
-        //   points: '120'
-        // },
-        // {
-        //   name: 'Jon Doe',
-        //   date: '12/03/2019',
-        //   amount: '$132.87',
-        //   points: '120'
-        // }
+        { text: 'Order #', value: 'integrationOid', sortable: false },
+        { text: 'Date', value: 'awardedDate', sortable: false },
+        { text: 'Reason', value: 'reason', sortable: false },
+        { text: 'Seller', value: 'seller', sortable: false },
+        { text: 'Payout', value: 'payout', sortable: false }
       ],
       memberCount: 0,
       team: [],
@@ -221,11 +202,18 @@ export default {
       loadingStats: 0,
       loadingCount: 0,
       generationCountLoading: 0,
-      statsDisabled: false
+      statsDisabled: false,
+      isMobile: isMobile()
     }
   },
-  async mounted() {
-
+  mounted() {
+    if (this.isMobile) {
+      this.dataTableHeaders = [
+        { text: 'Order #', value: 'integrationOid', sortable: false },
+        { text: 'Date', value: 'awardedDate', sortable: false },
+        { text: 'Payout', value: 'payout', sortable: false }
+      ]
+    }
   },
   watch: {
     '$apollo.loading'(newVal) {
@@ -233,6 +221,14 @@ export default {
     }
   },
   methods: {
+    formatEarning(earning) {
+      let currency = '$'
+      if (earning.payeeMarket === 'gbr') {
+        currency = '£'
+      }
+
+      return `${currency}${earning.payout.toFixed(2)}`
+    },
     ...mapMutations([
       UserMutations.MEMBER_QUERY,
       Mutations.SET_GATE,
@@ -256,6 +252,12 @@ export default {
     ...mapGetters(['contactId', 'memberId', 'member', 'slug', 'tenantIntegrations'])
   },
   apollo: {
+    earnings: {
+      query: COMP_PAYOUTS_QUERY,
+      update(data) {
+        return _.get(data, 'compRecentEarnings.earnings', [])
+      }
+    },
     stats: {
       query: COMP_STATS_QUERY,
       variables() {
