@@ -44,9 +44,9 @@
           slot="items"
           slot-scope="props"
         >
-          <tr @click="props.item.deductions ? props.expanded = !props.expanded : null">
+          <tr @click="props.item.deductions.length > 0 ? props.expanded = !props.expanded : null">
             <td>
-              <Currency :amount="props.item.amount" :currency="props.item.currency" />
+              <Currency :amount="props.item.amount / 100" :currency="props.item.currency" />
             </td>
             <td class="status-td">
               {{ props.item.status }}
@@ -68,12 +68,12 @@
                 <template slot="activator">
                   <Currency
                     :amount="props.item.deductions.reduce((accumulator, curVal) => {
-                      const retVal = accumulator + curVal.amount
+                      const retVal = accumulator + (curVal.amount / 100)
                       return retVal
                     }, 0)" :currency="props.item.currency"
                   />
                 </template>
-                <span>Total after deductions. Click to see itemized deductions</span>
+                <span>Total deductions. Click to see itemized deductions</span>
               </v-tooltip>
               <span v-else>--</span>
             </td>
@@ -84,16 +84,14 @@
           slot-scope="props"
         >
           <v-card flat>
-            <v-card-title class="body-2" primary-title>Deductions</v-card-title>
-            <v-card-text class="deductions-flex-container">
-              <div
-                v-for="d in props.item.deductions"
-                :key="d.id"
-              >
-                <div>Type: <span class="body-2">{{feeEnumMap[d.type]}}</span></div>
-                Amount: <Currency :amount="d.amount" :currency="props.item.currency" />
-                <div>Date: {{$moment(d.issuedOn).format('lll')}}</div>
-              </div>
+            <v-card-text>
+              <h3>Deductions</h3>
+              <ul>
+                <li v-for="d in props.item.deductions" :key="d.id" >
+                  <div>{{feeEnumMap[d.type]}}: <Currency class="body-2" :amount="d.amount / 100" :currency="props.item.currency" /></div>
+                  <small>{{d.note}}</small>
+                </li>
+              </ul>
             </v-card-text>
           </v-card>
         </template>
@@ -137,7 +135,7 @@ export default {
         { text: 'Status', value: 'status' },
         { text: 'Issued Date', value: 'issuedOn' },
         { text: 'Released Date', value: 'releasedOn' },
-        { text: 'notes', value: 'notes' },
+        { text: 'Notes', value: 'notes' },
         { text: 'Deductions', value: 'deductions' }
       ],
       feeEnumMap: {
@@ -149,82 +147,6 @@ export default {
         ADJUSTMENT_GENERIC: 'Adjustment',
         WITHHOLDING_GENERIC: 'Withholding'
       },
-      mockData: [
-        {
-          id: 1,
-          amount: 100,
-          status: 'PENDING_RELEASE',
-          issuedOn: this.$moment(),
-          releasedOn: this.$moment(),
-          notes: 'note',
-          deductions: [
-            {
-              id: 123,
-              amount: 69,
-              type: 'FEE',
-              issuedOn: this.$moment()
-            },
-            {
-              id: 1234,
-              amount: 69,
-              type: 'FEE_SERVICE',
-              issuedOn: this.$moment()
-            },
-            {
-              id: 1235,
-              amount: 69,
-              type: 'FEE_SHIPPING',
-              issuedOn: this.$moment()
-            },
-            {
-              id: 1236,
-              amount: 69,
-              type: 'WITHHOLDING_GENERIC',
-              issuedOn: this.$moment()
-            }
-          ]
-        },
-        {
-          id: 2,
-          amount: 100,
-          status: 'RELEASED',
-          issuedOn: this.$moment(),
-          releasedOn: this.$moment(),
-          notes: 'note'
-        },
-        {
-          id: 3,
-          amount: 100,
-          status: 'SUBMITTED',
-          issuedOn: this.$moment(),
-          releasedOn: this.$moment(),
-          notes: 'note'
-        },
-        {
-          id: 4,
-          amount: 100,
-          status: 'PROCESSING',
-          issuedOn: this.$moment(),
-          releasedOn: this.$moment(),
-          notes: 'note'
-        },
-        {
-          id: 5,
-          amount: 100,
-          status: 'FAILED',
-          issuedOn: this.$moment(),
-          releasedOn: this.$moment(),
-          notes: 'note'
-        },
-        {
-          id: 6,
-          amount: 100,
-          status: 'NEEDS_ATTENTION',
-          issuedOn: this.$moment(),
-          releasedOn: this.$moment(),
-          notes: 'note'
-        }
-      ],
       payouts: [],
       statuses: {
         PENDING_RELEASE: 'Payment has been initialized and is being sent to payout processor',
@@ -350,7 +272,7 @@ a {
 }
 .deductions-flex-container {
   display: flex;
-  justify-content: space-around;
+  justify-content: start;
   padding-top: 0px;
   padding-bottom: 30px;
 }
