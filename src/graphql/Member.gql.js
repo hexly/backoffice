@@ -25,6 +25,13 @@ export const GET_MEMBER_PAYOUTS = gql`
           issuedOn
           releasedOn
           acceptedOn
+          deductions {
+            id
+            amount
+            type
+            issuedOn
+            note
+          }
         }
       }
     }

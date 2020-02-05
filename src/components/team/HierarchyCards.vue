@@ -237,7 +237,6 @@ export default {
         }
       },
       update({ compStatsQuery: { results } }) {
-        console.log({results})
         return results
       }
     }
@@ -259,9 +258,6 @@ export default {
     },
     '$apollo.loading' (newVal) {
       this.setLoading(newVal)
-    },
-    compStats(newVal) {
-      console.log({newVal})
     }
   }
 }

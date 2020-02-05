@@ -7,11 +7,29 @@
         </v-card-title>
         <v-card-text v-if="stripeConnect && currentBalance">
             <h4>Available Funds:</h4>
+            <small>Total payouts in paid status since last bank transfer</small>
             <h2>
               <Currency :amount="currentBalance.amount / 100" :currency="currentBalance.currency" />
             </h2>
-            <small>Total payouts in paid status since last bank transfer</small>
-            <!-- <v-btn color="success" v-if="currentBalance.amount > 0" @click="transferFunds" small>Transfer To your bank</v-btn> -->
+            <br/>
+            <v-dialog v-model="transferDialog" width="500" :disabled="currentBalance.amount < 500">
+              <v-btn color="success" slot="activator" small :disabled="currentBalance.amount < 500">Transfer To My Bank</v-btn>
+              <v-card>
+                <v-card-title class="headline grey lighten-2" primary-title >
+                  Funds Transfer Policy
+                </v-card-title>
+                <v-card-text>
+                  When transfering funds to your bank manually, you will be charged a processing fee of $0.25/£0.10. Would you like to continue to transfer funds?
+                </v-card-text>
+                <v-divider></v-divider>
+                <v-card-actions>
+                  <v-btn color="warning" flat @click="transferDialog = false">no, dont transfer </v-btn>
+                  <v-spacer></v-spacer>
+                  <v-btn color="success" flat @click="transferFunds">Yes, Transfer Funds </v-btn>
+                </v-card-actions>
+              </v-card>
+            </v-dialog>
+            <small v-if="currentBalance.amount < 500">$5/£5 minimum to transfer to your bank</small>
         </v-card-text>
       </v-card>
       <v-data-table
@@ -20,15 +38,16 @@
         hide-actions
         class="elevation-1"
         item-key="id"
-        expand
         :loading="loading"
       >
         <template
           slot="items"
           slot-scope="props"
         >
-          <tr @click="props.expanded = !props.expanded">
-            <td><Currency :amount="props.item.amount / 100" :currency="props.item.currency" /></td>
+          <tr @click="props.item.deductions.length > 0 ? props.expanded = !props.expanded : null">
+            <td>
+              <Currency :amount="props.item.amount / 100" :currency="props.item.currency" />
+            </td>
             <td class="status-td">
               {{ props.item.status }}
               <v-tooltip v-if="statuses[props.item.status]" bottom>
@@ -44,10 +63,48 @@
             <td>{{ $moment(props.item.issuedOn).format('lll') }}</td>
             <td>{{ props.item.status === 'RELEASED' ? $moment(props.item.releasedOn).format('lll') : '--' }}</td>
             <td>{{ props.item.note ? props.item.note : '--' }}</td>
+            <td>
+              <v-tooltip class="deduction-tooltip" v-if="props.item.deductions" left>
+                <template slot="activator">
+                  <Currency
+                    :amount="props.item.deductions.reduce((accumulator, curVal) => {
+                      const retVal = accumulator + (curVal.amount / 100)
+                      return retVal
+                    }, 0)" :currency="props.item.currency"
+                  />
+                </template>
+                <span>Total deductions. Click to see itemized deductions</span>
+              </v-tooltip>
+              <span v-else>--</span>
+            </td>
           </tr>
+        </template>
+        <template
+          slot="expand"
+          slot-scope="props"
+        >
+          <v-card flat>
+            <v-card-text>
+              <h3>Deductions</h3>
+              <ul>
+                <li v-for="d in props.item.deductions" :key="d.id" >
+                  <div>{{feeEnumMap[d.type]}}: <Currency class="body-2" :amount="d.amount / 100" :currency="props.item.currency" /></div>
+                  <small>{{d.note}}</small>
+                </li>
+              </ul>
+            </v-card-text>
+          </v-card>
         </template>
       </v-data-table>
     </div>
+    <v-dialog
+      v-model="transferDialog"
+      lazy
+      full-width
+      width="290px"
+    >
+      <v-card></v-card>
+    </v-dialog>
   </v-flex>
 </template>
 
@@ -71,58 +128,25 @@ export default {
   },
   data() {
     return {
+      transferDialog: false,
       balance: {},
       headers: [
         { text: 'Payout Total', value: 'amount' },
         { text: 'Status', value: 'status' },
         { text: 'Issued Date', value: 'issuedOn' },
         { text: 'Released Date', value: 'releasedOn' },
-        { text: 'notes', value: 'notes' }
+        { text: 'Notes', value: 'notes' },
+        { text: 'Deductions', value: 'deductions' }
       ],
-      mockData: [
-        {
-          amount: 100,
-          status: 'PENDING_RELEASE',
-          issuedOn: this.$moment(),
-          releasedOn: this.$moment(),
-          notes: 'note'
-        },
-        {
-          amount: 100,
-          status: 'RELEASED',
-          issuedOn: this.$moment(),
-          releasedOn: this.$moment(),
-          notes: 'note'
-        },
-        {
-          amount: 100,
-          status: 'SUBMITTED',
-          issuedOn: this.$moment(),
-          releasedOn: this.$moment(),
-          notes: 'note'
-        },
-        {
-          amount: 100,
-          status: 'PROCESSING',
-          issuedOn: this.$moment(),
-          releasedOn: this.$moment(),
-          notes: 'note'
-        },
-        {
-          amount: 100,
-          status: 'FAILED',
-          issuedOn: this.$moment(),
-          releasedOn: this.$moment(),
-          notes: 'note'
-        },
-        {
-          amount: 100,
-          status: 'NEEDS_ATTENTION',
-          issuedOn: this.$moment(),
-          releasedOn: this.$moment(),
-          notes: 'note'
-        }
-      ],
+      feeEnumMap: {
+        FEE: 'Misc. Fee',
+        FEE_SERVICE: 'Service Fee',
+        FEE_PROCESSING: 'Processing Fee',
+        FEE_SHIPPING: 'Shipping Fee',
+        FEE_HANDLING: 'Handling Fee',
+        ADJUSTMENT_GENERIC: 'Adjustment',
+        WITHHOLDING_GENERIC: 'Withholding'
+      },
       payouts: [],
       statuses: {
         PENDING_RELEASE: 'Payment has been initialized and is being sent to payout processor',
@@ -185,8 +209,8 @@ export default {
           }
         },
         update: (store, { data: { integrationCommand } }) => {
-          console.log(integrationCommand)
           this.loadBalance()
+          this.transferDialog = false
         }
       })
     },
@@ -239,5 +263,17 @@ a {
   display: flex;
   align-items: center;
   justify-content: space-between;
+}
+.payouts {
+  cursor: default;
+}
+.deduction-tooltip {
+  cursor: pointer;
+}
+.deductions-flex-container {
+  display: flex;
+  justify-content: start;
+  padding-top: 0px;
+  padding-bottom: 30px;
 }
 </style>

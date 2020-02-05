@@ -112,8 +112,10 @@
           </v-toolbar>
           <v-responsive>
             <v-data-table
-              :headers ="dataTableHeaders"
-              :items   ="earnings"
+              :headers             ="dataTableHeaders"
+              :items               ="earnings"
+              :loading             ="$apollo.queries.earnings.loading"
+              :rows-per-page-items ="[8]"
             >
               <template
                 slot="items"
@@ -121,7 +123,7 @@
               >
                 <tr @click="props.expanded = !props.expanded">
                   <td>{{props.item.integrationOid}}</td>
-                  <td>{{props.item.awardedDate}}</td>
+                  <td>{{$moment(props.item.awardedDate).format('L')}}</td>
                   <td v-if="!isMobile">{{props.item.reason}}</td>
                   <td v-if="!isMobile">{{props.item.seller}}</td>
                   <td>{{formatEarning(props.item)}}</td>
@@ -359,6 +361,7 @@ section .stat {
 }
 #recent-sales-card {
   height: 100%;
+  min-height: 554px;
 }
 #personal-card-layout {
   height: 100%;
