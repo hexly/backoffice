@@ -1,10 +1,7 @@
 <template>
   <div class="graph-view">
     <v-layout row justify-space-between>
-      <!-- <v-flex xs3>
-        <MonthSelector :year="year" :month="month" @date-changed="dateChanged"/>
-      </v-flex> -->
-      <!-- <v-flex xs5>
+      <v-flex xs5>
         <form @submit.prevent="search" autocomplete="off">
           <v-flex>
             <v-layout row>
@@ -23,7 +20,7 @@
             </v-layout>
           </v-flex>
         </form>
-      </v-flex> -->
+      </v-flex>
       <v-flex xs2>
         <v-select
           v-model="select"
@@ -36,7 +33,7 @@
     </v-layout>
     <div ref="graph"></div>
     <v-progress-linear v-if="loading" :indeterminate="true" color="grey"></v-progress-linear>
-    <!-- <v-data-table :headers="tableColumns" :items="items" item-key="id" class="elevation-1" expand>
+    <v-data-table :headers="tableColumns" :items="items" item-key="id" class="elevation-1" expand>
       <template slot="items" slot-scope="props">
         <tr @click="props.expanded = !props.expanded">
           <td>
@@ -96,19 +93,14 @@
           </v-container>
         </div>
       </template>
-    </v-data-table> -->
+    </v-data-table>
   </div>
 </template>
 
 <script>
-// import MonthSelector from '@/components/MonthSelector'
-
 import { initialize, updateHeightDepth, collapse,
   checkParentOfPinned } from './Graph.d3.js'
-// import { OLD_QUERY } from '@/graphql/GetTeam'
-import searchSalesBySellerId from '@/graphql/searchSalesBySellerId.gql'
-import SalesStats from '@/graphql/SalesStats.gql'
-// import _ from 'lodash'
+import { SALES_STATS, SEARCH_SALES_SELLER_ID } from '@/graphql/Sales.gql'
 import moment from 'moment'
 import { map } from 'ramda'
 import * as d3 from 'd3'
@@ -388,7 +380,7 @@ export default {
     },
     contextMenuFunc (data) {
       const menu = []
-      // menu.push(this.contextMenuOptions[`displaySales`])
+      menu.push(this.contextMenuOptions[`displaySales`])
       menu.push(this.contextMenuOptions[`center`])
 
       if (data.children) menu.push(this.contextMenuOptions[`collapseMenu`])
@@ -446,7 +438,7 @@ export default {
       this.loading = true
       let memberIds = Object.keys(this.memberDict).map(Number)
       const { data: { saleStatsByDateRange } } = await this.$apollo.query({
-        query: SalesStats,
+        query: SALES_STATS,
         variables: {
           input: {
             sponsorIds: [],
@@ -499,7 +491,7 @@ export default {
     },
     async fetchData ({ memberId }) {
       const { data: { saleStatsByDateRange } } = await this.$apollo.query({
-        query: SalesStats,
+        query: SALES_STATS,
         variables: {
           input: {
             sponsorIds: [memberId],
@@ -577,7 +569,7 @@ export default {
   },
   apollo: {
     sales: {
-      query: searchSalesBySellerId,
+      query: SEARCH_SALES_SELLER_ID,
       variables () {
         return {
           saleSearchInput: {

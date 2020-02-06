@@ -152,7 +152,7 @@
 
 <script>
 import DateSelector from '@/components/DateSelector.vue'
-import SEARCH_SALES_QUERY from '@/graphql/SearchSales.gql'
+import { SEARCH_SALES_QUERY } from '@/graphql/Sales.gql'
 import { Mutations } from '@/store'
 import { mapMutations, mapState } from 'vuex'
 

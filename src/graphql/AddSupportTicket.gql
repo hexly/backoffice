@@ -1,6 +1,0 @@
-mutation ticketCreate($input: TicketCreateInput!) {
-  ticketCreate(input: $input) {
-    id
-    short
-  }
-}

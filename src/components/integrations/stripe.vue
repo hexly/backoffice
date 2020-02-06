@@ -81,9 +81,9 @@
         <p class="text-xs-left caption phone-hint">
           Please speficy your country code as follows:
           <br/>
-          US: +1555....
+          US: <b>+1</b>555....
           <br/>
-          UK: +44555...
+          UK: <b>+44</b>555...
         </p>
         <small>If Any of the following information is wrong, please contact support</small>
         <v-text-field
@@ -180,9 +180,7 @@ export default {
       this.setup = true
     },
     accountToken ({ stripe }) {
-      const bdate = this.$moment(this.birthdate)
-      console.log({ bdate })
-      console.log(bdate.date())
+      const bdate = this.$moment(this.birthdate, Rules.birthdayFormat)
       try {
         const params = {
           business_type: 'individual',
@@ -299,7 +297,7 @@ export default {
       this.lastName = this.member.lastName
       this.stripePhone = this.phone
       this.stripeEmail = this.email
-      this.birthdate = this.$moment(this.member.birthdate, 'YYYY-MM-DD').format('MM/DD/YYYY')
+      this.birthdate = this.$moment(this.member.birthdate, 'YYYY-MM-DD').format(Rules.birthdayFormat)
     }
   },
   apollo: {

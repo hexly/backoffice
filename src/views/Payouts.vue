@@ -270,10 +270,4 @@ a {
 .deduction-tooltip {
   cursor: pointer;
 }
-.deductions-flex-container {
-  display: flex;
-  justify-content: start;
-  padding-top: 0px;
-  padding-bottom: 30px;
-}
 </style>
