@@ -176,9 +176,11 @@ export default {
     },
     memberCount: {
       query: MEMBER_TOTAL_COUNT,
-      variables: {
-        input: {
-          tenantId: this.$tenantId
+      variables() {
+        return {
+          input: {
+            tenantId: this.$tenantId
+          }
         }
       },
       loadingKey: 'loadingCount'
