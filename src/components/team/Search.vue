@@ -170,22 +170,6 @@ export default {
     }
   },
   apollo: {
-    // results: {
-    //   query: TEAM_QUERY,
-    //   variables() {
-    //     const id = this.currentId || _.get(this, '$store.state.user.principal.memberId') // WTF check this state
-    //     return {
-    //       byTarget: { ids: [id] }, // get me the target
-    //       bySponsor: { sponsorIds: [id] } // get me anyone who belongs to the target
-    //     }
-    //   },
-    //   update ({ target, team }) {
-    //     return {
-    //       target: target.nodes[0],
-    //       team: team.nodes
-    //     }
-    //   }
-    // },
     memberTeamSearch: {
       query: TEAM_SEARCH_QUERY,
       variables() {
