@@ -6,39 +6,49 @@
           Payouts
         </v-card-title>
         <v-card-text v-if="stripeConnect && currentBalance">
-            <h4>Available Funds:</h4>
-            <small>Total payouts in paid status since last bank transfer</small>
+            <h4>
+              Available Funds:
+              <v-tooltip slot="append" bottom>
+                <v-icon small slot="activator">help</v-icon>
+                <span><small>Total payouts in paid status since last bank transfer</small></span>
+              </v-tooltip>
+            </h4>
             <h2>
-              <Currency :amount="currentBalance.amount / 100" :currency="currentBalance.currency" />
+                <Currency :amount="currentBalance.amount / 100" :currency="currentBalance.currency"/>
             </h2>
             <br/>
-            <v-dialog v-model="transferDialog" width="500" :disabled="currentBalance.amount < 500">
-              <v-btn color="success" slot="activator" small :disabled="currentBalance.amount < 500">Transfer To My Bank</v-btn>
-              <v-card>
-                <v-card-title class="headline grey lighten-2" primary-title >
-                  Funds Transfer Policy
-                </v-card-title>
-                <v-card-text>
-                  When transfering funds to your bank manually, you will be charged a processing fee of $0.25/£0.10. Would you like to continue to transfer funds?
-                </v-card-text>
-                <v-divider></v-divider>
-                <v-card-actions>
-                  <v-btn color="warning" flat @click="transferDialog = false">no, dont transfer </v-btn>
-                  <v-spacer></v-spacer>
-                  <v-btn color="success" flat @click="transferFunds">Yes, Transfer Funds </v-btn>
-                </v-card-actions>
-              </v-card>
-            </v-dialog>
-            <small v-if="currentBalance.amount < 500">$5/£5 minimum to transfer to your bank</small>
+            <v-tooltip slot="append" bottom>
+              <v-dialog v-model="transferDialog" width="500" :disabled="currentBalance.amount < 500" slot="activator">
+                <v-btn class="ma-0" color="success" slot="activator" small :disabled="currentBalance.amount < 500">Transfer To My Bank</v-btn>
+                <v-card>
+                  <v-card-title class="headline grey lighten-2" primary-title >
+                    Funds Transfer Policy
+                  </v-card-title>
+                  <v-card-text>
+                    When transfering funds to your bank manually, you will be charged a processing fee of $0.25/£0.10. Would you like to continue to transfer funds?
+                  </v-card-text>
+                  <v-divider></v-divider>
+                  <v-card-actions>
+                    <v-btn color="warning" flat @click="transferDialog = false">no, dont transfer </v-btn>
+                    <v-spacer></v-spacer>
+                    <v-btn color="success" flat @click="transferFunds">Yes, Transfer Funds </v-btn>
+                  </v-card-actions>
+                </v-card>
+              </v-dialog>
+              <span>
+                <small v-if="currentBalance.amount < 500">$5/£5 minimum to transfer to your bank</small>
+                <small v-if="currentBalance.amount >= 500">Fund should arrive in your bank within 48 hours</small>
+              </span>
+            </v-tooltip>
         </v-card-text>
       </v-card>
       <v-data-table
         :headers="headers"
         :items="items"
-        hide-actions
         class="elevation-1"
         item-key="id"
         :loading="loading"
+        :rows-per-page-items="[9, 17, 25]"
       >
         <template
           slot="items"
