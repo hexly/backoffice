@@ -68,3 +68,20 @@ export const TEAM_QUERY = gql`
     }
   }
 `
+
+export const AWARDS_BY_ID = gql`
+  query awardsById($input: MemberSearchCondition!){
+    members(condition: $input) {
+      nodes {
+        id
+        tenantId
+        awards {
+          id
+          awardedOn
+          name
+          metadata
+        }
+      }
+    }
+  }
+`

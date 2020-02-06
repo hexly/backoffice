@@ -23,13 +23,14 @@
         <v-progress-circular class="loader" indeterminate :size="60" :width="6" color="black"></v-progress-circular>
       </div>
       <v-layout wrap align-space-between justify-center row fill-height>
-        <v-flex v-for="(i, index) in mergedTeamArr" :key="index">
+        <v-flex v-for="(i, index) in memberTeamSearch.team" :key="index">
           <TeamCard
             @viewTeam="showTeam"
             :user="i"
             :stats="statsMap[i.id]"
             :actions="true"
             noData="No data available"
+            teamSearchMode
           />
         </v-flex>
       </v-layout>
@@ -44,10 +45,9 @@
 </template>
 
 <script>
-import { TEAM_QUERY, TEAM_SEARCH_QUERY } from '@/graphql/Team.gql'
+import { TEAM_SEARCH_QUERY } from '@/graphql/Team.gql'
 import TeamCard from '@/components/TeamCard.vue'
 
-import _ from 'lodash'
 import { mapGetters } from 'vuex'
 
 export default {
@@ -101,8 +101,9 @@ export default {
   },
   methods: {
     showTeam (user) {
+      const currentId = user.id || user.memberId
       this.lineage.push(user)
-      this.currentId = user.id || user.memberId
+      this.currentId = currentId
     },
     hashResultsTeam(results, memberTeamSearch) {
       let matchArr = []
@@ -163,28 +164,28 @@ export default {
       this.hashResultsTeam(newVal, memberTeamSearch)
     },
     memberTeamSearch(newVal) {
-      const { results } = this
+      // const { results } = this
 
-      this.hashResultsTeam(results, newVal)
+      // this.hashResultsTeam(results, newVal)
     }
   },
   apollo: {
-    results: {
-      query: TEAM_QUERY,
-      variables() {
-        const id = this.currentId || _.get(this, '$store.state.user.principal.memberId') // WTF check this state
-        return {
-          byTarget: { ids: [id] }, // get me the target
-          bySponsor: { sponsorIds: [id] } // get me anyone who belongs to the target
-        }
-      },
-      update ({ target, team }) {
-        return {
-          target: target.nodes[0],
-          team: team.nodes
-        }
-      }
-    },
+    // results: {
+    //   query: TEAM_QUERY,
+    //   variables() {
+    //     const id = this.currentId || _.get(this, '$store.state.user.principal.memberId') // WTF check this state
+    //     return {
+    //       byTarget: { ids: [id] }, // get me the target
+    //       bySponsor: { sponsorIds: [id] } // get me anyone who belongs to the target
+    //     }
+    //   },
+    //   update ({ target, team }) {
+    //     return {
+    //       target: target.nodes[0],
+    //       team: team.nodes
+    //     }
+    //   }
+    // },
     memberTeamSearch: {
       query: TEAM_SEARCH_QUERY,
       variables() {
@@ -199,7 +200,6 @@ export default {
         }
       },
       update({ memberTeamSearch }) {
-        this.$apollo.queries.results.refetch()
         return memberTeamSearch
       },
       loadingKey: 'loading',
