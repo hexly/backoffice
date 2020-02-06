@@ -54,7 +54,7 @@ import { mapMutations, mapState, mapGetters } from 'vuex'
 import MonthSelector from '@/components/MonthSelector.vue'
 import TeamCard from '@/components/TeamCard.vue'
 import { TEAM_QUERY, TEAM_SEARCH_QUERY } from '@/graphql/Team.gql'
-import MONTHLY_STATS_QUERY from '@/graphql/GetMonthlyStats.gql'
+import { MONTHLY_STATS_QUERY } from '@/graphql/MemberStats.gql'
 import { COMP_STATS_QUERY } from '@/graphql/CompStats.gql'
 import { Mutations } from '@/store'
 

@@ -208,7 +208,7 @@
 </template>
 
 <script>
-import TEAM_STATS_BY_LEVEL from '@/graphql/TeamStatsByLevel.gql'
+import { TEAM_STATS_BY_LEVEL } from '@/graphql/Team.gql'
 import {
   SALES_LEADERBOARD,
   FRONTLINE_LEADERBOARD,
@@ -216,7 +216,7 @@ import {
   COMPANY_FRONTLINE_LEADERBOARD
 } from '@/graphql/Leaderboard.js'
 import { GET_MEMBER_STATS } from '@/Sales/Api.js'
-import MONTHLY_STATS_QUERY from '@/graphql/GetMonthlyStats.gql'
+import { MONTHLY_STATS_QUERY } from '@/graphql/MemberStats.gql'
 
 import DashCard from '@/components/DashboardCard.vue'
 import LeaderBoard from '@/components/Leaderboard.vue'
