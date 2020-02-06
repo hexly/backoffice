@@ -55,3 +55,37 @@ export const MEMBER_AWARDS = gql`
     }
   }
 `
+
+export const GET_MEMBERS = gql`
+  query Member($input: MemberSearchCondition!) {
+    members(condition: $input) {
+      nodes {
+        firstName
+        lastName
+        id
+        birthdate
+        tenantId
+        name
+        displayName
+        mrn
+        slug
+        contacts {
+          id
+          emails {
+            id
+            email
+          }
+        }
+        profileUrl
+      }
+    }
+  }
+`
+
+export const UPDATE_PROFILE = gql`
+  mutation updateMemberSubset($input: MemberInfoInputSubset!) {
+    updateMemberSubset(input: $input) {
+        id
+    }
+  }
+`

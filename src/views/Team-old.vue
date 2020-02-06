@@ -62,7 +62,7 @@
 import MonthSelector from '@/components/MonthSelector.vue'
 import TeamCard from '../components/TeamCard.vue'
 import getTeamByMemberId from '@/graphql/GetTeam'
-import MONTHLY_STATS_QUERY from '@/graphql/GetMonthlyStats.gql'
+import { MONTHLY_STATS_QUERY } from '@/graphql/MemberStats.gql'
 import { Mutations } from '@/store'
 import { mapMutations, mapState, mapGetters } from 'vuex'
 

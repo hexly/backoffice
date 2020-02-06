@@ -61,8 +61,8 @@
 
 <script>
 import CompPlanLevel from '@/components/CompPlanLevel.vue'
-import GET_MEMBERS from '@/graphql/GetMembers.gql'
-import TEAM_STATS_BY_LEVEL from '@/graphql/TeamStatsByLevel.gql'
+import { GET_MEMBERS } from '@/graphql/Member.gql'
+import { TEAM_STATS_BY_LEVEL } from '@/graphql/Team.gql'
 
 export default {
   components: {

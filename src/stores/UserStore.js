@@ -1,8 +1,7 @@
 import { apolloHexlyClient } from '@/vue-apollo'
-import LOGIN from '@/graphql/Login.gql'
-import UPDATE_PROFILE from '@/graphql/MemberPartialUpdate.gql'
+import { LOGIN } from '@/graphql/iam.gql'
 import { CREATE_MEMBER_INTEGRATION } from '@/graphql/Integrations'
-import { ADJUST_TAGS } from '@/graphql/Member.gql'
+import { ADJUST_TAGS, UPDATE_PROFILE } from '@/graphql/Member.gql'
 import _ from 'lodash'
 
 export const UserActions = {

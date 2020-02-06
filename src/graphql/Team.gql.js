@@ -85,3 +85,17 @@ export const AWARDS_BY_ID = gql`
     }
   }
 `
+
+export const TEAM_STATS_BY_LEVEL = gql`
+  query teamStatsByLevel($teamInput: TeamStatsInput) {
+    teamStatsByLevel(input: $teamInput) {
+      memberId
+      tenantId
+      personal
+      firstLevel
+      secondLevel
+      thirdLevel
+      fourthLevel
+    }
+  }
+`

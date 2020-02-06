@@ -171,7 +171,7 @@ import { Actions, Mutations } from '@/store'
 import { UserMutations } from '@/stores/UserStore'
 import { Actions as MemberActions } from '@/Members/Store'
 import { mapState, mapActions, mapMutations, mapGetters } from 'vuex'
-import GET_PRINCIPAL from '@/graphql/Principal.gql'
+import { GET_PRINCIPAL } from '@/graphql/iam.gql'
 import { get } from 'lodash'
 
 const impersonationPrefix = 'Impersonating '

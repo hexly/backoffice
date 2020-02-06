@@ -57,3 +57,57 @@ export const TEAM_SIZE_BY_GENERATION = gql`
   }
 }
 `
+
+export const MONTHLY_STATS_QUERY = gql`
+  query getMonthlyStats(
+    $targetCondition: MemberMonthlyStatCondition!
+    $firstLevelCondition: MemberMonthlyStatCondition!
+  ) {
+    targetStats: allMemberMonthlyStats(condition: $targetCondition) {
+      nodes {
+        tenantId
+        year
+        month
+        joinedOn
+        sellerId
+        sellerPath
+        teamSize
+        firstLevelSize
+        secondLevelSize
+        thirdLevelSize
+        fourthLevelSize
+        fifthLevelSize
+        totalAmount
+        totalTeamAmount
+        totalPoints
+        commissionableAmount
+        commissionablePoints
+        name
+        sponsorId
+      }
+    }
+    firstLevelStats: allMemberMonthlyStats(condition: $firstLevelCondition) {
+      nodes {
+        tenantId
+        year
+        month
+        name
+        joinedOn
+        sellerId
+        sellerPath
+        teamSize
+        firstLevelSize
+        secondLevelSize
+        thirdLevelSize
+        fourthLevelSize
+        fifthLevelSize
+        totalAmount
+        totalTeamAmount
+        totalPoints
+        commissionableAmount
+        commissionablePoints
+        sponsorId
+      }
+    }
+  }
+`
