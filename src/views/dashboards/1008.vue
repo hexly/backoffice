@@ -217,8 +217,6 @@ import { mapMutations, mapState, mapGetters } from 'vuex'
 import { UserMutations } from '@/stores/UserStore'
 import { Mutations } from '@/store'
 
-const tenantId = ~~process.env.VUE_APP_TENANT_ID
-
 export default {
   name: 'dashboard',
   components: {
@@ -289,8 +287,8 @@ export default {
       variables () {
         return {
           teamInput: {
-            memberId: this.$store.state.user.principal.memberId,
-            tenantId,
+            memberId: this.memberId,
+            tenantId: this.$tenantId,
             startDate: this.startDate,
             endDate: this.endDate,
             month: this.month,
@@ -331,7 +329,7 @@ export default {
       variables () {
         return {
           leaderInput: {
-            tenantId,
+            tenantId: this.$tenantId,
             month: this.month,
             year: this.year,
             omitTagIds: [7]
@@ -347,7 +345,7 @@ export default {
       variables () {
         return {
           leaderInput: {
-            tenantId,
+            tenantId: this.$tenantId,
             month: this.month,
             year: this.year,
             omitTagIds: [7]
@@ -363,7 +361,7 @@ export default {
       variables () {
         return {
           leaderInput: {
-            tenantId,
+            tenantId: this.$tenantId,
             month: this.month,
             year: this.year,
             omitTagIds: [7]
@@ -379,7 +377,7 @@ export default {
       variables () {
         return {
           leaderInput: {
-            tenantId,
+            tenantId: this.$tenantId,
             month: this.month,
             year: this.year,
             omitTagIds: [8]
@@ -395,14 +393,14 @@ export default {
       variables () {
         return {
           targetCondition: {
-            tenantId,
-            sellerId: this.$store.state.user.principal.memberId,
+            tenantId: this.$tenantId,
+            sellerId: this.memberId,
             month: this.month,
             year: this.year
           },
           firstLevelCondition: {
-            tenantId,
-            sponsorId: this.$store.state.user.principal.memberId,
+            tenantId: this.$tenantId,
+            sponsorId: this.memberId,
             month: this.month,
             year: this.year
           }
@@ -432,7 +430,7 @@ export default {
     },
     async calculateTrends() {
       const currentMonthVars = {
-        memberIds: [this.$store.state.user.principal.memberId],
+        memberIds: [this.memberId],
         startDate: this.$moment().startOf('month').format('YYYY-MM-DD'),
         endDate: this.$moment().format('YYYY-MM-DD'),
         mode: 'YEAR_AND_MONTH'
@@ -486,7 +484,7 @@ export default {
     ...mapState({
       user: state => state.user
     }),
-    ...mapGetters(['contactId'])
+    ...mapGetters(['contactId', 'memberId'])
   }
 }
 </script>

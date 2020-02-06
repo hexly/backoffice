@@ -107,6 +107,7 @@ if (process.env.VUE_APP_SENTRY_DSN) {
   })
 }
 
+Vue.prototype.$tenantId = ~~process.env.VUE_APP_TENANT_ID
 Vue.prototype.$tenantInfo = tenantInfo
 Vue.prototype.$moment = moment
 

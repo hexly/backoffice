@@ -128,8 +128,6 @@ import { GET_MEMBER_PAYOUTS } from '@/graphql/Member.gql'
 import { ADDRESS_BY_CONTACT_ID } from '@/graphql/Address.js'
 import { mapState, mapGetters } from 'vuex'
 
-const tenantId = ~~process.env.VUE_APP_TENANT_ID
-
 export default {
   name: 'StripeIntegration',
   props: {
@@ -307,7 +305,7 @@ export default {
         return {
           addressContactId: {
             contactId: this.contactId,
-            tenantId
+            tenantId: this.$tenantId
           }
         }
       },
@@ -325,7 +323,7 @@ export default {
         return {
           saleSearchInput: {
             sellerId: this.member.id,
-            tenantId,
+            tenantId: this.$tenantId,
             query: null
           }
         }

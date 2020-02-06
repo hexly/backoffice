@@ -60,8 +60,6 @@
 import { mapGetters, mapState } from 'vuex'
 import { ADDRESS_BY_CONTACT_ID, UPDATE_ADDRESS } from '@/graphql/Address.js'
 
-const tenantId = ~~process.env.VUE_APP_TENANT_ID
-
 export default {
   name: 'AddressForm',
   data () {
@@ -95,7 +93,7 @@ export default {
         return {
           addressContactId: {
             contactId: this.contactId,
-            tenantId
+            tenantId: this.$tenantId
           }
         }
       },

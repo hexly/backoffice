@@ -89,24 +89,9 @@ export default {
           }
         })
         const { principal, token: jwtToken } = result.data.iamImpersonate
-
-        // const { member, memberId, username, identityId, permissionIds } = principal
-        // const { displayName, tenantId } = member
-
-        // const legacy = {
-        //   role: 'system_authenticated',
-        //   username,
-        //   identityId,
-        //   memberId,
-        //   permissions: permissionIds,
-        //   displayName,
-        //   tenantId
-        // }
-
         this.setJwt(jwtToken)
         this.setPrincipal(principal)
         this.toggleImpersonation()
-        // await this.$store.dispatch(UserActions.LOGIN_SUCCESS, legacy)
         this.$router.push('/dashboard')
       } catch (err) {
         console.warn(err)

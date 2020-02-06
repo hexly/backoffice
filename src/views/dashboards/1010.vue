@@ -166,8 +166,6 @@ import { mapMutations, mapState, mapGetters } from 'vuex'
 import { UserMutations } from '@/stores/UserStore'
 import { Mutations } from '@/store'
 
-// const tenantId = ~~process.env.VUE_APP_TENANT_ID
-
 export default {
   name: 'dashboard',
   components: {
@@ -282,7 +280,7 @@ export default {
         return {
           input: {
             relativeDepthIn: [1],
-            targetId: this.$store.state.user.principal.memberId
+            targetId: this.memberId
           }
         }
       },
@@ -311,7 +309,7 @@ export default {
       variables() {
         return {
           input: {
-            memberId: this.$store.state.user.principal.memberId
+            memberId: this.memberId
           }
         }
       },

@@ -63,6 +63,7 @@
 import CompPlanLevel from '@/components/CompPlanLevel.vue'
 import { GET_MEMBERS } from '@/graphql/Member.gql'
 import { TEAM_STATS_BY_LEVEL } from '@/graphql/Team.gql'
+import { mapGetters } from 'vuex'
 
 export default {
   components: {
@@ -98,7 +99,7 @@ export default {
       variables () {
         return {
           input: {
-            ids: [this.$store.state.user.principal.memberId]
+            ids: [this.memberId]
           }
         }
       },
@@ -112,7 +113,7 @@ export default {
       variables () {
         return {
           teamInput: {
-            memberId: this.$store.state.user.principal.memberId,
+            memberId: this.memberId,
             tenantId: process.env.VUE_APP_TENANT_ID,
             startDate: this.startDate,
             endDate: this.endDate,
@@ -148,6 +149,9 @@ export default {
     }
   },
   computed: {
+    ...mapGetters([
+      'memberId'
+    ]),
     getAvatar () {
       return (
         this.member.profileUrl || this.$tenantInfo.placeholder

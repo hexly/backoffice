@@ -58,8 +58,6 @@ import { mapMutations, mapState, mapGetters, mapActions } from 'vuex'
 import { UserMutations, UserActions } from '@/stores/UserStore'
 import { Mutations } from '@/store'
 
-// const tenantId = ~~process.env.VUE_APP_TENANT_ID
-
 export default {
   name: 'PersonalCard',
   components: {

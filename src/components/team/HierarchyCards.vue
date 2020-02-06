@@ -48,7 +48,6 @@
 </template>
 
 <script>
-import _ from 'lodash'
 import { mapMutations, mapState, mapGetters } from 'vuex'
 
 import MonthSelector from '@/components/MonthSelector.vue'
@@ -57,8 +56,6 @@ import { TEAM_QUERY, TEAM_SEARCH_QUERY } from '@/graphql/Team.gql'
 import { MONTHLY_STATS_QUERY } from '@/graphql/MemberStats.gql'
 import { COMP_STATS_QUERY } from '@/graphql/CompStats.gql'
 import { Mutations } from '@/store'
-
-const tenantId = ~~process.env.VUE_APP_TENANT_ID
 
 export default {
   name: 'HierarchyCards',
@@ -85,7 +82,7 @@ export default {
     ...mapState({
       loading: state => state.loading
     }),
-    ...mapGetters(['member'])
+    ...mapGetters(['member', 'memberId'])
   },
   components: {
     TeamCard,
@@ -94,6 +91,7 @@ export default {
   methods: {
     ...mapMutations([ Mutations.SET_LOADING ]),
     showTeam (user) {
+      console.log({user})
       this.lineage.push(user)
       this.currentId = user.id || user.memberId
     },
@@ -155,7 +153,7 @@ export default {
     results: {
       query: TEAM_QUERY,
       variables() {
-        const id = this.currentId || _.get(this, '$store.state.user.principal.memberId') // WTF check this state
+        const id = this.currentId || this.memberId
         return {
           byTarget: { ids: [id] }, // get me the target
           bySponsor: { sponsorIds: [id] } // get me anyone who belongs to the target
@@ -196,13 +194,13 @@ export default {
       variables () {
         return {
           targetCondition: {
-            tenantId,
+            tenantId: this.$tenantId,
             sellerId: this.currentId,
             month: this.month,
             year: this.year
           },
           firstLevelCondition: {
-            tenantId,
+            tenantId: this.$tenantId,
             sponsorId: this.currentId,
             month: this.month,
             year: this.year

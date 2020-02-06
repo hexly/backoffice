@@ -48,8 +48,6 @@ import { cloneDeep } from 'lodash'
 import { ADDRESS_BY_CONTACT_ID, UPDATE_ADDRESS, DELETE_ADDRESS } from '@/graphql/Address.js'
 import AddressCard from '@/components/profile/AddressCard.vue'
 
-const tenantId = ~~process.env.VUE_APP_TENANT_ID
-
 export default {
   name: 'Addresses',
   components: {
@@ -173,7 +171,7 @@ export default {
         return {
           addressContactId: {
             contactId: this.contactId,
-            tenantId
+            tenantId: this.$tenantId
           }
         }
       },

@@ -66,8 +66,6 @@ import { MONTHLY_STATS_QUERY } from '@/graphql/MemberStats.gql'
 import { Mutations } from '@/store'
 import { mapMutations, mapState, mapGetters } from 'vuex'
 
-const tenantId = ~~process.env.VUE_APP_TENANT_ID
-
 export default {
   name: 'Team',
   data() {
@@ -121,13 +119,13 @@ export default {
       variables () {
         return {
           targetCondition: {
-            tenantId,
+            tenantId: this.$tenantId,
             sellerId: this.currentId,
             month: this.month,
             year: this.year
           },
           firstLevelCondition: {
-            tenantId,
+            tenantId: this.$tenantId,
             sponsorId: this.currentId,
             month: this.month,
             year: this.year
