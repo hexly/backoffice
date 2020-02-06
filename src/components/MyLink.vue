@@ -48,8 +48,6 @@ import { CHECK_IF_UNIQUE_SLUG, ADD_MEMBER_SLUG } from '@/graphql/Slug'
 import { UserMutations } from '@/stores/UserStore'
 import { setTimeout } from 'timers'
 
-const tenantId = ~~process.env.VUE_APP_TENANT_ID
-
 export default {
   name: 'MyLink',
   data() {
@@ -81,7 +79,7 @@ export default {
         query: CHECK_IF_UNIQUE_SLUG,
         variables: {
           input: {
-            tenantId,
+            tenantId: this.$tenantId,
             slug: this.generateSlug
           }
         },
@@ -103,7 +101,7 @@ export default {
           mutation: ADD_MEMBER_SLUG,
           variables: {
             input: {
-              tenantId,
+              tenantId: this.$tenantId,
               slug: this.generateSlug
             }
           }

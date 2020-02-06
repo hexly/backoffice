@@ -1,26 +1,6 @@
 <template>
   <div class="graph-view">
     <v-layout row justify-space-between>
-      <v-flex xs5>
-        <form @submit.prevent="search" autocomplete="off">
-          <v-flex>
-            <v-layout row>
-              <v-flex>
-                <v-text-field
-                  v-model="searchTerm"
-                  append-icon="search"
-                  type="text"
-                  name="searchTerm"
-                  label="Enter name"
-                  c-on:keyup.enter="search"
-                  xs9
-                  hint="Enter to Submit"
-                ></v-text-field>
-              </v-flex>
-            </v-layout>
-          </v-flex>
-        </form>
-      </v-flex>
       <v-flex xs2>
         <v-select
           v-model="select"
@@ -55,27 +35,9 @@
               <v-flex xs4>
                 <h4>Details:</h4>
                 <ul>
-                  <li>Originating ID: {{props.item.providerOid}}</li>
+                  <li>Order ID: {{props.item.providerOid}}</li>
                   <li>Status: {{props.item.status}}</li>
                   <li>Customer Note: {{props.item.customerNote}}</li>
-                </ul>
-              </v-flex>
-              <v-flex xs4>
-                <h4>Customer Info:</h4>
-                <ul>
-                  <li>{{props.item.shippingFirstName}} {{props.item.shippingLastName}}</li>
-                  <li>{{props.item.shippingAddress1}}</li>
-                  <li>{{props.item.shippingAddress2}}</li>
-                  <li>{{props.item.shippingCity}}, {{props.item.shippingState}} {{props.item.shippingZip}}</li>
-                </ul>
-              </v-flex>
-              <v-flex xs4>
-                <h4>Billing Info:</h4>
-                <ul>
-                  <li>{{props.item.billingFirstName}} {{props.item.billingLastName}}</li>
-                  <li>{{props.item.billingAddress1}}</li>
-                  <li>{{props.item.billingAddress2}}</li>
-                  <li>{{props.item.billingCity}}, {{props.item.billingState}} {{props.item.billingZip}}</li>
                 </ul>
               </v-flex>
             </v-layout>
@@ -356,7 +318,7 @@ export default {
         }
         this.updateGraph({ source: selected, center: true, updateHeight: true })
       } else if (!checkParentOfPinned(selected, this.pinned)) {
-        if (selected.children || (selected.data.id === this.radialRoot.data.id && this.graphType === 'RT')) {
+        if (selected.children || (this.graphType === 'RT' && selected.data.id === this.radialRoot.data.id)) {
           selected._children = selected.children
           selected.children = null
           if (this.graphType === 'RT' && selected.parent) {
@@ -573,7 +535,7 @@ export default {
       variables () {
         return {
           saleSearchInput: {
-            tenantId: this.$store.state.user.principal.tenantId,
+            tenantId: this.$tenantId,
             startDate: this.startDate,
             endDate: this.endDate,
             query: null,

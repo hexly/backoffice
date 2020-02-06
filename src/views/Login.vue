@@ -89,12 +89,11 @@
 <script>
 
 /* global VERSION */
+import { mapActions } from 'vuex'
 import { UserActions } from '@/stores/UserStore'
 import { ClaimActions } from '@/stores/ClaimStore'
 import { delay } from '@/utils/timer.js'
 import { pathOr } from 'rambda'
-
-const tenantId = ~~process.env.VUE_APP_TENANT_ID
 
 export default {
   name: 'Foobar',
@@ -112,16 +111,21 @@ export default {
     }
   },
   methods: {
+    ...mapActions({
+      login: UserActions.LOGIN,
+      claim: ClaimActions.CLAIM,
+      reset: ClaimActions.RESET
+    }),
     async onLogin () {
       this.error = null
       try {
         this.$refs.login.validate()
         this.buttonLoading = true
 
-        const loginRes = await this.$store.dispatch(UserActions.LOGIN, {
+        const loginRes = await this.login({
           username: this.form.email,
           password: this.form.password,
-          tenantId
+          tenantId: this.$tenantId
         })
         const { success, issued, principal } = loginRes
 
@@ -130,10 +134,10 @@ export default {
             if (!principal || !principal.memberId) {
               throw new Error("It looks like your account has not been claimed, but we couldn't determine your Member ID. Please contact support")
             }
-            await this.$store.dispatch(ClaimActions.CLAIM, {
+            await this.claim({
               memberId: principal.memberId,
               email: this.form.email,
-              tenantId,
+              tenantId: this.$tenantId,
               type: 'claim'
             })
             return this.onError('This account has not been claimed yet. Please click on the link that has been sent to your email to verify your account.')
@@ -162,9 +166,9 @@ export default {
       this.error = null
       this.buttonLoading = true
       try {
-        await this.$store.dispatch(ClaimActions.RESET, {
+        await this.reset({
           email: this.form.email,
-          tenantId,
+          tenantId: this.$tenantId,
           type: 'reset'
         })
         this.onSuccess(

@@ -40,7 +40,7 @@
 </template>
 
 <script>
-
+import { mapGetters } from 'vuex'
 import * as gql from './zendesk.gql'
 
 export default {
@@ -79,7 +79,7 @@ export default {
       variables () {
         return {
           input: {
-            memberIds: [this.$store.state.user.principal.memberId]
+            memberIds: [this.memberId]
           }
         }
       },
@@ -87,6 +87,9 @@ export default {
         return supportUsers.results || []
       }
     }
+  },
+  computed: {
+    ...mapGetters(['memberId'])
   }
 }
 </script>

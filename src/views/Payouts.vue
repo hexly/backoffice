@@ -61,7 +61,7 @@
               <span v-else>{{ props.item.status }}</span>
             </td>
             <td>{{ $moment(props.item.issuedOn).format('lll') }}</td>
-            <td>{{ props.item.status === 'RELEASED' ? $moment(props.item.releasedOn).format('lll') : '--' }}</td>
+            <td>{{ props.item.releasedOn ? $moment(props.item.releasedOn).format('lll') : '--' }}</td>
             <td>{{ props.item.note ? props.item.note : '--' }}</td>
             <td>
               <v-tooltip class="deduction-tooltip" v-if="props.item.deductions" left>
@@ -113,9 +113,7 @@ import Currency from '@/components/Currency'
 import { MEMBER_INTEGRATION_COMMAND } from '@/graphql/Integrations'
 import { GET_MEMBER_PAYOUTS } from '@/graphql/Member.gql'
 import { Mutations } from '@/store'
-import { mapMutations, mapState } from 'vuex'
-
-const tenantId = ~~process.env.VUE_APP_TENANT_ID
+import { mapMutations, mapState, mapGetters } from 'vuex'
 
 export default {
   components: {
@@ -167,8 +165,8 @@ export default {
       variables() {
         return {
           saleSearchInput: {
-            sellerId: this.$store.state.user.principal.memberId,
-            tenantId,
+            sellerId: this.memberId,
+            tenantId: this.$tenantId,
             query: null,
             endDate: this.endDate,
             startDate: this.startDate
@@ -239,6 +237,7 @@ export default {
         return state.user.principal.member.tenantIntegrations.find(i => i.key === 'stripe_connect')
       }
     }),
+    ...mapGetters(['memberId']),
     currentBalance() {
       if (this.balance.available && this.balance.available[0]) {
         return this.balance.available[0]

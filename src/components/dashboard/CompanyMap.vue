@@ -31,8 +31,6 @@
 import Mapbox from 'mapbox-gl-vue'
 import { LAT_LONGS } from '@/graphql/Contacts.js'
 
-const tenantId = ~~process.env.VUE_APP_TENANT_ID
-
 export default {
   components: {
     Mapbox
@@ -69,7 +67,7 @@ export default {
       variables() {
         return {
           input: {
-            tenantId,
+            tenantId: this.$tenantId,
             limit: 1500
           }
         }

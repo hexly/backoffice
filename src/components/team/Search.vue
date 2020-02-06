@@ -44,11 +44,9 @@
 </template>
 
 <script>
-import { TEAM_QUERY, TEAM_SEARCH_QUERY } from '@/graphql/Team.gql'
-import TeamCard from '@/components/TeamCard.vue'
-
-import _ from 'lodash'
 import { mapGetters } from 'vuex'
+import TeamCard from '@/components/TeamCard.vue'
+import { TEAM_QUERY, TEAM_SEARCH_QUERY } from '@/graphql/Team.gql'
 
 export default {
   name: 'TeamSearch',
@@ -151,7 +149,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['member']),
+    ...mapGetters(['member', 'memberId']),
     length() {
       return Math.ceil(this.memberTeamSearch.totalCount / this.limit)
     }
@@ -172,7 +170,7 @@ export default {
     results: {
       query: TEAM_QUERY,
       variables() {
-        const id = this.currentId || _.get(this, '$store.state.user.principal.memberId') // WTF check this state
+        const id = this.currentId || this.memberId
         return {
           byTarget: { ids: [id] }, // get me the target
           bySponsor: { sponsorIds: [id] } // get me anyone who belongs to the target

@@ -18,9 +18,58 @@ export const LOGIN = gql`
         identityId
         memberId
         member {
+          firstName
+          lastName
+          id
+          birthdate
+          tenantId
+          name
           displayName
+          mrn
+          slug
+          slugs(priority: 0) {
+            slug
+          }
+          sponsor {
+            displayName
+            profileUrl
+            contacts {
+              id
+              emails {
+                id
+                email
+              }
+            }
+          }
+          joinedOn
+          tags
           contacts {
             id
+            emails {
+              id
+              email
+            }
+            phoneNumbers {
+              id
+              number
+            }
+          }
+          profileUrl
+          tenantIntegrations {
+            id
+            tenantIntegrationId
+            integrationOid
+            integrationStatusId
+            metadata
+            priority
+            name
+            key
+          }
+          customer {
+            subscriptions {
+              metadata
+              status
+            }
           }
         }
       }
