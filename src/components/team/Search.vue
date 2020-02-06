@@ -157,18 +157,6 @@ export default {
       return Math.ceil(this.memberTeamSearch.totalCount / this.limit)
     }
   },
-  watch: {
-    results(newVal) {
-      const { memberTeamSearch } = this
-
-      this.hashResultsTeam(newVal, memberTeamSearch)
-    },
-    memberTeamSearch(newVal) {
-      // const { results } = this
-
-      // this.hashResultsTeam(results, newVal)
-    }
-  },
   apollo: {
     memberTeamSearch: {
       query: TEAM_SEARCH_QUERY,
