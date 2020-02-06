@@ -35,10 +35,10 @@
       <v-data-table
         :headers="headers"
         :items="items"
-        hide-actions
         class="elevation-1"
         item-key="id"
         :loading="loading"
+        :rows-per-page-items="[9, 17, 25]"
       >
         <template
           slot="items"

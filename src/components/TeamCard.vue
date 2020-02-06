@@ -1,8 +1,8 @@
 <template>
   <v-card
-  max-width="320"
-  min-width="320"
-  class="ma-2 pa-2"
+    max-width="320"
+    min-width="320"
+    class="ma-2 pa-2"
   >
 
     <v-img
@@ -67,7 +67,16 @@
           </v-card>
         </v-tab-item>
         <v-tab-item>
-          <RankRequirementsCard :stats="compStats" tabMode />
+          <div class="item-container-card">
+            <RankRequirementsCard
+              :stats   ="compStatsData"
+              tabMode
+              v-if="!$apolloData.loading"
+            />
+            <v-flex v-else d-flex justify-center align-center class="text-xs-center">
+              <v-progress-circular indeterminate :size="50" :width="5" color="primary"></v-progress-circular>
+            </v-flex>
+          </div>
         </v-tab-item>
         <v-tab-item>
           <div class="item-container-card">
@@ -105,7 +114,7 @@
                   small
                   color="secondary white--text"
                   @click="viewTeam()"
-                  :disabled="$route.hash === '#search'"
+                  v-if="!($route.hash === '#search')"
                 >
                   View Team
                 </v-btn>
@@ -114,29 +123,37 @@
           </div>
         </v-tab-item>
         <v-tab-item>
-          <v-card v-if="user.awards" class="badge-card" d-flex justify-center wrap flat>
-            <v-chip
-              v-for       ="award in user.awards"
-              :class       ="'badge elevation-3' + (awardHover[award.name] ? ' badge-hover' : '')"
-              :color      ="award.metadata.color"
-              :text-color ="award.metadata.text"
-              :key        ="award.name"
-              @mouseover  ="handleHover($event, award.name)"
-              @mouseleave ="handleHover($event, award.name)"
-              @mouseout   ="handleHover($event, award.name)"
-            >
-              <v-avatar :color="award.metadata.accent">
-                <v-icon>{{award.metadata.icon}}</v-icon>
-              </v-avatar>
-              <transition
-                css
-                name         ="expand"
-                @after-leave ="afterLeaveHandler(award.name)"
+          <div v-if="!$apolloData.loading">
+            <v-card v-if="awards.length" class="badge-card" d-flex justify-center wrap flat>
+              <v-chip
+                v-for       ="award in awards"
+                :class       ="'badge elevation-3' + (awardHover[award.name] ? ' badge-hover' : '')"
+                :color      ="award.metadata.color"
+                :text-color ="award.metadata.text"
+                :key        ="award.name"
+                @mouseover  ="handleHover($event, award.name)"
+                @mouseleave ="handleHover($event, award.name)"
+                @mouseout   ="handleHover($event, award.name)"
               >
-                <span v-show="awardHover[award.name]">{{award.name}}</span>
-              </transition>
-            </v-chip>
-          </v-card>
+                <v-avatar :color="award.metadata.accent">
+                  <v-icon>{{award.metadata.icon}}</v-icon>
+                </v-avatar>
+                <transition
+                  css
+                  name         ="expand"
+                  @after-leave ="afterLeaveHandler(award.name)"
+                >
+                  <span v-show="awardHover[award.name]">{{award.name}}</span>
+                </transition>
+              </v-chip>
+            </v-card>
+            <v-card v-else class="badge-card" d-flex justify-center wrap flat>
+              <div>No Awards Yet!</div>
+            </v-card>
+          </div>
+          <v-flex v-else d-flex justify-center align-center class="badge-card text-xs-center">
+            <v-progress-circular indeterminate :size="50" :width="5" color="primary"></v-progress-circular>
+          </v-flex>
         </v-tab-item>
       </v-tabs>
     </div>
@@ -148,6 +165,8 @@
 import { get } from 'lodash'
 
 import { TEAM_SIZE_BY_GENERATION } from '@/graphql/MemberStats.gql'
+import { AWARDS_BY_ID } from '@/graphql/Team.gql'
+import { COMP_STATS_QUERY } from '@/graphql/CompStats.gql'
 import RankRequirementsCard from '@/components/RankRequirementsCard'
 export default {
   name: 'TeamCard',
@@ -156,10 +175,16 @@ export default {
   },
   data() {
     return {
+      month: new Date().getMonth() + 1,
+      year: new Date().getFullYear(),
       displayedRank: null,
       show: false,
       awardHover: {},
       skipTeamQuery: true,
+      skipAwardsQuery: true,
+      skipRankQuery: true,
+      awards: [],
+      compStatsData: {},
       tabHeadings: [
         'Info',
         'Rank',
@@ -182,7 +207,8 @@ export default {
     loading: Boolean,
     noData: String,
     rank: Number,
-    compStats: Object
+    compStats: Object,
+    teamSearchMode: Boolean
   },
   methods: {
     formatDate (value) {
@@ -196,8 +222,25 @@ export default {
       // this.displayedRank = 4
     },
     handleTabChange(e) {
-      if (e === 2) {
+      switch (e) {
+      case 1:
+        if (!this.teamSearchMode) {
+          break
+        }
+        this.skipRankQuery = false
+        break
+      case 2:
         this.skipTeamQuery = false
+        break
+      case 3:
+        if (!this.teamSearchMode) {
+          break
+        }
+        this.skipAwardsQuery = false
+        break
+
+      default:
+        break
       }
     },
     handleHover(e, awardName) {
@@ -235,6 +278,15 @@ export default {
       this.awardHover = {}
     }
   },
+  watch: {
+    user({ awards }) {
+      const { teamSearchMode } = this
+      if (teamSearchMode) {
+        return
+      }
+      this.awards = awards
+    }
+  },
   computed: {
     getAvatar () {
       return (
@@ -265,6 +317,12 @@ export default {
   },
   mounted() {
     this.displayedRank = this.rank
+    if (!this.teamSearchMode) {
+      if (this.user) {
+        this.awards = this.user.awards
+      }
+      this.compStatsData = this.compStats
+    }
   },
   apollo: {
     counts: {
@@ -272,7 +330,7 @@ export default {
       variables() {
         return {
           input: {
-            memberId: this.user.id
+            memberId: this.id
           }
         }
       },
@@ -290,6 +348,47 @@ export default {
           secondLine: getTeamDataByDepth['2'] || 0,
           thirdLine: getTeamDataByDepth['3'] || 0
         }
+      }
+    },
+    awardsRes: {
+      query: AWARDS_BY_ID,
+      variables() {
+        return {
+          input: {
+            ids: [this.id]
+          }
+        }
+      },
+      skip() {
+        return this.skipAwardsQuery
+      },
+      update(data) {
+        const awards = get(data, 'members.nodes[0].awards')
+        this.awards = awards
+        return awards
+      }
+    },
+    compStatsRes: {
+      query: COMP_STATS_QUERY,
+      variables() {
+        return {
+          input: {
+            year: this.year,
+            month: this.month,
+            membersIn: [this.id]
+          }
+        }
+      },
+      skip() {
+        return this.skipRankQuery
+      },
+      update({compStatsQuery: { results }}) {
+        this.compStatsData = results[0]
+
+        return results[0]
+        // const awards = get(data, 'members.nodes[0].awards')
+        // this.awards = awards
+        // return awards
       }
     }
   }
