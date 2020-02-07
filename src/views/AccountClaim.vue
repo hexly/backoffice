@@ -177,7 +177,7 @@ export default {
       agreements: tenantInfo.agreements
     }
   },
-  async beforeCreate () {
+  async mounted () {
     // Fetch one time token information
     try {
       const { token } = this.$route.params
