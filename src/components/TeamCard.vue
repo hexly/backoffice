@@ -382,7 +382,7 @@ export default {
       skip() {
         return this.skipRankQuery
       },
-      update({compStatsQuery: { results }}) {
+      update({ compStatsQuery: { results } }) {
         this.compStatsData = results[0]
 
         return results[0]

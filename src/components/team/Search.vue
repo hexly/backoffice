@@ -47,7 +47,7 @@
 <script>
 import { mapGetters } from 'vuex'
 import TeamCard from '@/components/TeamCard.vue'
-import { TEAM_QUERY, TEAM_SEARCH_QUERY } from '@/graphql/Team.gql'
+import { TEAM_SEARCH_QUERY } from '@/graphql/Team.gql'
 
 export default {
   name: 'TeamSearch',
