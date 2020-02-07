@@ -91,7 +91,7 @@ export default {
   methods: {
     ...mapMutations([ Mutations.SET_LOADING ]),
     showTeam (user) {
-      console.log({user})
+      console.log({ user })
       this.lineage.push(user)
       this.currentId = user.id || user.memberId
     },

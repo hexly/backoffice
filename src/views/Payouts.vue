@@ -31,7 +31,7 @@
                   <v-card-actions>
                     <v-btn color="warning" flat @click="transferDialog = false">no, dont transfer </v-btn>
                     <v-spacer></v-spacer>
-                    <v-btn color="success" flat @click="transferFunds">Yes, Transfer Funds </v-btn>
+                    <v-btn :loading="transferingFunds" :disabled="transferingFunds" color="success" flat @click="transferFunds">Yes, Transfer Funds </v-btn>
                   </v-card-actions>
                 </v-card>
               </v-dialog>
@@ -137,6 +137,7 @@ export default {
   data() {
     return {
       transferDialog: false,
+      transferingFunds: false,
       balance: {},
       headers: [
         { text: 'Payout Total', value: 'amount' },
@@ -203,6 +204,7 @@ export default {
       this.$refs.dialogEnd.save(date)
     },
     transferFunds() {
+      this.transferingFunds = true
       this.$apollo.mutate({
         mutation: MEMBER_INTEGRATION_COMMAND,
         variables: {
@@ -219,6 +221,7 @@ export default {
         update: (store, { data: { integrationCommand } }) => {
           this.loadBalance()
           this.transferDialog = false
+          this.transferFunds = false
         }
       })
     },
