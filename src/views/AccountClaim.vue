@@ -140,7 +140,7 @@ import AgreementCheckbox from '@/components/Agreement'
 import Rules from '@/views/Rules.js'
 
 export default {
-  name: 'Account Claim',
+  name: 'AccountClaim',
   components: {
     AgreementCheckbox
   },
