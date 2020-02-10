@@ -145,15 +145,23 @@ export default {
       firstName: '',
       lastName: '',
       birthdate: '',
-      accountNumber: isHost ? this.getTestAccount() : '',
-      routingNumber: isHost ? this.getTestRouting() : '',
+      accountNumber: isHost ? '000123456789' : '',
+      routingNumber: isHost ? '110000000' : '',
       ssnLastFour: '',
       stripeToS: false,
       localError: '',
       attemptingStripeSetup: false,
       dobError: false,
       address: null,
-      payouts: []
+      payouts: [],
+      currencies: {
+        UK: 'GBP',
+        GB: 'GBP',
+        US: 'USD',
+        PR: 'USD',
+        GU: 'USD',
+        UM: 'USD'
+      }
     }
   },
   mounted () {
@@ -162,18 +170,6 @@ export default {
     this.loading = false
   },
   methods: {
-    getTestAccount() {
-      if (this.country === 'GB') {
-        return '00012345'
-      }
-      return '000123456789'
-    },
-    getTestRouting() {
-      if (this.country === 'GB') {
-        return '108800'
-      }
-      return '110000000'
-    },
     beginSetup () {
       this.setup = true
     },
@@ -347,16 +343,13 @@ export default {
       tenant: state => state.user.principal.tenant
     }),
     currency() {
-      if (this.address && this.address.country === 'UK') {
-        return 'GBP'
-      }
-      return 'USD'
+      return this.currencies[this.address.country] || 'USD'
     },
     country() {
       if (this.address && this.address.country === 'UK') {
         return 'GB'
       }
-      return 'US'
+      return this.address.country || 'US'
     },
     integrationDetails () {
       const options = this.integrations || []
