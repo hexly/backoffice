@@ -107,18 +107,7 @@
                   <h4>Customer Info:</h4>
                   <ul>
                     <li>{{props.item.shippingFirstName}} {{props.item.shippingLastName}}</li>
-                    <li>{{props.item.shippingAddress1}}</li>
-                    <li>{{props.item.shippingAddress2}}</li>
                     <li>{{props.item.shippingCity}}, {{props.item.shippingState}} {{props.item.shippingZip}}</li>
-                  </ul>
-                </v-flex>
-                <v-flex xs4>
-                  <h4>Billing Info:</h4>
-                  <ul>
-                    <li>{{props.item.billingFirstName}} {{props.item.billingLastName}}</li>
-                    <li>{{props.item.billingAddress1}}</li>
-                    <li>{{props.item.billingAddress2}}</li>
-                    <li>{{props.item.billingCity}}, {{props.item.billingState}} {{props.item.billingZip}}</li>
                   </ul>
                 </v-flex>
                 <v-flex xs4>
@@ -126,7 +115,7 @@
                   <ul>
                     <li>Originating ID: {{props.item.providerOid}}</li>
                     <li>Status: {{props.item.status}}</li>
-                    <li>Customer Note: {{props.item.customerNote}}</li>
+                    <li v-if="props.item.customerNote">Customer Note: {{props.item.customerNote}}</li>
                   </ul>
                 </v-flex>
               </v-layout>
@@ -154,9 +143,7 @@
 import DateSelector from '@/components/DateSelector.vue'
 import { SEARCH_SALES_QUERY } from '@/graphql/Sales.gql'
 import { Mutations } from '@/store'
-import { mapMutations, mapState } from 'vuex'
-
-const tenantId = ~~process.env.VUE_APP_TENANT_ID
+import { mapMutations, mapState, mapGetters } from 'vuex'
 
 export default {
   components: {
@@ -204,8 +191,8 @@ export default {
       variables() {
         return {
           saleSearchInput: {
-            sellerId: this.$store.state.user.principal.memberId,
-            tenantId,
+            sellerId: this.memberId,
+            tenantId: this.$tenantId,
             query: null,
             endDate: this.endDate,
             startDate: this.startDate
@@ -248,6 +235,7 @@ export default {
     ...mapState({
       loading: state => state.loading
     }),
+    ...mapGetters(['memberId']),
     items() {
       return (this.sales || []).map(sale => ({
         ...sale,

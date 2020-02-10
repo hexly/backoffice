@@ -358,9 +358,6 @@ export default {
     memberId () {
       return this.principal.memberId
     },
-    tenantId () {
-      return this.principal.tenantId || ~~process.env.VUE_APP_TENANT_ID
-    },
     getAvatar () {
       return (
         this.editMember.profileUrl || this.$tenantInfo.placeholder

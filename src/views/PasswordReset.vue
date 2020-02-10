@@ -30,7 +30,7 @@
 </template>
 
 <script>
-import tenantInfo from '@/tenant.js'
+import { mapActions } from 'vuex'
 import { ClaimActions } from '@/stores/ClaimStore'
 
 export default {
@@ -55,16 +55,19 @@ export default {
           return true
         }
       ],
-      logoPath: tenantInfo.logoPath
+      logoPath: this.$tenantInfo.logoPath
     }
   },
   methods: {
+    ...mapActions({
+      resetPassword: ClaimActions.RESET_PASSWORD
+    }),
     async onSubmit () {
       if (this.$refs.claim.validate()) {
         const { token } = this.$route.params
         const { confirmPassword, password, username } = this
         const input = { confirmPassword, password, token, username }
-        await this.$store.dispatch(ClaimActions.RESET_PASSWORD, input)
+        await this.resetPassword(input)
         this.$router.push('/login')
       } else {
         console.error('Error in form')

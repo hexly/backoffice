@@ -40,13 +40,17 @@ const defaultState = () => {
     jwt: null,
     loginError: null,
     principal: {
+      tenant: {
+        integrations: []
+      },
       memberId: null,
       member: {
         tenantIntegrations: [],
         displayName: null,
         contacts: [],
         slugs: [],
-        customer: null
+        customer: null,
+        tags: []
       }
     },
     isImpersonating: false,
@@ -228,8 +232,8 @@ export const UserStore = {
       )
     },
     tenantIntegrations: state =>
-      state.principal &&
+      (state.principal &&
       state.principal.member &&
-      state.principal.member.tenantIntegrations
+      state.principal.member.tenantIntegrations) || []
   }
 }

@@ -177,14 +177,11 @@ export default {
       agreements: tenantInfo.agreements
     }
   },
-  async beforeCreate () {
+  async mounted () {
     // Fetch one time token information
     try {
       const { token } = this.$route.params
-      const { data: { oneTimeToken: member } } = await this.$store.dispatch(
-        ClaimActions.GET_TOKEN,
-        { token }
-      )
+      const { data: { oneTimeToken: member } } = await this.getToken({ token })
       const { id: contactId, emails } = member.contacts[0]
       const { email, id: emailId } = emails[0]
       this.editMember = {
@@ -249,6 +246,7 @@ export default {
     }),
     ...mapActions({
       createAccount: ClaimActions.CREATE_ACCOUNT,
+      getToken: ClaimActions.GET_TOKEN,
       upsertAttribute: Actions.SET_ATTRIBUTE,
       login: UserActions.LOGIN
     }),

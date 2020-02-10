@@ -45,10 +45,9 @@
 </template>
 
 <script>
-import { TEAM_SEARCH_QUERY } from '@/graphql/Team.gql'
-import TeamCard from '@/components/TeamCard.vue'
-
 import { mapGetters } from 'vuex'
+import TeamCard from '@/components/TeamCard.vue'
+import { TEAM_SEARCH_QUERY } from '@/graphql/Team.gql'
 
 export default {
   name: 'TeamSearch',
@@ -152,7 +151,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['member']),
+    ...mapGetters(['member', 'memberId']),
     length() {
       return Math.ceil(this.memberTeamSearch.totalCount / this.limit)
     }

@@ -170,7 +170,7 @@ export default {
       if (this.$refs.legalForm.validate()) {
         try {
           const { value: { initial } } = this
-          if (!initial.entity && !this.redacted) {
+          if (!initial.entity && !this.redacted && this.$tenantInfo.features.legal.ssn !== false) {
             await this.saveEntity()
           }
           if ((!initial.policies || !initial.affiliate) && !this.agreed) {
