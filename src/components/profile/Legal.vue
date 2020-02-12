@@ -144,8 +144,9 @@ export default {
       })
       data.getMemberAttributes.forEach(_ => {
         if (_.key === 'affiliate-agreement') {
-          this.value.agreement.affiliate = !!_.value.metadata.affiliate
-          this.value.agreement.policies = !!_.value.metadata.policies
+          // We only care about the existance of the property, not the value
+          this.value.agreement.affiliate = _.value.metadata.hasOwnProperty('affiliate')
+          this.value.agreement.policies = _.value.metadata.hasOwnProperty('policies')
           this.agreed = true
         } else if (_.key === 'entity-details') {
           this.value.entity.type = _.value.metadata.type
