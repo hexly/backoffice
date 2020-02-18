@@ -52,7 +52,7 @@
                     min="8"
                     :rules="passwordRule"
                     :append-icon="visible ? 'visibility_off' : 'visibility'"
-                    :append-icon-cb="() => (visible = !visible)"
+                    @click:append="visible = !visible"
                     :type="visible ? 'text' : 'password'"
                   ></v-text-field>
                   <v-autocomplete
