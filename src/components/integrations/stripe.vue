@@ -4,15 +4,41 @@
     <h3>{{$tenantInfo.strings['stripeConnect'] || 'Stripe'}} provides {{tenant.name}} the ability to send money directly to your bank account.</h3>
     <br />
     <v-alert type="error" :value="(error || localError)">{{error || localError}}</v-alert>
-    <div v-if="!integrationDetails && !loading && !setup">
-      <p>
-        It looks like you do not yet have {{$tenantInfo.strings['stripeConnect'] || 'Stripe'}} configured.
-        <br />Please click the button below to begin your account setup!
-      </p>
-      <v-btn @click="beginSetup" color="primary">Setup Account</v-btn>
+    <div v-if="integrationDetails">
+      <div v-if="loadingAccountDetails">
+        Loading Bank Info...
+      </div>
+      <div v-else-if="accountDetails && !loadingAccountDetails" class="bankAccount">
+        Bank Account Info
+        <v-layout row class="bankInfo">
+          <v-flex>
+            <v-icon large>account_balance</v-icon>
+          </v-flex>
+          <v-flex>
+            <div>
+              <div>
+                {{accountDetails.bank_name}}
+              </div>
+              <div>
+                <img class="routing" src="/img/icons/routing.svg">
+                {{accountDetails.routing_number}}
+                <img class="routing" src="/img/icons/routing.svg">
+                •••••{{accountDetails.last4}}
+              </div>
+            </div>
+          </v-flex>
+        </v-layout>
+      </div>
     </div>
-    <div v-if="!integrationDetails && !loading && setup">
-      <h3>Account Setup</h3>
+    <div v-if="!loading && !setup">
+      <p v-if="!integrationDetails">
+        It looks like you do not yet have {{$tenantInfo.strings['stripeConnect'] || 'Stripe'}} configured.
+        <br />Please click the button below to begin your account creation!
+      </p>
+      <v-btn @click="beginSetup" color="primary">Create New Account</v-btn>
+    </div>
+    <div v-if="!loading && setup">
+      <h3>Account Creation</h3>
       <p>Please enter the following information</p>
       <v-form @submit.prevent="setupStripe" ref="informationForm" width="500">
         <v-text-field
@@ -106,6 +132,9 @@
             >Terms of Service</a>
           </div>
         </v-checkbox>
+        <p v-if="accountDetails">
+          <small>Looks like you already have an account set up, by creating a new one you will be replacing your old account.</small>
+        </p>
         <v-btn
           :loading="attemptingStripeSetup"
           :disabled="attemptingStripeSetup"
@@ -114,9 +143,6 @@
         >Create Account</v-btn>
       </v-form>
     </div>
-    <div v-if="integrationDetails">
-      <p>Your {{$tenantInfo.strings['stripeConnect'] || 'Stripe'}} account has been created!</p>
-    </div>
   </div>
 </template>
 
@@ -124,7 +150,7 @@
 /* global Stripe */
 import _ from 'lodash'
 import Rules from '@/views/Rules.js'
-import { GET_MEMBER_PAYOUTS } from '@/graphql/Member.gql'
+import { MEMBER_INTEGRATION_COMMAND } from '@/graphql/Integrations'
 import { ADDRESS_BY_CONTACT_ID } from '@/graphql/Address.js'
 import { mapState, mapGetters } from 'vuex'
 
@@ -153,7 +179,8 @@ export default {
       attemptingStripeSetup: false,
       dobError: false,
       address: null,
-      payouts: [],
+      accountDetails: null,
+      loadingAccountDetails: false,
       currencies: {
         UK: 'GBP',
         GB: 'GBP',
@@ -238,21 +265,23 @@ export default {
         const url = `${host}?memberId=${this.member.id}`
 
         let accountToken
-        try {
-          accountToken = await this.accountToken({ stripe })
-          if (accountToken.error) {
-            if (accountToken.error.param && accountToken.error.param.includes('dob')) {
-              this.dobError = true
-              this.$refs.dobInput.focus()
+        if (!this.integrationDetails) {
+          try {
+            accountToken = await this.accountToken({ stripe })
+            if (accountToken.error) {
+              if (accountToken.error.param && accountToken.error.param.includes('dob')) {
+                this.dobError = true
+                this.$refs.dobInput.focus()
+              }
+              this.localError = accountToken.error.message
+              this.attemptingStripeSetup = false
+              return
             }
-            this.localError = accountToken.error.message
+          } catch (e) {
+            this.localError = e.message
             this.attemptingStripeSetup = false
             return
           }
-        } catch (e) {
-          this.localError = e.message
-          this.attemptingStripeSetup = false
-          return
         }
 
         let bankToken
@@ -273,16 +302,46 @@ export default {
           this.$emit('create', {
             command: 'stripe_connect',
             tenantIntegrationId: this.details.id,
-            data: { accountToken: accountToken.token, bankToken: bankToken.token, url, country: this.country, email: this.email },
+            data: {
+              integrationOid: this.integrationDetails ? this.integrationDetails.integrationOid : null,
+              bankAccountOid: this.accountDetails ? this.accountDetails.id : null,
+              accountToken: accountToken ? accountToken.token : null,
+              bankToken: bankToken.token,
+              url,
+              country: this.country,
+              email: this.email
+            },
             resolve,
             reject
           })
         }).then(integrationDetails => {
           // nada
+          this.setup = false
+          this.reload()
         }).catch(err => {
           this.localError = err.message || err
         }).finally(() => {
           this.attemptingStripeSetup = false
+        })
+      }
+    },
+    getAccountDetails() {
+      if (this.integrationDetails) {
+        this.$apollo.mutate({
+          mutation: MEMBER_INTEGRATION_COMMAND,
+          variables: {
+            input: {
+              command: 'stripe_connect_account_details',
+              tenantIntegrationId: this.integrationDetails.tenantIntegrationId,
+              data: {
+                accountOid: this.integrationDetails.integrationOid
+              }
+            }
+          },
+          loadingKey: 'loadingAccountDetails',
+          update: (store, { data: { integrationCommand } }) => {
+            this.accountDetails = integrationCommand.metadata
+          }
         })
       }
     },
@@ -292,6 +351,7 @@ export default {
       this.stripePhone = this.phone
       this.stripeEmail = this.email
       this.birthdate = this.$moment(this.member.birthdate, 'YYYY-MM-DD').format(Rules.birthdayFormat)
+      this.getAccountDetails()
     }
   },
   apollo: {
@@ -311,25 +371,6 @@ export default {
       loadingKey: 'loadingAddresses',
       skip() {
         return !this.contactId
-      }
-    },
-    payouts: {
-      query: GET_MEMBER_PAYOUTS,
-      variables() {
-        return {
-          saleSearchInput: {
-            sellerId: this.member.id,
-            tenantId: this.$tenantId,
-            query: null
-          }
-        }
-      },
-      error(err) {
-        console.error({ err })
-      },
-      debounce: 500,
-      update({ getPrincipal }) {
-        return getPrincipal.member.payouts
       }
     }
   },
@@ -368,5 +409,20 @@ export default {
   width: 100%;
   max-width: 500px;
   margin: auto;
+}
+
+.bankAccount{
+  width: 250px;
+  margin: auto;
+}
+
+.bankAccount .bankInfo{
+  padding: 5px;
+  border: 1px solid black;
+  border-radius: 2px;
+}
+
+.bankAccount .routing {
+  height: 10px;
 }
 </style>
