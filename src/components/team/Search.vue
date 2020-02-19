@@ -31,6 +31,8 @@
             :actions="true"
             noData="No data available"
             teamSearchMode
+            @tabActivated="tabActivated"
+            :activeTab="activeTab"
           />
         </v-flex>
       </v-layout>
@@ -95,10 +97,14 @@ export default {
           orderDirection: 'desc',
           orderByColumn: 'mrn'
         }
-      ]
+      ],
+      activeTab: null
     }
   },
   methods: {
+    tabActivated(tab) {
+      this.activeTab = tab
+    },
     showTeam (user) {
       const currentId = user.id || user.memberId
       this.lineage.push(user)
