@@ -26,7 +26,7 @@
       <div v-if="!loading">
         <v-layout row wrap>
           <template v-for="(i, index) in mergedTeamArr">
-            <v-flex xs12 sm4 md3 :key="index">
+            <v-flex :key="index" px-1>
               <TeamCard
                 :loading="loading"
                 @viewTeam="showTeam"
@@ -35,6 +35,8 @@
                 :stats="statsMap[i.id]"
                 :compStats="compStats[teamIds.indexOf(i.id)]"
                 noData="No data available"
+                @tabActivated="tabActivated"
+                :activeTab="activeTab"
               />
             </v-flex>
           </template>
@@ -75,7 +77,8 @@ export default {
       statsMap: {},
       mergedTeamArr: [],
       hashResTeam: [],
-      teamIds: []
+      teamIds: [],
+      activeTab: null
     }
   },
   computed: {
@@ -90,6 +93,9 @@ export default {
   },
   methods: {
     ...mapMutations([ Mutations.SET_LOADING ]),
+    tabActivated(tab) {
+      this.activeTab = tab
+    },
     showTeam (user) {
       console.log({ user })
       this.lineage.push(user)

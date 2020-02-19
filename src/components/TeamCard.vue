@@ -1,10 +1,5 @@
 <template>
-  <v-card
-    max-width="320"
-    min-width="320"
-    class="ma-2 pa-2"
-  >
-
+  <v-card max-width="320" min-width="320" class="my-2 pa-2 team-card">
     <v-img
       :src="getAvatar"
       cover
@@ -19,17 +14,15 @@
       </v-flex>
     </v-card-title>
     </v-img>
-
     <div v-if="actions">
       <v-tabs
         hide-slider
         centered
-        @change ="handleTabChange"
+        grow
+        @change="handleTabChange"
+        :value="activeTab"
       >
-        <v-tab
-          v-for="heading in tabHeadings"
-          :key="heading"
-        >
+        <v-tab @click="$emit('tabActivated', index)" v-for="(heading, index) in tabHeadings" :key="heading">
           {{ heading }}
         </v-tab>
         <v-tab-item>
@@ -208,7 +201,8 @@ export default {
     noData: String,
     rank: Number,
     compStats: Object,
-    teamSearchMode: Boolean
+    teamSearchMode: Boolean,
+    activeTab: Number
   },
   methods: {
     formatDate (value) {
@@ -285,6 +279,9 @@ export default {
         return
       }
       this.awards = awards
+    },
+    activeTab(index) {
+      this.handleTabChange(index)
     }
   },
   computed: {
@@ -396,6 +393,10 @@ export default {
 </script>
 
 <style scoped>
+.team-card{
+  margin-left: auto;
+  margin-right: auto;
+}
 .cardImg {
   margin: auto;
   max-height: 100%;
