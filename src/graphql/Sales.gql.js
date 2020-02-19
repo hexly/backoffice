@@ -17,6 +17,7 @@ export const SEARCH_SALES_QUERY = gql`
       customer
       orderId
       total
+      currency
       status
       customerNote
       shippingTotal
@@ -37,6 +38,7 @@ export const SEARCH_SALES_QUERY = gql`
       billingAddress2
       billingFirstName
       billingLastName
+      billingEmail
     }
   }
 `

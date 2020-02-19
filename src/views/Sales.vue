@@ -86,8 +86,12 @@
         >
           <tr @click="props.expanded = !props.expanded">
             <td>{{ props.item.date }}</td>
-            <td>{{ props.item.displayName }}</td>
-            <td>${{ props.item.total }}</td>
+            <td>
+              {{ props.item.billingFirstName }} {{ props.item.billingLastName }}
+            </td>
+            <td>
+              <Currency :amount="parseFloat(props.item.total)" :currency="props.item.currency"/>
+            </td>
             <td>{{ props.item.totalPoints }}</td>
             <td>{{ props.item.status }}</td>
             <td>
@@ -107,6 +111,7 @@
                   <h4>Customer Info:</h4>
                   <ul>
                     <li>{{props.item.shippingFirstName}} {{props.item.shippingLastName}}</li>
+                    <li>{{props.item.billingEmail}}</li>
                     <li>{{props.item.shippingCity}}, {{props.item.shippingState}} {{props.item.shippingZip}}</li>
                   </ul>
                 </v-flex>
@@ -123,10 +128,12 @@
                 <v-flex xs12>
                   <h4>Products & Services</h4>
                   <v-data-table :headers="productHeads" :items="props.item.lineItems" hide-actions>
-                    <template slot="items" slot-scope="props">
-                      <td>{{ props.item.name }}</td>
-                      <td>{{ props.item.quantity }}</td>
-                      <td>{{ props.item.subtotal }}</td>
+                    <template slot="items" slot-scope="lines">
+                      <td>{{ lines.item.name }}</td>
+                      <td>{{ lines.item.quantity }}</td>
+                      <td>
+                        <Currency :amount="parseFloat(lines.item.subtotal)" :currency="props.item.currency"/>
+                      </td>
                     </template>
                   </v-data-table>
                 </v-flex>
@@ -140,6 +147,7 @@
 </template>
 
 <script>
+import Currency from '@/components/Currency.vue'
 import DateSelector from '@/components/DateSelector.vue'
 import { SEARCH_SALES_QUERY } from '@/graphql/Sales.gql'
 import { Mutations } from '@/store'
@@ -147,7 +155,8 @@ import { mapMutations, mapState, mapGetters } from 'vuex'
 
 export default {
   components: {
-    DateSelector
+    DateSelector,
+    Currency
   },
   data() {
     return {
@@ -163,7 +172,7 @@ export default {
         .format('MM/DD/YYYY'),
       headers: [
         { text: 'Date', value: 'date' },
-        { text: 'Name', value: 'name' },
+        { text: 'Customer', value: 'customer' },
         { text: 'Sale Total', value: 'total' },
         { text: 'Total Points', value: 'points' },
         { text: 'Status', value: 'staus' },
