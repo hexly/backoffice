@@ -25,11 +25,12 @@
                     Funds Transfer Policy
                   </v-card-title>
                   <v-card-text>
+                    <v-alert type="error" :value="transferError">{{transferError}}</v-alert>
                     When transfering funds to your bank manually, you will be charged a processing fee of $0.25/£0.10. Would you like to continue to transfer funds?
                   </v-card-text>
                   <v-divider></v-divider>
                   <v-card-actions>
-                    <v-btn color="warning" flat @click="transferDialog = false">no, dont transfer </v-btn>
+                    <v-btn color="warning" flat @click="transferDialog = false; transferError = null">no, dont transfer </v-btn>
                     <v-spacer></v-spacer>
                     <v-btn :loading="transferingFunds" :disabled="transferingFunds" color="success" flat @click="transferFunds">Yes, Transfer Funds </v-btn>
                   </v-card-actions>
@@ -138,6 +139,7 @@ export default {
     return {
       transferDialog: false,
       transferingFunds: false,
+      transferError: null,
       balance: {},
       headers: [
         { text: 'Payout Total', value: 'amount' },
@@ -221,8 +223,12 @@ export default {
         update: (store, { data: { integrationCommand } }) => {
           this.loadBalance()
           this.transferDialog = false
-          this.transferFunds = false
+          this.transferingFunds = false
         }
+      }).catch(e => {
+        this.transferError = e.message
+        console.log(this.transferError)
+        this.transferingFunds = false
       })
     },
     loadBalance() {
@@ -252,8 +258,8 @@ export default {
     }),
     ...mapGetters(['memberId']),
     currentBalance() {
-      if (this.balance.available && this.balance.available[0]) {
-        return this.balance.available[0]
+      if (this.balance.instant_available && this.balance.instant_available[0]) {
+        return this.balance.instant_available[0]
       }
       return null
     }
