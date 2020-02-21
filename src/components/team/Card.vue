@@ -9,7 +9,7 @@
     <v-progress-circular v-if="loading" indeterminate :size="50" :width="5" color="primary"></v-progress-circular>
 
     <v-card-text v-if="!loading" class="dense">
-      <div class="text-xs-center">
+      <div class="text-center">
         <v-avatar size="124" class="avatar" color="white" @click="showProfilePicDialog = true">
           <v-img v-if="user.profileUrl || $tenantInfo.placeholder" :src="user.profileUrl || $tenantInfo.placeholder"></v-img>
           <v-gravatar v-else default-img="mp" :email="user.email"/>
@@ -57,9 +57,9 @@
 
     <v-divider v-if="actions" class="primary"/>
     <v-card-actions v-if="actions" class="justify-space-between">
-      <v-btn flat color="secondary" @click="viewTeam">View Team</v-btn>
-      <!-- <v-btn flat color="primary" v-if="isQualified">Qualified</v-btn>
-      <v-btn flat color=white disabled v-else>Unqualified</v-btn> -->
+      <v-btn text color="secondary" @click="viewTeam">View Team</v-btn>
+      <!-- <v-btn text color="primary" v-if="isQualified">Qualified</v-btn>
+      <v-btn text color=white disabled v-else>Unqualified</v-btn> -->
     </v-card-actions>
 
   </v-card>

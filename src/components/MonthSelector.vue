@@ -28,16 +28,8 @@
       scrollable
     >
       <v-spacer></v-spacer>
-      <v-btn
-        flat
-        color="primary"
-        @click="menu = false"
-      >Cancel</v-btn>
-      <v-btn
-        flat
-        color="primary"
-        @click="updateDate"
-      >OK</v-btn>
+      <v-btn text color="primary" @click="menu = false">Cancel</v-btn>
+      <v-btn text color="primary" @click="updateDate">OK</v-btn>
     </v-date-picker>
   </v-menu>
 </template>

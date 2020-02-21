@@ -16,14 +16,14 @@
     <v-layout row wrap justify-center class="pa-3">
       <v-flex xs12 sm5 md5 lg4>
         <v-card class="py-4">
-          <div class="text-xs-center">
+          <div class="text-center">
             <div class="rank-icon intern" :class="{'active': team.personal.totalPoints >= 60}"></div>
             <div class="rank-icon manager" :class="{'active': calculateRank(1)}"></div>
             <div class="rank-icon vp" :class="{'active': calculateRank(2)}"></div>
             <div class="rank-icon seniorvp" :class="{'active': calculateRank(3)}"></div>
             <div class="rank-icon ceo" :class="{'active': calculateRank(4)}"></div>
           </div>
-          <h2 class="text-xs-center headline">{{currentRank.name}}</h2>
+          <h2 class="text-center headline">{{currentRank.name}}</h2>
         </v-card>
       </v-flex>
     </v-layout>
@@ -109,19 +109,19 @@
             <v-flex>
             <div class="my-2">
               <div class="pa-1 grey lighten-4 d-flex align-top">
-                <div class="flex xs3 text-xs-left">
+                <div class="flex xs3 text-left">
                   <div class="header grey--text text--darken-1">Level</div>
                 </div>
-                <div class="flex xs2 text-xs-left">
+                <div class="flex xs2 text-left">
                   <div class="header grey--text text--darken-1">Size</div>
                 </div>
-                <div class="flex xs3 text-xs-left">
+                <div class="flex xs3 text-left">
                   <div class="header grey--text text--darken-1">Points</div>
                 </div>
-                <div class="flex xs2 text-xs-left">
+                <div class="flex xs2 text-left">
                   <div class="header grey--text text--darken-1">Recruited</div>
                 </div>
-                <div class="flex xs2 text-xs-left">
+                <div class="flex xs2 text-left">
                   <div class="header grey--text text--darken-1">Sales</div>
                 </div>
               </div>

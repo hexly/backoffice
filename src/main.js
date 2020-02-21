@@ -32,13 +32,20 @@ VueClipboard.config.autoSetContainer = true // add this line
 Vue.use(VueClipboard)
 Vue.component('v-gravatar', Gravatar)
 
-Vue.use(Vuetify, {
+Vue.use(Vuetify)
+
+const vuetify = new Vuetify({
   theme: {
-    primary: tenantInfo.primaryColor,
-    secondary: tenantInfo.secondaryColor,
-    accent: tenantInfo.accentColor
+    themes: {
+      light: {
+        primary: tenantInfo.primaryColor,
+        secondary: tenantInfo.secondaryColor,
+        accent: tenantInfo.accentColor
+      }
+    }
   }
 })
+
 Vue.config.productionTip = false
 
 // Removing service worker since we dont use it
@@ -113,6 +120,7 @@ Vue.prototype.$moment = moment
 
 new Vue({
   apolloProvider,
+  vuetify,
   router,
   store,
   render: h => h(App)

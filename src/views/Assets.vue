@@ -1,7 +1,7 @@
 <template>
   <div class="profile">
     <h1>Assets</h1>
-    <v-container grid-list-md text-xs-center>
+    <v-container grid-list-md text-center>
       <v-layout row wrap>
         <v-flex xs6>
         </v-flex>

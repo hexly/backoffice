@@ -4,7 +4,7 @@
     <v-layout row justify-center>
       <v-flex xs12 md6>
         <PersonalCard class="pa-4" memberName="Affiliate" :showMrn="false">
-          <div slot="footer" class="text-xs-center">
+          <div slot="footer" class="text-center">
             <p class="headline">Badges</p>
             <BirthdayBadge :joinedOn="member.joinedOn" />
           </div>

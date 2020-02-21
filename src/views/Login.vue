@@ -6,7 +6,7 @@
           <v-card class="elevation-12">
             <v-card-text>
               <img v-if="$tenantInfo.logoLoginPath" class="logo" :src="$tenantInfo.logoLoginPath" />
-              <h1 class="logo text-xs-center heading" v-else>{{$tenantInfo.name}}</h1>
+              <h1 class="logo text-center heading" v-else>{{$tenantInfo.name}}</h1>
               <v-alert type="error" :value="error">{{error}}</v-alert>
               <v-alert color="primary" :value="success">{{success}}</v-alert>
               <div v-if="type === 'login'">
@@ -36,7 +36,7 @@
                   ></v-text-field>
                   <v-card-actions>
                     <v-layout row wrap justify-space-between>
-                      <v-flex xs12 sm6 class="py-2 text-xs-center text-sm-left">
+                      <v-flex xs12 sm6 class="py-2 text-center text-sm-left">
                         <div>
                           <span>
                             Forgot your Password?
@@ -44,7 +44,7 @@
                           </span>
                         </div>
                       </v-flex>
-                      <v-flex xs12 sm6 class="py-2 text-xs-center text-sm-right">
+                      <v-flex xs12 sm6 class="py-2 text-center text-sm-right">
                         <v-btn
                           data-cy="Login Login Page"
                           :loading="buttonLoading"

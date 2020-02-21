@@ -13,8 +13,8 @@
               <div slot="footer">
                 <Badges :memberId="member.id"/>
                 <div v-if="tenantIntegrations.length === 0">
-                  <h3 class="text-xs-center">Social Accounts<sup>*</sup></h3>
-                  <div class="text-xs-center">
+                  <h3 class="text-center">Social Accounts<sup>*</sup></h3>
+                  <div class="text-center">
                     <small> Once linked, you can access your social accounts in your profile page </small>
                   </div>
                   <Social :key="tenantIntegrations.length"/>
@@ -115,7 +115,6 @@
               :headers             ="dataTableHeaders"
               :items               ="earnings"
               :loading             ="$apollo.queries.earnings.loading"
-              :rows-per-page-items ="[8]"
             >
               <template
                 slot="items"
@@ -141,8 +140,8 @@
         />
       </v-flex>
     </v-layout>
-    <Directory class="pa-2" :self="personalStats" :frontline="team" title="Your Circle of Influence" membersTypeName="Influencer"/>
-    <CompanyMap class="pa-2" title="Influencers around the world"/>
+    <Directory class="py-2" :self="personalStats" :frontline="team" title="Your Circle of Influence" membersTypeName="Influencer"/>
+    <CompanyMap class="py-2" title="Influencers around the world"/>
   </div>
 </template>
 

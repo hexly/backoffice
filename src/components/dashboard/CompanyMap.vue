@@ -5,7 +5,7 @@
         {{title}}
       </v-card-title>
       <div v-if="coordinates.length === 0"
-        class="title grey--text text--lighten-1 font-weight-light map text-xs-center pt-5"
+        class="title grey--text text--lighten-1 font-weight-light map text-center pt-5"
       >
         <p>
           Loading Map

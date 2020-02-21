@@ -1,9 +1,9 @@
 <template>
   <v-card class="address-card ma-1" :class="{'shrink': (!editMode && action), 'grow': editMode}">
     <v-card-text>
-      <div class="text-xs-left" v-if="!editMode">
+      <div class="text-left" v-if="!editMode">
         <span class="font-weight-bold headline">{{address.name}}</span>
-        <v-btn flat small class="grey--text" disabled>{{address.type}}</v-btn>
+        <v-btn text small class="grey--text" disabled>{{address.type}}</v-btn>
         <p>
           <span>{{address.street}}</span>
           <br v-if="address.street2"/>
@@ -16,22 +16,24 @@
         <v-divider class="mt-1"></v-divider>
         <v-card-actions>
           <template v-if="canDelete">
-            <v-btn :disabled="saving" :loading="saving" flat small class="red--text text--lighten-1" @click="remove">
+            <v-btn :disabled="saving" :loading="saving" text small class="red--text text--lighten-1" @click="remove">
               Delete
               <v-icon right dark>delete</v-icon>
             </v-btn>
           </template>
           <template v-else>
             <v-tooltip slot="append" bottom>
-              <v-btn disabled slot="activator" flat small class="grey--text">
+              <template v-slot:activator="{ on }">
+                <v-btn disabled v-on="on" text small class="grey--text">
                   Delete
                   <v-icon right dark>delete</v-icon>
                 </v-btn>
+              </template>
               <span>You must have alteast one address</span>
             </v-tooltip>
           </template>
           <v-spacer/>
-          <v-btn :disabled="saving" flat small class="grey--text" @click="edit">
+          <v-btn :disabled="saving" text small class="grey--text" @click="edit">
             Edit
             <v-icon right dark>edit</v-icon>
           </v-btn>
@@ -101,9 +103,9 @@
         ></v-select>
         <v-divider class="mt-5"></v-divider>
         <v-card-actions>
-          <v-btn :disabled="saving" flat @click="cancel">Cancel</v-btn>
+          <v-btn :disabled="saving" text @click="cancel">Cancel</v-btn>
           <v-spacer></v-spacer>
-          <v-btn :disabled="saving" :loading="saving" color="primary" flat @click="save">Save</v-btn>
+          <v-btn :disabled="saving" :loading="saving" color="primary" text @click="save">Save</v-btn>
         </v-card-actions>
         </v-form>
       </div>

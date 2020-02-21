@@ -1,6 +1,6 @@
 <template>
-  <div class="profile text-xs-center">
-      <v-tabs centered color="secondary" dark icons-and-text>
+  <div class="profile text-center">
+      <v-tabs centered background-color="secondary" dark icons-and-text>
         <v-tabs-slider color="white"></v-tabs-slider>
 
         <v-tab to="#profile">Profile
@@ -92,7 +92,7 @@
           <li v-for="(msg, index) in snackbarMsg" :key="index">{{msg}}</li>
         </ul>
       </div>
-      <v-btn flat color="white" @click.native="snackbar = false">Close</v-btn>
+      <v-btn text color="white" @click.native="snackbar = false">Close</v-btn>
     </v-snackbar>
   </div>
 </template>

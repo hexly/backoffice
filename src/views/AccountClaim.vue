@@ -25,23 +25,25 @@
                     full-width
                     width="290px"
                   >
-                    <v-text-field
-                      slot="activator"
-                      v-model="editMember.birthday"
-                      label="Date of Birth"
-                      prepend-icon="event"
-                      readonly
-                      :placeholder="birthdayFormat"
-                      :rules="birthdateRule"
-                    ></v-text-field>
+                    <template v-slot:activator="{ on }">
+                      <v-text-field
+                        v-on="on"
+                        v-model="editMember.birthday"
+                        label="Date of Birth"
+                        prepend-icon="event"
+                        readonly
+                        :placeholder="birthdayFormat"
+                        :rules="birthdateRule"
+                      ></v-text-field>
+                    </template>
                     <v-date-picker
                       scrollable
                       v-model ="datePickerDate"
                       ref     ="picker"
                     >
                       <v-spacer></v-spacer>
-                      <v-btn flat color="primary" @click="datePickerModal = false">Cancel</v-btn>
-                      <v-btn flat color="primary" @click="dateSave(datePickerDate); $refs.dialog.save()">OK</v-btn>
+                      <v-btn text color="primary" @click="datePickerModal = false">Cancel</v-btn>
+                      <v-btn text color="primary" @click="dateSave(datePickerDate); $refs.dialog.save()">OK</v-btn>
                     </v-date-picker>
                   </v-dialog>
                   <v-text-field

@@ -27,7 +27,7 @@
             <div class="caption grey--text darken-1"> Current Rank </div>
           </v-flex>
           <v-spacer></v-spacer>
-          <v-flex px-3 text-xs-right v-if="next && next.rank">
+          <v-flex px-3 text-right v-if="next && next.rank">
             <div class="title">Rank {{next.rank.rank}}</div>
             <div class="caption grey--text darken-1"> Next Rank </div>
           </v-flex>
@@ -43,7 +43,7 @@
               <div class="caption grey--text darken-1"> {{stat.description}} </div>
             </v-flex>
             <v-spacer></v-spacer>
-            <v-flex px-3 text-xs-right>
+            <v-flex px-3 text-right>
               <div class="title">{{stat.property}}</div>
               <div v-if="stat.necessary" class="caption grey--text darken-1">
                 {{Math.round(stat.percentage)}}% <br>
@@ -70,14 +70,14 @@
       <v-card-text v-else-if="!statsDisabled && !loading" class="pa-3">
         <v-layout row justify-space-between :class="tabMode ? null : 'pb-4'">
           <v-flex px-3>
-            <div class="title text-xs-center">No Rank Data Found</div>
+            <div class="title text-center">No Rank Data Found</div>
           </v-flex>
         </v-layout>
       </v-card-text>
       <v-card-text v-else-if="statsDisabled && !loading" class="pa-3">
         <v-layout row justify-space-between pb-4>
           <v-flex px-3>
-            <div class="title text-xs-center">Realtime Stats Temporarily Unavailable</div>
+            <div class="title text-center">Realtime Stats Temporarily Unavailable</div>
           </v-flex>
         </v-layout>
       </v-card-text>
