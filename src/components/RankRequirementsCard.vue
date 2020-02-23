@@ -4,55 +4,43 @@
       <v-toolbar v-if="!tabMode" color="secondary" dark>
         <v-toolbar-title>Rank Requirements</v-toolbar-title>
         <v-spacer></v-spacer>
-        <v-toolbar-items>
-          <!-- <v-tooltip class="rank-tooltip" slot="append" left>
-            <v-btn
-              slot   ="activator"
-              @click ="handleRefreshClick"
-              small
-              fab
-              class="findme primary darken-2"
-            >
-              <v-icon>refresh</v-icon>
-            </v-btn>
-            <span>{{'Stats refreshed ' + $moment(lastRefreshed).fromNow()}}</span>
-          </v-tooltip> -->
-        </v-toolbar-items>
       </v-toolbar>
       <v-card-text v-if="stats && Object.keys(stats).length && !statsDisabled && !loading" class="pa-1">
         <v-layout row justify-space-between :class="tabMode ? 'rank-row' : 'py-4'">
           <v-flex px-3>
-            <div v-if="!rank" class="title">Unranked</div>
-            <div v-else class="title">Rank {{rank}}</div>
+            <div v-if="!currentRank" class="title">Unranked</div>
+            <div v-else class="title">Rank {{currentRank}}</div>
             <div class="caption grey--text darken-1"> Current Rank </div>
           </v-flex>
           <v-spacer></v-spacer>
-          <v-flex px-3 text-xs-right v-if="next && next.rank">
-            <div class="title">Rank {{next.rank.rank}}</div>
+          <v-flex px-3 text-xs-right v-if="nextRank">
+            <div class="title">Rank {{nextRank}}</div>
             <div class="caption grey--text darken-1"> Next Rank </div>
           </v-flex>
         </v-layout>
 
-        <template class="stats-container" v-if="next && next.properties">
-          <v-layout :class="tabMode ? 'rank-data-row' : null" row justify-space-between wrap v-for="stat in next.properties" :key="stat.property">
+        <template class="stats-container" v-if="current">
+          <v-layout :class="tabMode ? 'rank-data-row' : null" row justify-space-between wrap v-for="stat in Object.keys(statMapping)" :key="stat.property">
+            <template v-if="next[stat].required !== null">
             <v-flex px-3>
-              <div v-if="!tabMode" :class="( stat.necessary  ? '' : 'grey--text') + ' title'">
-                {{stat.title}}
-                <v-icon color="green" v-if="stat.satisfied && stat.necessary">check_circle</v-icon>
+              <div v-if="!tabMode" :class="( next[stat].required  ? '' : 'grey--text') + ' title'">
+                {{statMapping[stat].title}}
+                <v-icon color="green" v-if="next[stat].satisfied && next[stat].required">check_circle</v-icon>
               </div>
-              <div class="caption grey--text darken-1"> {{stat.description}} </div>
+              <div class="caption grey--text darken-1"> {{statMapping[stat].description}} </div>
             </v-flex>
             <v-spacer></v-spacer>
             <v-flex px-3 text-xs-right>
-              <div class="title">{{stat.property}}</div>
-              <div v-if="stat.necessary" class="caption grey--text darken-1">
-                {{Math.round(stat.percentage)}}% <br>
-                <span v-if="!tabMode">{{Math.round(stat.value)}} of {{Math.round(stat.required)}}</span>
+              <div class="title">{{current[stat].earned}}</div>
+              <div v-if="next[stat].required && parseInt(current[stat].earned)" class="caption grey--text darken-1">
+                {{Math.round(current[stat].earned/next[stat].required*100)}}%
+                <br>
+                <span v-if="!tabMode">{{Math.round(current[stat].earned)}} of {{Math.round(next[stat].required)}}</span>
               </div>
               <div v-else class="caption grey--text darken-1">
                 N/A <br>
                 <span v-if="!tabMode">
-                  {{ Math.round(stat.value)}}
+                  {{ Math.round(next[stat].required)}}
                   <v-tooltip slot="append" left>
                       <v-icon slot="activator" small>info</v-icon>
                       <span>Not applicable for next rank</span>
@@ -61,8 +49,9 @@
               </div>
             </v-flex>
             <v-flex xs12 px-3>
-              <v-progress-linear :class="tabMode ? 'progress-bar' : null" :color="stat.necessary ? 'success' : 'grey' " :height="tabMode ? 2 : 5" :value="stat.percentage"></v-progress-linear>
+              <v-progress-linear :class="tabMode ? 'progress-bar' : null" :color="next[stat].required ? 'success' : 'grey' " :height="tabMode ? 2 : 5" :value="Math.round(current[stat].earned/next[stat].required*100)"></v-progress-linear>
             </v-flex>
+            </template>
           </v-layout>
         </template>
 
@@ -109,6 +98,9 @@ export default {
     return {
       rank: null,
       current: null,
+      next: null,
+      nextRank: null,
+      currentRank: null,
       nextRankReqs: {},
       nextRankSatisfied: {},
       currentProgress: {},
@@ -116,13 +108,13 @@ export default {
       month: ~~this.$moment().format('M'),
       lastRefreshed: null,
       statMapping: {
-        personalTotalPoints: {
-          title: 'PSV',
-          description: 'Personal Sales Volume'
-        },
         lifetimeTotalPoints: {
           title: 'CPSV',
           description: 'Career Personal Sales Volume'
+        },
+        personalTotalPoints: {
+          title: 'PSV',
+          description: 'Personal Sales Volume'
         },
         groupPoints: {
           title: 'GSV',
@@ -135,92 +127,37 @@ export default {
         downlinePoints: {
           title: 'DSV',
           description: 'Downline Sales volume'
+        },
+        anyRankCount: {
+          title: 'PABQL',
+          description: 'Paid-As Bonus Qualified Legs'
+        },
+        downlineAdjustedPoints: {
+          title: 'ADSV',
+          description: 'Adjusted Downline Sales volume'
         }
       }
     }
   },
   methods: {
     parseStats(stats) {
-      if (!this.stats || !this.stats.nextRank) {
-        return null
-      }
+      const { current, next } = stats.rank
+      this.currentRank = current.rank
+      this.nextRank = next.rank
+      this.current = current.metrics.reduce((carry, stat) => {
+        carry[stat.prop] = stat
+        return carry
+      }, {})
 
-      const { rank: { rank }, nextRank } = stats
-      const { deltas, requirements: nextRankReqs, satisfied: nextRankSatisfied } = nextRank
-
-      this.current = stats.rank
-
-      this.rank = rank
-
-      this.nextRankReqs = nextRankReqs
-      this.nextRankSatisfied = nextRankSatisfied
-      Object.keys(nextRankReqs).forEach(reqKey => {
-        this.currentProgress[reqKey] = nextRankReqs[reqKey] + deltas[reqKey]
-      })
-    },
-    handleRefreshClick() {
-      this.$apollo.queries.stats.refetch()
+      this.next = next.metrics.reduce((carry, stat) => {
+        carry[stat.prop] = stat
+        return carry
+      }, {})
     }
   },
-  // apollo: {
-  //   stats: {
-  //     query: COMP_STATS_QUERY,
-  //     variables() {
-  //       return {
-  //         input: {
-  //           year: this.year,
-  //           month: this.month,
-  //           membersIn: [1]
-  //         }
-  //       }
-  //     },
-  //     update(data) {
-  //       // debugger
-  //       const result = _.get(data, 'compStatsQuery.results[0]')
-
-  //       this.lastRefreshed = this.$moment().format()
-
-  //       return result
-  //     }
-  //   }
-  // },
   mounted() {
-    this.parseStats(this.stats)
-  },
-  computed: {
-    next() {
-      if (!this.stats || !this.stats.nextRank) {
-        return null
-      }
-      let { deltas: d, requirements: req, satisfied: sat } = this.stats.nextRank
-
-      const properties = Object.keys(this.statMapping)
-        .reduce((carry, property) => {
-          const satisfied = sat[property]
-          const required = req[property]
-          const delta = d[property]
-          const missing = satisfied ? required : delta
-          const value = required + delta
-          const necessary = [null, 0].indexOf(required) < 1
-          const { title, description } = this.statMapping[property]
-          carry.push({
-            title,
-            description,
-            value,
-            missing,
-            satisfied,
-            required,
-            delta,
-            necessary,
-            percentage: Math.round(100 * (satisfied ? 1 : value / required))
-          })
-          return carry
-        }, [])
-
-      return {
-        rank: this.stats.nextRank,
-        properties
-      }
+    if (this.stats) {
+      this.parseStats(this.stats)
     }
   },
   watch: {
