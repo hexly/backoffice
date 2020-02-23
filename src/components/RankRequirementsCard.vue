@@ -30,7 +30,7 @@
               <div class="caption grey--text darken-1"> {{statMapping[stat].description}} </div>
             </v-flex>
             <v-spacer></v-spacer>
-            <v-flex px-3 text-xs-right>
+            <v-flex px-3 text-xs-right v-if="stat !== 'anyRankCount'">
               <div class="title">{{current[stat].earned}}</div>
               <div v-if="next[stat].required && parseInt(current[stat].earned)" class="caption grey--text darken-1">
                 {{Math.round(current[stat].earned/next[stat].required*100)}}%
@@ -47,6 +47,16 @@
                   </v-tooltip>
                 </span>
               </div>
+            </v-flex>
+            <v-flex px-3 text-xs-right v-else>
+              <template v-if="current[stat].earned">
+                <div class="title" >Achieved</div>
+                <div class="caption grey--text darken-1"> 100% </div>
+              </template>
+              <template v-else>
+                <div class="title">Unachieved</div>
+                <div class="caption grey--text darken-1"> 0% </div>
+              </template>
             </v-flex>
             <v-flex xs12 px-3>
               <v-progress-linear :class="tabMode ? 'progress-bar' : null" :color="next[stat].required ? 'success' : 'grey' " :height="tabMode ? 2 : 5" :value="Math.round(current[stat].earned/next[stat].required*100)"></v-progress-linear>
