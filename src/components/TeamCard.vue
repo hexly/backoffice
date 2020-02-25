@@ -57,12 +57,8 @@
         </v-tab-item>
         <v-tab-item>
           <div class="item-container-card">
-            <RankRequirementsCard
-              :stats   ="compStatsData"
-              tabMode
-              v-if="!$apolloData.loading"
-            />
-            <v-flex v-else d-flex justify-center align-center class="text-center">
+            <RankRequirementsCard :stats="engineStats" tabMode v-if="!$apolloData.loading" />
+            <v-flex v-else d-flex justify-center align-center class="text-xs-center">
               <v-progress-circular indeterminate :size="50" :width="5" color="primary"></v-progress-circular>
             </v-flex>
           </div>
@@ -158,7 +154,7 @@ import { get } from 'lodash'
 
 import { TEAM_SIZE_BY_GENERATION } from '@/graphql/MemberStats.gql'
 import { AWARDS_BY_ID } from '@/graphql/Team.gql'
-import { COMP_STATS_QUERY } from '@/graphql/CompStats.gql'
+import { ENGINE_STATS_QUERY } from '@/graphql/CompStats.gql'
 import RankRequirementsCard from '@/components/RankRequirementsCard'
 export default {
   name: 'TeamCard',
@@ -177,6 +173,7 @@ export default {
       skipRankQuery: true,
       awards: [],
       compStatsData: {},
+      engineStats: null,
       tabHeadings: [
         'Info',
         'Rank',
@@ -364,27 +361,18 @@ export default {
         return awards
       }
     },
-    compStatsRes: {
-      query: COMP_STATS_QUERY,
+    engineStats: {
+      query: ENGINE_STATS_QUERY,
       variables() {
         return {
           input: {
-            year: this.year,
-            month: this.month,
+            forDate: this.$moment().format('YYYY-MM-DD'),
             membersIn: [this.id]
           }
         }
       },
-      skip() {
-        return this.skipRankQuery
-      },
-      update({ compStatsQuery: { results } }) {
-        this.compStatsData = results[0]
-
-        return results[0]
-        // const awards = get(data, 'members.nodes[0].awards')
-        // this.awards = awards
-        // return awards
+      update({ engineStats }) {
+        return engineStats[0]
       }
     }
   }
@@ -402,8 +390,8 @@ export default {
   max-width: 100%;
 }
 .dense {
-  font-size: 12px;
-  min-width: 40px;
+  font-size: 13.5px;
+  min-width: 43px;
 }
 .badge-card {
   display: flex;

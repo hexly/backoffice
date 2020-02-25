@@ -19,8 +19,6 @@
           <td>{{ item.date }}</td>
           <td><Currency :amount="parseFloat(item.total)" :currency="item.currency"/></td>
           <td>{{ item.totalPoints }}</td>
-          <td>{{ item.commissionableAmount }}</td>
-          <td>{{ item.commissionablePoints }}</td>
           <td>{{ item.displayName }}</td>
           <td>{{ item.sellerEmail }}</td>
           <td>
@@ -96,8 +94,6 @@ export default {
         { text: 'Date', value: 'date' },
         { text: 'Sale Total', value: 'total' },
         { text: 'Total Points', value: 'points' },
-        { text: 'Commissionable Total', value: 'comTotal' },
-        { text: 'Commissionable Points', value: 'comPoints' },
         { text: 'Seller Name', value: 'displayName' },
         { text: 'Seller Email', value: 'contactEmail' },
         { text: '', value: 'data-table-expand' }

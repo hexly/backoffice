@@ -125,8 +125,11 @@
               <span
                 data-cy="Display Name"
                 v-if="$vuetify.breakpoint.mdAndUp"
+                class="pr-2"
               >{{user.isImpersonating ? impersonationPrefix + user.principal.member.displayName : user.principal.member.displayName}}</span>
-              <img class="avatar" :src="getAvatar" />
+              <v-avatar>
+                <v-img :src="getAvatar"></v-img>
+              </v-avatar>
             </v-btn>
           </template>
           <v-list>

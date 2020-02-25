@@ -5,7 +5,7 @@
         <v-card-title class="headline font-weight-regular white--text secondary">
           Payouts
         </v-card-title>
-        <v-card-text v-if="stripeConnect && currentBalance">
+        <v-card-text v-if="stripeConnect && currentBalance" class="pt-3">
             <h4>
               Available Funds:
               <v-tooltip slot="append" bottom>

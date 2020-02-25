@@ -134,9 +134,9 @@
       </v-flex>
       <v-flex xs12 sm6 pa-2>
         <RankRequirementsCard
-          :stats         ="stats"
+          :stats         ="engineStats"
           :statsDisabled ="statsDisabled"
-          :loading       ="$apollo.queries.stats.loading"
+          :loading       ="$apollo.queries.engineStats.loading"
         />
       </v-flex>
     </v-layout>
@@ -159,7 +159,7 @@ import Announcement from '@/components/dashboard/Announcement.vue'
 import Badges from '@/components/Badges.vue'
 import RankRequirementsCard from '@/components/RankRequirementsCard.vue'
 
-import { COMP_STATS_QUERY, COMP_PAYOUTS_QUERY } from '@/graphql/CompStats.gql'
+import { COMP_PAYOUTS_QUERY, ENGINE_STATS_QUERY } from '@/graphql/CompStats.gql'
 import { MEMBER_STATS_BY_DEPTH, MAX_MRN, TEAM_SIZE_BY_GENERATION } from '@/graphql/MemberStats.gql'
 import { mapMutations, mapState, mapGetters } from 'vuex'
 import { UserMutations } from '@/stores/UserStore'
@@ -179,7 +179,6 @@ export default {
   },
   data() {
     return {
-      stats: null,
       year: ~~this.$moment().format('Y'),
       personalStats: {
         counts: {
@@ -201,7 +200,8 @@ export default {
       loadingCount: 0,
       generationCountLoading: 0,
       statsDisabled: false,
-      isMobile: isMobile()
+      isMobile: isMobile(),
+      engineStats: null
     }
   },
   mounted() {
@@ -256,21 +256,18 @@ export default {
         return _.get(data, 'compRecentEarnings.earnings', [])
       }
     },
-    stats: {
-      query: COMP_STATS_QUERY,
+    engineStats: {
+      query: ENGINE_STATS_QUERY,
       variables() {
         return {
           input: {
-            year: this.year,
-            month: this.month,
+            forDate: this.$moment().format('YYYY-MM-DD'),
             membersIn: [this.memberId]
           }
         }
       },
-      update(data) {
-        const result = _.get(data, 'compStatsQuery.results[0]')
-        this.lastRefreshed = this.$moment().format()
-        return result
+      update({ engineStats }) {
+        return engineStats[0]
       }
     },
     team: {

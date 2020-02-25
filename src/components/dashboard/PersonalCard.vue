@@ -134,7 +134,7 @@ export default {
   position: relative;
   top: -62px;
   margin-bottom: -62px;
-  padding-top: 19px;
+  padding-top: 16px;
 }
 .personal-card .avatar .v-responsive,
 .personal-card .avatar img {
@@ -155,6 +155,7 @@ export default {
   background-color: rgba(255,255,255,0.5);
   border-radius: 100%;
   cursor: pointer;
+  line-height: 124px;
 }
 .personal-card .avatar:hover::after{
   display: block;

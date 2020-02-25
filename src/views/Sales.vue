@@ -11,7 +11,7 @@
                 <template v-slot:activator="{ on }">
                   <v-text-field v-on="on" v-model="startDate" label="Select Start Date" prepend-icon="event" readonly/>
                 </template>
-                <v-date-picker ref ="pickerStart" color ="secondary" v-model ="datePickerStartDate" :reactive ="true" min ="2020-02-01">
+                <v-date-picker ref="pickerStart" color="secondary" v-model="datePickerStartDate" :reactive="true">
                   <v-spacer></v-spacer>
                   <v-btn text color="primary" @click="modalStart = false">Cancel</v-btn>
                   <v-btn text color="primary" @click="dateSave(datePickerStartDate, 'start'); $refs.dialogStart.save()">OK</v-btn>
@@ -21,7 +21,7 @@
                 <template v-slot:activator="{ on }">
                   <v-text-field v-on="on" v-model="endDate" label="Select End Date" prepend-icon="event" readonly/>
                 </template>
-                <v-date-picker ref="pickerEnd" color="secondary" v-model="datePickerEndDate" :reactive="true" min ="2020-02-01">
+                <v-date-picker ref="pickerEnd" color="secondary" v-model="datePickerEndDate" :reactive="true">
                   <v-spacer></v-spacer>
                   <v-btn text color="primary" @click="modalEnd = false">Cancel</v-btn>
                   <v-btn text color="primary" @click="dateSave(datePickerEndDate, 'end'); $refs.dialogEnd.save()">OK</v-btn>
@@ -174,14 +174,6 @@ export default {
     },
     endDateChanged(date) {
       this.$refs.dialogEnd.save(date)
-    }
-  },
-  watch: {
-    modalStart (val) {
-      val && setTimeout(() => (this.$refs.pickerStart.activePicker = 'YEAR'))
-    },
-    modalEnd (val) {
-      val && setTimeout(() => (this.$refs.pickerEnd.activePicker = 'YEAR'))
     }
   },
   computed: {
