@@ -17,13 +17,13 @@
       </v-flex>
     </v-layout>
     <v-layout v-else row wrap justify-left>
-      <v-flex xs12 md4 v-for="(a,i) in model" :key="i">
+      <v-flex xs12 md4 v-for="(a,i) in addresses" :key="i">
         <AddressCard
           :address="a"
           :saving="a.saving"
           @save="save"
           @remove="remove"
-          :canDelete="model.length > 1"
+          :canDelete="addresses.length > 1"
         />
       </v-flex>
     </v-layout>
@@ -62,9 +62,9 @@ export default {
   },
   methods: {
     add() {
-      const newAddress = this.model.find(a => a.new)
+      const newAddress = this.addresses.find(a => a.new)
       if (!newAddress) {
-        this.model.push({
+        this.addresses.push({
           name: '',
           street: '',
           city: '',

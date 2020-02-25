@@ -84,12 +84,8 @@ export default {
       month: moment()
         .format('MM'),
       year: moment().format('YYYY'),
-      startDate: moment()
-        .startOf('month')
-        .format('YYYY-MM-DD'),
-      endDate: moment()
-        .startOf('month')
-        .format('YYYY-MM-DD'),
+      startDate: moment().startOf('month').format('YYYY-MM-DD'),
+      endDate: moment().endOf('month').format('YYYY-MM-DD'),
       tableColumns: [
         { text: 'Date', value: 'date' },
         { text: 'Sale Total', value: 'total' },

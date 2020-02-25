@@ -51,7 +51,7 @@
                 </span>
               </div>
             </v-flex>
-            <v-flex px-3 text-xs-right v-else>
+            <v-flex px-3 text-right v-else>
               <template v-if="current[stat].satisfied">
                 <div class="title" >Achieved</div>
                 <div class="caption grey--text darken-1"> 100% </div>
