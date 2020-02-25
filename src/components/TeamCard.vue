@@ -58,7 +58,7 @@
         <v-tab-item>
           <div class="item-container-card">
             <RankRequirementsCard :stats="engineStats" tabMode v-if="!$apolloData.loading" />
-            <v-flex v-else d-flex justify-center align-center class="text-xs-center">
+            <v-flex v-else d-flex justify-center align-center class="text-center">
               <v-progress-circular indeterminate :size="50" :width="5" color="primary"></v-progress-circular>
             </v-flex>
           </div>
