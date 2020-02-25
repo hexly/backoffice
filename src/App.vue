@@ -2,7 +2,7 @@
   <v-app id="backoffice" :class="'tenant-' + tenant">
     <v-snackbar :timeout="0" bottom right v-model="newVersionAvailable">
       New Version Available!
-      <v-btn flat @click="update" color="primary">Click to update</v-btn>
+      <v-btn text @click="update" color="primary">Click to update</v-btn>
     </v-snackbar>
     <router-view />
   </v-app>
@@ -54,16 +54,17 @@ export default {
 </script>
 
 <style>
-#app {
+#backoffice {
   font-family: "Avenir", Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
   color: #2c3e50;
+  background-image: linear-gradient(to right top, #33ccbb, #3b2f93);
+
 }
 
-#backoffice {
-  background-image: linear-gradient(to right top, #33ccbb, #3b2f93);
+#backoffice .v-tabs-items {
+  background-color: transparent !important;
 }
 
 #backoffice.tenant-1000 {

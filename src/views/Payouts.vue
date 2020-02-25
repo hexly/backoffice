@@ -5,11 +5,13 @@
         <v-card-title class="headline font-weight-regular white--text secondary">
           Payouts
         </v-card-title>
-        <v-card-text v-if="stripeConnect && currentBalance">
+        <v-card-text v-if="stripeConnect && currentBalance" class="pt-3">
             <h4>
               Available Funds:
               <v-tooltip slot="append" bottom>
-                <v-icon small slot="activator">help</v-icon>
+                <template v-slot:activator="{ on }">
+                  <v-icon small v-on="on">help</v-icon>
+                </template>
                 <span><small>Total payouts in paid status since last bank transfer</small></span>
               </v-tooltip>
             </h4>
@@ -18,24 +20,28 @@
             </h2>
             <br/>
             <v-tooltip slot="append" bottom>
-              <v-dialog v-model="transferDialog" width="500" :disabled="currentBalance.amount < 500" slot="activator">
-                <v-btn class="ma-0" color="success" slot="activator" small :disabled="currentBalance.amount < 500">Transfer To My Bank</v-btn>
-                <v-card>
-                  <v-card-title class="headline grey lighten-2" primary-title >
-                    Funds Transfer Policy
-                  </v-card-title>
-                  <v-card-text>
-                    <v-alert type="error" :value="transferError">{{transferError}}</v-alert>
-                    When transfering funds to your bank manually, you will be charged a processing fee of $0.25/£0.10. Would you like to continue to transfer funds?
-                  </v-card-text>
-                  <v-divider></v-divider>
-                  <v-card-actions>
-                    <v-btn color="warning" flat @click="transferDialog = false; transferError = null">no, dont transfer </v-btn>
-                    <v-spacer></v-spacer>
-                    <v-btn :loading="transferingFunds" :disabled="transferingFunds" color="success" flat @click="transferFunds">Yes, Transfer Funds </v-btn>
-                  </v-card-actions>
-                </v-card>
-              </v-dialog>
+              <template v-slot:activator="{ on }">
+                <v-dialog v-model="transferDialog" v-on="on" width="500" :disabled="currentBalance.amount < 500">
+                  <template v-slot:activator="{ on }">
+                  <v-btn class="ma-0" color="success" v-on="on" small :disabled="currentBalance.amount < 500">Transfer To My Bank</v-btn>
+                  </template>
+                  <v-card>
+                    <v-card-title class="headline grey lighten-2" primary-title >
+                      Funds Transfer Policy
+                    </v-card-title>
+                    <v-card-text>
+                      <v-alert type="error" :value="transferError">{{transferError}}</v-alert>
+                      When transfering funds to your bank manually, you will be charged a processing fee of $0.25/£0.10. Would you like to continue to transfer funds?
+                    </v-card-text>
+                    <v-divider></v-divider>
+                    <v-card-actions>
+                      <v-btn color="warning" text @click="transferDialog = false; transferError = null">no, dont transfer </v-btn>
+                      <v-spacer></v-spacer>
+                      <v-btn :loading="transferingFunds" :disabled="transferingFunds" color="success" text @click="transferFunds">Yes, Transfer Funds </v-btn>
+                    </v-card-actions>
+                  </v-card>
+                </v-dialog>
+              </template>
               <span>
                 <small v-if="currentBalance.amount < 500">$5/£5 minimum to transfer to your bank</small>
                 <small v-if="currentBalance.amount >= 500">Fund should arrive in your bank within 48 hours</small>
@@ -49,62 +55,64 @@
         class="elevation-1"
         item-key="id"
         :loading="loading"
-        :rows-per-page-items="[9, 17, 25]"
+        :expanded="expanded"
+        show-expand
       >
-        <template
-          slot="items"
-          slot-scope="props"
-        >
-          <tr @click="props.item.deductions.length > 0 ? props.expanded = !props.expanded : null">
+        <template v-slot:item="{ item, isExpanded }">
+          <tr>
             <td>
-              <Currency :amount="props.item.amount / 100" :currency="props.item.currency" />
+              <Currency :amount="item.amount / 100" :currency="item.currency" />
             </td>
             <td class="status-td">
-              {{ props.item.status }}
-              <v-tooltip v-if="statuses[props.item.status]" bottom>
-                <template slot="activator">
-                  <v-chip class="hint-tip" color="grey lighten-2">
+              {{ item.status }}
+              <v-tooltip v-if="statuses[item.status]" bottom>
+                <template v-slot:activator="{ on }">
+                  <v-chip class="hint-tip" color="grey lighten-2" v-on="on">
                     <span>?</span>
                   </v-chip>
                 </template>
-                <span>{{statuses[props.item.status]}}</span>
+                <span>{{statuses[item.status]}}</span>
               </v-tooltip>
-              <span v-else>{{ props.item.status }}</span>
+              <span v-else>{{ item.status }}</span>
             </td>
-            <td>{{ $moment(props.item.issuedOn).format('lll') }}</td>
-            <td>{{ props.item.releasedOn ? $moment(props.item.releasedOn).format('lll') : '--' }}</td>
-            <td>{{ props.item.note ? props.item.note : '--' }}</td>
+            <td>{{ $moment(item.issuedOn).format('lll') }}</td>
+            <td>{{ item.releasedOn ? $moment(item.releasedOn).format('lll') : '--' }}</td>
+            <td>{{ item.note ? item.note : '--' }}</td>
             <td>
-              <v-tooltip class="deduction-tooltip" v-if="props.item.deductions" left>
-                <template slot="activator">
+              <v-tooltip class="deduction-tooltip" v-if="item.deductions" left>
+                <template v-slot:activator="{ on }">
                   <Currency
-                    :amount="props.item.deductions.reduce((accumulator, curVal) => {
+                    v-on="on"
+                    :amount="item.deductions.reduce((accumulator, curVal) => {
                       const retVal = accumulator + (curVal.amount / 100)
                       return retVal
-                    }, 0)" :currency="props.item.currency"
+                    }, 0)" :currency="item.currency"
                   />
                 </template>
                 <span>Total deductions. Click to see itemized deductions</span>
               </v-tooltip>
               <span v-else>--</span>
             </td>
+            <td v-if="item.deductions.length">
+              <v-icon @click="expanded = []" v-if="isExpanded">expand_less</v-icon>
+              <v-icon  @click="expanded = [item]" v-else>expand_more</v-icon>
+            </td>
           </tr>
         </template>
-        <template
-          slot="expand"
-          slot-scope="props"
-        >
-          <v-card flat>
-            <v-card-text>
-              <h3>Deductions</h3>
-              <ul>
-                <li v-for="d in props.item.deductions" :key="d.id" >
-                  <div>{{feeEnumMap[d.type]}}: <Currency class="body-2" :amount="d.amount / 100" :currency="props.item.currency" /></div>
-                  <small>{{d.note}}</small>
-                </li>
-              </ul>
-            </v-card-text>
-          </v-card>
+        <template v-slot:expanded-item="{ item, headers }">
+          <td :colspan="headers.length">
+            <v-card flat>
+              <v-card-text>
+                <h3>Deductions</h3>
+                <ul>
+                  <li v-for="d in item.deductions" :key="d.id" >
+                    <div>{{feeEnumMap[d.type]}}: <Currency class="body-2" :amount="d.amount / 100" :currency="item.currency" /></div>
+                    <small>{{d.note}}</small>
+                  </li>
+                </ul>
+              </v-card-text>
+            </v-card>
+          </td>
         </template>
       </v-data-table>
     </div>
@@ -141,13 +149,15 @@ export default {
       transferingFunds: false,
       transferError: null,
       balance: {},
+      expanded: [],
       headers: [
         { text: 'Payout Total', value: 'amount' },
         { text: 'Status', value: 'status' },
         { text: 'Issued Date', value: 'issuedOn' },
         { text: 'Released Date', value: 'releasedOn' },
         { text: 'Notes', value: 'notes' },
-        { text: 'Deductions', value: 'deductions' }
+        { text: 'Deductions', value: 'deductions' },
+        { text: '', value: 'data-table-expand' }
       ],
       feeEnumMap: {
         FEE: 'Misc. Fee',

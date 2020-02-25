@@ -13,40 +13,40 @@
       </v-menu>
     </v-toolbar>
     <v-list style="padding: 0;">
-      <v-list-tile
+      <v-list-item
         v-if="personal"
         class="progress"
         :style="calculateColor(1, personal)">
-        <v-list-tile-content>
-          <v-list-tile-title>{{personal.name}} (You)</v-list-tile-title>
-        </v-list-tile-content>
-        <v-list-tile-action >
-          <v-list-tile-title v-if="personal.totalPoints/60 < 1">{{ personal.totalPoints.toFixed(2) }}/60</v-list-tile-title>
-          <v-list-tile-title v-else>Qualified</v-list-tile-title>
-        </v-list-tile-action>
-      </v-list-tile>
+        <v-list-item-content>
+          <v-list-item-title>{{personal.name}} (You)</v-list-item-title>
+        </v-list-item-content>
+        <v-list-item-action >
+          <v-list-item-title v-if="personal.totalPoints/60 < 1">{{ personal.totalPoints.toFixed(2) }}/60</v-list-item-title>
+          <v-list-item-title v-else>Qualified</v-list-item-title>
+        </v-list-item-action>
+      </v-list-item>
       <div v-for="(item, index) in filteredLeaders" :key="`${item.contactEmail}-${index}`">
-        <v-list-tile
+        <v-list-item
           :key="item.name"
           class="progress"
           :style="calculateColor(index+2, item)">
-          <v-list-tile-content>
-            <v-list-tile-title>{{item.name}}</v-list-tile-title>
-          </v-list-tile-content>
-          <v-list-tile-action>
-            <v-list-tile-title v-if="isGrace(item.joinedOn)">Qualified</v-list-tile-title>
-            <v-list-tile-title v-else-if="item.totalPoints/60 < 1">{{ item.totalPoints.toFixed(2) }}/60</v-list-tile-title>
-            <v-list-tile-title v-else>Qualified</v-list-tile-title>
-          </v-list-tile-action>
-        </v-list-tile>
+          <v-list-item-content>
+            <v-list-item-title>{{item.name}}</v-list-item-title>
+          </v-list-item-content>
+          <v-list-item-action>
+            <v-list-item-title v-if="isGrace(item.joinedOn)">Qualified</v-list-item-title>
+            <v-list-item-title v-else-if="item.totalPoints/60 < 1">{{ item.totalPoints.toFixed(2) }}/60</v-list-item-title>
+            <v-list-item-title v-else>Qualified</v-list-item-title>
+          </v-list-item-action>
+        </v-list-item>
       </div>
-      <v-list-tile
+      <v-list-item
         v-if="filteredLeaders && filteredLeaders.length < 4 && leaders.length > 4"
         class="progress">
-        <v-list-tile-content>
-          <v-list-tile-title>You have {{leaders.length - filteredLeaders.length}} people in your front line with 0 points this month.</v-list-tile-title>
-        </v-list-tile-content>
-      </v-list-tile>
+        <v-list-item-content>
+          <v-list-item-title>You have {{leaders.length - filteredLeaders.length}} people in your front line with 0 points this month.</v-list-item-title>
+        </v-list-item-content>
+      </v-list-item>
     </v-list>
     <div v-if="leaders.length < 5"></div>
   </v-card>

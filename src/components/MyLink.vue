@@ -9,7 +9,9 @@
         single-line
         class="link">
         <v-tooltip slot="append" bottom>
-            <v-icon @click="copyToClipboard" slot="activator" color="black" dark>assignment</v-icon>
+            <template v-slot:activator="{ on }">
+              <v-icon @click="copyToClipboard" v-on="on" color="black" dark>assignment</v-icon>
+            </template>
             <span>{{copyTooltipText}}</span>
         </v-tooltip>
       </v-text-field>

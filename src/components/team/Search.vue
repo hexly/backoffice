@@ -19,7 +19,7 @@
       </form>
     </div>
     <div class="search-results" :class="{'loading': !!loading}">
-      <div class="loader-overlay text-xs-center">
+      <div class="loader-overlay text-center">
         <v-progress-circular class="loader" indeterminate :size="60" :width="6" color="black"></v-progress-circular>
       </div>
       <v-layout wrap align-space-between justify-center row fill-height>
@@ -36,7 +36,7 @@
           />
         </v-flex>
       </v-layout>
-      <div class="text-xs-center" v-if="length > 0">
+      <div class="text-center" v-if="length > 0">
         <v-pagination
           v-model="page"
           :length="length"

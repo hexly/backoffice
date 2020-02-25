@@ -3,7 +3,7 @@
     <h2>{{$tenantInfo.strings['stripeConnect'] || 'Stripe'}} </h2>
     <h3>{{$tenantInfo.strings['stripeConnect'] || 'Stripe'}} provides {{tenant.name}} the ability to send money directly to your bank account.</h3>
     <br />
-    <v-alert type="error" :value="(error || localError)">{{error || localError}}</v-alert>
+    <v-alert type="error" :value="!!error || !!localError">{{error || localError}}</v-alert>
     <div v-if="integrationDetails">
       <div v-if="loadingAccountDetails">
         Loading Bank Info...
@@ -35,7 +35,7 @@
         It looks like you do not yet have {{$tenantInfo.strings['stripeConnect'] || 'Stripe'}} configured.
         <br />Please click the button below to begin your account creation!
       </p>
-      <v-btn @click="beginSetup" color="primary">Create New Account</v-btn>
+      <v-btn @click="beginSetup" class="my-2" color="primary">Create New Account</v-btn>
     </div>
     <div v-if="!loading && setup">
       <h3>Account Creation</h3>
@@ -104,7 +104,7 @@
           :rules="rules.requiredRule"
           :disabled="attemptingStripeSetup"
         />
-        <p class="text-xs-left caption phone-hint">
+        <p class="text-left caption phone-hint">
           Please speficy your country code as follows:
           <br/>
           US: <b>+1</b>555....

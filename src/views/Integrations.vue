@@ -1,6 +1,6 @@
 <template>
-  <div class="integrations text-xs-center">
-    <v-tabs centered color="secondary" dark icons-and-text>
+  <div class="integrations text-center">
+    <v-tabs centered background-color="secondary" dark icons-and-text>
       <v-tabs-slider color="white"></v-tabs-slider>
 
       <v-tab v-for="i in availableIntegrations" :to="`#${i.key}`" :key="i.key">

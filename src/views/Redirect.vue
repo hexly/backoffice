@@ -3,7 +3,7 @@
     <h1>Assets</h1>
     <v-container
       grid-list-md
-      text-xs-center
+      text-center
     >
       <v-layout
         row

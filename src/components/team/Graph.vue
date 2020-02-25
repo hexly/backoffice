@@ -13,31 +13,30 @@
     </v-layout>
     <div ref="graph"></div>
     <v-progress-linear v-if="loading" :indeterminate="true" color="grey"></v-progress-linear>
-    <v-data-table :headers="tableColumns" :items="items" item-key="id" class="elevation-1" expand>
-      <template slot="items" slot-scope="props">
-        <tr @click="props.expanded = !props.expanded">
+    <v-data-table :headers="tableColumns" :items="items" item-key="id" class="elevation-1" :expanded="expanded" show-expand>
+      <template v-slot:item="{ item, isExpanded }">
+        <tr>
+          <td>{{ item.date }}</td>
+          <td><Currency :amount="parseFloat(item.total)" :currency="item.currency"/></td>
+          <td>{{ item.totalPoints }}</td>
+          <td>{{ item.displayName }}</td>
+          <td>{{ item.sellerEmail }}</td>
           <td>
-            <a>Details</a>
+            <v-icon @click="expanded = []" v-if="isExpanded">expand_less</v-icon>
+            <v-icon  @click="expanded = [item]" v-else>expand_more</v-icon>
           </td>
-          <td>{{ props.item.date }}</td>
-          <td>${{ props.item.total }}</td>
-          <td>{{ props.item.totalPoints }}</td>
-          <td>{{ props.item.commissionableAmount }}</td>
-          <td>{{ props.item.commissionablePoints }}</td>
-          <td>{{ props.item.displayName }}</td>
-          <td>{{ props.item.sellerEmail }}</td>
         </tr>
       </template>
-      <template slot="expand" slot-scope="props">
-        <div class="pa-3 sale-details">
+      <template v-slot:expanded-item="{ item, headers }">
+        <td :colspan="headers.length" class="pa-3 sale-details">
           <v-container fluid>
             <v-layout>
               <v-flex xs4>
                 <h4>Details:</h4>
                 <ul>
-                  <li>Order ID: {{props.item.providerOid}}</li>
-                  <li>Status: {{props.item.status}}</li>
-                  <li>Customer Note: {{props.item.customerNote}}</li>
+                  <li>Order ID: {{item.providerOid}}</li>
+                  <li>Status: {{item.status}}</li>
+                  <li>Customer Note: {{item.customerNote}}</li>
                 </ul>
               </v-flex>
             </v-layout>
@@ -45,21 +44,19 @@
               <v-flex xs12>
                 <h4>Line Items</h4>
                 <ul>
-                  <li
-                    v-for="line in props.item.lineItems"
-                    :key="line.id"
-                  >{{line.name}} ({{line.total}})</li>
+                  <li v-for="line in item.lineItems" :key="line.id" >{{line.name}} ({{line.total}})</li>
                 </ul>
               </v-flex>
             </v-layout>
           </v-container>
-        </div>
+        </td>
       </template>
     </v-data-table>
   </div>
 </template>
 
 <script>
+import Currency from '@/components/Currency.vue'
 import { initialize, updateHeightDepth, collapse,
   checkParentOfPinned } from './Graph.d3.js'
 import { SALES_STATS, SEARCH_SALES_SELLER_ID } from '@/graphql/Sales.gql'
@@ -72,6 +69,7 @@ export default {
   name: 'TeamGraph',
   data () {
     return {
+      expanded: [],
       searchTerm: '',
       graph: null,
       root: null,
@@ -93,19 +91,12 @@ export default {
         .startOf('month')
         .format('YYYY-MM-DD'),
       tableColumns: [
-        {
-          text: 'Show Details',
-          value: 'string',
-          align: 'left',
-          sortable: false
-        },
         { text: 'Date', value: 'date' },
         { text: 'Sale Total', value: 'total' },
         { text: 'Total Points', value: 'points' },
-        { text: 'Commissionable Total', value: 'comTotal' },
-        { text: 'Commissionable Points', value: 'comPoints' },
         { text: 'Seller Name', value: 'displayName' },
-        { text: 'Seller Email', value: 'contactEmail' }
+        { text: 'Seller Email', value: 'contactEmail' },
+        { text: '', value: 'data-table-expand' }
       ],
       contextMenuOptions: {
         unPinMenu: {
@@ -195,9 +186,9 @@ export default {
       this.changeGraphType(newSelection)
     }
   },
-  // components: {
-  //   MonthSelector
-  // },
+  components: {
+    Currency
+  },
   async mounted () {
     const cfg = {
       el: this.$refs.graph,
@@ -224,6 +215,13 @@ export default {
     this.loading = false
   },
   methods: {
+    expand(row) {
+      if (this.expanded.length > 0) {
+        this.expanded = []
+      } else {
+        this.expanded = [row]
+      }
+    },
     zoom ({ amount }) {
       this.graph.zoomInAndOut({ amount })
     },

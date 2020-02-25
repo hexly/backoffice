@@ -11,22 +11,22 @@
         v-for="(item, index) in leaders"
         :key="`${item.contactEmail}-${index}`"
       >
-        <v-list-tile
+        <v-list-item
           :key="item.name"
           avatar
         >
-          <v-list-tile-avatar>
+          <v-list-item-avatar>
             <img :src="scaleImage(item.profileUrl)">
-          </v-list-tile-avatar>
-          <v-list-tile-content>
-            <v-list-tile-title>{{item.name}}</v-list-tile-title>
-            <v-list-tile-sub-title>{{item.contactEmail}}</v-list-tile-sub-title>
-          </v-list-tile-content>
-          <v-list-tile-action v-if="showTotal">
-            <v-list-tile-title v-if="!currency">{{ item.total }}</v-list-tile-title>
-            <v-list-tile-title v-if="currency">{{ formatCurrency(~~item.total) }}</v-list-tile-title>
-          </v-list-tile-action>
-        </v-list-tile>
+          </v-list-item-avatar>
+          <v-list-item-content>
+            <v-list-item-title>{{item.name}}</v-list-item-title>
+            <v-list-item-sub-title>{{item.contactEmail}}</v-list-item-sub-title>
+          </v-list-item-content>
+          <v-list-item-action v-if="showTotal">
+            <v-list-item-title v-if="!currency">{{ item.total }}</v-list-item-title>
+            <v-list-item-title v-if="currency">{{ formatCurrency(~~item.total) }}</v-list-item-title>
+          </v-list-item-action>
+        </v-list-item>
       </div>
     </v-list>
   </v-card>

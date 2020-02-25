@@ -1,6 +1,6 @@
 <template>
-  <v-chip color="primary" text-color="white">
-    <v-avatar class="primary darken-4">
+  <v-chip pill color="primary" text-color="white">
+    <v-avatar left class="primary darken-4">
       <v-icon>cake</v-icon>
     </v-avatar>
     {{birthday}}

@@ -5,141 +5,89 @@
         <v-card-title class="headline font-weight-regular white--text secondary">Order History</v-card-title>
         <v-card-text>
           <v-subheader>Range</v-subheader>
-          <v-container
-            grid-list-md
-            text-xs-center
-          >
-            <v-layout
-              row
-              align-center
-              justify-space-around
-              wrap
-            >
-              <v-dialog
-                ref="dialogStart"
-                v-model="modalStart"
-                lazy
-                full-width
-                width="290px"
-              >
-                <v-text-field
-                  slot="activator"
-                  v-model="startDate"
-                  label="Select Start Date"
-                  prepend-icon="event"
-                  readonly
-                />
-                <v-date-picker
-                  ref       ="pickerStart"
-                  color     ="secondary"
-                  v-model   ="datePickerStartDate"
-                  :reactive ="true"
-                  min      ="2020-02-01"
-                >
+          <v-container grid-list-md text-center>
+            <v-layout row align-center justify-space-around wrap>
+              <v-dialog ref="dialogStart" v-model="modalStart" lazy full-width width="290px">
+                <template v-slot:activator="{ on }">
+                  <v-text-field v-on="on" v-model="startDate" label="Select Start Date" prepend-icon="event" readonly/>
+                </template>
+                <v-date-picker ref="pickerStart" color="secondary" v-model="datePickerStartDate" :reactive="true">
                   <v-spacer></v-spacer>
-                  <v-btn flat color="primary" @click="modalStart = false">Cancel</v-btn>
-                  <v-btn flat color="primary" @click="dateSave(datePickerStartDate, 'start'); $refs.dialogStart.save()">OK</v-btn>
+                  <v-btn text color="primary" @click="modalStart = false">Cancel</v-btn>
+                  <v-btn text color="primary" @click="dateSave(datePickerStartDate, 'start'); $refs.dialogStart.save()">OK</v-btn>
                 </v-date-picker>
               </v-dialog>
-              <v-dialog
-                ref="dialogEnd"
-                v-model="modalEnd"
-                lazy
-                full-width
-                width="290px"
-              >
-                <v-text-field
-                  slot="activator"
-                  v-model="endDate"
-                  label="Select End Date"
-                  prepend-icon="event"
-                  readonly
-                />
-                <v-date-picker
-                  ref="pickerEnd"
-                  color="secondary"
-                  v-model="datePickerEndDate"
-                  :reactive="true"
-                  min      ="2020-02-01"
-                >
+              <v-dialog ref="dialogEnd" v-model="modalEnd" lazy full-width width="290px">
+                <template v-slot:activator="{ on }">
+                  <v-text-field v-on="on" v-model="endDate" label="Select End Date" prepend-icon="event" readonly/>
+                </template>
+                <v-date-picker ref="pickerEnd" color="secondary" v-model="datePickerEndDate" :reactive="true">
                   <v-spacer></v-spacer>
-                  <v-btn flat color="primary" @click="modalEnd = false">Cancel</v-btn>
-                  <v-btn flat color="primary" @click="dateSave(datePickerEndDate, 'end'); $refs.dialogEnd.save()">OK</v-btn>
+                  <v-btn text color="primary" @click="modalEnd = false">Cancel</v-btn>
+                  <v-btn text color="primary" @click="dateSave(datePickerEndDate, 'end'); $refs.dialogEnd.save()">OK</v-btn>
                 </v-date-picker>
               </v-dialog>
             </v-layout>
           </v-container>
         </v-card-text>
       </v-card>
-      <v-data-table
-        :headers="headers"
-        :items="items"
-        hide-actions
-        class="elevation-1"
-        item-key="id"
-        expand
-        :loading="loading"
-      >
-        <template
-          slot="items"
-          slot-scope="props"
-        >
-          <tr @click="props.expanded = !props.expanded">
-            <td>{{ props.item.date }}</td>
+      <v-data-table :headers="headers" :items="items" hide-default-footer class="elevation-1" item-key="id" :expanded="expanded" show-expand :loading="loading">
+        <template v-slot:item="{ item, isExpanded }">
+          <tr>
+            <td>{{ item.date }}</td>
             <td>
-              {{ props.item.billingFirstName }} {{ props.item.billingLastName }}
+              {{ item.billingFirstName }} {{ item.billingLastName }}
             </td>
             <td>
-              <Currency :amount="parseFloat(props.item.total)" :currency="props.item.currency"/>
+              <Currency :amount="parseFloat(item.total)" :currency="item.currency"/>
             </td>
-            <td>{{ props.item.totalPoints }}</td>
-            <td>{{ props.item.status }}</td>
+            <td>{{ item.totalPoints }}</td>
+            <td>{{ item.status }}</td>
             <td>
-              <v-icon v-if="props.expanded">expand_less</v-icon>
-              <v-icon v-else>expand_more</v-icon>
+              <v-icon @click="expanded = []" v-if="isExpanded">expand_less</v-icon>
+              <v-icon  @click="expanded = [item]" v-else>expand_more</v-icon>
             </td>
           </tr>
         </template>
-        <template
-          slot="expand"
-          slot-scope="props"
-        >
-          <div class="pa-3 sale-details">
+        <template v-slot:expanded-item="{ item, headers }">
+          <td :colspan="headers.length" class="pa-3 sale-details">
             <v-container fluid>
               <v-layout>
                 <v-flex xs4>
                   <h4>Customer Info:</h4>
                   <ul>
-                    <li>{{props.item.shippingFirstName}} {{props.item.shippingLastName}}</li>
-                    <li>{{props.item.billingEmail}}</li>
-                    <li>{{props.item.shippingCity}}, {{props.item.shippingState}} {{props.item.shippingZip}}</li>
+                    <li>{{item.shippingFirstName}} {{item.shippingLastName}}</li>
+                    <li>{{item.billingEmail}}</li>
+                    <li>{{item.shippingCity}}, {{item.shippingState}} {{item.shippingZip}}</li>
                   </ul>
                 </v-flex>
                 <v-flex xs4>
                   <h4>Details:</h4>
                   <ul>
-                    <li>Originating ID: {{props.item.providerOid}}</li>
-                    <li>Status: {{props.item.status}}</li>
-                    <li v-if="props.item.customerNote">Customer Note: {{props.item.customerNote}}</li>
+                    <li>Originating ID: {{item.providerOid}}</li>
+                    <li>Status: {{item.status}}</li>
+                    <li v-if="item.customerNote">Customer Note: {{item.customerNote}}</li>
                   </ul>
                 </v-flex>
               </v-layout>
               <v-layout my-4>
                 <v-flex xs12>
                   <h4>Products & Services</h4>
-                  <v-data-table :headers="productHeads" :items="props.item.lineItems" hide-actions>
-                    <template slot="items" slot-scope="lines">
-                      <td>{{ lines.item.name }}</td>
-                      <td>{{ lines.item.quantity }}</td>
-                      <td>
-                        <Currency :amount="parseFloat(lines.item.subtotal)" :currency="props.item.currency"/>
-                      </td>
+                  <v-data-table :headers="productHeads" :items="item.lineItems" hide-default-footer>
+                    <template v-slot:item="{ item: line }">
+                      <tr>
+                        <td>{{ line.name }}</td>
+                        <td>{{ line.quantity }}</td>
+                        <td>
+                          <Currency :amount="parseFloat(line.subtotal)" :currency="item.currency"/>
+                        </td>
+                      </tr>
                     </template>
                   </v-data-table>
                 </v-flex>
               </v-layout>
             </v-container>
-          </div>
+          </td>
         </template>
       </v-data-table>
     </div>
@@ -163,6 +111,7 @@ export default {
       datePickerStartDate: null,
       datePickerEndDate: null,
       modalStart: false,
+      expanded: [],
       modalEnd: false,
       startDate: this.$moment()
         .startOf('month')
@@ -175,13 +124,8 @@ export default {
         { text: 'Customer', value: 'customer' },
         { text: 'Sale Total', value: 'total' },
         { text: 'Total Points', value: 'points' },
-        { text: 'Status', value: 'staus' },
-        {
-          text: 'Actions',
-          value: 'string',
-          align: 'left',
-          sortable: false
-        }
+        { text: 'Status', value: 'status' },
+        { text: '', value: 'data-table-expand' }
       ],
       productHeads: [
         { text: 'Item', sortable: false },
@@ -230,14 +174,6 @@ export default {
     },
     endDateChanged(date) {
       this.$refs.dialogEnd.save(date)
-    }
-  },
-  watch: {
-    modalStart (val) {
-      val && setTimeout(() => (this.$refs.pickerStart.activePicker = 'YEAR'))
-    },
-    modalEnd (val) {
-      val && setTimeout(() => (this.$refs.pickerEnd.activePicker = 'YEAR'))
     }
   },
   computed: {

@@ -1,5 +1,5 @@
 <template>
-  <v-card max-width="320" min-width="320" class="my-2 pa-2 team-card">
+  <v-card max-width="320" min-width="320" class="my-2 team-card">
     <v-img
       :src="getAvatar"
       cover
@@ -10,36 +10,30 @@
     >
     <v-card-title class="fill-height align-end">
       <v-flex row>
-        <h2>{{(user.name).toUpperCase()}}</h2>
+        <h3>{{(user.name).toUpperCase()}}</h3>
       </v-flex>
     </v-card-title>
     </v-img>
     <div v-if="actions">
-      <v-tabs
-        hide-slider
-        centered
-        grow
-        @change="handleTabChange"
-        :value="activeTab"
-      >
-        <v-tab @click="$emit('tabActivated', index)" v-for="(heading, index) in tabHeadings" :key="heading">
+      <v-tabs @change="handleTabChange" :value="activeTab">
+        <v-tab class="dense" @click="$emit('tabActivated', index)" v-for="(heading, index) in tabHeadings" :key="heading">
           {{ heading }}
         </v-tab>
         <v-tab-item>
           <v-card class="item-container-card" flat>
-            <!-- <h4 class="text-xs-center" v-if="displayedRank">Current Rank: {{displayedRank}}</h4>
+            <!-- <h4 class="text-center" v-if="displayedRank">Current Rank: {{displayedRank}}</h4>
             <v-btn
               @click="$emit('fetchRank')"
               class="get-rank-btn primary white--text"
-              round
+              rounded
               small
               v-else
             >
               <span v-if="!$apollo.loading">Get Rank</span>
               <v-progress-circular indeterminate v-else size="20" />
             </v-btn> -->
-            <h4 class="text-xs-center" v-if="email">{{(email).toLowerCase()}}</h4>
-            <h4 class="text-xs-center" v-if="slug">
+            <h4 class="text-center" v-if="email">{{(email).toLowerCase()}}</h4>
+            <h4 class="text-center" v-if="slug">
               Store: <a target="_blank" :href="$tenantInfo.storeUrl.replace('{slug}', slug)">
               {{slug}}
               </a>
@@ -49,9 +43,11 @@
               <v-layout class="generation-badge-container" align-center row wrap>
                 <template v-for="parent in user.relativePathMembers">
                   <v-tooltip top slot="append" :key="parent.profileUrl">
-                    <v-avatar class="generation-avatar ma-1 elevation-3" size="60px" slot="activator">
-                      <img :src="parent.profileUrl || $tenantInfo.placeholder" alt="Avatar" >
-                    </v-avatar>
+                    <template v-slot:activator="{ on }">
+                      <v-avatar class="generation-avatar ma-1 elevation-3" size="60px" v-on="on">
+                        <img :src="parent.profileUrl || $tenantInfo.placeholder" alt="Avatar" >
+                      </v-avatar>
+                    </template>
                     <span>{{parent.name}}</span>
                   </v-tooltip>
                 </template>
@@ -70,12 +66,14 @@
         <v-tab-item>
           <div class="item-container-card">
             <v-card v-if="!$apolloData.loading" flat>
-              <v-layout justify-center row wrap class="text-xs-center">
+              <v-layout justify-center row wrap class="text-center">
                 <v-flex xs3>
                   <span class="font-weight-black title">{{tabContent.teamSize}}</span>
                   <br/>
                   Team Size
                 </v-flex>
+              </v-layout>
+              <v-layout justify-center row wrap class="text-center">
                 <v-flex xs3>
                   <span class="font-weight-black title">{{tabContent.frontLine}}</span>
                   <br/>
@@ -93,13 +91,13 @@
                 </v-flex>
               </v-layout>
             </v-card>
-            <v-flex v-else d-flex justify-center align-center class="text-xs-center">
+            <v-flex v-else d-flex justify-center align-center class="text-center">
               <v-progress-circular indeterminate :size="50" :width="5" color="primary"></v-progress-circular>
             </v-flex>
             <v-card flat>
-              <v-layout justify-center row wrap class="text-xs-center">
+              <v-layout justify-center row wrap class="text-center">
                 <v-btn
-                  round
+                  rounded
                   small
                   color="secondary white--text"
                   @click="viewTeam()"
@@ -115,6 +113,7 @@
           <div v-if="!$apolloData.loading">
             <v-card v-if="awards.length" class="badge-card" d-flex justify-center wrap flat>
               <v-chip
+                pill
                 v-for       ="award in awards"
                 :class       ="'badge elevation-3' + (awardHover[award.name] ? ' badge-hover' : '')"
                 :color      ="award.metadata.color"
@@ -124,7 +123,7 @@
                 @mouseleave ="handleHover($event, award.name)"
                 @mouseout   ="handleHover($event, award.name)"
               >
-                <v-avatar :color="award.metadata.accent">
+                <v-avatar left :color="award.metadata.accent">
                   <v-icon>{{award.metadata.icon}}</v-icon>
                 </v-avatar>
                 <transition
@@ -140,7 +139,7 @@
               <div>No Awards Yet!</div>
             </v-card>
           </div>
-          <v-flex v-else d-flex justify-center align-center class="badge-card text-xs-center">
+          <v-flex v-else d-flex justify-center align-center class="badge-card text-center">
             <v-progress-circular indeterminate :size="50" :width="5" color="primary"></v-progress-circular>
           </v-flex>
         </v-tab-item>
@@ -390,6 +389,10 @@ export default {
   max-height: 100%;
   max-width: 100%;
 }
+.dense {
+  font-size: 13.5px;
+  min-width: 43px;
+}
 .badge-card {
   display: flex;
   flex-wrap: wrap;
@@ -400,6 +403,11 @@ export default {
 .badge {
   max-width: 29px;
   transition: ease-out 350ms;
+}
+.badge .v-avatar{
+  height: 29px !important;
+  min-width: 29px !important;
+  width: 29px !important;
 }
 .badge-hover {
   max-width: 100%;

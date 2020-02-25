@@ -1,101 +1,101 @@
 <template>
   <div class="main">
     <v-navigation-drawer fixed v-model="drawer" app>
-      <div v-if="$tenantInfo.logoPath" class="text-xs-center">
+      <div v-if="$tenantInfo.logoPath" class="text-center">
         <img :src="$tenantInfo.logoPath" class="logo" />
       </div>
       <v-divider></v-divider>
       <v-list dense>
-        <v-list-tile to="/dashboard">
-          <v-list-tile-action>
+        <v-list-item to="/dashboard">
+          <v-list-item-action>
             <v-icon>home</v-icon>
-          </v-list-tile-action>
-          <v-list-tile-content>
-            <v-list-tile-title>Dashboard</v-list-tile-title>
-          </v-list-tile-content>
-        </v-list-tile>
-        <v-list-tile to="/profile">
-          <v-list-tile-action>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>Dashboard</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+        <v-list-item to="/profile">
+          <v-list-item-action>
             <v-icon>contact_mail</v-icon>
-          </v-list-tile-action>
-          <v-list-tile-content>
-            <v-list-tile-title>Profile</v-list-tile-title>
-          </v-list-tile-content>
-        </v-list-tile>
-        <!-- <v-list-tile to="/assets">
-          <v-list-tile-action>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>Profile</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+        <!-- <v-list-item to="/assets">
+          <v-list-item-action>
             <v-icon>perm_media</v-icon>
-          </v-list-tile-action>
-          <v-list-tile-content>
-            <v-list-tile-title>Assets</v-list-tile-title>
-          </v-list-tile-content>
-        </v-list-tile>-->
-        <v-list-tile v-if="$tenantInfo.features.sales" to="/sales">
-          <v-list-tile-action>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>Assets</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>-->
+        <v-list-item v-if="$tenantInfo.features.sales" to="/sales">
+          <v-list-item-action>
             <v-icon>shopping_basket</v-icon>
-          </v-list-tile-action>
-          <v-list-tile-content>
-            <v-list-tile-title>Order History</v-list-tile-title>
-          </v-list-tile-content>
-        </v-list-tile>
-        <v-list-tile v-if="$tenantInfo.features.team" to="/team">
-          <v-list-tile-action>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>Order History</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+        <v-list-item v-if="$tenantInfo.features.team" to="/team">
+          <v-list-item-action>
             <v-icon>people</v-icon>
-          </v-list-tile-action>
-          <v-list-tile-content>
-            <v-list-tile-title>Team</v-list-tile-title>
-          </v-list-tile-content>
-        </v-list-tile>
-        <v-list-tile v-if="$tenantInfo.features.payouts" to="/payouts">
-          <v-list-tile-action>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>Team</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+        <v-list-item v-if="$tenantInfo.features.payouts" to="/payouts">
+          <v-list-item-action>
             <v-icon>attach_money</v-icon>
-          </v-list-tile-action>
-          <v-list-tile-content>
-            <v-list-tile-title>Payouts</v-list-tile-title>
-          </v-list-tile-content>
-        </v-list-tile>
-        <v-list-tile v-if="activeIntegrations.length" to="/integrations">
-          <v-list-tile-action>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>Payouts</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+        <v-list-item v-if="activeIntegrations.length" to="/integrations">
+          <v-list-item-action>
             <v-icon>compare_arrows</v-icon>
-          </v-list-tile-action>
-          <v-list-tile-content>
-            <v-list-tile-title>Integrations</v-list-tile-title>
-          </v-list-tile-content>
-        </v-list-tile>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>Integrations</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
       </v-list>
 
       <v-divider></v-divider>
       <v-list>
-        <v-list-tile :href="usersStoreUrl" target="_blank">
-          <v-list-tile-action>
+        <v-list-item :href="usersStoreUrl" target="_blank">
+          <v-list-item-action>
             <v-icon>store</v-icon>
-          </v-list-tile-action>
-          <v-list-tile-content>
-            <v-list-tile-title>Shop</v-list-tile-title>
-          </v-list-tile-content>
-        </v-list-tile>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>Shop</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
       </v-list>
       <v-divider v-if="hasAdminMenu"></v-divider>
       <v-list v-if="hasAdminMenu">
-        <v-list-tile target="_blank" href="https://admin.hexly.cloud">
-          <v-list-tile-action>
+        <v-list-item target="_blank" href="https://admin.hexly.cloud">
+          <v-list-item-action>
             <v-icon>cloud_circle</v-icon>
-          </v-list-tile-action>
-          <v-list-tile-content>
-            <v-list-tile-title>Hexly Admin</v-list-tile-title>
-          </v-list-tile-content>
-        </v-list-tile>
-        <v-list-tile v-if="hasZendeskAdmin" to="/zendesk">
-          <v-list-tile-action>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>Hexly Admin</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+        <v-list-item v-if="hasZendeskAdmin" to="/zendesk">
+          <v-list-item-action>
             <v-icon>supervised_user_circle</v-icon>
-          </v-list-tile-action>
-          <v-list-tile-content>
-            <v-list-tile-title>Zendesk Admin</v-list-tile-title>
-          </v-list-tile-content>
-        </v-list-tile>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>Zendesk Admin</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
       </v-list>
 
-      <div column class="text-xs-center py-4 footer">
+      <div column class="text-center py-4 footer">
         <div>
           <a
             v-for="social in $tenantInfo.social"
@@ -114,26 +114,31 @@
         </h5>
       </div>
     </v-navigation-drawer>
-    <v-toolbar :color="$tenantInfo.baseColor" dark fixed app>
-      <v-toolbar-side-icon v-if="$vuetify.breakpoint.mdAndDown" @click.stop="drawer = !drawer"></v-toolbar-side-icon>
+    <v-app-bar :color="$tenantInfo.baseColor" dark fixed app>
+      <v-app-bar-nav-icon v-if="$vuetify.breakpoint.mdAndDown" @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
       <v-toolbar-title class="title">{{$route.name}}</v-toolbar-title>
       <v-spacer></v-spacer>
       <v-toolbar-items>
         <v-menu offset-y>
-          <v-btn flat slot="activator">
-            <span
-              data-cy="Display Name"
-              v-if="$vuetify.breakpoint.mdAndUp"
-            >{{user.isImpersonating ? impersonationPrefix + user.principal.member.displayName : user.principal.member.displayName}}</span>
-            <img class="avatar" :src="getAvatar" />
-          </v-btn>
+          <template v-slot:activator="{ on }">
+            <v-btn text v-on="on">
+              <span
+                data-cy="Display Name"
+                v-if="$vuetify.breakpoint.mdAndUp"
+                class="pr-2"
+              >{{user.isImpersonating ? impersonationPrefix + user.principal.member.displayName : user.principal.member.displayName}}</span>
+              <v-avatar>
+                <v-img :src="getAvatar"></v-img>
+              </v-avatar>
+            </v-btn>
+          </template>
           <v-list>
-            <v-list-tile @click="logout" v-if="user.isImpersonating">
-              <v-list-tile-title>End Impersonation</v-list-tile-title>
-            </v-list-tile>
-            <v-list-tile data-cy="Logout" @click="logout" v-if="!user.isImpersonating">
-              <v-list-tile-title>Log Out</v-list-tile-title>
-            </v-list-tile>
+            <v-list-item @click="logout" v-if="user.isImpersonating">
+              <v-list-item-title>End Impersonation</v-list-item-title>
+            </v-list-item>
+            <v-list-item data-cy="Logout" @click="logout" v-if="!user.isImpersonating">
+              <v-list-item-title>Log Out</v-list-item-title>
+            </v-list-item>
           </v-list>
         </v-menu>
       </v-toolbar-items>
@@ -144,7 +149,7 @@
         :indeterminate="true"
         color="secondary"
       ></v-progress-linear>
-    </v-toolbar>
+    </v-app-bar>
     <v-content>
       <div>
         <router-view />

@@ -7,7 +7,7 @@
         :src="$tenantInfo.profileCover || '/img/default-profile-cover.jpg'"
       />
     <div v-else class="profile-color" :style="`background-color: ${$tenantInfo.profileColor}`"></div>
-    <v-card-text class="text-xs-center">
+    <v-card-text class="text-center">
       <v-avatar size="124" class="avatar" color="white" @click="showProfilePicDialog = true">
         <v-img v-if="user.principal.member.profileUrl || $tenantInfo.placeholder" :src="user.principal.member.profileUrl || $tenantInfo.placeholder" class="mb-4" ></v-img>
         <v-gravatar v-else default-img="mp" :email="user.principal.member.contacts[0].emails[0].email" class="mb-4"/>
@@ -17,12 +17,12 @@
       <div v-if="user.principal.member.sponsor" class="mt-3">
         <b>{{sponsorName || 'Your Sponsor'}}:</b>
         <v-layout row align-center>
-          <v-flex mx-2 class="text-xs-right">
+          <v-flex mx-2 class="text-right">
             <v-avatar>
               <v-img v-if="user.principal.member.sponsor.profileUrl || $tenantInfo.placeholder" :src="user.principal.member.sponsor.profileUrl || $tenantInfo.placeholder"></v-img>
             </v-avatar>
           </v-flex>
-          <v-flex mx-2 class="text-xs-left">
+          <v-flex mx-2 class="text-left">
             <div>
               <b>{{user.principal.member.sponsor.displayName}} </b>
               <br/>
@@ -33,12 +33,12 @@
       </div>
     </v-card-text>
     <v-divider class="mb-3"></v-divider>
-    <div class="text-xs-center pa-2">
+    <div class="text-center pa-2">
       <h3 class="mb-4">Your Personal Link</h3>
       <MyLink />
     </div>
     <v-divider class="mb-3"></v-divider>
-    <div class="text-xs-center pa-2">
+    <div class="text-center pa-2">
       <h3 class="mb-4">Profile Settings</h3>
       <PrivateProfile />
     </div>
@@ -134,7 +134,7 @@ export default {
   position: relative;
   top: -62px;
   margin-bottom: -62px;
-  padding-top: 19px;
+  padding-top: 16px;
 }
 .personal-card .avatar .v-responsive,
 .personal-card .avatar img {
@@ -155,6 +155,7 @@ export default {
   background-color: rgba(255,255,255,0.5);
   border-radius: 100%;
   cursor: pointer;
+  line-height: 124px;
 }
 .personal-card .avatar:hover::after{
   display: block;

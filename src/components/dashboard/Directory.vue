@@ -5,7 +5,7 @@
         {{title}}
       </v-card-title>
       <v-layout justify-space-between row wrap>
-        <v-flex xs12 sm5>
+        <v-flex xs12 sm5 ml-3>
           <v-sheet class="pa-3">
             <v-text-field
               v-model="search"
@@ -49,19 +49,19 @@
         </v-flex>
         <v-flex
           d-flex
-          text-xs-center
+          text-center
         >
           <v-scroll-y-transition mode="out-in">
             <div
               v-if="!selected"
               class="title grey--text text--lighten-1 font-weight-light"
-              style="align-self: center;"
+              style="align-self: center; margin: auto;"
             >
               <p>Select a team member to view details.</p>
               <p class="subheading">Select the arrow to their view team</p>
             </div>
             <v-card v-else :key="selected.id" class="pt-4 mx-auto" flat>
-              <v-card-text class="text-xs-center">
+              <v-card-text class="text-center">
                 <v-avatar size="124" class="avatar" color="white">
                   <v-img :src="selected.profileUrl || $tenantInfo.placeholder" class="mb-4" ></v-img>
                 </v-avatar>
@@ -72,9 +72,9 @@
                 <div class="primary--text subheading font-weight-bold">{{membersTypeName}} #<b>{{selected.mrn}}</b></div>
               </v-card-text>
               <v-divider class="mb-3"></v-divider>
-              <div class="text-xs-center pa-2" v-if="selected && (selected.counts || loadingCounts)">
+              <div class="text-center pa-2" v-if="selected && (selected.counts || loadingCounts)">
                 <h3>Team</h3>
-                <v-layout row wrap class="text-xs-center">
+                <v-layout row wrap class="text-center">
                   <v-flex xs3>
                     <span v-if="!loadingCounts" class="font-weight-black title">{{selected.counts.total}}</span>
                     <v-progress-circular v-else indeterminate :size="15" :width="2" color="black"></v-progress-circular>
@@ -101,7 +101,7 @@
                   </v-flex>
                 </v-layout>
               </div>
-              <div class="text-xs-center pa-2" v-if="selected.slugs && selected.slugs[0]">
+              <div class="text-center pa-2" v-if="selected.slugs && selected.slugs[0]">
                 <h3>Website</h3>
                 <a target="_blank" :href="$tenantInfo.storeUrl.replace('{slug}', selected.slugs[0])">
                   {{$tenantInfo.storeUrl.replace('{slug}', selected.slugs[0])}}

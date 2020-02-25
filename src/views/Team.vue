@@ -1,6 +1,6 @@
 <template>
   <div class="profile">
-    <v-tabs centered color="secondary" dark icons-and-text>
+    <v-tabs centered background-color="secondary" dark icons-and-text>
       <v-tabs-slider color="white"></v-tabs-slider>
 
       <v-tab to="#hierarchy">Generations
