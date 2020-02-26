@@ -371,8 +371,8 @@ export default {
           }
         }
       },
-      update({ engineStats }) {
-        return engineStats[0]
+      update({ engineStatsByMemberIds }) {
+        return engineStatsByMemberIds[0]
       }
     }
   }
