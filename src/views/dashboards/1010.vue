@@ -127,7 +127,7 @@
         <RankRequirementsCard
           :stats         ="engineStats"
           :statsDisabled ="statsDisabled"
-          :loading       ="$apollo.queries.engineStats.loading"
+          :loading       ="loadingRanks > 0"
         />
       </v-col>
     </v-row>
@@ -188,6 +188,7 @@ export default {
       team: [],
       generationCount: {},
       loadingStats: 0,
+      loadingRanks: 0,
       loadingCount: 0,
       generationCountLoading: 0,
       statsDisabled: false,
@@ -251,6 +252,7 @@ export default {
           }
         }
       },
+      loadingKey: 'loadingRanks',
       update({ engineStatsByMemberIds }) {
         return engineStatsByMemberIds[0]
       }
