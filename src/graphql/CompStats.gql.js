@@ -26,20 +26,15 @@ query compRecentEarnings {
 
 export const ENGINE_STATS_QUERY = gql`
   query engineStats($input: EngineStatsInput) {
-    engineStats(input: $input) {
+    engineStatsByMemberIds(input: $input) {
       memberId
       periodId
       refreshedOn
       uplineIds
       sponsorId
-      frontlineIds
-      frontline
-      generations
       qualified
-      rankId
-      rank
-      stats
-      metrics
+      current
+      next
     }
   }
 `

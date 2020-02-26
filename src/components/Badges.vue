@@ -3,16 +3,16 @@
     <h3>Awards</h3>
     <h5 v-if="loading">Loading Awards</h5>
     <v-progress-circular v-if="loading" indeterminate :size="30" :width="3" color="grey"></v-progress-circular>
-    <v-flex v-else tag="strong" xs5 text-right mb-2 >
+    <v-flex v-else tag="strong" xs5 text-right>
       <template v-if="joinedOn">
-        <v-chip pill color="primary elevation-3" text-color="white">
+        <v-chip pill color="primary elevation-3" text-color="white" class="ma-1">
           <v-avatar left class="primary darken-4">
             <v-icon>cake</v-icon>
           </v-avatar>
           {{birthday}}
         </v-chip>
       </template>
-      <v-chip pill v-for="award in awards" class="mx-2 elevation-3" :color="award.metadata.color" :text-color="award.metadata.text" :key="award.name">
+      <v-chip pill v-for="award in awards" class="ma-1 elevation-3" :color="award.metadata.color" :text-color="award.metadata.text" :key="award.name">
         <v-avatar left :color="award.metadata.accent">
           <v-icon>{{award.metadata.icon}}</v-icon>
         </v-avatar>

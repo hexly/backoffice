@@ -4,8 +4,8 @@
       <v-card-title class="secondary white--text headline">
         {{title}}
       </v-card-title>
-      <v-layout justify-space-between row wrap>
-        <v-flex xs12 sm5 ml-3>
+      <v-row justify="space-between">
+        <v-col cols="12" sm="5">
           <v-sheet class="pa-3">
             <v-text-field
               v-model="search"
@@ -46,11 +46,8 @@
               <span v-if="item.searchMatched" class="font-weight-black text-uppercase grey--text">Matched</span>
             </template>
           </v-treeview>
-        </v-flex>
-        <v-flex
-          d-flex
-          text-center
-        >
+        </v-col>
+        <v-col class="d-flex text-center">
           <v-scroll-y-transition mode="out-in">
             <div
               v-if="!selected"
@@ -74,32 +71,32 @@
               <v-divider class="mb-3"></v-divider>
               <div class="text-center pa-2" v-if="selected && (selected.counts || loadingCounts)">
                 <h3>Team</h3>
-                <v-layout row wrap class="text-center">
-                  <v-flex xs3>
+                <v-row wrap class="text-center">
+                  <v-col cols="3">
                     <span v-if="!loadingCounts" class="font-weight-black title">{{selected.counts.total}}</span>
                     <v-progress-circular v-else indeterminate :size="15" :width="2" color="black"></v-progress-circular>
                     <br/>
                     Team Size
-                  </v-flex>
-                  <v-flex xs3>
+                  </v-col>
+                  <v-col cols="3">
                     <span v-if="!loadingCounts" class="font-weight-black title">{{selected.counts.level1}}</span>
                     <v-progress-circular v-else indeterminate :size="15" :width="2" color="black"></v-progress-circular>
                     <br/>
                     Front-Line
-                  </v-flex>
-                  <v-flex xs3>
+                  </v-col>
+                  <v-col cols="3">
                     <span v-if="!loadingCounts" class="font-weight-black title">{{selected.counts.level2}}</span>
                     <v-progress-circular v-else indeterminate :size="15" :width="2" color="black"></v-progress-circular>
                     <br/>
                     Second line
-                  </v-flex>
-                  <v-flex xs3>
+                  </v-col>
+                  <v-col cols="3">
                     <span v-if="!loadingCounts" class="font-weight-black title">{{selected.counts.level3}}</span>
                     <v-progress-circular v-else indeterminate :size="15" :width="2" color="black"></v-progress-circular>
                     <br/>
                     Third line
-                  </v-flex>
-                </v-layout>
+                  </v-col>
+                </v-row>
               </div>
               <div class="text-center pa-2" v-if="selected.slugs && selected.slugs[0]">
                 <h3>Website</h3>
@@ -110,8 +107,8 @@
               <Badges v-if="badges" :memberId="selected.id" />
             </v-card>
           </v-scroll-y-transition>
-        </v-flex>
-      </v-layout>
+        </v-col>
+      </v-row>
     </v-card>
   </div>
 </template>

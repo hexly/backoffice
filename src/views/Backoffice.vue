@@ -142,13 +142,6 @@
           </v-list>
         </v-menu>
       </v-toolbar-items>
-      <v-progress-linear
-        class="loading-bar"
-        style="margin: 0;"
-        v-if="loading"
-        :indeterminate="true"
-        color="secondary"
-      ></v-progress-linear>
     </v-app-bar>
     <v-content>
       <div>
@@ -196,7 +189,6 @@ export default {
     ...mapState({
       user: state => state.user,
       showGate: state => state.showGate,
-      loading: state => state.loading,
       integrations: state => state.integrations
     }),
     ...mapGetters(['slug']),
@@ -235,14 +227,13 @@ export default {
       this.logoutUser()
       window.location.reload(true)
     },
-    ...mapMutations([Mutations.SET_GATE, UserMutations.SET_PRINCIPAL, Mutations.SET_LOADING]),
+    ...mapMutations([Mutations.SET_GATE, UserMutations.SET_PRINCIPAL]),
     ...mapActions({
       logoutUser: Actions.LOGOUT,
       getAttributes: MemberActions.GET_ATTRIBUTES
     })
   },
   async mounted () {
-    this.setLoading(true)
     if (this.$tenantInfo.features.legal === true) {
       const { data } = await this.getAttributes({
         key: ['affiliate-agreement', 'entity-details'],
@@ -253,8 +244,6 @@ export default {
         this.setGate(true)
       }
     }
-
-    this.setLoading(false)
   },
   apollo: {
     principal: {
@@ -274,13 +263,6 @@ export default {
 </script>
 
 <style scoped>
-.loading-bar {
-  height: 7px;
-  margin: 0px;
-  position: absolute;
-  bottom: -7px;
-  left: 0;
-}
 .avatar {
   max-width: 50px;
   max-height: 50px;

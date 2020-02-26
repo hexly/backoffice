@@ -821,8 +821,10 @@ function panControls() {
 window.addEventListener('resize', redrawZoom)
 
 function redrawZoom() {
-  let svgWidth = Number(svgContainer.style(`width`).replace('px', ''))
-  zoomer.attr('width', Math.max(svgWidth, width))
+  if (svgContainer && zoomer) {
+    let svgWidth = Number(svgContainer.style(`width`).replace('px', ''))
+    zoomer.attr('width', Math.max(svgWidth, width))
+  }
 }
 
 function makeAbsoluteContext(element, svgDocument) {

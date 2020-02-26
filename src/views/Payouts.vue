@@ -49,72 +49,72 @@
             </v-tooltip>
         </v-card-text>
       </v-card>
-      <v-data-table
-        :headers="headers"
-        :items="items"
-        class="elevation-1"
-        item-key="id"
-        :loading="loading"
-        :expanded="expanded"
-        show-expand
-      >
-        <template v-slot:item="{ item, isExpanded }">
-          <tr>
-            <td>
-              <Currency :amount="item.amount / 100" :currency="item.currency" />
+      <v-responsive>
+        <v-data-table
+          :headers="headers"
+          :items="items"
+          class="elevation-1"
+          item-key="id"
+          :loading="loading"
+          :expanded="expanded"
+          show-expand
+        >
+          <template v-slot:item="{ item, isExpanded }">
+            <tr>
+              <td>
+                <Currency :amount="item.amount / 100" :currency="item.currency" />
+              </td>
+              <td>
+                {{ item.status }}
+                <v-tooltip v-if="statuses[item.status]" bottom>
+                  <template v-slot:activator="{ on }">
+                    <v-icon v-on="on" small>info</v-icon>
+                  </template>
+                  <span>{{statuses[item.status]}}</span>
+                </v-tooltip>
+                <span v-else>{{ item.status }}</span>
+              </td>
+              <td>{{ $moment(item.issuedOn).format('lll') }}</td>
+              <td>{{ item.releasedOn ? $moment(item.releasedOn).format('lll') : '--' }}</td>
+              <td>{{ item.note ? item.note : '--' }}</td>
+              <td>
+                <v-tooltip class="deduction-tooltip" v-if="item.deductions" left>
+                  <template v-slot:activator="{ on }">
+                    <Currency
+                      v-on="on"
+                      :amount="item.deductions.reduce((accumulator, curVal) => {
+                        const retVal = accumulator + (curVal.amount / 100)
+                        return retVal
+                      }, 0)" :currency="item.currency"
+                    />
+                  </template>
+                  <span>Total deductions. Click to see itemized deductions</span>
+                </v-tooltip>
+                <span v-else>--</span>
+              </td>
+              <td v-if="item.deductions.length">
+                <v-icon @click="expanded = []" v-if="isExpanded">expand_less</v-icon>
+                <v-icon  @click="expanded = [item]" v-else>expand_more</v-icon>
+              </td>
+            </tr>
+          </template>
+          <template v-slot:expanded-item="{ item, headers }">
+            <td :colspan="headers.length">
+              <v-card flat>
+                <v-card-text>
+                  <h3>Deductions</h3>
+                  <ul>
+                    <li v-for="d in item.deductions" :key="d.id" >
+                      <div>{{feeEnumMap[d.type]}}: <Currency class="body-2" :amount="d.amount / 100" :currency="item.currency" /></div>
+                      <small>{{d.note}}</small>
+                    </li>
+                  </ul>
+                </v-card-text>
+              </v-card>
             </td>
-            <td class="status-td">
-              {{ item.status }}
-              <v-tooltip v-if="statuses[item.status]" bottom>
-                <template v-slot:activator="{ on }">
-                  <v-chip class="hint-tip" color="grey lighten-2" v-on="on">
-                    <span>?</span>
-                  </v-chip>
-                </template>
-                <span>{{statuses[item.status]}}</span>
-              </v-tooltip>
-              <span v-else>{{ item.status }}</span>
-            </td>
-            <td>{{ $moment(item.issuedOn).format('lll') }}</td>
-            <td>{{ item.releasedOn ? $moment(item.releasedOn).format('lll') : '--' }}</td>
-            <td>{{ item.note ? item.note : '--' }}</td>
-            <td>
-              <v-tooltip class="deduction-tooltip" v-if="item.deductions" left>
-                <template v-slot:activator="{ on }">
-                  <Currency
-                    v-on="on"
-                    :amount="item.deductions.reduce((accumulator, curVal) => {
-                      const retVal = accumulator + (curVal.amount / 100)
-                      return retVal
-                    }, 0)" :currency="item.currency"
-                  />
-                </template>
-                <span>Total deductions. Click to see itemized deductions</span>
-              </v-tooltip>
-              <span v-else>--</span>
-            </td>
-            <td v-if="item.deductions.length">
-              <v-icon @click="expanded = []" v-if="isExpanded">expand_less</v-icon>
-              <v-icon  @click="expanded = [item]" v-else>expand_more</v-icon>
-            </td>
-          </tr>
-        </template>
-        <template v-slot:expanded-item="{ item, headers }">
-          <td :colspan="headers.length">
-            <v-card flat>
-              <v-card-text>
-                <h3>Deductions</h3>
-                <ul>
-                  <li v-for="d in item.deductions" :key="d.id" >
-                    <div>{{feeEnumMap[d.type]}}: <Currency class="body-2" :amount="d.amount / 100" :currency="item.currency" /></div>
-                    <small>{{d.note}}</small>
-                  </li>
-                </ul>
-              </v-card-text>
-            </v-card>
-          </td>
-        </template>
-      </v-data-table>
+          </template>
+        </v-data-table>
+      </v-responsive>
     </div>
     <v-dialog
       v-model="transferDialog"
@@ -278,9 +278,6 @@ export default {
 </script>
 
 <style scoped>
-.hint-tip {
-  cursor: pointer;
-}
 .sale-details ul li {
   list-style: none;
 }
