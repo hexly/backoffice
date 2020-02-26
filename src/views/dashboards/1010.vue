@@ -1,14 +1,10 @@
 <template>
   <div class="full-wrapper dashboard">
-    <v-layout row>
-      <v-flex xs12 class="pa-2">
-        <Announcement />
-      </v-flex>
-    </v-layout>
-    <v-layout row wrap>
-      <v-flex xs12 md6>
+    <Announcement />
+    <v-row wrap>
+      <v-col cols="12" md="6">
         <v-layout id="personal-card-layout" column>
-          <v-flex class="pa-2">
+          <v-flex>
             <PersonalCard memberName="Your Influencer Number:">
               <div slot="footer">
                 <Badges :memberId="member.id"/>
@@ -23,20 +19,18 @@
             </PersonalCard>
           </v-flex>
         </v-layout>
-      </v-flex>
-      <v-flex xs12 md6>
-        <v-layout row wrap justify-space-between>
-          <v-flex xs12 class="pa-2">
-            <DashCard
-              color="white"
-              darken="1"
-              :display="memberCount"
-              subheading="Total Influencers"
-              icon="location_city"
-              :loading="loadingCount > 0"
-            />
-          </v-flex>
-          <v-flex xs12 sm6 class="pa-2">
+      </v-col>
+      <v-col cols="12" md="6">
+        <DashCard
+          color="white"
+          darken="1"
+          :display="memberCount"
+          subheading="Total Influencers"
+          icon="location_city"
+          :loading="loadingCount > 0"
+        />
+        <v-row>
+          <v-col cols="12" md="6">
             <DashCard
               color="white"
               darken="1"
@@ -45,8 +39,8 @@
               icon="supervised_user_circle"
               :loading="generationCountLoading > 0"
             />
-          </v-flex>
-          <v-flex xs12 sm6 class="pa-2">
+          </v-col>
+          <v-col cols="12" md="6">
             <DashCard
               color="white"
               darken="1"
@@ -55,8 +49,10 @@
               icon="account_tree"
               :loading="generationCountLoading > 0"
             />
-          </v-flex>
-          <v-flex xs12 sm6 class="pa-2">
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col cols="12" md="6">
             <DashCard
               color="white"
               darken="1"
@@ -65,8 +61,8 @@
               icon="looks_two"
               :loading="generationCountLoading > 0"
             />
-          </v-flex>
-          <v-flex xs12 sm6 class="pa-2">
+          </v-col>
+          <v-col cols="12" md="6">
             <DashCard
               color="white"
               darken="1"
@@ -75,37 +71,35 @@
               icon="looks_3"
               :loading="generationCountLoading > 0"
             />
-          </v-flex>
-          <v-flex class="pa-2">
-            <v-card style="height: 100%;">
-              <v-card-text>
-                <p class="title">Early Access Incentive</p>
-                <p>To qualify, sponsor at least two Influencers during the Early Access period and help them become "Active" (or sell $50) during the first month of sales (you must also be Active). </p>
-                <ol>
-                  <li>$20/£16 for EVERY personally sponsored Active Influencer</li>
-                  <li>$5/£4 for EVERY Active Influencer on your Second Line.</li>
-                </ol>
-                <p>The qualification period begins on your enrollment date and ends when the company begins selling product.</p>
-                <v-layout row class="incentive">
-                  <v-flex class="incentive-count" xs6>
-                    {{generationCount['1']}}
-                    <br/>
-                    Personally Sponsored
-                  </v-flex>
-                  <v-flex class="incentive-count" xs6>
-                    {{generationCount['2']}}
-                    <br/>
-                    Second Line
-                  </v-flex>
-                </v-layout>
-              </v-card-text>
-            </v-card>
-          </v-flex>
-        </v-layout>
-      </v-flex>
-    </v-layout>
-    <v-layout row wrap>
-      <v-flex xs12 sm6 pa-2>
+          </v-col>
+        </v-row>
+        <v-card>
+          <v-card-text>
+            <p class="title">Early Access Incentive</p>
+            <p>To qualify, sponsor at least two Influencers during the Early Access period and help them become "Active" (or sell $50) during the first month of sales (you must also be Active). </p>
+            <ol>
+              <li>$20/£16 for EVERY personally sponsored Active Influencer</li>
+              <li>$5/£4 for EVERY Active Influencer on your Second Line.</li>
+            </ol>
+            <p>The qualification period begins on your enrollment date and ends when the company begins selling product.</p>
+            <v-layout row class="incentive">
+              <v-flex class="incentive-count" xs6>
+                {{generationCount['1']}}
+                <br/>
+                Personally Sponsored
+              </v-flex>
+              <v-flex class="incentive-count" xs6>
+                {{generationCount['2']}}
+                <br/>
+                Second Line
+              </v-flex>
+            </v-layout>
+          </v-card-text>
+        </v-card>
+      </v-col>
+    </v-row>
+    <v-row wrap>
+      <v-col col="12" sm="6">
         <v-card id="recent-sales-card">
           <v-toolbar color="secondary" dark>
             <v-toolbar-title>Recent Earnings</v-toolbar-title>
@@ -116,10 +110,7 @@
               :items               ="earnings"
               :loading             ="$apollo.queries.earnings.loading"
             >
-              <template
-                slot="items"
-                slot-scope="props"
-              >
+              <template slot="items" slot-scope="props">
                 <tr @click="props.expanded = !props.expanded">
                   <td>{{props.item.integrationOid}}</td>
                   <td>{{$moment(props.item.awardedDate).format('L')}}</td>
@@ -131,15 +122,15 @@
             </v-data-table>
           </v-responsive>
         </v-card>
-      </v-flex>
-      <v-flex xs12 sm6 pa-2>
+      </v-col>
+      <v-col col="12" sm="6">
         <RankRequirementsCard
           :stats         ="engineStats"
           :statsDisabled ="statsDisabled"
           :loading       ="$apollo.queries.engineStats.loading"
         />
-      </v-flex>
-    </v-layout>
+      </v-col>
+    </v-row>
     <Directory class="py-2" :self="personalStats" :frontline="team" title="Your Circle of Influence" membersTypeName="Influencer"/>
     <CompanyMap class="py-2" title="Influencers around the world"/>
   </div>
@@ -213,11 +204,6 @@ export default {
       ]
     }
   },
-  watch: {
-    '$apollo.loading'(newVal) {
-      this.setLoading(newVal)
-    }
-  },
   methods: {
     formatEarning(earning) {
       let currency = '$'
@@ -229,8 +215,7 @@ export default {
     },
     ...mapMutations([
       UserMutations.MEMBER_QUERY,
-      Mutations.SET_GATE,
-      Mutations.SET_LOADING
+      Mutations.SET_GATE
     ])
   },
   computed: {
@@ -266,8 +251,8 @@ export default {
           }
         }
       },
-      update({ engineStats }) {
-        return engineStats[0]
+      update({ engineStatsByMemberIds }) {
+        return engineStatsByMemberIds[0]
       }
     },
     team: {

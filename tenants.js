@@ -142,11 +142,11 @@ const tenantOptions = {
     logoPath: '/img/1010/logo.png',
     logoLoginPath: '/img/1010/logo.png',
     placeholder: '/img/1010/placeholder.png',
-    profileColor: '#FFEFAC',
+    profileColor: '#fcc19f',
     baseColor: '#292425',
     primaryColor: '#a1213b',
     secondaryColor: '#a1213b',
-    accentColor: '#FFEFAC',
+    accentColor: '#fcc19f',
     storeUrl: 'https://www.everra.com/store/{slug}',
     corporateUrl: 'https://www.everra.com/',
     encryptKey: 'luccii', // leave this, it is important

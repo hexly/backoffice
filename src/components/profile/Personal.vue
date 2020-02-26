@@ -1,11 +1,11 @@
 <template>
   <div>
-    <v-form ref="informationForm" @submit.prevent="saveData">
-      <v-layout row wrap>
-        <v-flex xs12 md4>
+    <v-form ref="informationForm" @submit.prevent="saveData" class="pa-1">
+      <v-row wrap>
+        <v-col cols="12" md="4">
           <slot name="profilePic"></slot>
-        </v-flex>
-        <v-flex xs12 md8>
+        </v-col>
+        <v-col cols="12" md="8">
           <v-text-field
             label="First Name"
             v-model.trim="value.firstName"
@@ -18,8 +18,8 @@
             :rules="requiredRule"
             required
           ></v-text-field>
-        </v-flex>
-      </v-layout>
+        </v-col>
+      </v-row>
       <v-text-field
         class="pb-2"
         label="Legal Name"

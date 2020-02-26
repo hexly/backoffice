@@ -1,5 +1,5 @@
 <template>
-  <v-card :color="`${color} darken-${darken}`" :style="{overflow: 'hidden', height: '100%'}">
+  <v-card :color="`${color} darken-${darken}`" style="overflow: hidden;">
     <v-card-title primary-title>
       <div>
         <span v-if="!loading" class="display-2" style="position: relative; z-index: 1;">{{display}}</span>

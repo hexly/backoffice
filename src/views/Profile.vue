@@ -32,8 +32,8 @@
 
         <v-tab-item value="profile" class="py-3">
           <h3>Personal Information</h3>
-          <v-layout row wrap justify-space-around>
-            <v-flex xs12 sm6>
+          <v-row wrap justify="space-around">
+            <v-col cols="12" sm="6">
               <PersonalForm
                 ref="personal"
                 :modal="modal"
@@ -47,8 +47,8 @@
                   <v-gravatar v-else default-img="mp" :email="principal.member.contacts[0].emails[0].email" class="mb-4"/>
                 </v-avatar>
               </PersonalForm>
-            </v-flex>
-          </v-layout>
+            </v-col>
+          </v-row>
           <div v-if="$tenantInfo.features.social">
             <v-divider class="my-5"/>
             <h3>Social Accounts</h3>

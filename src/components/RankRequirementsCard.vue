@@ -1,97 +1,100 @@
 <template>
-  <v-layout id="rank-card" row wrap>
-    <v-card width="100%" :class="tabMode ? 'elevation-0 item-container-card' : null">
-      <v-toolbar v-if="!tabMode" color="secondary" dark>
-        <v-toolbar-title>Rank Requirements</v-toolbar-title>
+  <v-card id="rank-card" width="100%" :class="tabMode ? 'elevation-0 item-container-card' : null">
+    <v-toolbar v-if="!tabMode" color="secondary" dark>
+      <v-toolbar-title>Rank Requirements</v-toolbar-title>
+      <v-spacer></v-spacer>
+    </v-toolbar>
+    <v-card-text v-if="stats && Object.keys(stats).length && !statsDisabled && !loading">
+      <v-row justify-space-between :class="tabMode ? 'rank-row' : ''">
+        <v-col>
+          <div v-if="!currentRank" class="title">Unranked</div>
+          <div v-else class="title">Rank {{currentRank}}</div>
+          <div class="caption grey--text darken-1"> Current Rank </div>
+        </v-col>
         <v-spacer></v-spacer>
-      </v-toolbar>
-      <v-card-text v-if="stats && Object.keys(stats).length && !statsDisabled && !loading" class="py-1 px-3">
-        <v-layout row justify-space-between :class="tabMode ? 'rank-row' : 'py-4'">
-          <v-flex px-3>
-            <div v-if="!currentRank" class="title">Unranked</div>
-            <div v-else class="title">Rank {{currentRank}}</div>
-            <div class="caption grey--text darken-1"> Current Rank </div>
-          </v-flex>
-          <v-spacer></v-spacer>
-          <v-flex px-3 text-right v-if="nextRank">
-            <div class="title">Rank {{nextRank}}</div>
-            <div class="caption grey--text darken-1"> Next Rank </div>
-          </v-flex>
-        </v-layout>
+        <v-col class="text-right" v-if="nextRank">
+          <div class="title">Rank {{nextRank}}</div>
+          <div class="caption grey--text darken-1"> Next Rank </div>
+        </v-col>
+      </v-row>
 
-        <template class="stats-container" v-if="current">
-          <v-layout :class="tabMode ? 'rank-data-row' : null" row justify-space-between wrap v-for="stat in Object.keys(statMapping)" :key="stat.property">
-            <template v-if="next[stat].required !== null">
-            <v-flex px-3>
-              <div v-if="!tabMode" :class="( next[stat].required  ? '' : 'grey--text') + ' title'">
-                {{statMapping[stat].title}}
+      <template class="stats-container" v-if="current">
+        <v-row :class="tabMode ? 'rank-data-row' : null" justify="space-between" wrap v-for="stat in Object.keys(statMapping)" :key="stat.property">
+          <template v-if="next[stat].required !== null">
+          <v-col class="pa-1">
+            <div v-if="!tabMode" :class="( next[stat].required  ? '' : 'grey--text') + ' title'">
+              {{statMapping[stat].title}}
+              <template v-if="stat !== 'anyRankCount'">
                 <v-icon color="green" v-if="next[stat].satisfied && next[stat].required">check_circle</v-icon>
-              </div>
-              <div class="caption grey--text darken-1"> {{statMapping[stat].description}} </div>
-            </v-flex>
-            <v-spacer></v-spacer>
-            <v-flex px-3 text-right v-if="stat !== 'anyRankCount'">
-              <div class="title">{{next[stat].earned}}</div>
-              <div v-if="next[stat].required && parseInt(next[stat].earned)" class="caption grey--text darken-1">
-                {{Math.round(next[stat].earned/next[stat].required*100)}}%
-                <br>
-                <span v-if="!tabMode">{{Math.round(next[stat].earned)}} of {{Math.round(next[stat].required)}}</span>
-              </div>
-              <div v-else class="caption grey--text darken-1">
-                N/A
-                <br>
-                <span v-if="!tabMode">
-                  {{ Math.round(next[stat].required)}}
-                  <v-tooltip slot="append" left>
-                    <template v-slot:activator="{ on }">
-                      <v-icon v-on="on" small>info</v-icon>
-                    </template>
-                      <span>Not applicable for next rank</span>
-                  </v-tooltip>
-                </span>
-              </div>
-            </v-flex>
-            <v-flex px-3 text-right v-else>
-              <template v-if="current[stat].satisfied">
-                <div class="title" >Achieved</div>
-                <div class="caption grey--text darken-1"> 100% </div>
               </template>
               <template v-else>
-                <div class="title">Unachieved</div>
-                <div class="caption grey--text darken-1"> 0% </div>
+                <v-icon color="green" v-if="next[stat].satisfied && Object.keys(next[stat].required).length">check_circle</v-icon>
               </template>
-            </v-flex>
-            <v-flex xs12 px-3 v-if="stat !== 'anyRankCount'">
-              <v-progress-linear :class="tabMode ? 'progress-bar' : null" :color="next[stat].required ? 'success' : 'grey' " :height="tabMode ? 2 : 5" :value="Math.round(next[stat].earned/next[stat].required*100)"></v-progress-linear>
-            </v-flex>
+            </div>
+            <div class="caption grey--text darken-1"> {{statMapping[stat].description}} </div>
+          </v-col>
+          <v-spacer></v-spacer>
+          <v-col class="text-right pa-1" v-if="stat !== 'anyRankCount'">
+            <div class="title">{{next[stat].earned}}</div>
+            <div v-if="next[stat].required && parseInt(next[stat].earned)" class="caption grey--text darken-1">
+              {{Math.round(next[stat].earned/next[stat].required*100)}}%
+              <br>
+              <span v-if="!tabMode">{{Math.round(next[stat].earned)}} of {{Math.round(next[stat].required)}}</span>
+            </div>
+            <div v-else class="caption grey--text darken-1">
+              N/A
+              <br>
+              <span v-if="!tabMode">
+                {{ Math.round(next[stat].required)}}
+                <v-tooltip slot="append" left>
+                  <template v-slot:activator="{ on }">
+                    <v-icon v-on="on" small>info</v-icon>
+                  </template>
+                    <span>Not applicable for next rank</span>
+                </v-tooltip>
+              </span>
+            </div>
+          </v-col>
+          <v-col class="pa-1 text-right" v-else>
+            <template v-if="next[stat].satisfied">
+              <div class="title" >Achieved</div>
+              <div class="caption grey--text darken-1"> 100% </div>
             </template>
-          </v-layout>
-        </template>
+            <template v-else>
+              <div class="title">Unachieved</div>
+              <div class="caption grey--text darken-1"> 0% </div>
+            </template>
+          </v-col>
+          <v-col cols="12" class="pa-1" v-if="stat !== 'anyRankCount'">
+            <v-progress-linear :class="tabMode ? 'progress-bar' : null" :color="next[stat].required ? 'success' : 'grey' " :height="tabMode ? 2 : 5" :value="Math.round(next[stat].earned/next[stat].required*100)"></v-progress-linear>
+          </v-col>
+          </template>
+        </v-row>
+      </template>
 
-      </v-card-text>
-      <v-card-text v-else-if="!statsDisabled && !loading" class="pa-3">
-        <v-layout row justify-space-between :class="tabMode ? null : 'pb-4'">
-          <v-flex px-3>
-            <div class="title text-center">No Rank Data Found</div>
-          </v-flex>
-        </v-layout>
-      </v-card-text>
-      <v-card-text v-else-if="statsDisabled && !loading" class="pa-3">
-        <v-layout row justify-space-between pb-4>
-          <v-flex px-3>
-            <div class="title text-center">Realtime Stats Temporarily Unavailable</div>
-          </v-flex>
-        </v-layout>
-      </v-card-text>
-      <v-card-text v-else-if="loading" class="pa-3">
-        <v-layout row justify-space-between pb-4>
-          <v-flex id="loading-container" px-3>
-            <v-progress-circular indeterminate />
-          </v-flex>
-        </v-layout>
-      </v-card-text>
-    </v-card>
-  </v-layout>
+    </v-card-text>
+    <v-card-text v-else-if="!statsDisabled && !loading" class="pa-3">
+      <v-layout row justify-space-between :class="tabMode ? null : 'pb-4'">
+        <v-flex px-3>
+          <div class="title text-center">No Rank Data Found</div>
+        </v-flex>
+      </v-layout>
+    </v-card-text>
+    <v-card-text v-else-if="statsDisabled && !loading" class="pa-3">
+      <v-layout row justify-space-between pb-4>
+        <v-flex px-3>
+          <div class="title text-center">Realtime Stats Temporarily Unavailable</div>
+        </v-flex>
+      </v-layout>
+    </v-card-text>
+    <v-card-text v-else-if="loading" class="pa-3">
+      <v-layout row justify-space-between pb-4>
+        <v-flex id="loading-container" px-3>
+          <v-progress-circular indeterminate />
+        </v-flex>
+      </v-layout>
+    </v-card-text>
+  </v-card>
 </template>
 
 <script>
@@ -154,7 +157,7 @@ export default {
   },
   methods: {
     parseStats(stats) {
-      const { current, next } = stats.rank
+      const { current, next } = stats
       this.currentRank = current.rank
       this.nextRank = next.rank
       this.current = current.metrics.reduce((carry, stat) => {
