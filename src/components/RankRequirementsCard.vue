@@ -20,7 +20,8 @@
 
       <template class="stats-container" v-if="current">
         <v-row :class="tabMode ? 'rank-data-row' : null" justify="space-between" wrap v-for="stat in Object.keys(statMapping)" :key="stat.property">
-          <template v-if="next[stat].required !== null">
+          <template v-if="stat === 'anyRankCount' && Object.keys(next[stat].required).length === 0 "></template>
+          <template v-else>
           <v-col class="pa-1">
             <div v-if="!tabMode" :class="( next[stat].required  ? '' : 'grey--text') + ' title'">
               {{statMapping[stat].title}}
