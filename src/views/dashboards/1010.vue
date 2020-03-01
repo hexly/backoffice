@@ -29,73 +29,42 @@
           icon="location_city"
           :loading="loadingCount > 0"
         />
-        <v-row>
-          <v-col cols="12" md="6">
-            <DashCard
-              color="white"
-              darken="1"
-              :display="generationCount.all"
-              subheading="Your Circle of Influence"
-              icon="supervised_user_circle"
-              :loading="generationCountLoading > 0"
-            />
-          </v-col>
-          <v-col cols="12" md="6">
-            <DashCard
-              color="white"
-              darken="1"
-              :display="generationCount['1']"
-              subheading="Personally Sponsored"
-              icon="account_tree"
-              :loading="generationCountLoading > 0"
-            />
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col cols="12" md="6">
-            <DashCard
-              color="white"
-              darken="1"
-              :display="generationCount['2']"
-              subheading="Second Line Size"
-              icon="looks_two"
-              :loading="generationCountLoading > 0"
-            />
-          </v-col>
-          <v-col cols="12" md="6">
-            <DashCard
-              color="white"
-              darken="1"
-              :display="generationCount['3']"
-              subheading="Third Line Size"
-              icon="looks_3"
-              :loading="generationCountLoading > 0"
-            />
-          </v-col>
-        </v-row>
-        <v-card>
-          <v-card-text>
-            <p class="title">Early Access Incentive</p>
-            <p>To qualify, sponsor at least two Influencers during the Early Access period and help them become "Active" (or sell $50) during the first month of sales (you must also be Active). </p>
-            <ol>
-              <li>$20/£16 for EVERY personally sponsored Active Influencer</li>
-              <li>$5/£4 for EVERY Active Influencer on your Second Line.</li>
-            </ol>
-            <p>The qualification period begins on your enrollment date and ends when the company begins selling product.</p>
-            <v-layout row class="incentive">
-              <v-flex class="incentive-count" xs6>
-                {{generationCount['1']}}
-                <br/>
-                Personally Sponsored
-              </v-flex>
-              <v-flex class="incentive-count" xs6>
-                {{generationCount['2']}}
-                <br/>
-                Second Line
-              </v-flex>
-            </v-layout>
-          </v-card-text>
-        </v-card>
+        <DashCard
+          class="mt-2"
+          color="white"
+          darken="1"
+          :display="generationCount.all"
+          subheading="Your Circle of Influence"
+          icon="supervised_user_circle"
+          :loading="generationCountLoading > 0"
+        />
+        <DashCard
+          class="mt-2"
+          color="white"
+          darken="1"
+          :display="generationCount['1']"
+          subheading="Personally Sponsored"
+          icon="account_tree"
+          :loading="generationCountLoading > 0"
+        />
+        <DashCard
+          class="mt-2"
+          color="white"
+          darken="1"
+          :display="generationCount['2']"
+          subheading="Second Line Size"
+          icon="looks_two"
+          :loading="generationCountLoading > 0"
+        />
+        <DashCard
+          class="mt-2"
+          color="white"
+          darken="1"
+          :display="generationCount['3']"
+          subheading="Third Line Size"
+          icon="looks_3"
+          :loading="generationCountLoading > 0"
+        />
       </v-col>
     </v-row>
     <v-row wrap>
