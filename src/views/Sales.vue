@@ -108,6 +108,7 @@ export default {
   },
   data() {
     return {
+      statuses: ['completed', 'processing', 'refunded', 'awaiting-shipment'],
       datePickerStartDate: null,
       datePickerEndDate: null,
       modalStart: false,
@@ -159,7 +160,7 @@ export default {
       debounce: 500,
       update({ searchSalesBySellerId }) {
         this.setLoading(false)
-        return searchSalesBySellerId
+        return searchSalesBySellerId.filter(sale => this.statuses.indexOf(sale.status) >= 0)
       }
     }
   },
