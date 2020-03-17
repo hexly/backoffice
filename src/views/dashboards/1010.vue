@@ -21,53 +21,17 @@
         </v-layout>
       </v-col>
       <v-col cols="12" md="6">
-        <DashCard
-          color="white"
-          darken="1"
-          :display="memberCount"
-          subheading="Total Influencers"
-          icon="location_city"
-          :loading="loadingCount > 0"
-        />
-        <DashCard
-          class="mt-2"
-          color="white"
-          darken="1"
-          :display="generationCount.all"
-          subheading="Your Circle of Influence"
-          icon="supervised_user_circle"
-          :loading="generationCountLoading > 0"
-        />
-        <DashCard
-          class="mt-2"
-          color="white"
-          darken="1"
-          :display="generationCount['1']"
-          subheading="Personally Sponsored"
-          icon="account_tree"
-          :loading="generationCountLoading > 0"
-        />
-        <DashCard
-          class="mt-2"
-          color="white"
-          darken="1"
-          :display="generationCount['2']"
-          subheading="Second Line Size"
-          icon="looks_two"
-          :loading="generationCountLoading > 0"
-        />
-        <DashCard
-          class="mt-2"
-          color="white"
-          darken="1"
-          :display="generationCount['3']"
-          subheading="Third Line Size"
-          icon="looks_3"
-          :loading="generationCountLoading > 0"
+        <RankRequirementsCard
+          :stats         ="engineStats"
+          :statsDisabled ="statsDisabled"
+          :loading       ="engineStatsLoading"
         />
       </v-col>
     </v-row>
     <v-row wrap>
+      <v-col col="12" sm="6">
+        <TeamOverview :stats="engineStats" :total="memberCount" :loading ="engineStatsLoading"/>
+      </v-col>
       <v-col col="12" sm="6">
         <v-card id="recent-sales-card">
           <v-toolbar color="secondary" dark>
@@ -75,29 +39,16 @@
           </v-toolbar>
           <v-responsive>
             <v-data-table
-              :headers             ="dataTableHeaders"
-              :items               ="earnings"
-              :loading             ="$apollo.queries.earnings.loading"
+              :headers ="dataTableHeaders"
+              :items   ="earnings"
+              :loading ="$apollo.queries.earnings.loading"
             >
-              <template slot="items" slot-scope="props">
-                <tr @click="props.expanded = !props.expanded">
-                  <td>{{props.item.integrationOid}}</td>
-                  <td>{{$moment(props.item.awardedDate).format('L')}}</td>
-                  <td v-if="!isMobile">{{props.item.reason}}</td>
-                  <td v-if="!isMobile">{{props.item.seller}}</td>
-                  <td>{{formatEarning(props.item)}}</td>
-                </tr>
-              </template>
+            <template v-slot:item.payout="{ item }">
+              {{formatEarning(item)}}
+            </template>
             </v-data-table>
           </v-responsive>
         </v-card>
-      </v-col>
-      <v-col col="12" sm="6">
-        <RankRequirementsCard
-          :stats         ="engineStats"
-          :statsDisabled ="statsDisabled"
-          :loading       ="loadingRanks > 0"
-        />
       </v-col>
     </v-row>
     <Directory class="py-2" :self="personalStats" :frontline="team" title="Your Circle of Influence" membersTypeName="Influencer"/>
@@ -118,11 +69,16 @@ import CompanyMap from '@/components/dashboard/CompanyMap.vue'
 import Announcement from '@/components/dashboard/Announcement.vue'
 import Badges from '@/components/Badges.vue'
 import RankRequirementsCard from '@/components/RankRequirementsCard.vue'
+import TeamOverview from '@/components/dashboard/TeamOverview.vue'
 
-import { COMP_PAYOUTS_QUERY, ENGINE_STATS_QUERY } from '@/graphql/CompStats.gql'
-import { MEMBER_STATS_BY_DEPTH, MAX_MRN, TEAM_SIZE_BY_GENERATION } from '@/graphql/MemberStats.gql'
-import { mapMutations, mapState, mapGetters } from 'vuex'
+import { COMP_PAYOUTS_QUERY } from '@/graphql/CompStats.gql'
+import {
+  MEMBER_STATS_BY_DEPTH,
+  MAX_MRN
+} from '@/graphql/MemberStats.gql'
+import { mapMutations, mapState, mapGetters, mapActions } from 'vuex'
 import { UserMutations } from '@/stores/UserStore'
+import { CompActions } from '@/stores/CompStore'
 import { Mutations } from '@/store'
 
 export default {
@@ -135,7 +91,8 @@ export default {
     Announcement,
     Badges,
     Social,
-    RankRequirementsCard
+    RankRequirementsCard,
+    TeamOverview
   },
   data() {
     return {
@@ -161,11 +118,10 @@ export default {
       loadingCount: 0,
       generationCountLoading: 0,
       statsDisabled: false,
-      isMobile: isMobile(),
-      engineStats: null
+      isMobile: isMobile()
     }
   },
-  mounted() {
+  async mounted() {
     if (this.isMobile) {
       this.dataTableHeaders = [
         { text: 'Order #', value: 'integrationOid', sortable: false },
@@ -173,6 +129,7 @@ export default {
         { text: 'Payout', value: 'payout', sortable: false }
       ]
     }
+    await this.compGetPeriods({ when: this.$moment(this.getCompanyTime()).format('YYYY-MM-DD') })
   },
   methods: {
     formatEarning(earning) {
@@ -183,9 +140,25 @@ export default {
 
       return `${currency}${earning.payout.toFixed(2)}`
     },
+    getCompanyTime(time) {
+      const date = time ? new Date(time) : new Date()
+      return new Intl.DateTimeFormat('en-US', {
+        timeZone: this.$tenantInfo.companyTime,
+        year: 'numeric',
+        month: 'numeric',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric',
+        second: 'numeric'
+      }).format(date)
+    },
     ...mapMutations([
       UserMutations.MEMBER_QUERY,
       Mutations.SET_GATE
+    ]),
+    ...mapActions([
+      CompActions.GET_PERIODS,
+      CompActions.GET_STATS
     ])
   },
   computed: {
@@ -196,34 +169,24 @@ export default {
       }
       return month
     },
-    memberId() {
-      return _.get(this, 'user.memberId')
-    },
     ...mapState({
-      user: state => state.user
+      user: state => state.user,
+      engineStats: state => state.comp.stats,
+      engineStatsLoading: state => state.comp.engineStatsLoading
     }),
     ...mapGetters(['contactId', 'memberId', 'member', 'slug', 'tenantIntegrations'])
   },
   apollo: {
     earnings: {
       query: COMP_PAYOUTS_QUERY,
-      update(data) {
-        return _.get(data, 'compRecentEarnings.earnings', [])
-      }
-    },
-    engineStats: {
-      query: ENGINE_STATS_QUERY,
-      variables() {
-        return {
-          input: {
-            forDate: this.$moment().format('YYYY-MM-DD'),
-            membersIn: [this.memberId]
-          }
+      variables: {
+        input: {
+          page: 1,
+          pageSize: 25
         }
       },
-      loadingKey: 'loadingRanks',
-      update({ engineStatsByMemberIds }) {
-        return engineStatsByMemberIds[0]
+      update({ compRecentEarnings }) {
+        return _.get(compRecentEarnings, 'results', [])
       }
     },
     team: {
@@ -254,23 +217,6 @@ export default {
       loadingKey: 'loadingCount',
       update({ memberGetMaxMrnForTenant }) {
         return memberGetMaxMrnForTenant
-      }
-    },
-    generationCount: {
-      query: TEAM_SIZE_BY_GENERATION,
-      variables() {
-        return {
-          input: {
-            memberId: this.memberId
-          }
-        }
-      },
-      loadingKey: 'generationCountLoading',
-      update({ membershipTeamSizes }) {
-        return membershipTeamSizes.reduce((all, s) => {
-          all[s.generation || 'all'] = s.count
-          return all
-        }, {})
       }
     }
   }
