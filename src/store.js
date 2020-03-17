@@ -3,6 +3,7 @@ import Vuex from 'vuex'
 import axios from 'axios'
 import { UserStore } from '@/stores/UserStore'
 import { ClaimStore } from '@/stores/ClaimStore'
+import { CompStore } from '@/stores/CompStore'
 import MemberStore from '@/Members/Store'
 import ContentStore from '@/modules/content/store'
 
@@ -83,7 +84,8 @@ export default new Vuex.Store({
     user: UserStore,
     claim: ClaimStore,
     member: MemberStore,
-    content: ContentStore
+    content: ContentStore,
+    comp: CompStore
   },
   state: {
     locale: 'en-us',

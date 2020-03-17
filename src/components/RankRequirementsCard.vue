@@ -3,8 +3,58 @@
     <v-toolbar v-if="!tabMode" color="secondary" dark>
       <v-toolbar-title>Rank Requirements</v-toolbar-title>
       <v-spacer></v-spacer>
+      <template v-if="!loading">
+        <small>{{selectedPeriod && selectedPeriod.name}}</small>
+        <v-menu v-model="menu">
+          <template v-slot:activator="{ on }">
+            <v-btn icon v-on="on">
+              <v-icon>mdi-dots-vertical</v-icon>
+            </v-btn>
+          </template>
+          <v-card>
+            <v-list subheader dense>
+              <template v-if="periods.open">
+                <v-subheader>Current Period</v-subheader>
+                <v-list-item v-for="period in periods.open" :key="period.id" @click="periodChanged(period)">
+                  <v-list-item-icon>
+                    <v-icon v-if="selectedPeriod && period.id === selectedPeriod.id" color="pink">mdi-star</v-icon>
+                  </v-list-item-icon>
+                  <v-list-item-content>
+                    <v-list-item-title>{{period.name}}</v-list-item-title>
+                  </v-list-item-content>
+                </v-list-item>
+              </template>
+              <template v-if="periods.under_review">
+                <v-subheader>Under Review</v-subheader>
+                <v-list-item v-for="period in periods.under_review" :key="period.id" @click="periodChanged(period)">
+                  <v-list-item-icon>
+                    <v-icon v-if="selectedPeriod && period.id === selectedPeriod.id" color="pink">mdi-star</v-icon>
+                  </v-list-item-icon>
+                  <v-list-item-content>
+                    <v-list-item-title>{{period.name}}</v-list-item-title>
+                  </v-list-item-content>
+                </v-list-item>
+              </template>
+              <template v-if="periods.closed">
+                <v-subheader>Past Periods</v-subheader>
+                <v-list-item v-for="period in periods.closed" :key="period.id" @click="periodChanged(period)">
+                  <v-list-item-icon>
+                    <v-icon v-if="selectedPeriod && period.id === selectedPeriod.id" color="pink">mdi-star</v-icon>
+                  </v-list-item-icon>
+                  <v-list-item-content>
+                    <v-list-item-title>{{period.name}}</v-list-item-title>
+                  </v-list-item-content>
+                </v-list-item>
+              </template>
+              </v-list>
+          </v-card>
+        </v-menu>
+      </template>
     </v-toolbar>
     <v-card-text v-if="stats && Object.keys(stats).length && !statsDisabled && !loading">
+      <v-alert :value="selectedPeriod && showBanner()" border="top" colored-border type="info" elevation="2">
+        {{bannerMessage}}
+      </v-alert>
       <v-row justify-space-between :class="tabMode ? 'rank-row' : ''">
         <v-col>
           <div v-if="!currentRank" class="title">Unranked</div>
@@ -72,7 +122,6 @@
           </template>
         </v-row>
       </template>
-
     </v-card-text>
     <v-card-text v-else-if="!statsDisabled && !loading" class="pa-3">
       <v-layout row justify-space-between :class="tabMode ? null : 'pb-4'">
@@ -99,10 +148,8 @@
 </template>
 
 <script>
-// import { COMP_STATS_QUERY } from '@/graphql/CompStats.gql'
-
-// import _ from 'lodash'
-
+import { CompActions } from '@/stores/CompStore'
+import { mapState, mapActions } from 'vuex'
 export default {
   name: 'RankRequirementsCard',
   props: {
@@ -113,6 +160,8 @@ export default {
   },
   data() {
     return {
+      bannerMessage: null,
+      menu: false,
       rank: null,
       current: null,
       next: null,
@@ -157,6 +206,9 @@ export default {
     }
   },
   methods: {
+    periodChanged(period) {
+      this.compSelectPeriod(period)
+    },
     parseStats(stats) {
       const { current, next } = stats
       this.currentRank = current.rank
@@ -170,16 +222,42 @@ export default {
         carry[stat.prop] = stat
         return carry
       }, {})
-    }
+    },
+    showBanner() {
+      if (this.tabMode) {
+        return false
+      } else if (this.selectedPeriod.status === 'open' &&
+          this.periods.under_review &&
+          this.periods.under_review.length) {
+        this.bannerMessage = `Hey There, you're looking at requirements for a new month. To check previous months select the three dot icon and choose a past month.`
+        return true
+      } else if (this.selectedPeriod.status === 'under_review') {
+        this.bannerMessage = `This period is still under review.`
+        return true
+      } else if (this.selectedPeriod.status === 'closed') {
+        this.bannerMessage = `This period is closed`
+        return true
+      }
+      return false
+    },
+    ...mapActions([CompActions.SELECT_PERIOD])
   },
   mounted() {
-    if (this.stats) {
+    if (this.stats && this.stats.current) {
       this.parseStats(this.stats)
     }
   },
+  computed: {
+    ...mapState({
+      periods: state => state.comp.periods,
+      selectedPeriod: state => state.comp.selectedPeriod
+    })
+  },
   watch: {
     stats(newVal) {
-      this.parseStats(newVal)
+      if (newVal && newVal.current) {
+        this.parseStats(newVal)
+      }
     }
   }
 }

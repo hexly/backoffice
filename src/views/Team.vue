@@ -6,6 +6,9 @@
       <v-tab to="#hierarchy">Generations
         <v-icon>portrait</v-icon>
       </v-tab>
+      <v-tab to="#activity">Activity
+        <v-icon>whatshot</v-icon>
+      </v-tab>
       <v-tab to="#search">Search
         <v-icon>search</v-icon>
       </v-tab>
@@ -13,14 +16,25 @@
         <v-icon>scatter_plot</v-icon>
       </v-tab>
 
-      <v-tab-item lazy value="hierarchy" class="py-3">
-        <HierarchyCards />
+      <v-tab-item value="hierarchy" class="py-3">
+        <v-lazy>
+          <HierarchyCards />
+        </v-lazy>
       </v-tab-item>
-      <v-tab-item lazy value="search" class="py-3">
-        <TeamSearch />
+      <v-tab-item value="activity" class="py-3">
+        <v-lazy>
+          <TeamActivity />
+        </v-lazy>
       </v-tab-item>
-      <v-tab-item lazy value="graph" class="py-3">
-        <TeamGraph />
+      <v-tab-item value="search" class="py-3">
+        <v-lazy>
+          <TeamSearch />
+        </v-lazy>
+      </v-tab-item>
+      <v-tab-item value="graph" class="py-3">
+        <v-lazy>
+          <TeamGraph />
+        </v-lazy>
       </v-tab-item>
     </v-tabs>
   </div>
@@ -28,6 +42,7 @@
 
 <script>
 import HierarchyCards from '@/components/team/HierarchyCards.vue'
+import TeamActivity from '@/components/team/TeamActivity.vue'
 import TeamSearch from '@/components/team/Search.vue'
 import TeamGraph from '@/components/team/Graph.vue'
 
@@ -36,7 +51,8 @@ export default {
   components: {
     HierarchyCards,
     TeamSearch,
-    TeamGraph
+    TeamGraph,
+    TeamActivity
   }
 }
 </script>

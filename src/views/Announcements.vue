@@ -1,35 +1,36 @@
 <template>
-  <v-card v-if="post.content">
-    <v-card-title>
-      <p class="headline">{{post.title}}</p>
-    </v-card-title>
-    <v-card-text v-html="post.content"></v-card-text>
-    <v-card-actions>
-      <small>{{post.date}}</small>
-    </v-card-actions>
-  </v-card>
+  <div>
+    <v-card v-for="post in posts" :key="post.date">
+      <v-card-title>
+        <p class="headline">{{post.title}}</p>
+      </v-card-title>
+      <v-card-text v-html="post.content"></v-card-text>
+      <v-card-actions>
+        <small>{{post.date}}</small>
+      </v-card-actions>
+    </v-card>
+  </div>
 </template>
 
 <script>
+import * as _ from 'lodash'
 import { GET_RECENT_POST } from '@/graphql/wordpress/Posts.gql'
 
-import * as _ from 'lodash'
-
 export default {
-  name: 'Announcement',
+  name: 'Announcements',
   data() {
     return {
-      post: {}
+      posts: []
     }
   },
   apollo: {
-    post: {
+    posts: {
       query: GET_RECENT_POST,
       variables() {
         return {
-          first: 1,
+          first: 25,
           where: {
-            categoryName: 'hub-dashboard',
+            categoryName: 'hub-announcement',
             orderby: [{
               field: 'DATE',
               order: 'DESC'
@@ -39,7 +40,7 @@ export default {
       },
       update(data) {
         const { posts: { edges } } = data
-        return edges[0] ? edges[0].node : {}
+        return edges[0].node
       },
       client: 'wordpress',
       skip: function() {

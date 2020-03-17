@@ -309,6 +309,7 @@ export default {
     }
   },
   mounted() {
+    console.log('loading team card')
     this.displayedRank = this.rank
     if (!this.teamSearchMode) {
       if (this.user) {

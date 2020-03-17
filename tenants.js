@@ -142,7 +142,7 @@ const tenantOptions = {
     logoPath: '/img/1010/logo.png',
     logoLoginPath: '/img/1010/logo.png',
     placeholder: '/img/1010/placeholder.png',
-    profileColor: '#fcc19f',
+    profileColor: '#a1213b',
     baseColor: '#292425',
     primaryColor: '#a1213b',
     secondaryColor: '#a1213b',
@@ -150,6 +150,7 @@ const tenantOptions = {
     storeUrl: 'https://www.everra.com/store/{slug}',
     corporateUrl: 'https://www.everra.com/',
     encryptKey: 'luccii', // leave this, it is important
+    companyTime: 'America/Los_Angeles',
     social: [
       {
         key: 'facebook',
@@ -173,6 +174,7 @@ const tenantOptions = {
     ],
     privacyPolicy: '/docs/1010/Privacy-Policy.pdf',
     features: {
+      annoucements: true,
       sales: true,
       team: true,
       legal: {

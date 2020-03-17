@@ -7,6 +7,7 @@ import AccountClaim from './views/AccountClaim.vue'
 import PasswordReset from './views/PasswordReset.vue'
 import Backoffice from './views/Backoffice.vue'
 import Integrations from './views/Integrations.vue'
+import Announcements from './views/Announcements.vue'
 import Profile from './views/Profile.vue'
 import Assets from './views/Assets.vue'
 import Team from './views/Team.vue'
@@ -113,6 +114,11 @@ export default new Router({
           path: 'team',
           name: 'team',
           component: Team
+        },
+        {
+          path: 'announcements',
+          name: 'announcements',
+          component: Announcements
         },
         {
           path: 'integrations',

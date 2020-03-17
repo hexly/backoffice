@@ -1,9 +1,9 @@
 import gql from 'graphql-tag'
 
 export const COMP_PAYOUTS_QUERY = gql`
-query compRecentEarnings {
-  compRecentEarnings{
-    earnings {
+query compRecentEarnings($input: CompRecentEarningsInput) {
+  compRecentEarnings(input: $input){
+    results {
       reason
       payout
       payeeMarket
@@ -35,6 +35,26 @@ export const ENGINE_STATS_QUERY = gql`
       qualified
       current
       next
+      levelCounts
+      groupCount
+      downlineCount
+      ranks
+      qualifiedLegCount
+    }
+  }
+`
+
+export const ENGINE_STATS_PERIODS_QUERY = gql`
+  query engineStatsPeriod($input: EngineStatsPeriodsByMemberInput) {
+    engineStatsPeriodsByMemberId(input: $input) {
+      id
+      name
+      key
+      open
+      close
+      status
+      hasMaterializedStats
+      hasPayroll
     }
   }
 `
@@ -123,6 +143,47 @@ export const COMP_STATS_QUERY = gql`
             downlinePoints
             downlineAdjustedPoints
           }
+        }
+      }
+    }
+  }
+`
+
+export const ENGINE_TEAM_ACTIVITY = gql`
+  query engineStatsTeamActivity($input: EngineStatsActivityInput!) {
+    engineStatsGetTeamActivity(input: $input) {
+      page
+      totalPages
+      pageSize
+      totalResults
+      results {
+        id
+        name
+        mrn
+        depth
+        memberPath
+        qualified
+        rank
+        psv
+        cpsv
+        gsv
+        dsv
+        legs
+        current
+        next
+        groupCount
+        downlineCount
+        member {
+          profileUrl
+          contacts {
+            emails {
+              email
+            }
+          }
+        }
+        ancestors {
+          profileUrl
+          displayName
         }
       }
     }
