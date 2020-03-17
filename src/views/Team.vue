@@ -6,9 +6,11 @@
       <v-tab to="#hierarchy">Generations
         <v-icon>portrait</v-icon>
       </v-tab>
-      <v-tab to="#activity">Activity
-        <v-icon>whatshot</v-icon>
-      </v-tab>
+      <template v-if="$tenantInfo.features.activity">
+        <v-tab to="#activity">Activity
+          <v-icon>whatshot</v-icon>
+        </v-tab>
+      </template>
       <v-tab to="#search">Search
         <v-icon>search</v-icon>
       </v-tab>
@@ -21,11 +23,13 @@
           <HierarchyCards />
         </v-lazy>
       </v-tab-item>
-      <v-tab-item value="activity" class="py-3">
-        <v-lazy>
-          <TeamActivity />
-        </v-lazy>
-      </v-tab-item>
+      <template v-if="$tenantInfo.features.activity">
+        <v-tab-item value="activity" class="py-3">
+          <v-lazy>
+            <TeamActivity />
+          </v-lazy>
+        </v-tab-item>
+      </template>
       <v-tab-item value="search" class="py-3">
         <v-lazy>
           <TeamSearch />

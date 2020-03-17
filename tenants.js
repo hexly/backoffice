@@ -177,6 +177,7 @@ const tenantOptions = {
       annoucements: true,
       sales: true,
       team: true,
+      activity: true,
       legal: {
         docs: true,
         ssn: false
