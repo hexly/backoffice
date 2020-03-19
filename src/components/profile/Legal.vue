@@ -44,7 +44,7 @@
           </v-flex>
           <v-flex xs12 sm4>
             <v-text-field
-              :disabled="agreed"
+              :disabled="redacted"
               label="Business / Entity Name"
               v-if="value.entity.type === 'ein'"
               v-model="value.entity.name"

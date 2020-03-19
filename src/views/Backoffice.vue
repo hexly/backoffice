@@ -157,7 +157,7 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="primary" flat="flat" @click="$router.push('/profile')">Go To Profile Page</v-btn>
+          <v-btn color="primary" text @click="$router.push('/profile')">Go To Profile Page</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
