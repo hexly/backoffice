@@ -31,7 +31,7 @@
           </v-container>
         </v-card-text>
       </v-card>
-      <v-data-table :headers="headers" :items="items" hide-default-footer class="elevation-1" item-key="id" :expanded="expanded" show-expand :loading="loading">
+      <v-data-table :headers="headers" :items="items" hide-default-footer disable-pagination class="elevation-1" item-key="id" :expanded="expanded" show-expand :loading="loading">
         <template v-slot:item="{ item, isExpanded }">
           <tr>
             <td>{{ item.date }}</td>
