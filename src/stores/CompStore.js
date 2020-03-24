@@ -64,8 +64,8 @@ export const CompStore = {
       return engineStatsByMemberIds
     },
     [CompActions.GET_PERIODS]: async ({ dispatch, commit, state, rootState }, input) => {
-      const { data: { engineStatsPeriodsByMemberId } } = await apolloHexlyClient.mutate({
-        mutation: ENGINE_STATS_PERIODS_QUERY,
+      const { data: { engineStatsPeriodsByMemberId } } = await apolloHexlyClient.query({
+        query: ENGINE_STATS_PERIODS_QUERY,
         variables: { input }
       })
       const periods = _.groupBy(engineStatsPeriodsByMemberId, 'status')

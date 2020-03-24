@@ -54,10 +54,10 @@
     </v-row>
     <v-row wrap>
       <v-col cols="12" sm="6">
-        <LeaderBoard :leaders="companyLeaderboard" title="Top Team Builders (Company)" message="New influencers this period:"/>
+        <LeaderBoard :leaders="companyLeaderboard" title="Top Team Builders (Company)" message="New influencers this period: "/>
       </v-col>
       <v-col cols="12" sm="6">
-        <LeaderBoard :leaders="teamLeaderboard" title="Top Team Builders (Your Team)" message="New influencers this period:"/>
+        <LeaderBoard :leaders="teamLeaderboard" title="Top Team Builders (Your Team)" message="New influencers this period: "/>
       </v-col>
     </v-row>
     <Directory class="py-2" :self="personalStats" :frontline="team" title="Your Circle of Influence" membersTypeName="Influencer"/>

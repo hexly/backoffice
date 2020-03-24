@@ -25,14 +25,14 @@
           </v-list-item-content>
           <v-list-item-action v-if="showTotal">
             <v-list-item-title v-if="!currency">
-              <span v-if="message">{{message}}</span>{{ item.total }}
+              <span v-if="message">{{message}}</span><strong>{{ item.total }}</strong>
             </v-list-item-title>
             <v-list-item-title v-if="currency">{{ formatCurrency(~~item.total) }}</v-list-item-title>
           </v-list-item-action>
         </v-list-item>
       </div>
     </v-list>
-    <div v-else>
+    <div class="text-center pa-2" v-else>
       No Leaders Yet
     </div>
   </v-card>
