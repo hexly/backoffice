@@ -24,6 +24,18 @@ export const FRONTLINE_LEADERBOARD = gql`
   }
 `
 
+export const FRONTLINE_LEADERBOARD_BY_RANGE = gql`
+  query frontlineLeaderByTeam($input: RangedLeaderboardInput!) {
+    rangedFrontlineLeaderboardByTeam(input: $input) {
+      name
+      contactEmail
+      total
+      profileUrl
+      joinedOn
+    }
+  }
+`
+
 export const COMPANY_SALES_LEADERBOARD = gql`
   query salesleaders($leaderInput: LeaderboardInput!) {
     monthlySalesLeaderboard(input: $leaderInput) {
@@ -39,6 +51,18 @@ export const COMPANY_SALES_LEADERBOARD = gql`
 export const COMPANY_FRONTLINE_LEADERBOARD = gql`
   query frontlineLeader($leaderInput: LeaderboardInput!) {
     monthlyFrontlineLeaderboard(input: $leaderInput) {
+      name
+      contactEmail
+      total
+      profileUrl
+      joinedOn
+    }
+  }
+`
+
+export const COMPANY_FRONTLINE_LEADERBOARD_BY_RANGE = gql`
+  query frontlineLeader($input: RangedLeaderboardInput!) {
+    rangedFrontlineLeaderboard(input: $input) {
       name
       contactEmail
       total

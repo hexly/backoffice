@@ -52,6 +52,14 @@
         </v-card>
       </v-col>
     </v-row>
+    <v-row wrap>
+      <v-col cols="12" sm="6">
+        <LeaderBoard :leaders="companyLeaderboard" title="Top Team Builders (Company)" message="New influencers this period: "/>
+      </v-col>
+      <v-col cols="12" sm="6">
+        <LeaderBoard :leaders="teamLeaderboard" title="Top Team Builders (Your Team)" message="New influencers this period: "/>
+      </v-col>
+    </v-row>
     <Directory class="py-2" :self="personalStats" :frontline="team" title="Your Circle of Influence" membersTypeName="Influencer"/>
     <CompanyMap class="py-2" title="Influencers around the world"/>
   </div>
@@ -72,7 +80,12 @@ import Badges from '@/components/Badges.vue'
 import RankRequirementsCard from '@/components/RankRequirementsCard.vue'
 import TeamOverview from '@/components/dashboard/TeamOverview.vue'
 import Incentive from '@/components/incentives/1010March2020.vue'
+import LeaderBoard from '@/components/Leaderboard.vue'
 
+import {
+  FRONTLINE_LEADERBOARD_BY_RANGE,
+  COMPANY_FRONTLINE_LEADERBOARD_BY_RANGE
+} from '@/graphql/Leaderboard.js'
 import { COMP_PAYOUTS_QUERY } from '@/graphql/CompStats.gql'
 import {
   MEMBER_STATS_BY_DEPTH,
@@ -95,7 +108,8 @@ export default {
     Social,
     RankRequirementsCard,
     TeamOverview,
-    Incentive
+    Incentive,
+    LeaderBoard
   },
   data() {
     return {
@@ -121,7 +135,9 @@ export default {
       loadingCount: 0,
       generationCountLoading: 0,
       statsDisabled: false,
-      isMobile: isMobile()
+      isMobile: isMobile(),
+      teamLeaderboard: [],
+      companyLeaderboard: []
     }
   },
   async mounted() {
@@ -155,6 +171,27 @@ export default {
         second: 'numeric'
       }).format(date)
     },
+    async loadLeaderboards(period) {
+      const variables = {
+        input: {
+          tenantId: 1010,
+          start: period.open,
+          end: period.close,
+          omitTagIds: []
+        }
+      }
+      const { data: { rangedFrontlineLeaderboardByTeam } } = await this.$apollo.query({
+        query: FRONTLINE_LEADERBOARD_BY_RANGE,
+        variables
+      })
+
+      const { data: { rangedFrontlineLeaderboard } } = await this.$apollo.query({
+        query: COMPANY_FRONTLINE_LEADERBOARD_BY_RANGE,
+        variables
+      })
+      this.teamLeaderboard = rangedFrontlineLeaderboardByTeam
+      this.companyLeaderboard = rangedFrontlineLeaderboard
+    },
     ...mapMutations([
       UserMutations.MEMBER_QUERY,
       Mutations.SET_GATE
@@ -175,9 +212,15 @@ export default {
     ...mapState({
       user: state => state.user,
       engineStats: state => state.comp.stats,
-      engineStatsLoading: state => state.comp.engineStatsLoading
+      engineStatsLoading: state => state.comp.engineStatsLoading,
+      openPeriod: state => state.comp.periods.open && state.comp.periods.open[0]
     }),
     ...mapGetters(['contactId', 'memberId', 'member', 'slug', 'tenantIntegrations'])
+  },
+  watch: {
+    openPeriod(newVal) {
+      this.loadLeaderboards(newVal)
+    }
   },
   apollo: {
     earnings: {

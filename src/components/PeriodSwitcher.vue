@@ -1,7 +1,7 @@
 <template>
   <div>
     <small>{{selectedPeriod && selectedPeriod.name}}</small>
-    <v-menu v-model="menu">
+    <v-menu v-model="menu" v-if="!readOnly">
       <template v-slot:activator="{ on }">
         <v-btn icon v-on="on">
           <v-icon>mdi-dots-vertical</v-icon>
@@ -53,6 +53,12 @@ import { CompActions } from '@/stores/CompStore'
 import { mapState, mapActions } from 'vuex'
 export default {
   name: 'PeriodSwitcher',
+  props: {
+    readOnly: {
+      type: Boolean,
+      default: false
+    }
+  },
   data() {
     return {
       menu: false
