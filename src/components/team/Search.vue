@@ -6,7 +6,7 @@
         <v-text-field
           solo
           v-model="query"
-          placeholder="Influecer Name"
+          placeholder="Influencer Name"
         />
         <h5>Sort Name By:</h5>
         <v-select

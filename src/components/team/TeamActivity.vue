@@ -1,16 +1,22 @@
 <template>
   <div style="height: calc(100vh - 128px);">
-    <v-row justify="space-between">
+    <v-toolbar color="secondary" dark>
+      <v-toolbar-title>Team Activity</v-toolbar-title>
+      <v-spacer></v-spacer>
+      <PeriodSwitcher></PeriodSwitcher>
+      <v-btn icon @click="drawer = !drawer">
+        <v-icon dark>mdi-format-list-bulleted-square</v-icon>
+      </v-btn>
+    </v-toolbar>
+    <!-- <v-row justify="space-between">
       <v-col>
         <h2>Team Activity</h2>
       </v-col>
       <v-spacer/>
       <v-col class="text-right">
-        <v-btn class="mx-2" small fab dark color="teal" @click="drawer = !drawer">
-          <v-icon dark>mdi-format-list-bulleted-square</v-icon>
-        </v-btn>
+
       </v-col>
-    </v-row>
+    </v-row> -->
     <v-data-table hide-default-footer disable-pagination disable-sort :headers="headers" :items="members" class="elevation-1" :loading="loading > 0 ">
       <template v-slot:item.name="{ item }">
         <v-tooltip top slot="append">
@@ -112,8 +118,12 @@ import _ from 'lodash'
 import { mapGetters, mapState, mapActions } from 'vuex'
 import { CompActions } from '@/stores/CompStore'
 import { ENGINE_TEAM_ACTIVITY } from '@/graphql/CompStats.gql'
+import PeriodSwitcher from '@/components/PeriodSwitcher.vue'
 export default {
   name: 'TeamActivity',
+  components: {
+    PeriodSwitcher
+  },
   data() {
     return {
       headers: [
