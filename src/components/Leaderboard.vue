@@ -8,7 +8,7 @@
       <v-spacer></v-spacer>
       <PeriodSwitcher :readOnly="true"></PeriodSwitcher>
     </v-toolbar>
-    <v-list two-line dense>
+    <v-list two-line dense v-if="leaders.length > 0">
       <div
         v-for="(item, index) in leaders"
         :key="`${item.contactEmail}-${index}`"
@@ -24,12 +24,17 @@
             <v-list-item-title>{{item.name}}</v-list-item-title>
           </v-list-item-content>
           <v-list-item-action v-if="showTotal">
-            <v-list-item-title v-if="!currency">{{ item.total }}</v-list-item-title>
+            <v-list-item-title v-if="!currency">
+              <span v-if="message">{{message}}</span>{{ item.total }}
+            </v-list-item-title>
             <v-list-item-title v-if="currency">{{ formatCurrency(~~item.total) }}</v-list-item-title>
           </v-list-item-action>
         </v-list-item>
       </div>
     </v-list>
+    <div v-else>
+      No Leaders Yet
+    </div>
   </v-card>
 </template>
 
@@ -51,7 +56,8 @@ export default {
     showTotal: {
       type: Boolean,
       default: true
-    }
+    },
+    message: String
   },
   methods: {
     formatCurrency (total) {
