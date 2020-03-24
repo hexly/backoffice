@@ -4,9 +4,13 @@
       <v-toolbar color="secondary" dark>
         <v-toolbar-title>Team Overview</v-toolbar-title>
         <v-spacer></v-spacer>
+        <PeriodSwitcher v-if="!loading"></PeriodSwitcher>
       </v-toolbar>
       <v-card-text style="height: 587px; overflow: auto; padding-top: 0px;">
-        <template v-if="!loading">
+        <template v-if="!loading && stats">
+        <v-alert v-model="showBanner" border="top" colored-border type="info" elevation="2" class="mt-2">
+          You are looking at a past period.
+        </v-alert>
           <v-timeline clipped dense>
             <v-timeline-item large color="#a1213b">
               <v-row class="pt-1">
@@ -34,7 +38,10 @@
                   <div class="caption">Total Influencers</div>
                 </v-col>
                 <v-col>
-                  <strong>{{stats.downlineCount && stats.downlineCount.qualified}}</strong>
+                  <div>
+                    <strong>{{stats.downlineCount && stats.downlineCount.qualified}}</strong>
+                     <Trend v-if="showTrend" :previous="previous.downlineCount.qualified" :current="current.downlineCount.qualified"/>
+                  </div>
                   <div class="caption">Active Influencers</div>
                 </v-col>
               </v-row>
@@ -49,7 +56,10 @@
                   <div class="caption">Total Influencers</div>
                 </v-col>
                 <v-col>
-                  <strong>{{value.qualified}}</strong>
+                  <div>
+                    <strong>{{value.qualified}}</strong>
+                    <Trend v-if="showTrend" :previous="previous.levelCounts[key].qualified" :current="current.levelCounts[key].qualified"/>
+                  </div>
                   <div class="caption">Active Influencers</div>
                 </v-col>
               </v-row>
@@ -65,17 +75,34 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
-
+import Trend from '@/components/dashboard/Trend.vue'
+import { mapGetters, mapState } from 'vuex'
+import PeriodSwitcher from '@/components/PeriodSwitcher.vue'
 export default {
   name: 'TeamOverview',
+  components: {
+    Trend,
+    PeriodSwitcher
+  },
   props: {
     stats: Object,
     total: Number,
     loading: Boolean
   },
   computed: {
-    ...mapGetters(['member'])
+    showBanner() {
+      return !this.isSelectedCurrent
+    },
+    showTrend() {
+      return this.isSelectedCurrent &&
+        this.current &&
+        this.previous
+    },
+    ...mapState({
+      current: state => state.comp.currentPeriod,
+      previous: state => state.comp.previousPeriod
+    }),
+    ...mapGetters(['member', 'isSelectedCurrent'])
   }
 }
 </script>

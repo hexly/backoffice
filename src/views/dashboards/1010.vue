@@ -21,6 +21,7 @@
         </v-layout>
       </v-col>
       <v-col cols="12" md="6">
+        <Incentive class="mb-2"/>
         <RankRequirementsCard
           :stats         ="engineStats"
           :statsDisabled ="statsDisabled"
@@ -70,6 +71,7 @@ import Announcement from '@/components/dashboard/Announcement.vue'
 import Badges from '@/components/Badges.vue'
 import RankRequirementsCard from '@/components/RankRequirementsCard.vue'
 import TeamOverview from '@/components/dashboard/TeamOverview.vue'
+import Incentive from '@/components/incentives/1010March2020.vue'
 
 import { COMP_PAYOUTS_QUERY } from '@/graphql/CompStats.gql'
 import {
@@ -92,7 +94,8 @@ export default {
     Badges,
     Social,
     RankRequirementsCard,
-    TeamOverview
+    TeamOverview,
+    Incentive
   },
   data() {
     return {
