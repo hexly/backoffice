@@ -5,6 +5,8 @@
       dark
     >
       <v-toolbar-title>{{title}}</v-toolbar-title>
+      <v-spacer></v-spacer>
+      <PeriodSwitcher :readOnly="true"></PeriodSwitcher>
     </v-toolbar>
     <v-list two-line dense>
       <div
@@ -20,7 +22,6 @@
           </v-list-item-avatar>
           <v-list-item-content>
             <v-list-item-title>{{item.name}}</v-list-item-title>
-            <v-list-item-sub-title>{{item.contactEmail}}</v-list-item-sub-title>
           </v-list-item-content>
           <v-list-item-action v-if="showTotal">
             <v-list-item-title v-if="!currency">{{ item.total }}</v-list-item-title>
@@ -33,8 +34,12 @@
 </template>
 
 <script>
+import PeriodSwitcher from '@/components/PeriodSwitcher.vue'
 export default {
   name: 'LeaderBoard',
+  components: {
+    PeriodSwitcher
+  },
   data() { return { } },
   props: {
     leaders: Array,
