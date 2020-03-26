@@ -177,7 +177,7 @@ export default {
           tenantId: 1010,
           start: period.open,
           end: period.close,
-          omitTagIds: []
+          omitTagIds: [34]
         }
       }
       const { data: { rangedFrontlineLeaderboardByTeam } } = await this.$apollo.query({
