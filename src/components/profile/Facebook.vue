@@ -80,7 +80,7 @@ export default {
       })
     },
     pic(userId) {
-      return 'http://graph.facebook.com/' + userId + '/picture?type=normal'
+      return 'https://graph.facebook.com/' + userId + '/picture?type=normal'
     }
   }
 }
