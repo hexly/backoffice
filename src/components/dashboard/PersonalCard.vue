@@ -14,6 +14,12 @@
       </v-avatar>
       <h3 class="headline"> {{ user.principal.member.name }}</h3>
       <div v-if="showMrn" class="primary--text subheading font-weight-bold">{{memberName || 'Member'}} #<b>{{user.principal.member.mrn}}</b></div>
+      <div v-if="stats && stats.current">
+        Achieved Status:
+        <v-btn x-small dark color="primary" class="body-2">
+          Rank {{Math.max(stats.current.rank, stats.current.recognizedRank)}}
+        </v-btn>
+      </div>
       <div v-if="user.principal.member.sponsor" class="mt-3">
         <b>{{sponsorName || 'Your Sponsor'}}:</b>
         <v-layout row align-center>
@@ -112,7 +118,8 @@ export default {
   },
   computed: {
     ...mapState({
-      user: state => state.user
+      user: state => state.user,
+      stats: state => state.comp.currentPeriod
     }),
     ...mapGetters(['contactId', 'memberId', 'slug']),
     isFounder() {

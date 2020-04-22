@@ -57,6 +57,7 @@ export const CompStore = {
         fetchPolicy: 'network-only',
         variables: { input }
       })
+      console.log(engineStatsByMemberIds)
       if (!transient) {
         commit(CompMutations.SET_STATS, engineStatsByMemberIds[0])
       }

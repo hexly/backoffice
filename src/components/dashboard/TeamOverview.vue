@@ -8,8 +8,14 @@
       </v-toolbar>
       <v-card-text style="height: 587px; overflow: auto; padding-top: 0px;">
         <template v-if="!loading && stats">
-        <v-alert v-model="showBanner" border="top" colored-border type="info" elevation="2" class="mt-2">
-          You are looking at a past period.
+        <v-alert
+          class="inner-alert"
+          icon="mdi-calendar-check"
+          text
+          dense
+          type="info"
+          v-model="showBanner">
+          You are currently viewing a past period.
         </v-alert>
           <v-timeline clipped dense>
             <v-timeline-item large color="#a1213b">
@@ -108,5 +114,8 @@ export default {
 </script>
 
 <style scoped>
-
+.inner-alert{
+  margin-left: -15px;
+  margin-right: -15px;
+}
 </style>

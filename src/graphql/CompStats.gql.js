@@ -40,6 +40,7 @@ export const ENGINE_STATS_QUERY = gql`
       downlineCount
       ranks
       qualifiedLegCount
+      payouts
     }
   }
 `
