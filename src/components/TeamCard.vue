@@ -387,7 +387,7 @@ export default {
 }
 .cardImg {
   margin: auto;
-  max-height: 100%;
+  max-height: 150px;
   max-width: 100%;
 }
 .dense {

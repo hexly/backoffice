@@ -4,77 +4,94 @@
       <v-toolbar-title>Rank Requirements</v-toolbar-title>
       <v-spacer></v-spacer>
       <PeriodSwitcher v-if="!loading"></PeriodSwitcher>
+      <!-- <v-btn icon small v-if="!showPayouts" :disabled="!stats.payouts || !stats.payouts.grandTotal" @click="showPayouts = !showPayouts">
+        <v-icon>mdi-currency-usd</v-icon>
+      </v-btn>
+      <v-btn icon small v-else  @click="showPayouts = !showPayouts">
+        <v-icon>mdi-chart-gantt</v-icon>
+      </v-btn> -->
     </v-toolbar>
     <v-card-text v-if="stats && Object.keys(stats).length && !statsDisabled && !loading">
-      <v-alert :value="selectedPeriod && showBanner()" border="top" colored-border type="info" elevation="2">
+      <v-alert
+        class="inner-alert"
+        :value="selectedPeriod && showBanner()"
+        icon="mdi-calendar-check"
+        text
+        dense
+        type="info">
         {{bannerMessage}}
       </v-alert>
-      <v-row justify-space-between :class="tabMode ? 'rank-row' : ''">
-        <v-col>
-          <div v-if="!currentRank" class="title">Unranked</div>
-          <div v-else class="title">Rank {{currentRank}}</div>
-          <div class="caption grey--text darken-1"> Current Rank </div>
-        </v-col>
-        <v-spacer></v-spacer>
-        <v-col class="text-right" v-if="nextRank">
-          <div class="title">Rank {{nextRank}}</div>
-          <div class="caption grey--text darken-1"> Next Rank </div>
-        </v-col>
-      </v-row>
-
-      <template class="stats-container" v-if="current">
-        <v-row :class="tabMode ? 'rank-data-row' : null" justify="space-between" wrap v-for="stat in Object.keys(statMapping)" :key="stat.property">
-          <template v-if="stat === 'anyRankCount' && Object.keys(next[stat].required).length === 0 "></template>
-          <template v-else>
-          <v-col class="pa-1">
-            <div v-if="!tabMode" :class="( next[stat].required  ? '' : 'grey--text') + ' title'">
-              {{statMapping[stat].title}}
-              <template v-if="stat !== 'anyRankCount'">
-                <v-icon color="green" v-if="next[stat].satisfied && next[stat].required">check_circle</v-icon>
-              </template>
-              <template v-else>
-                <v-icon color="green" v-if="next[stat].satisfied && Object.keys(next[stat].required).length">check_circle</v-icon>
-              </template>
-            </div>
-            <div class="caption grey--text darken-1"> {{statMapping[stat].description}} </div>
+      <template v-if="showPayouts">
+        <PeriodPayouts :payouts="stats.payouts" />
+      </template>
+      <template v-else>
+        <v-row justify-space-between :class="tabMode ? 'rank-row' : ''" class="pa-1">
+          <v-col class="pa-0">
+            <div v-if="!currentRank" class="title">Unranked</div>
+            <div v-else class="title">Rank {{currentRank}}</div>
+            <div class="caption grey--text darken-1"> Current Rank </div>
           </v-col>
           <v-spacer></v-spacer>
-          <v-col class="text-right pa-1" v-if="stat !== 'anyRankCount'">
-            <div class="title">{{next[stat].earned}}</div>
-            <div v-if="next[stat].required && parseInt(next[stat].earned)" class="caption grey--text darken-1">
-              {{Math.round(next[stat].earned/next[stat].required*100)}}%
-              <br>
-              <span v-if="!tabMode">{{Math.round(next[stat].earned)}} of {{Math.round(next[stat].required)}}</span>
-            </div>
-            <div v-else class="caption grey--text darken-1">
-              N/A
-              <br>
-              <span v-if="!tabMode">
-                {{ Math.round(next[stat].required)}}
-                <v-tooltip slot="append" left>
-                  <template v-slot:activator="{ on }">
-                    <v-icon v-on="on" small>info</v-icon>
-                  </template>
-                    <span>Not applicable for next rank</span>
-                </v-tooltip>
-              </span>
-            </div>
+          <v-col class="text-right pa-1" v-if="nextRank">
+            <div class="title">Rank {{nextRank}}</div>
+            <div class="caption grey--text darken-1"> Next Rank </div>
           </v-col>
-          <v-col class="pa-1 text-right" v-else>
-            <template v-if="next[stat].satisfied">
-              <div class="title" >Achieved</div>
-              <div class="caption grey--text darken-1"> 100% </div>
-            </template>
-            <template v-else>
-              <div class="title">Unachieved</div>
-              <div class="caption grey--text darken-1"> 0% </div>
-            </template>
-          </v-col>
-          <v-col cols="12" class="pa-1" v-if="stat !== 'anyRankCount'">
-            <v-progress-linear :class="tabMode ? 'progress-bar' : null" :color="next[stat].required ? 'success' : 'grey' " :height="tabMode ? 2 : 5" :value="Math.round(next[stat].earned/next[stat].required*100)"></v-progress-linear>
-          </v-col>
-          </template>
         </v-row>
+
+        <template class="stats-container pa-2" v-if="current">
+          <v-row :class="tabMode ? 'rank-data-row' : null" justify="space-between" wrap v-for="stat in Object.keys(statMapping)" :key="stat.property">
+            <template v-if="stat === 'anyRankCount' && Object.keys(next[stat].required).length === 0 "></template>
+            <template v-else>
+            <v-col class="pa-1">
+              <div v-if="!tabMode" :class="( next[stat].required  ? '' : 'grey--text') + ' title'">
+                {{statMapping[stat].title}}
+                <template v-if="stat !== 'anyRankCount'">
+                  <v-icon color="green" v-if="next[stat].satisfied && next[stat].required">check_circle</v-icon>
+                </template>
+                <template v-else>
+                  <v-icon color="green" v-if="next[stat].satisfied && Object.keys(next[stat].required).length">check_circle</v-icon>
+                </template>
+              </div>
+              <div class="caption grey--text darken-1"> {{statMapping[stat].description}} </div>
+            </v-col>
+            <v-spacer></v-spacer>
+            <v-col class="text-right pa-1" v-if="stat !== 'anyRankCount'">
+              <div class="title">{{next[stat].earned}}</div>
+              <div v-if="next[stat].required && parseInt(next[stat].earned)" class="caption grey--text darken-1">
+                {{Math.round(next[stat].earned/next[stat].required*100)}}%
+                <br>
+                <span v-if="!tabMode">{{Math.round(next[stat].earned)}} of {{Math.round(next[stat].required)}}</span>
+              </div>
+              <div v-else class="caption grey--text darken-1">
+                N/A
+                <br>
+                <span v-if="!tabMode">
+                  {{ Math.round(next[stat].required)}}
+                  <v-tooltip slot="append" left>
+                    <template v-slot:activator="{ on }">
+                      <v-icon v-on="on" small>info</v-icon>
+                    </template>
+                      <span>Not applicable for next rank</span>
+                  </v-tooltip>
+                </span>
+              </div>
+            </v-col>
+            <v-col class="pa-1 text-right" v-else>
+              <template v-if="next[stat].satisfied">
+                <div class="title" >Achieved</div>
+                <div class="caption grey--text darken-1"> 100% </div>
+              </template>
+              <template v-else>
+                <div class="title">Unachieved</div>
+                <div class="caption grey--text darken-1"> 0% </div>
+              </template>
+            </v-col>
+            <v-col cols="12" class="pa-1" v-if="stat !== 'anyRankCount'">
+              <v-progress-linear :class="tabMode ? 'progress-bar' : null" :color="next[stat].required ? 'success' : 'grey' " :height="tabMode ? 2 : 5" :value="Math.round(next[stat].earned/next[stat].required*100)"></v-progress-linear>
+            </v-col>
+            </template>
+          </v-row>
+        </template>
       </template>
     </v-card-text>
     <v-card-text v-else-if="!statsDisabled && !loading" class="pa-3">
@@ -104,10 +121,13 @@
 <script>
 import { mapState } from 'vuex'
 import PeriodSwitcher from '@/components/PeriodSwitcher.vue'
+import PeriodPayouts from '@/components/PeriodPayouts.vue'
+
 export default {
   name: 'RankRequirementsCard',
   components: {
-    PeriodSwitcher
+    PeriodSwitcher,
+    PeriodPayouts
   },
   props: {
     stats: Object,
@@ -117,6 +137,7 @@ export default {
   },
   data() {
     return {
+      showPayouts: false,
       bannerMessage: null,
       rank: null,
       current: null,
@@ -188,7 +209,7 @@ export default {
         this.bannerMessage = `This period is still under review.`
         return true
       } else if (this.selectedPeriod.status === 'closed') {
-        this.bannerMessage = `This period is closed`
+        this.bannerMessage = `You are currently viewing a past period. This period is closed`
         return true
       }
       return false
@@ -243,5 +264,8 @@ export default {
 }
 .rank-row {
   padding-bottom: 10px;
+}
+.inner-alert {
+  margin: -15px -16px 6px -16px;
 }
 </style>
