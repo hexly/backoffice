@@ -1,4 +1,4 @@
-<template>
+s<template>
   <v-card class="personal-card mx-auto" height="100%">
     <v-img
         v-if="!$tenantInfo.profileColor"
@@ -15,10 +15,18 @@
       <h3 class="headline"> {{ user.principal.member.name }}</h3>
       <div v-if="showMrn" class="primary--text subheading font-weight-bold">{{memberName || 'Member'}} #<b>{{user.principal.member.mrn}}</b></div>
       <div v-if="stats && stats.current">
-        Achieved Status:
-        <v-btn x-small dark color="primary" class="body-2">
-          Rank {{Math.max(stats.current.rank, stats.current.recognizedRank)}}
-        </v-btn>
+        <v-alert class="inner-alert" :value="isMonthInReview" icon="mdi-calendar-check" text dense type="info">
+          <p>It's a new month and last month is in review. Your achieved status will be updated once the review has been finished.</p>
+          <b v-if="previous">
+            Last month you reached: Rank&nbsp;{{previous.current.rank}}
+          </b>
+        </v-alert>
+        <p>
+          Achieved Status:
+          <v-btn x-small dark color="primary" class="body-2">
+            Rank {{stats.current.recognizedRank}}
+          </v-btn>
+        </p>
       </div>
       <div v-if="user.principal.member.sponsor" class="mt-3">
         <b>{{sponsorName || 'Your Sponsor'}}:</b>
@@ -119,9 +127,10 @@ export default {
   computed: {
     ...mapState({
       user: state => state.user,
-      stats: state => state.comp.currentPeriod
+      stats: state => state.comp.currentPeriod,
+      previous: state => state.comp.previousPeriod
     }),
-    ...mapGetters(['contactId', 'memberId', 'slug']),
+    ...mapGetters(['contactId', 'memberId', 'slug', 'isMonthInReview']),
     isFounder() {
       return this.$moment(this.user.principal.member.joinedOn).isBefore('2020-03-01')
     }

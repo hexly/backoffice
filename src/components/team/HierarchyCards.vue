@@ -97,7 +97,6 @@ export default {
       this.activeTab = tab
     },
     showTeam (user) {
-      console.log({ user })
       this.lineage.push(user)
       this.currentId = user.id || user.memberId
     },
