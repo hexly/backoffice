@@ -73,7 +73,6 @@ export default {
       }, 3000)
     },
     slugChanged: debounce(async function(searchTerm) {
-      console.log(searchTerm)
       this.slugUnique = false
       this.slugErrors = []
       this.checkingSlug = true

@@ -57,7 +57,6 @@ export const CompStore = {
         fetchPolicy: 'network-only',
         variables: { input }
       })
-      console.log(engineStatsByMemberIds)
       if (!transient) {
         commit(CompMutations.SET_STATS, engineStatsByMemberIds[0])
       }
@@ -74,15 +73,17 @@ export const CompStore = {
       if (_.isEmpty(state.selectedPeriod)) {
         await dispatch(CompActions.SELECT_PERIOD, currentPeriod)
       }
-      if (_.isEmpty(state.previousPeriod)) {
-        const previous = await dispatch(CompActions.GET_STATS, {
+      if (_.isEmpty(state.previousPeriod) && (periods.closed || periods.under_review)) {
+        const [previous] = await dispatch(CompActions.GET_STATS, {
           input: {
-            forDate: moment(currentPeriod.open, 'YYYY-MM-DDD').subtract(1, 'day').format('YYYY-MM-DD'),
+            forDate: moment(currentPeriod.open, 'YYYY-MM-DD').subtract(1, 'day').format('YYYY-MM-DD'),
             membersIn: [rootState.user.principal.memberId]
           },
           transient: true
         })
-        commit(CompMutations.SET_PREVIOUS_STATS, previous[0])
+        if (previous && previous.memberId) {
+          commit(CompMutations.SET_PREVIOUS_STATS, previous)
+        }
       }
       commit(CompMutations.SET_PERIODS, periods)
       return periods
@@ -95,6 +96,9 @@ export const CompStore = {
   getters: {
     isSelectedCurrent: state => {
       return state.selectedPeriod.id === state.currentPeriod.periodId
+    },
+    isMonthInReview: state => {
+      return !!(state.periods.under_review && state.periods.under_review.length)
     }
   }
 }

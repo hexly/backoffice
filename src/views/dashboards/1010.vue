@@ -31,7 +31,7 @@
     </v-row>
     <v-row wrap>
       <v-col col="12" sm="6">
-        <TeamOverview :stats="engineStats" :total="memberCount" :loading ="engineStatsLoading"/>
+        <TeamOverview :stats="engineStats" :total="memberCount" :loading="engineStatsLoading"/>
       </v-col>
       <v-col col="12" sm="6">
         <v-card id="recent-sales-card">

@@ -309,7 +309,6 @@ export default {
     }
   },
   mounted() {
-    console.log('loading team card')
     this.displayedRank = this.rank
     if (!this.teamSearchMode) {
       if (this.user) {
@@ -387,7 +386,7 @@ export default {
 }
 .cardImg {
   margin: auto;
-  max-height: 150px;
+  max-height: 200px;
   max-width: 100%;
 }
 .dense {

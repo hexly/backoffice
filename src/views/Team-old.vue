@@ -150,7 +150,6 @@ export default {
     }
   },
   mounted () {
-    console.log()
     this.currentId = this.member.memberId
     this.lineage.push({ memberId: this.currentId, displayName: this.member.displayName })
   }

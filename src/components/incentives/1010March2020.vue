@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="current && current.current">
     <v-card id="power-seller-incentive">
       <v-toolbar color="secondary" dark>
         <v-toolbar-title>Power Seller Promotion</v-toolbar-title>
@@ -83,7 +83,7 @@ export default {
   name: 'EverraMarch2020Incentive',
   computed: {
     ...mapState({
-      current: state => state.comp.currentPeriod
+      current: state => state.comp.previousPeriod
     })
   }
 }

@@ -64,15 +64,14 @@
               <td>
                 <Currency :amount="item.amount / 100" :currency="item.currency" />
               </td>
-              <td>
-                {{ item.status }}
+              <td class="text-capitalize">
                 <v-tooltip v-if="statuses[item.status]" bottom>
                   <template v-slot:activator="{ on }">
                     <v-icon v-on="on" small>info</v-icon>
                   </template>
-                  <span>{{statuses[item.status]}}</span>
+                  <span>{{statuses[item.status].toLowerCase()}}</span>
                 </v-tooltip>
-                <span v-else>{{ item.status }}</span>
+                <span v-else>{{ item.status.toLowerCase() }}</span>
               </td>
               <td>{{ $moment(item.issuedOn).format('lll') }}</td>
               <td>{{ item.releasedOn ? $moment(item.releasedOn).format('lll') : '--' }}</td>
