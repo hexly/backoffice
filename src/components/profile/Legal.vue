@@ -53,48 +53,60 @@
             ></v-text-field>
           </v-flex>
         </v-layout>
-        <v-flex xs12>
-          <v-checkbox
-            v-model="value.agreement.affiliate"
-            :rules="requiredPolicyRule"
-            :persistent-hint="!value.clicked.affiliate"
-            :disabled="agreed || !value.clicked.affiliate"
-            hint="Note: You must read the agreement before agreeing"
-          >
-            <div :disabled="false" slot="label">
-              I agree to the terms in the
-              <a
-                class="doc-links"
-                @click.capture="accept('affiliate')"
+        <v-flex xs12 class="text-left">
+          <h2>Legal Documents</h2>
+          <template v-if="agreed">
+            <div class="text-left py-2">
+              You have agreed to the terms in the
+              <a class="doc-links"
                 target="_blank"
                 :href="$tenantInfo.agreements[0].url"
               >Independent Contractor Agreement</a>
             </div>
-          </v-checkbox>
+          </template>
+          <template v-else>
+            <a
+              class="doc-links"
+              target="_blank"
+              :href="$tenantInfo.agreements[0].url"
+            >Independent Contractor Agreement</a>
+            <v-checkbox
+              v-model="value.agreement.affiliate"
+              :rules="requiredPolicyRule"
+              label="I agree to the terms in the Independent Contractor Agreement"
+            >
+            </v-checkbox>
+          </template>
         </v-flex>
-        <v-flex xs12>
-          <v-checkbox
-            v-model="value.agreement.policies"
-            :rules="requiredPolicyRule"
-            :persistent-hint="!value.clicked.policies"
-            :disabled="agreed || !value.clicked.policies"
-            hint="Note: You must read the policies and procedures before agreeing"
-          >
-            <div :disabled="false" slot="label">
-              I agree to all the
-              <a
-                class="doc-links"
-                @click.capture="accept('policies')"
-                target="_blank"
-                :href="$tenantInfo.agreements[1].url"
-              >Policies and Procedures</a>
-            </div>
-          </v-checkbox>
+        <v-flex xs12 class="text-left mt-5">
+          <template v-if="agreed">
+            <div class="text-left py-2">
+                You have agreed to all the
+                <a
+                  class="doc-links"
+                  target="_blank"
+                  :href="$tenantInfo.agreements[1].url"
+                >Policies and Procedures</a>
+              </div>
+          </template>
+          <template v-else>
+            <a
+              class="doc-links"
+              target="_blank"
+              :href="$tenantInfo.agreements[1].url"
+            >Policies and Procedures</a>
+            <v-checkbox
+              v-model="value.agreement.policies"
+              :rules="requiredPolicyRule"
+              label="I agree to all the Policies and Procedures"
+            >
+            </v-checkbox>
+          </template>
         </v-flex>
         <br>
         <v-flex xs12>
           <v-btn
-            :disabled="saving || (redacted && agreed)"
+            :disabled="saving || !canSave"
             :loading="saving"
             color="primary"
             type="submit"
@@ -131,6 +143,14 @@ export default {
   mounted () {
     this.load()
   },
+  watch: {
+    'value.agreement.affiliate'() {
+      this.value.clicked['affiliate'] = this.$moment.utc()
+    },
+    'value.agreement.policies'() {
+      this.value.clicked['policies'] = this.$moment.utc()
+    }
+  },
   methods: {
     ...mapActions({
       upsertAttribute: Actions.SET_ATTRIBUTE,
@@ -159,11 +179,6 @@ export default {
         this.$emit('hasLegal', { type: 'legal', isSet: false })
       } else {
         this.$emit('hasLegal', { type: 'legal', isSet: true })
-      }
-    },
-    accept (value) {
-      if (!this.agreed) {
-        this.value.clicked[value] = this.$moment.utc()
       }
     },
     async save () {
@@ -221,6 +236,12 @@ export default {
     }
   },
   computed: {
+    canSave() {
+      if (this.$tenantInfo.features.legal.ssn) {
+        return !this.redacted || !this.agreed
+      }
+      return !this.agreed
+    },
     ...mapState({
       user: state => state.user
     })
