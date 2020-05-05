@@ -5,10 +5,10 @@
       <v-col cols="12" md="6">
         <v-layout id="personal-card-layout" column>
           <v-flex>
-            <PersonalCard memberName="Your Influencer Number:">
+            <PersonalCard :memberName="`Your ${$tenantInfo.distributorLabel}  Number:`">
               <div slot="footer">
                 <Badges :memberId="member.id"/>
-                <div v-if="tenantIntegrations.length === 0">
+                <div v-if="tenantIntegrations.length === 0 && this.$tenantInfo.features.social">
                   <h3 class="text-center">Social Accounts<sup>*</sup></h3>
                   <div class="text-center">
                     <small> Once linked, you can access your social accounts in your profile page </small>
@@ -21,47 +21,24 @@
         </v-layout>
       </v-col>
       <v-col cols="12" md="6">
-        <Incentive class="mb-2"/>
         <RankRequirementsCard
           :stats         ="engineStats"
           :statsDisabled ="statsDisabled"
           :loading       ="engineStatsLoading"
         />
-      </v-col>
-    </v-row>
-    <v-row wrap>
-      <v-col col="12" sm="6">
+        <br>
         <TeamOverview :stats="engineStats" :total="memberCount" :loading="engineStatsLoading"/>
       </v-col>
-      <v-col col="12" sm="6">
-        <v-card id="recent-sales-card">
-          <v-toolbar color="secondary" dark>
-            <v-toolbar-title>Recent Earnings</v-toolbar-title>
-          </v-toolbar>
-          <v-responsive>
-            <v-data-table
-              :headers ="dataTableHeaders"
-              :items   ="earnings"
-              :loading ="$apollo.queries.earnings.loading"
-            >
-            <template v-slot:item.payout="{ item }">
-              {{formatEarning(item)}}
-            </template>
-            </v-data-table>
-          </v-responsive>
-        </v-card>
-      </v-col>
     </v-row>
-    <v-row wrap>
+    <!-- <v-row wrap>
       <v-col cols="12" sm="6">
-        <LeaderBoard :leaders="companyLeaderboard" title="Top Team Builders (Company)" message="New influencers this period: "/>
+        <LeaderBoard :leaders="companyLeaderboard" title="Top Team Builders (Company)" :message="`New ${$tenantInfo.distributorsLabel} this period: `"/>
       </v-col>
       <v-col cols="12" sm="6">
-        <LeaderBoard :leaders="teamLeaderboard" title="Top Team Builders (Your Team)" message="New influencers this period: "/>
+        <LeaderBoard :leaders="teamLeaderboard" title="Top Team Builders (Your Team)" :message="`New ${$tenantInfo.distributorsLabel} this period: `"/>
       </v-col>
-    </v-row>
+    </v-row> -->
     <Directory class="py-2" :self="personalStats" :frontline="team" title="Your Circle of Influence" membersTypeName="Influencer"/>
-    <CompanyMap class="py-2" title="Influencers around the world"/>
   </div>
 </template>
 

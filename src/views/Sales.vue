@@ -108,7 +108,7 @@ export default {
   },
   data() {
     return {
-      statuses: ['completed', 'processing', 'refunded', 'awaiting-shipment'],
+      statuses: ['completed', 'processing', 'refunded', 'awaiting-shipment', 'POSTED', 'Awaiting Approval', 'SHIPPED', 'AWAITING FUNDS', 'ENTERED'],
       datePickerStartDate: null,
       datePickerEndDate: null,
       modalStart: false,

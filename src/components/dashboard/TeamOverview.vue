@@ -21,11 +21,11 @@
             <v-timeline-item large color="#a1213b">
               <v-row class="pt-1">
                 <v-col>
-                  <strong>Everra</strong>
+                  <strong>{{this.$tenantInfo.name}}</strong>
                 </v-col>
                 <v-col>
                   <strong>{{total}}</strong>
-                  <div class="caption">Total Influencers</div>
+                  <div class="caption">Total {{this.$tenantInfo.distributorsLabel}}</div>
                 </v-col>
               </v-row>
             </v-timeline-item>
@@ -41,14 +41,14 @@
                 </v-col>
                 <v-col>
                   <strong>{{stats.downlineCount && stats.downlineCount.total}}</strong>
-                  <div class="caption">Total Influencers</div>
+                  <div class="caption">Total {{ $tenantInfo.distributorsLabel }}</div>
                 </v-col>
                 <v-col>
                   <div>
                     <strong>{{stats.downlineCount && stats.downlineCount.qualified}}</strong>
                      <Trend v-if="showTrend" :previous="previous.downlineCount.qualified" :current="current.downlineCount.qualified"/>
                   </div>
-                  <div class="caption">Active Influencers</div>
+                  <div class="caption">Active {{ $tenantInfo.distributorsLabel }}</div>
                 </v-col>
               </v-row>
             </v-timeline-item>
@@ -59,14 +59,14 @@
                 </v-col>
                 <v-col>
                   <strong>{{value.total}}</strong>
-                  <div class="caption">Total Influencers</div>
+                  <div class="caption">Total {{ $tenantInfo.distributorsLabel }}</div>
                 </v-col>
                 <v-col>
                   <div>
                     <strong>{{value.qualified}}</strong>
                     <Trend v-if="showTrend" :previous="previous.levelCounts[key].qualified" :current="current.levelCounts[key].qualified"/>
                   </div>
-                  <div class="caption">Active Influencers</div>
+                  <div class="caption">Active {{ $tenantInfo.distributorsLabel }}</div>
                 </v-col>
               </v-row>
             </v-timeline-item>
@@ -81,6 +81,7 @@
 </template>
 
 <script>
+import _ from 'lodash'
 import Trend from '@/components/dashboard/Trend.vue'
 import { mapGetters, mapState } from 'vuex'
 import PeriodSwitcher from '@/components/PeriodSwitcher.vue'
@@ -100,7 +101,8 @@ export default {
       return !this.isSelectedCurrent
     },
     showTrend() {
-      return this.isSelectedCurrent &&
+      return _.get(this, '$tenantInfo.trends.teamOverview', true) &&
+        this.isSelectedCurrent &&
         this.current &&
         this.previous
     },

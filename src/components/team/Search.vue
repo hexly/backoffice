@@ -6,7 +6,7 @@
         <v-text-field
           solo
           v-model="query"
-          placeholder="Influencer Name"
+          :placeholder="`${$tenantInfo.distributorLabel} Name`"
         />
         <h5>Sort Name By:</h5>
         <v-select

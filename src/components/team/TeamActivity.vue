@@ -30,7 +30,7 @@
         </v-tooltip>
         {{item.name}}
         <br/>
-        <small class="pl-5">{{item.member.contacts[0].emails[0].email}}</small>
+        <small class="pl-5">{{ GET(item, 'member.contacts[0].emails[0].email', 'N/A') }}</small>
       </template>
       <template v-slot:item.rank="{ item }">
         <v-chip :color="item.rank > 5 ? '#a1213b' : 'gray'" :class="{'white--text': item.rank > 5}">Rank {{item.rank}}</v-chip>
@@ -126,9 +126,10 @@ export default {
   },
   data() {
     return {
+      GET: _.get,
       headers: [
         {
-          text: 'Influencer',
+          text: this.$tenantInfo.distributorLabel,
           align: 'start',
           value: 'name'
         },
@@ -192,7 +193,7 @@ export default {
         return {
           input: {
             orderBy: [`${this.sortBy},${this.orderBy}`],
-            qualified: true,
+            qualified: false,
             psvGte: null,
             levelsIn: this.filterBy.length ? this.filterBy : null,
             page: this.page,

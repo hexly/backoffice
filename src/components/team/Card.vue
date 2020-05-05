@@ -3,7 +3,7 @@
     <v-card-title primary-title>
       <div style="width: 100%;">
         <h2>{{user.name}}</h2>
-        <small>Influencer Since: {{$moment(user.joinedOn).format('ll')}}</small>
+        <small>{{$tenantInfo.distributorLabel}} Since: {{$moment(user.joinedOn).format('ll')}}</small>
       </div>
     </v-card-title>
     <v-progress-circular v-if="loading" indeterminate :size="50" :width="5" color="primary"></v-progress-circular>

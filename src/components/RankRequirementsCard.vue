@@ -40,55 +40,59 @@
 
         <template class="stats-container pa-2" v-if="current">
           <v-row :class="tabMode ? 'rank-data-row' : null" justify="space-between" wrap v-for="stat in Object.keys(statMapping)" :key="stat.property">
-            <template v-if="stat === 'anyRankCount' && Object.keys(next[stat].required).length === 0 "></template>
+            <template v-if="stat === 'anyRankCount' && next && next[stat] && Object.keys(next[stat].required).length === 0 "></template>
             <template v-else>
-            <v-col class="pa-1">
-              <div v-if="!tabMode" :class="( next[stat].required  ? '' : 'grey--text') + ' title'">
-                {{statMapping[stat].title}}
-                <template v-if="stat !== 'anyRankCount'">
-                  <v-icon color="green" v-if="next[stat].satisfied && next[stat].required">check_circle</v-icon>
+              <v-col class="pa-1">
+                <div v-if="!tabMode" :class="( next && next[stat] && next[stat].required  ? '' : 'grey--text') + ' title'">
+                  {{statMapping[stat].title}}
+                  <template v-if="stat !== 'anyRankCount'">
+                    <v-icon color="green" v-if="!next || !next[stat] || (next[stat].satisfied && next[stat].required)">check_circle</v-icon>
+                  </template>
+                  <template v-else>
+                    <v-icon color="green" v-if="!next || !next[stat] || (next[stat].satisfied && Object.keys(next[stat].required).length)">check_circle</v-icon>
+                  </template>
+                </div>
+                <div class="caption grey--text darken-1"> {{statMapping[stat].description}} </div>
+              </v-col>
+              <v-spacer></v-spacer>
+              <v-col class="text-right pa-1" v-if="stat !== 'anyRankCount' && next && next[stat]">
+                <div class="title">{{next[stat].earned}}</div>
+                <div v-if="(!next || !next[stat]) || next[stat].required && parseInt(next[stat].earned)" class="caption grey--text darken-1">
+                  {{ next && next[stat] ? Math.round(next[stat].earned/next[stat].required*100) : 100}}%
+                  <br>
+                  <span v-if="!tabMode && next && next[stat]">
+                    {{Math.round(next[stat].earned)}} of {{Math.round(next[stat].required)}}
+                  </span>
+                </div>
+                <div v-else class="caption grey--text darken-1">
+                  N/A
+                  <br>
+                  <span v-if="!tabMode">
+                    <span v-if="next">{{ Math.round(next[stat].required)}}</span>
+                    <v-tooltip slot="append" left>
+                      <template v-slot:activator="{ on }">
+                        <v-icon v-on="on" small>info</v-icon>
+                      </template>
+                        <span>Not applicable for next rank</span>
+                    </v-tooltip>
+                  </span>
+                </div>
+              </v-col>
+
+              <v-col class="pa-1 text-right" v-else>
+                <template v-if="next && next[stat] && next[stat].satisfied">
+                  <div class="title" >Achieved</div>
+                  <div class="caption grey--text darken-1"> 100% </div>
                 </template>
-                <template v-else>
-                  <v-icon color="green" v-if="next[stat].satisfied && Object.keys(next[stat].required).length">check_circle</v-icon>
+                <template v-else-if="next && next[stat]">
+                  <div class="title">Unachieved</div>
+                  <div class="caption grey--text darken-1"> 0% </div>
                 </template>
-              </div>
-              <div class="caption grey--text darken-1"> {{statMapping[stat].description}} </div>
-            </v-col>
-            <v-spacer></v-spacer>
-            <v-col class="text-right pa-1" v-if="stat !== 'anyRankCount'">
-              <div class="title">{{next[stat].earned}}</div>
-              <div v-if="next[stat].required && parseInt(next[stat].earned)" class="caption grey--text darken-1">
-                {{Math.round(next[stat].earned/next[stat].required*100)}}%
-                <br>
-                <span v-if="!tabMode">{{Math.round(next[stat].earned)}} of {{Math.round(next[stat].required)}}</span>
-              </div>
-              <div v-else class="caption grey--text darken-1">
-                N/A
-                <br>
-                <span v-if="!tabMode">
-                  {{ Math.round(next[stat].required)}}
-                  <v-tooltip slot="append" left>
-                    <template v-slot:activator="{ on }">
-                      <v-icon v-on="on" small>info</v-icon>
-                    </template>
-                      <span>Not applicable for next rank</span>
-                  </v-tooltip>
-                </span>
-              </div>
-            </v-col>
-            <v-col class="pa-1 text-right" v-else>
-              <template v-if="next[stat].satisfied">
-                <div class="title" >Achieved</div>
-                <div class="caption grey--text darken-1"> 100% </div>
-              </template>
-              <template v-else>
-                <div class="title">Unachieved</div>
-                <div class="caption grey--text darken-1"> 0% </div>
-              </template>
-            </v-col>
-            <v-col cols="12" class="pa-1" v-if="stat !== 'anyRankCount'">
-              <v-progress-linear :class="tabMode ? 'progress-bar' : null" :color="next[stat].required ? 'success' : 'grey' " :height="tabMode ? 2 : 5" :value="Math.round(next[stat].earned/next[stat].required*100)"></v-progress-linear>
-            </v-col>
+              </v-col>
+              <v-col cols="12" class="pa-1" v-if="stat !== 'anyRankCount'">
+                <v-progress-linear v-if="next && next[stat]" :class="tabMode ? 'progress-bar' : null" :color="next[stat].required ? 'success' : 'grey' " :height="tabMode ? 2 : 5" :value="Math.round(next[stat].earned/next[stat].required*100)"></v-progress-linear>
+                <v-progress-linear v-else :class="tabMode ? 'progress-bar' : null" color="grey" :height="tabMode ? 2 : 5" :value="100"></v-progress-linear>
+              </v-col>
             </template>
           </v-row>
         </template>
@@ -150,36 +154,7 @@ export default {
       year: ~~this.$moment().format('Y'),
       month: ~~this.$moment().format('M'),
       lastRefreshed: null,
-      statMapping: {
-        lifetimeTotalPoints: {
-          title: 'CPSV',
-          description: 'Career Personal Sales Volume'
-        },
-        personalTotalPoints: {
-          title: 'PSV',
-          description: 'Personal Sales Volume'
-        },
-        groupPoints: {
-          title: 'GSV',
-          description: 'Group Sales Volume'
-        },
-        activeLeg: {
-          title: 'Active Legs',
-          description: 'Active Legs'
-        },
-        downlinePoints: {
-          title: 'DSV',
-          description: 'Downline Sales volume'
-        },
-        anyRankCount: {
-          title: 'PABQL',
-          description: 'Paid-As Bonus Qualified Legs'
-        },
-        downlineAdjustedPoints: {
-          title: 'ADSV',
-          description: 'Adjusted Downline Sales volume'
-        }
-      }
+      statMapping: this.$tenantInfo.statMapping
     }
   },
   methods: {

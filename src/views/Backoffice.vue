@@ -38,7 +38,7 @@
             <v-list-item-title>Order History</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
-        <v-list-item v-if="$tenantInfo.features.team" to="/team">
+        <v-list-item v-if="GET($tenantInfo, 'features.team.base', true)" to="/team">
           <v-list-item-action>
             <v-icon>people</v-icon>
           </v-list-item-action>
@@ -177,6 +177,7 @@ const impersonationPrefix = 'Impersonating '
 export default {
   data () {
     return {
+      GET: get,
       impersonationPrefix,
       drawer: null,
       activeIntegrations: []
