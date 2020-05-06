@@ -44,7 +44,7 @@
               </template>
               <span>
                 <small v-if="currentBalance.amount < 500">$5/£5 minimum to transfer to your bank</small>
-                <small v-if="currentBalance.amount >= 500">Fund should arrive in your bank within 48 hours</small>
+                <small v-if="currentBalance.amount >= 500">Funds should arrive in your bank within 48 hours</small>
               </span>
             </v-tooltip>
         </v-card-text>
@@ -65,13 +65,13 @@
                 <Currency :amount="item.amount / 100" :currency="item.currency" />
               </td>
               <td class="text-capitalize">
+                {{ item.status.toLowerCase() }}
                 <v-tooltip v-if="statuses[item.status]" bottom>
                   <template v-slot:activator="{ on }">
                     <v-icon v-on="on" small>info</v-icon>
                   </template>
                   <span>{{statuses[item.status].toLowerCase()}}</span>
                 </v-tooltip>
-                <span v-else>{{ item.status.toLowerCase() }}</span>
               </td>
               <td>{{ $moment(item.issuedOn).format('lll') }}</td>
               <td>{{ item.releasedOn ? $moment(item.releasedOn).format('lll') : '--' }}</td>
