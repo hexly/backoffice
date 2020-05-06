@@ -10,17 +10,16 @@
         class="link">
         <v-tooltip slot="append" bottom>
             <template v-slot:activator="{ on }">
-              <v-icon @click="copyToClipboard" v-on="on" color="black" dark>assignment</v-icon>
+              <v-icon v-if="canShare" @click="shareLink" v-on="on" color="black" dark>share</v-icon>
+              <v-icon v-else @click="copyToClipboard" v-on="on" color="black" dark>assignment</v-icon>
             </template>
-            <span>{{copyTooltipText}}</span>
+            <span v-if="canShare">{{shareTooltipText}}</span>
+            <span v-else>{{copyTooltipText}}</span>
         </v-tooltip>
       </v-text-field>
     </div>
     <div v-else>
-      <v-alert
-        :value="true"
-        type="warning"
-      >
+      <v-alert :value="true" type="warning">
         Hey There! You do not have your link set up yet.
         <br />
         Note: You will not be able to change it once it is set.
@@ -61,10 +60,21 @@ export default {
       slugRule: Rules.slugRule,
       checkSlug: null,
       copyTooltipText: 'Copy',
+      shareTooltipText: 'Share',
       savingSlug: false
     }
   },
   methods: {
+    shareLink() {
+      navigator.share({ url: this.formattedSlug })
+        .then(() => {
+          this.copyTooltipText = 'Shared'
+          setTimeout(() => {
+            this.copyTooltipText = 'Share'
+          }, 3000)
+        })
+        .catch((error) => console.log('Error sharing', error))
+    },
     async copyToClipboard() {
       await this.$copyText(this.formattedSlug)
       this.copyTooltipText = 'Copied!'
@@ -116,6 +126,9 @@ export default {
     })
   },
   computed: {
+    canShare() {
+      return navigator.share
+    },
     ...mapGetters(['slug', 'member']),
     formattedSlug() {
       return this.$tenantInfo.storeUrl.replace('{slug}', this.slug || this.generateSlug)
