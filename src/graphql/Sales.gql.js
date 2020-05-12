@@ -17,6 +17,9 @@ export const SEARCH_SALES_QUERY = gql`
       customer
       orderId
       total
+      discountTotal
+      taxTotal
+      shippingTotal
       currency
       status
       customerNote
