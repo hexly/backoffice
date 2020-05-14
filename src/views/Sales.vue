@@ -83,6 +83,29 @@
                         </td>
                       </tr>
                     </template>
+                    <template v-slot:body.append>
+                      <tr v-if="item.discountTotal > 0">
+                        <td>Discounts/Product Credit</td>
+                        <td></td>
+                        <td>
+                          <Currency :amount="parseFloat(item.discountTotal)" :currency="item.currency"/>
+                        </td>
+                      </tr>
+                      <tr v-if="item.taxTotal > 0">
+                        <td>Taxes</td>
+                        <td></td>
+                        <td>
+                          <Currency :amount="parseFloat(item.taxTotal)" :currency="item.currency"/>
+                        </td>
+                      </tr>
+                      <tr v-if="item.shippingTotal > 0">
+                        <td>Shipping</td>
+                        <td></td>
+                        <td>
+                          <Currency :amount="parseFloat(item.shippingTotal)" :currency="item.currency"/>
+                        </td>
+                      </tr>
+                    </template>
                   </v-data-table>
                 </v-flex>
               </v-layout>
