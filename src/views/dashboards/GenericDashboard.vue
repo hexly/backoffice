@@ -1,14 +1,14 @@
 <template>
   <div class="full-wrapper dashboard">
-    <Announcement />
+    <Announcement v-if="features.announcements"/>
     <v-row wrap>
       <v-col cols="12" md="6">
         <v-layout id="personal-card-layout" column>
           <v-flex>
-            <PersonalCard :memberName="`Your ${$tenantInfo.distributorLabel}  Number:`">
+            <PersonalCard :memberName="`Your ${$tenantInfo.distributorLabel}  Number:`" v-if="features.personalCard">
               <div slot="footer">
-                <Badges :memberId="member.id"/>
-                <div v-if="tenantIntegrations.length === 0 && this.$tenantInfo.features.social">
+                <Badges v-if="features.personalCardAwards" :memberId="member.id"/>
+                <div v-if="features.personalCardSocial && (tenantIntegrations.length === 0 && this.$tenantInfo.features.social)">
                   <h3 class="text-center">Social Accounts<sup>*</sup></h3>
                   <div class="text-center">
                     <small> Once linked, you can access your social accounts in your profile page </small>
@@ -21,24 +21,55 @@
         </v-layout>
       </v-col>
       <v-col cols="12" md="6">
+        <template v-for="incentive in features.incentives">
+          <component :is="incentive" :key="incentive"></component>
+        </template>
         <RankRequirementsCard
+          v-if="features.rankRequirements"
           :stats         ="engineStats"
           :statsDisabled ="statsDisabled"
           :loading       ="engineStatsLoading"
         />
         <br>
-        <TeamOverview :stats="engineStats" :total="memberCount" :loading="engineStatsLoading"/>
+        <TeamOverview
+          v-if="features.teamOverview"
+          :stats="engineStats"
+          :total="memberCount"
+          :loading="engineStatsLoading"
+        />
       </v-col>
     </v-row>
-    <!-- <v-row wrap>
+    <v-row wrap>
       <v-col cols="12" sm="6">
-        <LeaderBoard :leaders="companyLeaderboard" title="Top Team Builders (Company)" :message="`New ${$tenantInfo.distributorsLabel} this period: `"/>
+        <LeaderBoard
+          v-if="features.companyLeaders"
+          :leaders="companyLeaderboard"
+          title="Top Team Builders (Company)"
+          :message="`New ${$tenantInfo.distributorsLabel} this period: `"
+        />
       </v-col>
       <v-col cols="12" sm="6">
-        <LeaderBoard :leaders="teamLeaderboard" title="Top Team Builders (Your Team)" :message="`New ${$tenantInfo.distributorsLabel} this period: `"/>
+        <LeaderBoard
+          v-if="features.teamLeaders"
+          :leaders="teamLeaderboard"
+          title="Top Team Builders (Your Team)"
+          :message="`New ${$tenantInfo.distributorsLabel} this period: `"
+        />
       </v-col>
-    </v-row> -->
-    <Directory class="py-2" :self="personalStats" :frontline="team" title="Your Circle of Influence" membersTypeName="Influencer"/>
+    </v-row>
+    <Directory
+      v-if="features.directory"
+      class="py-2"
+      :self="personalStats"
+      :frontline="team"
+      title="Your Circle of Influence"
+      membersTypeName="Influencer"
+    />
+    <CompanyMap
+      v-if="features.map"
+      class="py-2"
+      :title="`${$tenantInfo.distributorsLabel} around the world`"
+    />
   </div>
 </template>
 
@@ -56,7 +87,6 @@ import Announcement from '@/components/dashboard/Announcement.vue'
 import Badges from '@/components/Badges.vue'
 import RankRequirementsCard from '@/components/RankRequirementsCard.vue'
 import TeamOverview from '@/components/dashboard/TeamOverview.vue'
-import Incentive from '@/components/incentives/1010March2020.vue'
 import LeaderBoard from '@/components/Leaderboard.vue'
 
 import {
@@ -85,8 +115,12 @@ export default {
     Social,
     RankRequirementsCard,
     TeamOverview,
-    Incentive,
     LeaderBoard
+  },
+  created() {
+    this.$tenantInfo.features.dashboard.incentives.forEach(fileName => {
+      this.$options.components[fileName] = () => import(`@/components/incentives/${fileName}.vue`)
+    })
   },
   data() {
     return {
@@ -192,6 +226,9 @@ export default {
       engineStatsLoading: state => state.comp.engineStatsLoading,
       openPeriod: state => state.comp.periods.open && state.comp.periods.open[0]
     }),
+    features() {
+      return this.$tenantInfo.features.dashboard
+    },
     ...mapGetters(['contactId', 'memberId', 'member', 'slug', 'tenantIntegrations'])
   },
   watch: {
