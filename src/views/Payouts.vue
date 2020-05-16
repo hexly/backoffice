@@ -19,7 +19,7 @@
                 <Currency :amount="currentBalance.amount / 100" :currency="currentBalance.currency"/>
             </h2>
             <br/>
-            <!-- <v-tooltip slot="append" bottom>
+            <v-tooltip slot="append" bottom>
               <template v-slot:activator="{ on }">
                 <v-dialog v-model="transferDialog" v-on="on" width="500" :disabled="currentBalance.amount < 500">
                   <template v-slot:activator="{ on }">
@@ -46,7 +46,7 @@
                 <small v-if="currentBalance.amount < 500">$5/£5 minimum to transfer to your bank</small>
                 <small v-if="currentBalance.amount >= 500">Funds should arrive in your bank within 48 hours</small>
               </span>
-            </v-tooltip> -->
+            </v-tooltip>
         </v-card-text>
       </v-card>
       <v-responsive>
