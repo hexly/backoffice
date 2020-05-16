@@ -168,6 +168,7 @@ export default {
         WITHHOLDING_GENERIC: 'Withholding'
       },
       payouts: [],
+      filterOut: ['REVERSED'],
       statuses: {
         PENDING_RELEASE: 'Payment has been initialized and is being sent to payout processor',
         RELEASED: 'Payment is available to send to payout processor',
@@ -202,7 +203,7 @@ export default {
       debounce: 500,
       update({ getPrincipal }) {
         this.setLoading(false)
-        return getPrincipal.member.payouts
+        return getPrincipal.member.payouts.filter(p => this.filterOut[this.statuses] < 0)
       }
     }
   },
