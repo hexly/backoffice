@@ -203,7 +203,7 @@ export default {
       debounce: 500,
       update({ getPrincipal }) {
         this.setLoading(false)
-        return getPrincipal.member.payouts.filter(p => this.filterOut[p.status] < 0)
+        return getPrincipal.member.payouts.filter(p => this.filterOut.indexOf(p.status) < 0)
       }
     }
   },
