@@ -110,7 +110,7 @@
           <span v-if="$tenantInfo.privacyPolicy">
             <a target="_blank" :href="$tenantInfo.privacyPolicy">Privacy Policy</a> ·
           </span>
-          <span>Copyright 2019</span>
+          <span>Copyright {{moment().format('YYYY')}}</span>
         </h5>
       </div>
     </v-navigation-drawer>
@@ -165,6 +165,7 @@
 </template>
 
 <script>
+import moment from 'moment'
 import { Actions, Mutations } from '@/store'
 import { UserMutations } from '@/stores/UserStore'
 import { Actions as MemberActions } from '@/Members/Store'
@@ -177,6 +178,7 @@ const impersonationPrefix = 'Impersonating '
 export default {
   data () {
     return {
+      moment,
       GET: get,
       impersonationPrefix,
       drawer: null,

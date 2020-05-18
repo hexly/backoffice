@@ -21,11 +21,11 @@
             <v-timeline-item large color="#a1213b">
               <v-row class="pt-1">
                 <v-col>
-                  <strong>{{this.$tenantInfo.name}}</strong>
+                  <strong>{{$tenantInfo.name}}</strong>
                 </v-col>
                 <v-col>
                   <strong>{{total}}</strong>
-                  <div class="caption">Total {{this.$tenantInfo.distributorsLabel}}</div>
+                  <div class="caption">Total {{$tenantInfo.distributorsLabel}}</div>
                 </v-col>
               </v-row>
             </v-timeline-item>
@@ -40,13 +40,13 @@
                   <strong>Circle Of Influence</strong>
                 </v-col>
                 <v-col>
-                  <strong>{{stats.downlineCount && stats.downlineCount.total}}</strong>
+                  <strong>{{(stats.downlineCount && stats.downlineCount.total) || 0 }}</strong>
                   <div class="caption">Total {{ $tenantInfo.distributorsLabel }}</div>
                 </v-col>
                 <v-col>
                   <div>
-                    <strong>{{stats.downlineCount && stats.downlineCount.qualified}}</strong>
-                     <Trend v-if="showTrend" :previous="previous.downlineCount.qualified" :current="current.downlineCount.qualified"/>
+                    <strong>{{(stats.downlineCount && stats.downlineCount.qualified) || 0}}</strong>
+                      <Trend v-if="showTrend" :previous="previous.downlineCount.qualified" :current="current.downlineCount.qualified"/>
                   </div>
                   <div class="caption">Active {{ $tenantInfo.distributorsLabel }}</div>
                 </v-col>
@@ -58,12 +58,12 @@
                   <strong>Level {{key.replace('level', '')}}</strong>
                 </v-col>
                 <v-col>
-                  <strong>{{value.total}}</strong>
+                  <strong>{{value.total || 0}}</strong>
                   <div class="caption">Total {{ $tenantInfo.distributorsLabel }}</div>
                 </v-col>
                 <v-col>
                   <div>
-                    <strong>{{value.qualified}}</strong>
+                    <strong>{{value.qualified || 0}}</strong>
                     <Trend v-if="showTrend" :previous="previous.levelCounts[key].qualified" :current="current.levelCounts[key].qualified"/>
                   </div>
                   <div class="caption">Active {{ $tenantInfo.distributorsLabel }}</div>

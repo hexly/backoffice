@@ -6,7 +6,7 @@
         <v-layout id="personal-card-layout" column>
           <v-flex>
             <PersonalCard :memberName="`Your ${$tenantInfo.distributorLabel}  Number:`">
-              <div slot="footer">
+              <div slot="footer" v-if="GET($tenantInfo, 'features.awards.base', true)">
                 <Badges :memberId="member.id"/>
                 <div v-if="tenantIntegrations.length === 0 && this.$tenantInfo.features.social">
                   <h3 class="text-center">Social Accounts<sup>*</sup></h3>
@@ -38,7 +38,7 @@
         <LeaderBoard :leaders="teamLeaderboard" title="Top Team Builders (Your Team)" :message="`New ${$tenantInfo.distributorsLabel} this period: `"/>
       </v-col>
     </v-row> -->
-    <Directory class="py-2" :self="personalStats" :frontline="team" title="Your Circle of Influence" membersTypeName="Influencer"/>
+    <Directory :badges="GET($tenantInfo, 'features.awards.base', true)" class="py-2" :self="personalStats" :frontline="team" title="Your Circle of Influence" :membersTypeName="$tenantInfo.distributorLabel"/>
   </div>
 </template>
 
@@ -90,6 +90,7 @@ export default {
   },
   data() {
     return {
+      GET: _.get,
       year: ~~this.$moment().format('Y'),
       personalStats: {
         counts: {
@@ -181,9 +182,9 @@ export default {
   computed: {
     month() {
       let month = ~~this.$moment().format('M')
-      if (this.year === 2020) {
-        month = Math.max(month, 2)
-      }
+      // if (this.year === 2020) {
+      //   month = Math.max(month, 2)
+      // }
       return month
     },
     ...mapState({

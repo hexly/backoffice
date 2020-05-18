@@ -296,6 +296,9 @@ const tenantOptions = {
     features: {
       annoucements: false,
       sales: true,
+      awards: {
+        base: false
+      },
       team: {
         base: true,
         generations: false,
