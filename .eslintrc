@@ -4,7 +4,10 @@
   },
   "extends": ["plugin:vue/essential", "@vue/standard"],
   "rules": {
-    "indent": ["error", 2],
+    "template-curly-spacing" : "off",
+    "indent": ["error", 2,{
+      "ignoredNodes": ["TemplateLiteral"]
+    }],
     "linebreak-style": ["error", "unix"],
     "prefer-spread": "warn",
     "semi": "error",
