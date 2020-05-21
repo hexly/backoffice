@@ -45,11 +45,7 @@ export default {
           query: IPAYOUTS_USER_BALANCE,
           variables: {
             input: {
-              tenantIntegrationId: this.iPayouts.tenantIntegrationId,
-              data: {
-                balance: this.currentBalance.amount,
-                currencyCode: this.currentBalance.currencyCode
-              }
+              username: this.iPayouts.integrationOid
             }
           },
           client: 'federated'

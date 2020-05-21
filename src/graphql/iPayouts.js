@@ -44,7 +44,7 @@ query userQuery($input: UserInput) {
 `
 
 export const IPAYOUTS_USER_BALANCE = gql`
-query userBalance($input: UserBalanceInput) {
+query userBalance($input: UserInput) {
   userBalance(input: $input) {
     UserBalance {
       balance: Float,
@@ -55,7 +55,7 @@ query userBalance($input: UserBalanceInput) {
 `
 
 export const IPAYOUTS_USER_AUTO_LOGIN = gql`
-mutation autoLoginUser($input: AutoLoginUserinput) {
+mutation autoLoginUser($input: UserInput) {
   autoLoginUser(input: $input) {
     AutoLoginUser {
       m_code: Integer,
