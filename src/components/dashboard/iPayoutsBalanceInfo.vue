@@ -17,7 +17,7 @@
         <template v-slot:activator="{ on }">
         <v-dialog v-model="iPayoutsDialog" v-on="on" width="500">
             <template v-slot:activator="{ on }">
-            <v-btn class="ma-0" color="success" v-on="on" small>Visit iPayouts</v-btn>
+            <v-btn class="ma-0" color="success" v-on="on" @click="visitIPayouts" small>Visit iPayouts</v-btn>
             </template>
         </v-dialog>
         </template>
@@ -39,7 +39,7 @@ export default {
   },
   data() {
     return {
-      currentBalance: {}
+      balance: {}
     }
   },
   methods: {
@@ -58,7 +58,7 @@ export default {
       })
     },
     visitIPayouts() {
-    
+
     }
   },
   computed: {
@@ -66,10 +66,18 @@ export default {
       loading: state => state.loading,
       iPayouts: state => {
         return state.user.principal.member.tenantIntegrations.find(i => {
-          return i.key == 'iPayouts' && i.priority === 0
+          return i.key === 'iPayouts' && i.priority === 0
         })
       }
-    })
+    }),
+    ...mapGetters(['memberId']),
+    currentBalance() {
+      if (this.balance.amount) {
+        return this.currentBalance.amount
+      } else {
+        return 0
+      }
+    }
   }
 }
 </script>

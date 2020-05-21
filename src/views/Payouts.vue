@@ -6,6 +6,7 @@
           Payouts
         </v-card-title>
         <StripeBalanceInfo/>
+        <iPayoutsBalanceInfo/>
       </v-card>
       <v-responsive>
         <v-data-table
@@ -87,6 +88,7 @@
 <script>
 import Currency from '@/components/Currency'
 import StripeBalanceInfo from '@/components/dashboard/StripeBalanceInfo'
+import iPayoutsBalanceInfo from '@/components/dashboard/iPayoutsBalanceInfo'
 import { MEMBER_INTEGRATION_COMMAND } from '@/graphql/Integrations'
 import { GET_MEMBER_PAYOUTS } from '@/graphql/Member.gql'
 import { Mutations } from '@/store'
@@ -95,7 +97,8 @@ import { mapMutations, mapState, mapGetters } from 'vuex'
 export default {
   components: {
     Currency,
-    StripeBalanceInfo
+    StripeBalanceInfo,
+    iPayoutsBalanceInfo
   },
   mounted() {
     if (this.stripeConnect) {
