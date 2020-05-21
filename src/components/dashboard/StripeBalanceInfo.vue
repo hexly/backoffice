@@ -47,7 +47,6 @@
 <script>
 import Currency from '@/components/Currency'
 import { mapGetters, mapState } from 'vuex'
-import { GET_MEMBER_PAYOUTS } from '@/graphql/Member.gql'
 import { MEMBER_INTEGRATION_COMMAND } from '@/graphql/Integrations'
 
 export default {
@@ -55,7 +54,9 @@ export default {
     Currency
   },
   mounted() {
-    this.loadBalance()
+    if (this.stripeConnect) {
+      this.loadBalance()
+    }
   },
   data() {
     return {
@@ -63,34 +64,6 @@ export default {
       transferingFunds: false,
       transferError: null,
       balance: {}
-    }
-  },
-  apollo: {
-    items: {
-      watchLoading(isLoading, countModifier) {
-        this.setLoading(isLoading)
-      },
-      query: GET_MEMBER_PAYOUTS,
-      variables() {
-        return {
-          saleSearchInput: {
-            sellerId: this.memberId,
-            tenantId: this.$tenantId,
-            query: null,
-            endDate: this.endDate,
-            startDate: this.startDate
-          }
-        }
-      },
-      error(err) {
-        this.setLoading(false)
-        console.error({ err })
-      },
-      debounce: 500,
-      update({ getPrincipal }) {
-        this.setLoading(false)
-        return getPrincipal.member.payouts.filter(p => this.filterOut.indexOf(p.status) < 0)
-      }
     }
   },
   methods: {
@@ -140,7 +113,6 @@ export default {
   },
   computed: {
     ...mapState({
-      loading: state => state.loading,
       stripeConnect: state => {
         return state.user.principal.member.tenantIntegrations.find(i => {
           return i.key === 'stripe_connect' && i.priority === 0

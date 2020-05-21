@@ -13,19 +13,12 @@
       <Currency :amount="currentBalance.amount" :currency="currentBalance.curency"/>
     </h2>
     <br/>
-    <v-tooltip slot="append" bottom>
-        <template v-slot:activator="{ on }">
-        <v-dialog v-model="iPayoutsDialog" v-on="on" width="500">
-            <template v-slot:activator="{ on }">
-            <v-btn class="ma-0" color="success" v-on="on" @click="visitIPayouts" small>Visit iPayouts</v-btn>
-            </template>
-        </v-dialog>
-        </template>
-    </v-tooltip>
+    <v-btn class="ma-0" color="success" @click="visitIPayouts" small>Visit eWallet</v-btn>
   </v-card-text>
 </template>
 
 <script>
+import _ from 'lodash'
 import { IPAYOUTS_USER_BALANCE } from '@/graphql/iPayouts.js'
 import Currency from '@/components/Currency'
 import { mapGetters, mapState } from 'vuex'
@@ -35,7 +28,9 @@ export default {
     Currency
   },
   mounted() {
-    this.loadBalance()
+    if (this.iPayouts) {
+      this.loadBalance()
+    }
   },
   data() {
     return {
@@ -44,18 +39,22 @@ export default {
   },
   methods: {
     loadBalance() {
-      this.$apollo.query({
-        query: IPAYOUTS_USER_BALANCE,
-        variables: {
-          input: {
-            tenantIntegrationId: this.iPayouts.tenantIntegrationId,
-            data: {
-              balance: this.currentBalance.amount,
-              currencyCode: this.currentBalance.currencyCode
+      // FOr now
+      if (_.get(this, '$apolloProvider.clients.federated')) {
+        this.$apollo.query({
+          query: IPAYOUTS_USER_BALANCE,
+          variables: {
+            input: {
+              tenantIntegrationId: this.iPayouts.tenantIntegrationId,
+              data: {
+                balance: this.currentBalance.amount,
+                currencyCode: this.currentBalance.currencyCode
+              }
             }
-          }
-        }
-      })
+          },
+          client: 'federated'
+        })
+      }
     },
     visitIPayouts() {
 
@@ -66,7 +65,7 @@ export default {
       loading: state => state.loading,
       iPayouts: state => {
         return state.user.principal.member.tenantIntegrations.find(i => {
-          return i.key === 'iPayouts' && i.priority === 0
+          return i.key === 'i_payouts' && i.priority === 0
         })
       }
     }),

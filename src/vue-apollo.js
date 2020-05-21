@@ -49,5 +49,20 @@ if (process.env.VUE_APP_WP_GRAPHQL_ENDPOINT) {
   apolloProviderOptions.clients.wordpress = createApolloClient(wpOptions)
 }
 
+if (process.env.VUE_APP_FEDERATED_GRAPHQL_ENDPOINT) {
+  // Config
+  const fedOptions = {
+    ssr: false,
+    base: process.env.VUE_APP_FEDERATED_GRAPHQL_ENDPOINT,
+    endpoints: {
+      graphql: process.env.VUE_APP_FEDERATED_GRAPHQL_PATH || '/graphql',
+      subscription: process.env.VUE_APP_FEDERATED_GRAPHQL_SUBSCRIPTIONS_PATH || '/graphql'
+    },
+    persisting: false
+  }
+
+  apolloProviderOptions.clients.federated = createApolloClient(fedOptions)
+}
+
 // Create vue apollo provider
 export const apolloProvider = new VueApollo(apolloProviderOptions)
