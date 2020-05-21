@@ -1,5 +1,5 @@
 <template>
-  <v-card-text v-if="iPayouts && currentBalance" class="pt-3">
+  <v-card-text v-if="iPayouts" class="pt-3">
     <h4>
       Available Funds:
       <v-tooltip slot="append" bottom>
@@ -10,7 +10,7 @@
       </v-tooltip>
     </h4>
     <h2>
-      <Currrency :amount="currentBalance.amount" :currency="currentBalance.curency"/>
+      <Currency :amount="currentBalance.amount" :currency="currentBalance.curency"/>
     </h2>
     <br/>
     <v-tooltip slot="append" bottom>
