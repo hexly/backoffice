@@ -46,10 +46,8 @@ query userQuery($input: UserInput) {
 export const IPAYOUTS_USER_BALANCE = gql`
 query userBalance($input: UserInput) {
   userBalance(input: $input) {
-    UserBalance {
-      balance: Float,
-      currencyCode: String
-    }
+    balance
+    currencyCode
   }
 }
 `
@@ -57,11 +55,7 @@ query userBalance($input: UserInput) {
 export const IPAYOUTS_USER_AUTO_LOGIN = gql`
 mutation autoLoginUser($input: UserInput) {
   autoLoginUser(input: $input) {
-    AutoLoginUser {
-      m_code: Integer,
-      m_text: String,
-      transactionRefId: String
-    }
+    url
   }
 }
 `

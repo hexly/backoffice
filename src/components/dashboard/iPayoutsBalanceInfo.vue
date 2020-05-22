@@ -10,16 +10,16 @@
       </v-tooltip>
     </h4>
     <h2>
-      <Currency :amount="currentBalance.amount" :currency="currentBalance.curency"/>
+      <Currency :amount="currentBalance.balance" :currency="currentBalance.currency"/>
     </h2>
     <br/>
-    <v-btn class="ma-0" color="success" @click="visitIPayouts" small>Visit eWallet</v-btn>
+    <v-btn :loading="fetchingLoginUrl" :disabled="fetchingLoginUrl" class="ma-0" color="success" @click="visitIPayouts" small>Visit eWallet</v-btn>
   </v-card-text>
 </template>
 
 <script>
 import _ from 'lodash'
-import { IPAYOUTS_USER_BALANCE } from '@/graphql/iPayouts.js'
+import { IPAYOUTS_USER_BALANCE, IPAYOUTS_USER_AUTO_LOGIN } from '@/graphql/iPayouts.js'
 import Currency from '@/components/Currency'
 import { mapGetters, mapState } from 'vuex'
 
@@ -34,26 +34,46 @@ export default {
   },
   data() {
     return {
-      balance: {}
+      currentBalance: {
+        balance: 0,
+        currencyCode: this.currencyCode
+      },
+      fetchingLoginUrl: false
     }
   },
   methods: {
-    loadBalance() {
-      // FOr now
+    async loadBalance() {
+      // For now, everyone should be aware of the federated url since that is the future!
       if (_.get(this, '$apolloProvider.clients.federated')) {
-        this.$apollo.query({
+        const { data: { userBalance } } = await this.$apollo.query({
           query: IPAYOUTS_USER_BALANCE,
           variables: {
             input: {
-              username: this.iPayouts.integrationOid
+              username: this.iPayouts.integrationOid,
+              tenantIntegrationId: this.iPayouts.tenantIntegrationId,
+              currencyCode: this.currencyCode
             }
           },
           client: 'federated'
         })
+        this.currentBalance = userBalance
       }
     },
-    visitIPayouts() {
-
+    async visitIPayouts() {
+      this.fetchingLoginUrl = true
+      const { data: { autoLoginUser } } = await this.$apollo.mutate({
+        mutation: IPAYOUTS_USER_AUTO_LOGIN,
+        variables: {
+          input: {
+            username: this.iPayouts.integrationOid,
+            tenantIntegrationId: this.iPayouts.tenantIntegrationId,
+            currencyCode: this.currencyCode
+          }
+        },
+        client: 'federated'
+      })
+      window.open(autoLoginUser.url, '_blank').focus()
+      this.fetchingLoginUrl = false
     }
   },
   computed: {
@@ -65,14 +85,7 @@ export default {
         })
       }
     }),
-    ...mapGetters(['memberId']),
-    currentBalance() {
-      if (this.balance.amount) {
-        return this.currentBalance.amount
-      } else {
-        return 0
-      }
-    }
+    ...mapGetters(['memberId', 'currencyCode'])
   }
 }
 </script>

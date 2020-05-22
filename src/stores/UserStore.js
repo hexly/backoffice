@@ -213,6 +213,17 @@ export const UserStore = {
     memberId: state => {
       return state.principal && state.principal.memberId
     },
+    currencyCode: state => {
+      // I hate this so much
+      const currency = ['USD', 'CAD', 'GBP']
+      const currencyIds =
+        state.principal &&
+        state.principal.member &&
+        state.principal.member.market &&
+        state.principal.member.market.supportedCurrencyIds
+      const currencyId = currencyIds[0] || 0
+      return currency[currencyId]
+    },
     slug: state => {
       return (
         state.principal &&

@@ -61,7 +61,7 @@ if (process.env.VUE_APP_FEDERATED_GRAPHQL_ENDPOINT) {
     persisting: false
   }
 
-  apolloProviderOptions.clients.federated = createApolloClient(fedOptions)
+  apolloProviderOptions.clients.federated = createApolloClient(fedOptions, true)
 }
 
 // Create vue apollo provider
