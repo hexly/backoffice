@@ -1,5 +1,5 @@
 <template>
-  <v-card-text v-if="stripeConnect && currentBalance" class="pt-3">
+  <v-card-text v-if="hasIntegration" class="pt-3">
     <h4>
         Available Funds:
         <v-tooltip slot="append" bottom>
@@ -119,12 +119,18 @@ export default {
         })
       }
     }),
-    ...mapGetters(['memberId']),
+    hasIntegration() {
+      return this.integrations.find(i => i.key === 'stripe_connect' && i.statusId === 200)
+    },
+    ...mapGetters(['memberId', 'integrations']),
     currentBalance() {
       if (this.balance.instant_available && this.balance.instant_available[0]) {
         return this.balance.instant_available[0]
       }
-      return null
+      return {
+        amount: 0,
+        currency: 'USD'
+      }
     }
   }
 }

@@ -245,6 +245,10 @@ export const UserStore = {
     tenantIntegrations: state =>
       (state.principal &&
       state.principal.member &&
-      state.principal.member.tenantIntegrations) || []
+      state.principal.member.tenantIntegrations) || [],
+    integrations: state =>
+      (state.principal &&
+      state.principal.tenant &&
+      state.principal.tenant.integrations) || []
   }
 }
