@@ -79,7 +79,7 @@ import Announcement from '@/components/dashboard/Announcement.vue'
 import Badges from '@/components/Badges.vue'
 import RankRequirementsCard from '@/components/RankRequirementsCard.vue'
 import TeamOverview from '@/components/dashboard/TeamOverview.vue'
-import Incentive from '@/components/incentives/1010March2020.vue'
+import Incentive from '@/components/incentives/I1010March2020.vue'
 import LeaderBoard from '@/components/Leaderboard.vue'
 
 import {

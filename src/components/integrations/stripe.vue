@@ -112,6 +112,15 @@
           UK: <b>+44</b>555...
         </p>
         <small>If Any of the following information is wrong, please contact support</small>
+        <v-select
+          v-if="addresses.length > 1"
+          label="Select Address"
+          v-model="address"
+          :items="addresses"
+          item-text="street"
+          item-value="id"
+          return-object
+        ></v-select>
         <v-text-field
           label="country"
           v-model="country"
@@ -179,6 +188,7 @@ export default {
       attemptingStripeSetup: false,
       dobError: false,
       address: null,
+      addresses: [],
       accountDetails: null,
       loadingAccountDetails: false,
       currencies: {
@@ -355,7 +365,7 @@ export default {
     }
   },
   apollo: {
-    address: {
+    addresses: {
       query: ADDRESS_BY_CONTACT_ID,
       variables () {
         return {
@@ -366,7 +376,8 @@ export default {
         }
       },
       update ({ addressByContactOrTenant }) {
-        return addressByContactOrTenant[0]
+        this.address = addressByContactOrTenant[0]
+        return addressByContactOrTenant
       },
       loadingKey: 'loadingAddresses',
       skip() {

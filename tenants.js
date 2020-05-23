@@ -226,7 +226,21 @@ const tenantOptions = {
         ssn: false
       },
       social: true,
-      payouts: true
+      payouts: true,
+      generalDashboard: true,
+      dashboard: {
+        annoucements: true,
+        personalCard: true,
+        personalCardAwards: true,
+        personalCardSocial: true,
+        rankRequirements: true,
+        companyLeaders: true,
+        teamLeaders: true,
+        teamOverview: true,
+        incentives: ['I1010March2020'],
+        directory: true,
+        map: true
+      }
     }
   },
   1011: {
@@ -313,7 +327,16 @@ const tenantOptions = {
       },
       social: false,
       payouts: false,
-      generalDashboard: true
+      generalDashboard: true,
+      dashboard: {
+        annoucements: true,
+        personalCard: true,
+        personalCardSocial: true,
+        rankRequirements: true,
+        teamOverview: true,
+        directory: true,
+        incentives: [ 'I1010March2020' ]
+      }
     }
   }
 }
