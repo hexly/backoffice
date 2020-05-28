@@ -69,7 +69,7 @@
       :self="personalStats"
       :frontline="team"
       title="Your Circle of Influence"
-      membersTypeName="Influencer"
+      :membersTypeName="$tenantInfo.distributorLabel"
     />
     <CompanyMap
       v-if="features.map"
