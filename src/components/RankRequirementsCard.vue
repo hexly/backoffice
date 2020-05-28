@@ -123,6 +123,7 @@
 </template>
 
 <script>
+import * as moment from 'moment'
 import { mapState } from 'vuex'
 import PeriodSwitcher from '@/components/PeriodSwitcher.vue'
 import PeriodPayouts from '@/components/PeriodPayouts.vue'
@@ -173,17 +174,21 @@ export default {
       }, {})
     },
     showBanner() {
+      const { open, status } = this.selectedPeriod || {}
+      const days = moment().diff(moment(open), 'days')
+
       if (this.tabMode) {
         return false
-      } else if (this.selectedPeriod.status === 'open' &&
-          this.periods.under_review &&
-          this.periods.under_review.length) {
+      } else if (status === 'open' &&
+          // this.periods.under_review &&
+          // this.periods.under_review.length) {
+          days <= 5) {
         this.bannerMessage = `Hey There, you're looking at requirements for a new month. To check previous months select the three dot icon and choose a past month.`
         return true
-      } else if (this.selectedPeriod.status === 'under_review') {
+      } else if (status === 'under_review') {
         this.bannerMessage = `This period is still under review.`
         return true
-      } else if (this.selectedPeriod.status === 'closed') {
+      } else if (status === 'closed') {
         this.bannerMessage = `You are currently viewing a past period. This period is closed`
         return true
       }
