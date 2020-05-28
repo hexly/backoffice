@@ -1,9 +1,9 @@
 import gql from 'graphql-tag'
 
 export const IPAYOUTS_USER_QUERY = gql`
-query userQuery($input: UserInput) {
-  userQuery(input: $input) {
-     UserDetails {
+query userQuery($input: PayoutsUserInput) {
+  payoutsUserQuery(input: $input) {
+    PayoutsUserDetails {
       userName: String,
       customerGUID: String,
       isActivated: Boolean,
@@ -44,8 +44,8 @@ query userQuery($input: UserInput) {
 `
 
 export const IPAYOUTS_USER_BALANCE = gql`
-query userBalance($input: UserInput) {
-  userBalance(input: $input) {
+query userBalance($input: PayoutsUserInput) {
+  payoutsUserBalance(input: $input) {
     balance
     currencyCode
   }
@@ -53,8 +53,8 @@ query userBalance($input: UserInput) {
 `
 
 export const IPAYOUTS_USER_AUTO_LOGIN = gql`
-mutation autoLoginUser($input: UserInput) {
-  autoLoginUser(input: $input) {
+mutation autoLoginUser($input: PayoutsUserInput) {
+  payoutsAutoLoginUser(input: $input) {
     url
   }
 }

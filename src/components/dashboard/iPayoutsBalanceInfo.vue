@@ -65,7 +65,7 @@ export default {
     async loadBalance() {
       // For now, everyone should be aware of the federated url since that is the future!
       if (_.get(this, '$apolloProvider.clients.federated')) {
-        const { data: { userBalance } } = await this.$apollo.query({
+        const { data: { payoutsUserBalance } } = await this.$apollo.query({
           query: IPAYOUTS_USER_BALANCE,
           variables: {
             input: {
@@ -76,12 +76,12 @@ export default {
           },
           client: 'federated'
         })
-        this.currentBalance = userBalance
+        this.currentBalance = payoutsUserBalance
       }
     },
     async visitIPayouts() {
       this.fetchingLoginUrl = true
-      const { data: { autoLoginUser } } = await this.$apollo.mutate({
+      const { data: { payoutsAutoLoginUser } } = await this.$apollo.mutate({
         mutation: IPAYOUTS_USER_AUTO_LOGIN,
         variables: {
           input: {
@@ -92,7 +92,7 @@ export default {
         },
         client: 'federated'
       })
-      window.open(autoLoginUser.url, '_blank').focus()
+      window.open(payoutsAutoLoginUser.url, '_blank').focus()
       this.fetchingLoginUrl = false
     }
   },
