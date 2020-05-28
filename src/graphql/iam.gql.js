@@ -88,6 +88,9 @@ export const GET_PRINCIPAL = gql`
       memberId
       permissions
       member {
+        market {
+          supportedCurrencyIds
+        }
         firstName
         lastName
         id

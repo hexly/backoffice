@@ -86,8 +86,31 @@ export function createApolloClient ({
   base,
   endpoints,
   persisting
-}) {
-  const link = new HttpLink({ uri: base + endpoints.graphql })
+}, useAuthLink) {
+  const httpLink = new HttpLink({ uri: base + endpoints.graphql })
+  let link = httpLink
+
+  if (useAuthLink) {
+    const authLink = setContext((_, { headers = {} }) => {
+      const context = {
+        headers: {
+          ...headers
+        }
+      }
+      const memberId = get(store, 'state.user.principal.memberId')
+      if (memberId) {
+        context.headers['x-hexly-member-id'] = memberId
+      }
+      const authToken = getAuth()
+      if (authToken && authToken.trim().length > 0) {
+        context.headers.Authorization = authToken
+      } else {
+        delete context.headers.Authorization
+      }
+      return context
+    })
+    link = authLink.concat(httpLink)
+  }
 
   // Apollo cache
   const cache = new InMemoryCache({

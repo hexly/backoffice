@@ -88,7 +88,9 @@ export default new Router({
           path: 'dashboard',
           alias: '',
           name: 'dashboard',
-          component: () => import(`./views/dashboards/${process.env.VUE_APP_TENANT_ID}.vue`)
+          component: () => {
+            return import(`./views/dashboards/${process.env.VUE_APP_TENANT_ID}.vue`)
+          }
         },
         {
           path: 'profile',
