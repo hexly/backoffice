@@ -281,7 +281,7 @@ const tenantOptions = {
     primaryColor: '#3b2f93',
     secondaryColor: '#3b2f93',
     accentColor: '#33ccbb', // #33ccbb, #3b2f93
-    storeUrl: 'https://www.sucavu.net/store/{slug}',
+    storeUrl: 'https://{slug}.sucavu.net/',
     corporateUrl: 'https://www.sucavu.net/',
     encryptKey: 'sucavu',
     companyTime: 'America/Los_Angeles',

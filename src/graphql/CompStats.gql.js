@@ -7,10 +7,10 @@ query compRecentEarnings($input: CompRecentEarningsInput) {
       reason
       payout
       payeeMarket
-      
+
       sellerId
       seller
-      
+
       integrationOid
       tenantIntegrationId
       awardedDate
@@ -189,4 +189,12 @@ export const ENGINE_TEAM_ACTIVITY = gql`
       }
     }
   }
+`
+
+export const ENGINE_DASHBOARD_PROMOS = gql`
+query engineStatsMemberPromotionStatus($input: EngineStatsMemberPromotionStatusInput!){
+  engineStatsMemberPromotionStatus(input: $input){
+    metadata
+  }
+}
 `

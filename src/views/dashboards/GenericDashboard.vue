@@ -21,15 +21,16 @@
         </v-layout>
       </v-col>
       <v-col cols="12" md="6">
-        <template v-for="p in progresses">
+        <!-- <template v-for="p in progresses"> -->
+          <template v-for="p in promos">
           <div :key="p.id">
             <ProgressCard :id="p.id" :title="p.title" :rows="p.rows"/>
             <br>
           </div>
         </template>
-        <template v-for="incentive in features.incentives">
+        <!-- <template v-for="incentive in features.incentives">
           <component :is="incentive" :key="incentive"></component>
-        </template>
+        </template> -->
         <RankRequirementsCard
           v-if="features.rankRequirements"
           :stats         ="engineStats"
@@ -101,7 +102,7 @@ import {
   FRONTLINE_LEADERBOARD_BY_RANGE,
   COMPANY_FRONTLINE_LEADERBOARD_BY_RANGE
 } from '@/graphql/Leaderboard.js'
-import { COMP_PAYOUTS_QUERY } from '@/graphql/CompStats.gql'
+import { COMP_PAYOUTS_QUERY, ENGINE_DASHBOARD_PROMOS } from '@/graphql/CompStats.gql'
 import {
   MEMBER_STATS_BY_DEPTH,
   MAX_MRN
@@ -127,11 +128,11 @@ export default {
     LeaderBoard
   },
   created() {
-    this.$tenantInfo.features.dashboard.incentives.forEach(fileName => {
-      console.log(fileName)
+    // this.$tenantInfo.features.dashboard.incentives.forEach(fileName => {
+    // console.log(fileName)
     //   debugger
     //   this.$options.components[fileName] = () => import(`@/components/incentives/${fileName}.vue`)
-    })
+    // })
   },
   data() {
     return {
@@ -325,6 +326,19 @@ export default {
     }
   },
   apollo: {
+    promos: {
+      query: ENGINE_DASHBOARD_PROMOS,
+      variables() {
+        return {
+          input: {
+            memberId: this.memberId
+          }
+        }
+      },
+      update(obj) {
+        return _.get(obj, 'engineStatsMemberPromotionStatus.metadata', [])
+      }
+    },
     earnings: {
       query: COMP_PAYOUTS_QUERY,
       variables: {
