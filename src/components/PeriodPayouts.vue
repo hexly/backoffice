@@ -1,5 +1,6 @@
 <template>
   <div>
+    <p class="body-1">Here is a breakdown of the month end payout you received for the selected period you are viewing.</p>
     <v-row v-for="(value, key) in mapping" :key="key">
       <v-col cols="6">
         {{value}}
@@ -37,9 +38,9 @@ export default {
         gen3: 'Gen 3 Bonus',
         rankBonus: 'Rank Promotion Bonus',
         matchBonus: 'Matching Bonus',
-        total: 'Total',
+        total: 'Total'
         // grandTotal: 'Grand Total',
-        overrides: 'Overrides'
+        // overrides: 'Overrides'
       }
     }
   }

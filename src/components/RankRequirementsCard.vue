@@ -4,12 +4,12 @@
       <v-toolbar-title>Rank Requirements</v-toolbar-title>
       <v-spacer></v-spacer>
       <PeriodSwitcher v-if="!loading"></PeriodSwitcher>
-      <!-- <v-btn icon small v-if="!showPayouts" :disabled="!stats.payouts || !stats.payouts.grandTotal" @click="showPayouts = !showPayouts">
+      <v-btn icon small v-if="!showPayouts" :disabled="!stats.payouts || !stats.payouts.grandTotal" @click="showPayouts = !showPayouts">
         <v-icon>mdi-currency-usd</v-icon>
       </v-btn>
       <v-btn icon small v-else  @click="showPayouts = !showPayouts">
         <v-icon>mdi-chart-gantt</v-icon>
-      </v-btn> -->
+      </v-btn>
     </v-toolbar>
     <v-card-text v-if="stats && Object.keys(stats).length && !statsDisabled && !loading">
       <v-alert
