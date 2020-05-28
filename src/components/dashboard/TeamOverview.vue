@@ -18,7 +18,7 @@
           You are currently viewing a past period.
         </v-alert>
           <v-timeline clipped dense>
-            <v-timeline-item large color="#a1213b">
+            <v-timeline-item large :color="$tenantInfo.primaryColor">
               <v-row class="pt-1">
                 <v-col>
                   <strong>{{$tenantInfo.name}}</strong>
