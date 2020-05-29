@@ -1,12 +1,14 @@
 <template>
   <div>
     <p class="body-1">Here is a breakdown of the month end payout you received for the selected period you are viewing.</p>
-    <v-row v-for="(value, key) in mapping" :key="key">
-      <v-col cols="6">
+    <v-row v-for="(value, key) in mapping" :key="key" class="alternate-row">
+      <v-col cols="6" class="body-2">
         {{value}}
       </v-col>
       <v-col cols="6" class="text-right body-1">
-        <Currency :amount="payouts[key]" />
+        <strong>
+          <Currency :amount="payouts[key]" />
+        </strong>
       </v-col>
     </v-row>
   </div>
@@ -46,3 +48,9 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.alternate-row:nth-child(odd){
+  background-color: #d2d2d2;
+}
+</style>
