@@ -62,6 +62,14 @@
             <v-list-item-title>Integrations</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
+        <v-list-item to="/newsletters">
+          <v-list-item-action>
+            <v-icon>today</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>Newsletters</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
       </v-list>
 
       <v-divider></v-divider>
