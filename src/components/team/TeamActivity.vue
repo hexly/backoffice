@@ -17,99 +17,111 @@
 
       </v-col>
     </v-row> -->
-    <v-data-table hide-default-footer disable-pagination disable-sort :headers="headers" :items="members" class="elevation-1" :loading="loading > 0 ">
-      <template v-slot:item.name="{ item }">
-        <v-tooltip top slot="append">
-          <template v-slot:activator="{ on }">
-            <v-avatar size="24px" v-on="on">
-              <img v-if="item.member.profileUrl" alt="Avatar" :src="item.member.profileUrl">
-              <v-icon v-else color="primary" dark>mdi-account-circle</v-icon>
-            </v-avatar>
-          </template>
-          <span>#{{item.mrn}}</span>
-        </v-tooltip>
-        {{item.name}}
-        <br/>
-        <small class="pl-5">{{item.member.contacts[0].emails[0].email}}</small>
-      </template>
-      <template v-slot:item.rank="{ item }">
-        <v-chip :color="item.rank > 5 ? '#a1213b' : 'gray'" :class="{'white--text': item.rank > 5}">Rank {{item.rank}}</v-chip>
-      </template>
-      <template v-slot:item.memberPath="{ item }">
-        <v-layout class="generation-badge-container" align-center row wrap>
-          <template v-for="(parent, index) in item.ancestors">
-            <v-tooltip v-if="index > 0 && (index + 1) !== item.ancestors.length" top slot="append" :key="parent.profileUrl">
-              <template v-slot:activator="{ on }">
-                <v-avatar class="generation-avatar ma-0 elevation-3" size="24px" v-on="on">
-                  <img :src="parent.profileUrl || $tenantInfo.placeholder" alt="Avatar" >
-                </v-avatar>
-              </template>
-              <span>{{parent.displayName}}</span>
-            </v-tooltip>
-          </template>
-        </v-layout>
-      </template>
-      <template v-slot:item.stats="{ item }">
-        <v-row class="the-grid">
-          <v-col cols="6" class="bottom-border right-border grid-cell" :class="{'satisfied': item.next.stats.personalTotalPoints.satisfied}">
-            <h6>PSV</h6>
-            <div class="text-center">{{item.psv}}</div>
-          </v-col>
-          <v-col cols="6" class="bottom-border grid-cell"  :class="{'satisfied': item.next.stats.groupPoints.satisfied}">
-            <h6>GSV</h6>
-            <div class="text-center">{{item.gsv}}</div>
-          </v-col>
-          <v-col cols="6" class="right-border grid-cell"  :class="{'satisfied': item.next.stats.downlinePoints.satisfied}">
-            <h6>DSV</h6>
-            <div class="text-center">{{item.dsv}}</div>
-          </v-col>
-          <v-col cols="6" class="grid-cell"  :class="{'satisfied': item.next.stats.activeLeg.satisfied}">
-            <h6>Active Legs</h6>
-            <div class="text-center">{{item.legs}}</div>
-          </v-col>
-        </v-row>
-      </template>
-      <template v-slot:item.pabql="{ item }">
-        <v-chip v-for="(value, key) in item.current.stats.anyRankCount.earned" :key="`${key}${item.mrn}`">
-          <v-avatar dark left color="#FFFFFF"> {{value}} </v-avatar>
-          Rank {{key}}
-        </v-chip>
-      </template>
-    </v-data-table>
-    <v-pagination class="py-4" v-model="page" :length="Math.ceil(totalResults/pageSize)"></v-pagination>
-    <v-navigation-drawer v-model="drawer" absolute right temporary>
-      <v-expansion-panels>
-        <v-expansion-panel>
-          <v-expansion-panel-header>Sort By: {{sortByOptions[sortBy]}}</v-expansion-panel-header>
-          <v-expansion-panel-content>
-            <v-radio-group v-model="sortBy">
-              <v-radio v-for="(value, key) in sortByOptions" :label="value" :value="key" :key="key"></v-radio>
-            </v-radio-group>
-          </v-expansion-panel-content>
-        </v-expansion-panel>
-        <v-expansion-panel>
-          <v-expansion-panel-header>Order By: {{orderByOptions[orderBy]}}</v-expansion-panel-header>
-          <v-expansion-panel-content>
-            <v-radio-group v-model="orderBy">
-              <v-radio v-for="(value, key) in orderByOptions" :label="value" :value="key" :key="key"></v-radio>
-            </v-radio-group>
-          </v-expansion-panel-content>
-        </v-expansion-panel>
-        <v-expansion-panel>
-          <v-expansion-panel-header>Filter By: {{filterBy}}</v-expansion-panel-header>
-          <v-expansion-panel-content>
-            <v-checkbox
-              v-for="(value, key) in engineStats.levelCounts"
-              :label="`Level ${key.replace('level', '')}`"
-              :value="~~key.replace('level', '')"
-              :key="key"
-              v-model="filterBy"
-            ></v-checkbox>
-          </v-expansion-panel-content>
-        </v-expansion-panel>
-      </v-expansion-panels>
-      <v-btn class="ma-2" color="green" @click="drawer = !drawer">Ok</v-btn>
-    </v-navigation-drawer>
+    <template v-if="showStatsMaintenance">
+      <v-alert
+        class="inner-alert"
+        icon="mdi-calendar-check"
+        text
+        dense
+        type="info">
+        Our system is currently undergoing maintenance. We will be back up shortly
+      </v-alert>
+    </template>
+    <template v-else>
+      <v-data-table hide-default-footer disable-pagination disable-sort :headers="headers" :items="members" class="elevation-1" :loading="loading > 0 ">
+        <template v-slot:item.name="{ item }">
+          <v-tooltip top slot="append">
+            <template v-slot:activator="{ on }">
+              <v-avatar size="24px" v-on="on">
+                <img v-if="item.member.profileUrl" alt="Avatar" :src="item.member.profileUrl">
+                <v-icon v-else color="primary" dark>mdi-account-circle</v-icon>
+              </v-avatar>
+            </template>
+            <span>#{{item.mrn}}</span>
+          </v-tooltip>
+          {{item.name}}
+          <br/>
+          <small class="pl-5">{{item.member.contacts[0].emails[0].email}}</small>
+        </template>
+        <template v-slot:item.rank="{ item }">
+          <v-chip :color="item.rank > 5 ? '#a1213b' : 'gray'" :class="{'white--text': item.rank > 5}">Rank {{item.rank}}</v-chip>
+        </template>
+        <template v-slot:item.memberPath="{ item }">
+          <v-layout class="generation-badge-container" align-center row wrap>
+            <template v-for="(parent, index) in item.ancestors">
+              <v-tooltip v-if="index > 0 && (index + 1) !== item.ancestors.length" top slot="append" :key="parent.profileUrl">
+                <template v-slot:activator="{ on }">
+                  <v-avatar class="generation-avatar ma-0 elevation-3" size="24px" v-on="on">
+                    <img :src="parent.profileUrl || $tenantInfo.placeholder" alt="Avatar" >
+                  </v-avatar>
+                </template>
+                <span>{{parent.displayName}}</span>
+              </v-tooltip>
+            </template>
+          </v-layout>
+        </template>
+        <template v-slot:item.stats="{ item }">
+          <v-row class="the-grid">
+            <v-col cols="6" class="bottom-border right-border grid-cell" :class="{'satisfied': item.next.stats.personalTotalPoints.satisfied}">
+              <h6>PSV</h6>
+              <div class="text-center">{{item.psv}}</div>
+            </v-col>
+            <v-col cols="6" class="bottom-border grid-cell"  :class="{'satisfied': item.next.stats.groupPoints.satisfied}">
+              <h6>GSV</h6>
+              <div class="text-center">{{item.gsv}}</div>
+            </v-col>
+            <v-col cols="6" class="right-border grid-cell"  :class="{'satisfied': item.next.stats.downlinePoints.satisfied}">
+              <h6>DSV</h6>
+              <div class="text-center">{{item.dsv}}</div>
+            </v-col>
+            <v-col cols="6" class="grid-cell"  :class="{'satisfied': item.next.stats.activeLeg.satisfied}">
+              <h6>Active Legs</h6>
+              <div class="text-center">{{item.legs}}</div>
+            </v-col>
+          </v-row>
+        </template>
+        <template v-slot:item.pabql="{ item }">
+          <v-chip v-for="(value, key) in item.current.stats.anyRankCount.earned" :key="`${key}${item.mrn}`">
+            <v-avatar dark left color="#FFFFFF"> {{value}} </v-avatar>
+            Rank {{key}}
+          </v-chip>
+        </template>
+      </v-data-table>
+      <v-pagination class="py-4" v-model="page" :length="Math.ceil(totalResults/pageSize)"></v-pagination>
+      <v-navigation-drawer v-model="drawer" absolute right temporary>
+        <v-expansion-panels>
+          <v-expansion-panel>
+            <v-expansion-panel-header>Sort By: {{sortByOptions[sortBy]}}</v-expansion-panel-header>
+            <v-expansion-panel-content>
+              <v-radio-group v-model="sortBy">
+                <v-radio v-for="(value, key) in sortByOptions" :label="value" :value="key" :key="key"></v-radio>
+              </v-radio-group>
+            </v-expansion-panel-content>
+          </v-expansion-panel>
+          <v-expansion-panel>
+            <v-expansion-panel-header>Order By: {{orderByOptions[orderBy]}}</v-expansion-panel-header>
+            <v-expansion-panel-content>
+              <v-radio-group v-model="orderBy">
+                <v-radio v-for="(value, key) in orderByOptions" :label="value" :value="key" :key="key"></v-radio>
+              </v-radio-group>
+            </v-expansion-panel-content>
+          </v-expansion-panel>
+          <v-expansion-panel>
+            <v-expansion-panel-header>Filter By: {{filterBy}}</v-expansion-panel-header>
+            <v-expansion-panel-content>
+              <v-checkbox
+                v-for="(value, key) in engineStats.levelCounts"
+                :label="`Level ${key.replace('level', '')}`"
+                :value="~~key.replace('level', '')"
+                :key="key"
+                v-model="filterBy"
+              ></v-checkbox>
+            </v-expansion-panel-content>
+          </v-expansion-panel>
+        </v-expansion-panels>
+        <v-btn class="ma-2" color="green" @click="drawer = !drawer">Ok</v-btn>
+      </v-navigation-drawer>
+    </template>
   </div>
 </template>
 
@@ -213,6 +225,9 @@ export default {
     }
   },
   computed: {
+    showStatsMaintenance() {
+      return process.env.VUE_APP_STATS_MAINTENANCE
+    },
     ...mapState({
       engineStats: state => state.comp.stats,
       periods: state => state.comp.periods,
