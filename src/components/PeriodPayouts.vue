@@ -1,16 +1,23 @@
 <template>
   <div>
-    <p class="body-1">Here is a breakdown of the month end payout you received for the selected period you are viewing.</p>
-    <v-row v-for="(value, key) in mapping" :key="key" class="alternate-row">
-      <v-col cols="6" class="body-2">
-        {{value}}
-      </v-col>
-      <v-col cols="6" class="text-right body-1">
-        <strong>
-          <Currency :amount="payouts[key]" />
-        </strong>
-      </v-col>
-    </v-row>
+    <template v-if="payouts">
+      <p class="body-1">Here is a breakdown of the month end payout you received for the selected period you are viewing.</p>
+      <v-row v-for="(value, key) in mapping" :key="key" class="alternate-row">
+        <v-col cols="6" class="body-2">
+          {{value}}
+        </v-col>
+        <v-col cols="6" class="text-right body-1">
+          <strong>
+            <Currency :amount="payouts[key]" />
+          </strong>
+        </v-col>
+      </v-row>
+    </template>
+    <template v-else>
+      <v-alert type="warning">
+        Please select a closed period to show payout breakdown.
+      </v-alert>
+    </template>
   </div>
 </template>
 
