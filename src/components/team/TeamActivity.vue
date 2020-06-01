@@ -226,7 +226,8 @@ export default {
   },
   computed: {
     showStatsMaintenance() {
-      return process.env.VUE_APP_STATS_MAINTENANCE
+      // all env vars come in as strings! yay!
+      return process.env.VUE_APP_STATS_MAINTENANCE === 'true'
     },
     ...mapState({
       engineStats: state => state.comp.stats,

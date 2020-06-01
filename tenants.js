@@ -178,6 +178,9 @@ const tenantOptions = {
       sales: true,
       team: true,
       activity: true,
+      dashboard: {
+        payoutHistory: false
+      },
       legal: {
         docs: true,
         ssn: false

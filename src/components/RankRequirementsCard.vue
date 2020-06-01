@@ -1,15 +1,17 @@
 <template>
   <v-card id="rank-card" width="100%" :class="tabMode ? 'elevation-0 item-container-card' : null">
     <v-toolbar v-if="!tabMode" color="secondary" dark>
-        <v-toolbar-title>Rank Requirements</v-toolbar-title>
-        <v-spacer></v-spacer>
-        <PeriodSwitcher v-if="!loading"></PeriodSwitcher>
-        <!-- <v-btn icon small v-if="!showPayouts" :disabled="!stats.payouts || !stats.payouts.grandTotal" @click="showPayouts = !showPayouts">
+      <v-toolbar-title>Rank Requirements</v-toolbar-title>
+      <v-spacer></v-spacer>
+      <PeriodSwitcher v-if="!loading"></PeriodSwitcher>
+      <template v-if="$tenantInfo.features.dashboard && $tenantInfo.features.dashboard.payoutHistory">
+        <v-btn v-if="!showPayouts" icon small @click="showPayouts = !showPayouts">
           <v-icon>mdi-currency-usd</v-icon>
         </v-btn>
-        <v-btn icon small v-else  @click="showPayouts = !showPayouts">
+        <v-btn icon small v-else @click="showPayouts = !showPayouts">
           <v-icon>mdi-chart-gantt</v-icon>
-        </v-btn> -->
+        </v-btn>
+      </template>
     </v-toolbar>
     <template v-if="showStatsMaintenance">
       <v-card-text>
@@ -236,7 +238,8 @@ export default {
   },
   computed: {
     showStatsMaintenance() {
-      return process.env.VUE_APP_STATS_MAINTENANCE
+      // all env vars come in as strings! yay!
+      return process.env.VUE_APP_STATS_MAINTENANCE === 'true'
     },
     ...mapState({
       periods: state => state.comp.periods,
