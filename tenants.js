@@ -179,7 +179,7 @@ const tenantOptions = {
       team: true,
       activity: true,
       dashboard: {
-        payoutHistory: true
+        payoutHistory: false
       },
       legal: {
         docs: true,
