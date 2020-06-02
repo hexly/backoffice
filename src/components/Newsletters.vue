@@ -7,10 +7,11 @@
             </template>
           </pdf>
         <v-divider/>
+        <v-divider/>
         <p class="text-center headline" style="width: 300px;">{{ newsletter.name }}</p>
         <p class="text-center subtitle-1" style="width: 300px;">{{ newsletter.description }}</p>
         <div>
-          <v-btn text color="primary" @click="navigateToAsset(newsletter)">Download</v-btn>
+          <v-btn text color="primary" @click="navigateToAsset(newsletter)">View</v-btn>
         </div>
       </v-card>
     </div>
