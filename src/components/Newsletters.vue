@@ -1,14 +1,14 @@
 <template>
     <div id="newsletters">
       <v-card v-for="newsletter in newsletterList" :key="newsletter.id" class="d-inline-block mx-auto mr-4" style="max-width: 300px;">
-          <pdf :src="newsletter.url" :page="1" style="max-width: 300px; min-height: 200px;">
+          <pdf src="./test-newsletter.pdf" :page="1" style="max-width: 300px; min-height: 200px;">
             <template slot="loading">
               <p class="text-center">Loading PDF Preview</p>
             </template>
           </pdf>
         <v-divider/>
-        <p class="text-center headline" style="width: 300px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{ newsletter.name }}</p>
-        <p class="text-center subtitle-1" style="width: 300px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{ newsletter.description }}</p>
+        <p class="text-center headline" style="width: 300px;">{{ newsletter.name }}</p>
+        <p class="text-center subtitle-1" style="width: 300px;">{{ newsletter.description }}</p>
         <div>
           <v-btn text color="primary" @click="navigateToAsset(newsletter)">Download</v-btn>
         </div>
