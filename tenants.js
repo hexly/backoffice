@@ -124,7 +124,7 @@ const tenantOptions = {
     primaryColor: '#142479',
     secondaryColor: '#ffc63a',
     accentColor: '#142479',
-    storeUrl: 'https://www.kyngdomorganizer.com/store/{slug}',
+    storeUrl: 'https://{slug}.kyngdomorganizer.com',
     corporateUrl: 'https://www.kyngdomorganizer.com/',
     encryptKey: 'kyngdom-organizer',
     social: [
@@ -198,6 +198,9 @@ const tenantOptions = {
       sales: true,
       team: true,
       activity: true,
+      dashboard: {
+        payoutHistory: false
+      },
       legal: {
         docs: true,
         ssn: false

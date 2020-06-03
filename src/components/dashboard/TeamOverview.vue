@@ -6,7 +6,7 @@
         <v-spacer></v-spacer>
         <PeriodSwitcher v-if="!loading"></PeriodSwitcher>
       </v-toolbar>
-      <v-card-text style="height: 587px; overflow: auto; padding-top: 0px;">
+      <v-card-text style="height: 587px; overflow: auto; padding: 0 5px 0 0;">
         <template v-if="!loading && stats">
         <v-alert
           class="inner-alert"
@@ -17,56 +17,63 @@
           v-model="showBanner">
           You are currently viewing a past period.
         </v-alert>
-          <v-timeline clipped dense>
-            <v-timeline-item large color="#a1213b">
+          <v-timeline clipped dense align-top style="margin-left: -15px;">
+            <v-timeline-item hide-dot class="pb-0">
               <v-row class="pt-1">
+                <v-col></v-col>
                 <v-col>
-                  <strong>Everra</strong>
+                  <div class="caption text-center">Total Influencers</div>
                 </v-col>
                 <v-col>
-                  <strong>{{total}}</strong>
-                  <div class="caption">Total Influencers</div>
+                  <div class="caption  text-center">Active Influencers</div>
                 </v-col>
               </v-row>
             </v-timeline-item>
-            <v-timeline-item>
+            <v-timeline-item large :color="$tenantInfo.primaryColor">
+              <v-row class="pt-1">
+                <v-col class="pa-1">
+                  <strong>Everra</strong>
+                </v-col>
+                <v-col class="text-center">
+                  <strong>{{total}}</strong>
+                </v-col>
+                <v-col></v-col>
+              </v-row>
+            </v-timeline-item>
+            <v-timeline-item class="pb-1">
               <template v-slot:icon>
                 <v-avatar>
                   <img :src="member.profileUrl">
                 </v-avatar>
               </template>
               <v-row class="pt-1">
-                <v-col>
+                <v-col class="pa-1">
                   <strong>Circle Of Influence</strong>
                 </v-col>
-                <v-col>
+                <v-col class="text-center">
                   <strong>{{stats.downlineCount && stats.downlineCount.total}}</strong>
-                  <div class="caption">Total Influencers</div>
                 </v-col>
-                <v-col>
+                <v-col class="text-center">
                   <div>
                     <strong>{{stats.downlineCount && stats.downlineCount.qualified}}</strong>
-                     <Trend v-if="showTrend" :previous="previous.downlineCount.qualified" :current="current.downlineCount.qualified"/>
                   </div>
-                  <div class="caption">Active Influencers</div>
+                  <Trend v-if="showTrend" :previous="previous.downlineCount.qualified" :current="current.downlineCount.qualified"/>
                 </v-col>
               </v-row>
             </v-timeline-item>
-            <v-timeline-item color="grey" small v-for="(value, key) in stats.levelCounts" :key="key">
+            <v-timeline-item color="grey" small v-for="(value, key) in stats.levelCounts" :key="key" class="pb-1">
               <v-row class="pt-1">
-                <v-col>
+                <v-col class="pa-1">
                   <strong>Level {{key.replace('level', '')}}</strong>
                 </v-col>
-                <v-col>
+                <v-col class="text-center">
                   <strong>{{value.total}}</strong>
-                  <div class="caption">Total Influencers</div>
                 </v-col>
-                <v-col>
+                <v-col class="text-center">
                   <div>
                     <strong>{{value.qualified}}</strong>
-                    <Trend v-if="showTrend" :previous="previous.levelCounts[key].qualified" :current="current.levelCounts[key].qualified"/>
                   </div>
-                  <div class="caption">Active Influencers</div>
+                  <Trend v-if="showTrend" :previous="getPrevious(key)" :current="current.levelCounts[key].qualified"/>
                 </v-col>
               </v-row>
             </v-timeline-item>
@@ -94,6 +101,14 @@ export default {
     stats: Object,
     total: Number,
     loading: Boolean
+  },
+  methods: {
+    getPrevious(key) {
+      if (this.previous.levelCounts[key]) {
+        return this.previous.levelCounts[key].qualified
+      }
+      return 0
+    }
   },
   computed: {
     showBanner() {
