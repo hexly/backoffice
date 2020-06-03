@@ -54,7 +54,7 @@ export default {
     async getNewsletters() {
       const input = {
         tenantId: this.$tenantId,
-        anyTags: ['search:newsletter'],
+        anyTags: this.$tenantInfo.features.assetTags.newsletter,
         visibilityIds: [200, 201, 202, 203, 204],
         includeThumbnails: false,
         includeSources: false,
