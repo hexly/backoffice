@@ -207,7 +207,7 @@ const tenantOptions = {
       },
       social: true,
       payouts: true,
-      newsletters: true,
+      newsletters: false,
       assetTags: {
         newsletter: "search:newsletter"
       }
