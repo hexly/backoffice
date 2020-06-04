@@ -24,7 +24,11 @@ const tenantOptions = {
     strings: {},
     features: {
       team: true,
-      legal: true
+      legal: true,
+      newsletters: false,
+      assetTags: {
+        newsletter: "search:newsletter"
+      }
     }
   },
   1001: {
@@ -32,7 +36,11 @@ const tenantOptions = {
     logoPath: '/logo.png',
     features: {
       team: true,
-      legal: true
+      legal: true,
+      newsletters: false,
+      assetTags: {
+        newsletter: "search:newsletter"
+      }
     },
     strings: {}
   },
@@ -70,7 +78,11 @@ const tenantOptions = {
     features: {
       sales: true,
       team: true,
-      legal: true
+      legal: true,
+      newsletters: false,
+      assetTags: {
+        newsletter: "search:newsletter"
+      }
     }
   },
   1008: {
@@ -95,7 +107,11 @@ const tenantOptions = {
     features: {
       sales: true,
       team: false,
-      legal: false
+      legal: false,
+      newsletters: false,
+      assetTags: {
+        newsletter: "search:newsletter"
+      }
     }
   },
   1009: {
@@ -134,7 +150,11 @@ const tenantOptions = {
       sales: true,
       team: true,
       legal: true,
-      payouts: true
+      payouts: true,
+      newsletters: false,
+      assetTags: {
+        newsletter: "search:newsletter"
+      }
     }
   },
   1010: {
@@ -186,7 +206,11 @@ const tenantOptions = {
         ssn: false
       },
       social: true,
-      payouts: true
+      payouts: true,
+      newsletters: false,
+      assetTags: {
+        newsletter: "search:newsletter"
+      }
     }
   }
 }
