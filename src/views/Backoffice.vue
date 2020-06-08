@@ -62,6 +62,14 @@
             <v-list-item-title>Integrations</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
+        <v-list-item v-if="$tenantInfo.features.newsletters" to="/newsletters">
+          <v-list-item-action>
+            <v-icon>today</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>Newsletters</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
       </v-list>
 
       <v-divider></v-divider>
@@ -253,7 +261,7 @@ export default {
           this.setPrincipal(getPrincipal)
           const integrations = get(getPrincipal, 'tenant.integrations')
           this.activeIntegrations = integrations.filter(i => {
-            return this.integrations.indexOf(i.key) > -1 && i.statusId === 200 && get(i, 'metadata.mode') !== 'stealth'
+            return this.integrations.indexOf(i.key) > -1 && i.statusId === 200
           })
         }
       }

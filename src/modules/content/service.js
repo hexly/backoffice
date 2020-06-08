@@ -1,6 +1,6 @@
 import { get } from 'lodash'
 
-import { assetMeta, assetCreate, seachAllAssets, getAssets } from './content.gql'
+import { assetMeta, assetCreate, seachAllAssets, getAssets, betterSearchAllAssets } from './content.gql'
 import { apolloHexlyClient } from '@/vue-apollo'
 
 const doQuery = (query, args = {}) => {
@@ -34,6 +34,11 @@ export const createAsset = async input => {
 export const searchAssets = async (op, input, jwt) => {
   const result = await doQuery(seachAllAssets(op), { input })
   return get(result, 'data.assetSearch')
+}
+
+export const searchAssetsByKey = async (op, input, jwt) => {
+  const result = await doQuery(betterSearchAllAssets(op), { input })
+  return get(result, 'data.betterAssetSearch')
 }
 
 export const getAllAssets = async (op, input, jwt) => {
