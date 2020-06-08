@@ -37,7 +37,7 @@
           :statsDisabled ="statsDisabled"
           :loading       ="engineStatsLoading"
         />
-        <br>
+        <br v-if="features.rankRequirements">
         <TeamOverview
           v-if="features.teamOverview"
           :stats="engineStats"

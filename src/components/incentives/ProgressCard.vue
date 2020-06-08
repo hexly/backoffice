@@ -10,7 +10,12 @@
     <v-card-text>
       <v-row v-for="row in rows" :key="row.id">
         <v-col v-for="col in row.cols" :key="col.key" class="text-center">
-          <template v-if="col.type === 'circular'">
+           <template v-if="! col.data">
+             <h4 v-if="col.title" v-html="col.title"></h4>
+             <v-icon class="no-data">warning</v-icon>
+             <h6>No Data</h6>
+           </template>
+          <template v-else-if="col.type === 'circular'">
             <h4 v-if="col.title" v-html="col.title"></h4>
             <v-progress-circular
               :rotate="270"
@@ -61,3 +66,9 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.no-data {
+  padding: 15px !important;
+}
+</style>
