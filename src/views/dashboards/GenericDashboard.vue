@@ -4,7 +4,7 @@
     <v-row wrap>
       <v-col cols="12" md="6">
         <v-layout id="personal-card-layout" column>
-          <v-flex>
+          <v-flex class="mb-4">
             <PersonalCard :memberName="`Your ${$tenantInfo.distributorLabel}  Number:`" v-if="features.personalCard">
               <div slot="footer">
                 <Badges v-if="features.personalCardAwards" :memberId="member.id"/>
@@ -22,7 +22,7 @@
       </v-col>
       <v-col cols="12" md="6">
         <!-- <template v-for="p in progresses"> -->
-          <template v-for="p in promos">
+        <template v-for="p in promos">
           <div :key="p.id">
             <ProgressCard :id="p.id" :title="p.title" :rows="p.rows"/>
             <br>
@@ -37,13 +37,16 @@
           :statsDisabled ="statsDisabled"
           :loading       ="engineStatsLoading"
         />
-        <br v-if="features.rankRequirements">
+      </v-col>
+    </v-row>
+    <v-row wrap>
+      <v-col col="12" sm="6">
         <TeamOverview
-          v-if="features.teamOverview"
-          :stats="engineStats"
-          :total="memberCount"
-          :loading="engineStatsLoading"
-        />
+              v-if="features.teamOverview"
+              :stats="engineStats"
+              :total="memberCount"
+              :loading="engineStatsLoading"
+            />
       </v-col>
     </v-row>
     <v-row wrap>

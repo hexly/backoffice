@@ -250,7 +250,7 @@ const tenantOptions = {
       },
       social: true,
       payouts: true,
-      generalDashboard: true,
+      generalDashboard: false,
       dashboard: {
         payoutHistory: false,
         annoucements: true,
