@@ -36,7 +36,10 @@ export default {
     trend() {
       if (this.current === 0 && this.previous === 0) {
         return 0
+      } else if (this.previous === 0) {
+        return this.current * 100
       }
+
       return ((this.previous - this.current) / this.previous) * -100
     }
   }
@@ -48,7 +51,7 @@ export default {
   display: inline-block;
   vertical-align: middle;
   padding-left: 5px;
-  line-height: 1px;
+  line-height: 10px;
   padding-bottom: 6px;
 }
 </style>
