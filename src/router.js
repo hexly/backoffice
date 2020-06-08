@@ -137,6 +137,13 @@ export default new Router({
           path: 'integrations',
           name: 'integrations',
           component: Integrations
+        },
+        {
+          path: 'newsletters',
+          name: 'newsletters',
+          component: () => {
+            return import('./components/Newsletters.vue')
+          }
         }
       ]
     },

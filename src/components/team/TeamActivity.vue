@@ -17,6 +17,16 @@
 
       </v-col>
     </v-row> -->
+    <template v-if="showStatsMaintenance">
+      <v-alert
+        class="inner-alert"
+        icon="mdi-calendar-check"
+        text
+        dense
+        type="info">
+        Our system is currently undergoing maintenance. We will be back up shortly
+      </v-alert>
+    </template>
     <v-data-table hide-default-footer disable-pagination disable-sort :headers="headers" :items="members" class="elevation-1" :loading="loading > 0 ">
       <template v-slot:item.name="{ item }">
         <v-tooltip top slot="append">
@@ -214,6 +224,10 @@ export default {
     }
   },
   computed: {
+    showStatsMaintenance() {
+      // all env vars come in as strings! yay!
+      return process.env.VUE_APP_STATS_MAINTENANCE === 'true'
+    },
     ...mapState({
       engineStats: state => state.comp.stats,
       periods: state => state.comp.periods,

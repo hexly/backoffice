@@ -88,6 +88,35 @@ export const seachAllAssets = opName => gql`
   }
 `
 
+export const betterSearchAllAssets = opName => gql`
+  query ${opName}($input: BetterAssetSearch) {
+    betterAssetSearch(input: $input) {
+      page
+      pageSize
+      totalPages
+      totalResults
+      results {
+        id
+        url
+        thumbnailUrl
+        name
+        slug
+        description
+        categoryKey
+        visibilityId
+        owner{
+          displayName
+          mrn
+        }
+        tags{
+          key
+          name
+        }
+      }
+    }
+  }
+`
+
 export const processingStatus = gql`
   query ProcessingStatus($input: AssetProcessingStatusRequest!){
     assetProcessingStatus(input:$input){

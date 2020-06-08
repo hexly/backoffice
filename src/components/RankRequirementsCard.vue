@@ -4,12 +4,14 @@
       <v-toolbar-title>Rank Requirements</v-toolbar-title>
       <v-spacer></v-spacer>
       <PeriodSwitcher v-if="!loading"></PeriodSwitcher>
-      <!-- <v-btn icon small v-if="!showPayouts" :disabled="!stats.payouts || !stats.payouts.grandTotal" @click="showPayouts = !showPayouts">
-        <v-icon>mdi-currency-usd</v-icon>
-      </v-btn>
-      <v-btn icon small v-else  @click="showPayouts = !showPayouts">
-        <v-icon>mdi-chart-gantt</v-icon>
-      </v-btn> -->
+      <template v-if="$tenantInfo.features.dashboard && $tenantInfo.features.dashboard.payoutHistory">
+        <v-btn v-if="!showPayouts" icon small @click="showPayouts = !showPayouts">
+          <v-icon>mdi-currency-usd</v-icon>
+        </v-btn>
+        <v-btn icon small v-else @click="showPayouts = !showPayouts">
+          <v-icon>mdi-chart-gantt</v-icon>
+        </v-btn>
+      </template>
     </v-toolbar>
     <v-card-text v-if="stats && Object.keys(stats).length && !statsDisabled && !loading">
       <v-alert
@@ -127,7 +129,6 @@ import * as moment from 'moment'
 import { mapState } from 'vuex'
 import PeriodSwitcher from '@/components/PeriodSwitcher.vue'
 import PeriodPayouts from '@/components/PeriodPayouts.vue'
-
 export default {
   name: 'RankRequirementsCard',
   components: {
@@ -167,7 +168,6 @@ export default {
         carry[stat.prop] = stat
         return carry
       }, {})
-
       this.next = next.metrics.reduce((carry, stat) => {
         carry[stat.prop] = stat
         return carry
@@ -176,7 +176,6 @@ export default {
     showBanner() {
       const { open, status } = this.selectedPeriod || {}
       const days = moment().diff(moment(open), 'days')
-
       if (this.tabMode) {
         return false
       } else if (status === 'open' &&

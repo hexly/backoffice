@@ -1,7 +1,6 @@
 <template>
   <v-content>
     <v-container fluid fill-height>
-      <v-alert type="warning" v-if="error">{{error}}</v-alert>
       <v-layout align-center justify-center>
         <v-flex xs12 sm8 md8>
           <v-card class="elevation-12">
@@ -17,6 +16,7 @@
               <div class="center" v-if="!loading">
                 <p class="headline">Welcome {{editMember.name}}!</p>
                 <p>Please fill out the following information to finish setting up your account.</p>
+                <v-alert type="warning" v-if="error">{{error}}</v-alert>
                 <v-form ref="claim" @submit.prevent="onSubmit" lazy-validation>
                   <v-dialog
                     ref="dialog"

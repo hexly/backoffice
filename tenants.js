@@ -26,7 +26,12 @@ const tenantOptions = {
     ],
     strings: {},
     features: {
-      legal: true
+      legal: true,
+      team: true,
+      newsletters: false,
+      assetTags: {
+        newsletter: 'search:newsletter'
+      }
     }
   },
   1001: {
@@ -36,7 +41,12 @@ const tenantOptions = {
     name: 'Hexly',
     logoPath: '/logo.png',
     features: {
-      legal: true
+      legal: true,
+      team: true,
+      newsletters: false,
+      assetTags: {
+        newsletter: 'search:newsletter'
+      }
     },
     strings: {}
   },
@@ -76,7 +86,12 @@ const tenantOptions = {
     strings: {},
     features: {
       sales: true,
-      legal: true
+      legal: true,
+      team: true,
+      newsletters: false,
+      assetTags: {
+        newsletter: 'search:newsletter'
+      }
     }
   },
   1008: {
@@ -104,7 +119,11 @@ const tenantOptions = {
     features: {
       sales: true,
       team: false,
-      legal: false
+      legal: false,
+      newsletters: false,
+      assetTags: {
+        newsletter: 'search:newsletter'
+      }
     }
   },
   1009: {
@@ -120,7 +139,7 @@ const tenantOptions = {
     primaryColor: '#142479',
     secondaryColor: '#ffc63a',
     accentColor: '#142479',
-    storeUrl: 'https://www.kyngdomorganizer.com/store/{slug}',
+    storeUrl: 'https://{slug}.kyngdomorganizer.com',
     corporateUrl: 'https://www.kyngdomorganizer.com/',
     encryptKey: 'kyngdom-organizer',
     social: [
@@ -145,7 +164,11 @@ const tenantOptions = {
     features: {
       sales: true,
       legal: true,
-      payouts: true
+      payouts: true,
+      newsletters: false,
+      assetTags: {
+        newsletter: 'search:newsletter'
+      }
     }
   },
   1010: {
@@ -231,6 +254,7 @@ const tenantOptions = {
       dashboard: {
         annoucements: true,
         personalCard: true,
+        payoutHistory: false,
         personalCardAwards: true,
         personalCardSocial: true,
         rankRequirements: true,
@@ -240,6 +264,10 @@ const tenantOptions = {
         incentives: ['I1010March2020'],
         directory: true,
         map: true
+      },
+      newsletters: false,
+      assetTags: {
+        newsletter: 'search:newsletter'
       }
     }
   },
@@ -336,6 +364,10 @@ const tenantOptions = {
         teamOverview: true,
         directory: true,
         incentives: [ 'I1010March2020' ]
+      },
+      newsletters: false,
+      assetTags: {
+        // newsletter: "search:newsletter"
       }
     }
   }

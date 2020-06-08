@@ -142,7 +142,7 @@ export default {
       requiredRule: Rules.requiredRule,
       countries: [
         { text: 'United States of America', value: 'US' },
-        { text: 'United Kingdom', value: 'UK' }
+        { text: 'United Kingdom', value: 'GB' }
       ],
       types: [
         { text: 'Shipping', value: 'shipping' },

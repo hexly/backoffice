@@ -58,6 +58,7 @@
     "mapbox-gl-vue": "2.0.3",
     "moment": "^2.24.0",
     "node-sass": "^4.7.2",
+    "pdfvuer": "^1.6.0",
     "pre-build-webpack": "^0.1.0",
     "rambda": "^1.0.13",
     "register-service-worker": "^1.0.0",
@@ -85,8 +86,7 @@
   "devDependencies": {
     "cypress": "3.2.0",
     "eslint-plugin-cypress": "2.2.1",
-    "jest": "24.8.0",
-    "lt": "^0.3.3"
+    "jest": "24.8.0"
   },
   "optionalDependencies": {
     "@vue/cli-plugin-e2e-cypress": "3.7.0",

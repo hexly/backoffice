@@ -118,6 +118,7 @@
 </template>
 
 <script>
+// DO NOT TOUCH THIS FILE!
 import { mapActions, mapState } from 'vuex'
 import { encrypt } from '@/utils/EncryptionService'
 
@@ -237,7 +238,8 @@ export default {
   },
   computed: {
     canSave() {
-      if (this.$tenantInfo.features.legal.ssn) {
+      if (this.$tenantInfo.features.legal.ssn || this.$tenantInfo.features.legal === true) {
+        console.log(!this.redacted, !this.agreed)
         return !this.redacted || !this.agreed
       }
       return !this.agreed
