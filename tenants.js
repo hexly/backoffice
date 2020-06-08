@@ -27,7 +27,7 @@ const tenantOptions = {
       legal: true,
       newsletters: false,
       assetTags: {
-        newsletter: "search:newsletter"
+        newsletter: 'search:newsletter'
       }
     }
   },
@@ -39,7 +39,7 @@ const tenantOptions = {
       legal: true,
       newsletters: false,
       assetTags: {
-        newsletter: "search:newsletter"
+        newsletter: 'search:newsletter'
       }
     },
     strings: {}
@@ -81,7 +81,7 @@ const tenantOptions = {
       legal: true,
       newsletters: false,
       assetTags: {
-        newsletter: "search:newsletter"
+        newsletter: 'search:newsletter'
       }
     }
   },
@@ -110,7 +110,7 @@ const tenantOptions = {
       legal: false,
       newsletters: false,
       assetTags: {
-        newsletter: "search:newsletter"
+        newsletter: 'search:newsletter'
       }
     }
   },
@@ -153,7 +153,7 @@ const tenantOptions = {
       payouts: true,
       newsletters: false,
       assetTags: {
-        newsletter: "search:newsletter"
+        newsletter: 'search:newsletter'
       }
     }
   },
@@ -209,7 +209,7 @@ const tenantOptions = {
       payouts: true,
       newsletters: false,
       assetTags: {
-        newsletter: "search:newsletter"
+        newsletter: 'search:newsletter'
       }
     }
   }
