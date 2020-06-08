@@ -244,9 +244,6 @@ const tenantOptions = {
       annoucements: true,
       sales: true,
       activity: true,
-      dashboard: {
-        payoutHistory: false
-      },
       legal: {
         docs: true,
         ssn: false
@@ -255,6 +252,7 @@ const tenantOptions = {
       payouts: true,
       generalDashboard: true,
       dashboard: {
+        payoutHistory: false,
         annoucements: true,
         personalCard: true,
         personalCardAwards: true,

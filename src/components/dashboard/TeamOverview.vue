@@ -22,14 +22,10 @@
               <v-row class="pt-1">
                 <v-col></v-col>
                 <v-col>
-<<<<<<< HEAD
-                  <strong>{{$tenantInfo.name}}</strong>
-=======
-                  <div class="caption text-center">Total Influencers</div>
->>>>>>> dev
+                  <div class="caption text-center">Total {{$tenantInfo.distributorsLabel}}</div>
                 </v-col>
                 <v-col>
-                  <div class="caption  text-center">Active Influencers</div>
+                  <div class="caption  text-center">Active {{$tenantInfo.distributorsLabel}}</div>
                 </v-col>
               </v-row>
             </v-timeline-item>
@@ -40,10 +36,6 @@
                 </v-col>
                 <v-col class="text-center">
                   <strong>{{total}}</strong>
-<<<<<<< HEAD
-                  <div class="caption">Total {{$tenantInfo.distributorsLabel}}</div>
-=======
->>>>>>> dev
                 </v-col>
                 <v-col></v-col>
               </v-row>
@@ -58,27 +50,14 @@
                 <v-col class="pa-1">
                   <strong>Circle Of Influence</strong>
                 </v-col>
-<<<<<<< HEAD
-                <v-col>
-                  <strong>{{(stats.downlineCount && stats.downlineCount.total) || 0 }}</strong>
-                  <div class="caption">Total {{ $tenantInfo.distributorsLabel }}</div>
-=======
                 <v-col class="text-center">
                   <strong>{{stats.downlineCount && stats.downlineCount.total}}</strong>
->>>>>>> dev
                 </v-col>
                 <v-col class="text-center">
                   <div>
-<<<<<<< HEAD
-                    <strong>{{(stats.downlineCount && stats.downlineCount.qualified) || 0}}</strong>
-                      <Trend v-if="showTrend" :previous="previous.downlineCount.qualified" :current="current.downlineCount.qualified"/>
-                  </div>
-                  <div class="caption">Active {{ $tenantInfo.distributorsLabel }}</div>
-=======
                     <strong>{{stats.downlineCount && stats.downlineCount.qualified}}</strong>
                   </div>
                   <Trend v-if="showTrend" :previous="previous.downlineCount.qualified" :current="current.downlineCount.qualified"/>
->>>>>>> dev
                 </v-col>
               </v-row>
             </v-timeline-item>
@@ -87,27 +66,14 @@
                 <v-col class="pa-1">
                   <strong>Level {{key.replace('level', '')}}</strong>
                 </v-col>
-<<<<<<< HEAD
-                <v-col>
-                  <strong>{{value.total || 0}}</strong>
-                  <div class="caption">Total {{ $tenantInfo.distributorsLabel }}</div>
-=======
                 <v-col class="text-center">
                   <strong>{{value.total}}</strong>
->>>>>>> dev
                 </v-col>
                 <v-col class="text-center">
                   <div>
-<<<<<<< HEAD
-                    <strong>{{value.qualified || 0}}</strong>
-                    <Trend v-if="showTrend" :previous="previous.levelCounts[key].qualified" :current="current.levelCounts[key].qualified"/>
-                  </div>
-                  <div class="caption">Active {{ $tenantInfo.distributorsLabel }}</div>
-=======
                     <strong>{{value.qualified}}</strong>
                   </div>
                   <Trend v-if="showTrend" :previous="getPrevious(key)" :current="current.levelCounts[key].qualified"/>
->>>>>>> dev
                 </v-col>
               </v-row>
             </v-timeline-item>
@@ -122,7 +88,6 @@
 </template>
 
 <script>
-import _ from 'lodash'
 import Trend from '@/components/dashboard/Trend.vue'
 import { mapGetters, mapState } from 'vuex'
 import PeriodSwitcher from '@/components/PeriodSwitcher.vue'
@@ -150,8 +115,7 @@ export default {
       return !this.isSelectedCurrent
     },
     showTrend() {
-      return _.get(this, '$tenantInfo.trends.teamOverview', true) &&
-        this.isSelectedCurrent &&
+      return this.isSelectedCurrent &&
         this.current &&
         this.previous
     },
