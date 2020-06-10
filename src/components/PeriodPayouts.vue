@@ -2,16 +2,28 @@
   <div>
     <template v-if="payouts">
       <p class="body-1">Here is a breakdown of the month end payout you received for the selected period you are viewing.</p>
+      <v-row>
+        <v-divider/>
+      </v-row>
       <v-row v-for="(value, key) in mapping.immediate" :key="key">
         <v-col cols="6">
-          {{value}}
+          <h3>{{value}}</h3>
         </v-col>
         <v-col cols="6" class="text-right body-1">
           <Currency :amount="payouts[key]" />
         </v-col>
       </v-row>
-      <v-row v-for="(value, key) in mapping.overrides" :key="key" class="alternate-row">
-        <v-col cols="6" class="body-2">
+      <v-row>
+        <v-divider/>
+      </v-row>
+      <v-row v-for="(value, key) in mapping.overrides" :key="key">
+        <v-col cols="6" class="body-2" v-if="key === 'total'">
+          <h3>{{value}}</h3>
+        </v-col>
+        <v-col cols="6" class="body-2" v-else-if="key === 'overrides'">
+          <h3>{{value}}</h3>
+        </v-col>
+        <v-col v-else cols="6" class="body-2">
           {{value}}
         </v-col>
         <v-col cols="6" class="text-right body-1">
@@ -20,9 +32,12 @@
           </strong>
         </v-col>
       </v-row>
+      <v-row>
+        <v-divider/>
+      </v-row>
       <v-row v-for="(value, key) in mapping.grandTotal" :key="key">
-        <v-col cols="6">
-          <strong>{{value}}</strong>
+        <v-col class="body-2" cols="6">
+          <h3>{{value}}</h3>
         </v-col>
         <v-col cols="6" class="text-right body-1">
           <strong><Currency :amount="payouts[key]" /></strong>
@@ -62,17 +77,17 @@ export default {
           powerSeller: 'Power Seller Bonus',
           fssb: 'Fast Start Sponsor Bonus',
           level1: 'Level 1 Bonus',
-          level2: 'Leve 2 Bonus',
+          level2: 'Level 2 Bonus',
           level3: 'Level 3 Bonus',
           group: 'Group Bonus',
           gen1: 'Gen 1 Bonus',
           gen2: 'Gen 2 Bonus',
           gen3: 'Gen 3 Bonus',
+          overrides: 'Overrides Total',
           rankBonus: 'Rank Promotion Bonus',
           matchBonus: 'Matching Bonus',
-          total: 'Month End Totals',
+          total: 'Month End Totals'
           // grandTotal: 'Grand Total',
-          overrides: 'Overrides'
         }
       }
     }

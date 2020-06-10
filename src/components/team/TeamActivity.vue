@@ -60,6 +60,9 @@
             </template>
           </v-layout>
         </template>
+        <template v-slot:item.cpsv="{ item }">
+          <v-chip :color="item.cpsv > 2000 ? '#a1213b' : '#4CAF50'" :class="{'white--text': true}">{{ item.cpsv }}</v-chip>
+        </template>
         <template v-slot:item.stats="{ item }">
           <v-row class="the-grid">
             <v-col cols="6" class="bottom-border right-border grid-cell" :class="{'satisfied': item.next.stats.personalTotalPoints.satisfied}">
