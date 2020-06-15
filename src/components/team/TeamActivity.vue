@@ -27,7 +27,8 @@
         Our system is currently undergoing maintenance. We will be back up shortly
       </v-alert>
     </template>
-    <v-data-table hide-default-footer disable-pagination disable-sort :headers="headers" :items="members" class="elevation-1" :loading="loading > 0 ">
+    <template v-else>
+      <v-data-table hide-default-footer disable-pagination disable-sort :headers="headers" :items="members" class="elevation-1" :loading="loading > 0 ">
       <template v-slot:item.name="{ item }">
         <v-tooltip top slot="append">
           <template v-slot:activator="{ on }">
@@ -120,6 +121,7 @@
       </v-expansion-panels>
       <v-btn class="ma-2" color="green" @click="drawer = !drawer">Ok</v-btn>
     </v-navigation-drawer>
+    </template>
   </div>
 </template>
 
@@ -151,7 +153,7 @@ export default {
         // let's add this back in once breakouts are a thing
         // { text: 'Group Size', value: 'groupCount' },
         { text: 'Stats', value: 'stats' },
-        { text: 'Career Total', value: 'cpsv' },
+        { text: 'Career Total', value(i) { console.log(i); return Math.round } },
         { text: 'PABQL', value: 'pabql' }
       ],
       members: [],
@@ -218,8 +220,14 @@ export default {
         return _.isEmpty(this.periods) || this.drawer
       },
       update({ engineStatsGetTeamActivity }) {
-        this.totalResults = engineStatsGetTeamActivity.totalResults
-        return this.totalResults ? engineStatsGetTeamActivity.results : []
+        const activity = engineStatsGetTeamActivity || {
+          totalResults: 0,
+          page: this.page,
+          pageSize: this.pageSize,
+          results: []
+        }
+        this.totalResults = activity.totalResults
+        return activity.results
       }
     }
   },

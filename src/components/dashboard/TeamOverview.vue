@@ -6,7 +6,7 @@
         <v-spacer></v-spacer>
         <PeriodSwitcher v-if="!loading"></PeriodSwitcher>
       </v-toolbar>
-      <v-card-text style="max-height: 587px; overflow: auto; padding: 0 5px 0 0;">
+      <v-card-text style="height: 587px; overflow: auto; padding: 0 5px 0 0;">
         <template v-if="!loading && stats">
         <v-alert
           class="inner-alert"
