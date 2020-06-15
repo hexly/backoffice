@@ -91,6 +91,16 @@
     <v-navigation-drawer v-model="drawer" absolute right temporary>
       <v-expansion-panels>
         <v-expansion-panel>
+          <v-expansion-panel-header>Show Active: {{showActive}}</v-expansion-panel-header>
+          <v-expansion-panel-content>
+            <v-checkbox
+              label="Show Active"
+              :value="!showActive"
+              v-model="showActive"
+            ></v-checkbox>
+          </v-expansion-panel-content>
+        </v-expansion-panel>
+        <v-expansion-panel>
           <v-expansion-panel-header>Sort By: {{sortByOptions[sortBy]}}</v-expansion-panel-header>
           <v-expansion-panel-content>
             <v-radio-group v-model="sortBy">
@@ -137,25 +147,27 @@ export default {
     PeriodSwitcher
   },
   data() {
+    const headers = [
+      {
+        text: this.$tenantInfo.distributorLabel,
+        align: 'start',
+        value: 'name'
+      },
+      { text: 'Level', value: 'depth' },
+      { text: 'Upline', value: 'memberPath' },
+      { text: 'Rank', value: 'rank' },
+      { text: 'Downline Size', value: 'downlineCount.total' },
+      { text: 'Active In Downline', value: 'downlineCount.qualified' },
+      // let's add this back in once breakouts are a thing
+      // { text: 'Group Size', value: 'groupCount' },
+      { text: 'Stats', value: 'stats' },
+      { text: 'Career Total', value(i) { console.log(i); return Math.round } },
+      { text: 'PABQL', value: 'pabql' }
+    ]
+
     return {
       GET: _.get,
-      headers: [
-        {
-          text: this.$tenantInfo.distributorLabel,
-          align: 'start',
-          value: 'name'
-        },
-        { text: 'Level', value: 'depth' },
-        { text: 'Upline', value: 'memberPath' },
-        { text: 'Rank', value: 'rank' },
-        { text: 'Downline Size', value: 'downlineCount.total' },
-        { text: 'Active In Downline', value: 'downlineCount.qualified' },
-        // let's add this back in once breakouts are a thing
-        // { text: 'Group Size', value: 'groupCount' },
-        { text: 'Stats', value: 'stats' },
-        { text: 'Career Total', value(i) { console.log(i); return Math.round } },
-        { text: 'PABQL', value: 'pabql' }
-      ],
+      headers,
       members: [],
       page: 1,
       pageSize: 25,
@@ -170,6 +182,7 @@ export default {
         rank: 'Rank',
         legs: 'Active Legs'
       },
+      showActive: true,
       filterBy: [],
       orderBy: 'desc',
       orderByOptions: {
@@ -205,7 +218,7 @@ export default {
         return {
           input: {
             orderBy: [`${this.sortBy},${this.orderBy}`],
-            qualified: false,
+            qualified: this.showActive,
             psvGte: null,
             levelsIn: this.filterBy.length ? this.filterBy : null,
             page: this.page,

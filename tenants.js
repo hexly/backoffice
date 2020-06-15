@@ -248,11 +248,18 @@ const tenantOptions = {
         docs: true,
         ssn: false
       },
+      team: {
+        base: true,
+        generations: true,
+        activity: true,
+        search: true,
+        graph: true
+      },
       social: true,
       payouts: true,
       generalDashboard: false,
       dashboard: {
-        payoutHistory: false,
+        payoutHistory: true,
         annoucements: true,
         personalCard: true,
         personalCardAwards: true,

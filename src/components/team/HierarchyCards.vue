@@ -170,7 +170,7 @@ export default {
           this.teamIds = nodes.map(t => t.id)
         }
         return {
-          target: nodes[0],
+          target: target.nodes[0],
           team: nodes
         }
       }
