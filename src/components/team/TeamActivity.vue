@@ -61,7 +61,7 @@
           </v-layout>
         </template>
         <template v-slot:item.cpsv="{ item }">
-          <v-chip :color="item.cpsv > 500 ? '#EF5350' : '#4CAF50'" :class="{'white--text': true}">{{ item.cpsv }}</v-chip>
+          <v-chip :color="item.next.stats.lifetimeTotalPoints.satisfied ? '#4CAF50' : '#EF5350'" :class="{'white--text': true}">{{ item.cpsv }}</v-chip>
         </template>
         <template v-slot:item.stats="{ item }">
           <v-row class="the-grid">
@@ -84,11 +84,19 @@
           </v-row>
         </template>
         <template v-slot:item.pabql="{ item }">
-          <v-chip v-for="(value, key) in item.current.stats.anyRankCount.earned" :key="`${key}${item.mrn}`">
-            <v-avatar dark left color="#FFFFFF"> {{value}} </v-avatar>
-            Rank {{key}}
-          </v-chip>
-          <v-chip v-if="Object.keys(item.current.stats.anyRankCount.earned).length == 0">n/a</v-chip>
+          <template v-if="Object.keys(item.next.stats.anyRankCount.required).length == 0">
+            <v-chip color="#4CAF50">N/A</v-chip>
+          </template>
+          <template v-else>
+            <v-chip
+              v-for="(value, key) in item.next.stats.anyRankCount.earned"
+              :color="item.next.stats.anyRankCount.satisfied ? '#4CAF50' : '#EF5350'"
+              :key="`${key}${item.mrn}`"
+            >
+              <v-avatar dark left color="#FFFFFF"> {{value}} </v-avatar>
+              Rank {{key}}
+            </v-chip>
+          </template>
         </template>
       </v-data-table>
       <v-pagination class="py-4" v-model="page" :length="Math.ceil(totalResults/pageSize)"></v-pagination>
