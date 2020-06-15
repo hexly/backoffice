@@ -61,7 +61,7 @@
           </v-layout>
         </template>
         <template v-slot:item.cpsv="{ item }">
-          <v-chip :color="item.cpsv > 2000 ? '#a1213b' : '#4CAF50'" :class="{'white--text': true}">{{ item.cpsv }}</v-chip>
+          <v-chip :color="item.cpsv > 500 ? '#EF5350' : '#4CAF50'" :class="{'white--text': true}">{{ item.cpsv }}</v-chip>
         </template>
         <template v-slot:item.stats="{ item }">
           <v-row class="the-grid">
@@ -88,6 +88,7 @@
             <v-avatar dark left color="#FFFFFF"> {{value}} </v-avatar>
             Rank {{key}}
           </v-chip>
+          <v-chip v-if="Object.keys(item.current.stats.anyRankCount.earned).length == 0">n/a</v-chip>
         </template>
       </v-data-table>
       <v-pagination class="py-4" v-model="page" :length="Math.ceil(totalResults/pageSize)"></v-pagination>

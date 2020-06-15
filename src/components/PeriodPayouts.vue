@@ -5,7 +5,7 @@
       <v-row>
         <v-divider/>
       </v-row>
-      <v-row v-for="(value, key) in mapping.immediate" :key="key">
+      <v-row v-for="(value, key) in mapping.immediate" :key="key" class="pa-0">
         <v-col cols="6">
           <h3>{{value}}</h3>
         </v-col>
@@ -16,7 +16,7 @@
       <v-row>
         <v-divider/>
       </v-row>
-      <v-row v-for="(value, key) in mapping.overrides" :key="key">
+      <v-row v-for="(value, key) in mapping.overrides" :key="key" class="pa-0">
         <v-col cols="6" class="body-2" v-if="key === 'total'">
           <h3>{{value}}</h3>
         </v-col>
@@ -35,7 +35,7 @@
       <v-row>
         <v-divider/>
       </v-row>
-      <v-row v-for="(value, key) in mapping.grandTotal" :key="key">
+      <v-row v-for="(value, key) in mapping.grandTotal" :key="key" class="pa-0">
         <v-col class="body-2" cols="6">
           <h3>{{value}}</h3>
         </v-col>
@@ -98,5 +98,9 @@ export default {
 <style scoped>
 .alternate-row:nth-child(odd){
   background-color: #d2d2d2;
+}
+.slim-row {
+  padding-top: 0;
+  padding-bottom: 0;
 }
 </style>
