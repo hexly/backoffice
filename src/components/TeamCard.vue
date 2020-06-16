@@ -32,14 +32,23 @@
               <span v-if="!$apollo.loading">Get Rank</span>
               <v-progress-circular indeterminate v-else size="20" />
             </v-btn> -->
-            <h4 class="text-center" v-if="email">{{(email).toLowerCase()}}</h4>
-            <h4 class="text-center" v-if="slug">
+            <div class="text-center" v-if="email">{{(email).toLowerCase()}}</div>
+            <div class="text-center" v-if="address">
+              {{address.street}}
+              <br/>
+              {{address.street2}}
+              <br v-if="address.street2"/>
+              {{address.city}}, {{address.province}} {{address.postalCode}}
+              <br/>
+              {{address.country}}
+            </div>
+            <div class="text-center" v-if="slug">
               Store: <a target="_blank" :href="$tenantInfo.storeUrl.replace('{slug}', slug)">
               {{slug}}
               </a>
-            </h4>
+            </div>
             <div class="generation-container">
-              <h4>Generation: {{user.relativeDepth}}</h4>
+              <h5>Generation: {{user.relativeDepth}}</h5>
               <v-layout class="generation-badge-container" align-center row wrap>
                 <template v-for="parent in user.relativePathMembers">
                   <v-tooltip top slot="append" :key="parent.profileUrl">
@@ -301,6 +310,9 @@ export default {
     email () {
       return get(this.user, 'contacts[0].emails[0].email', this.user.email)
     },
+    address () {
+      return get(this.user, 'addresses[0]', null)
+    },
     slug () {
       return get(this, 'user.slugs[0].slug')
     },
@@ -427,6 +439,7 @@ export default {
   display: flex;
   flex-direction: column;
   justify-content: space-evenly;
+  font-size: 12px;
 }
 .generation-container {
   flex-direction: column;

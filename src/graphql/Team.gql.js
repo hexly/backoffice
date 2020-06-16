@@ -58,6 +58,14 @@ export const TEAM_QUERY = gql`
         slugs {
           slug
         }
+        addresses {
+          street
+          street2
+          city
+          province
+          postalCode
+          country
+        }
         contacts {
           emails {
             email
