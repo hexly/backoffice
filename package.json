@@ -5,6 +5,7 @@
   "scripts": {
     "start": "node tenants.js && vue-cli-service serve --open --fix",
     "serve": "node tenants.js && vue-cli-service serve --open --fix",
+    "watch:config": "nodemon -w $(pwd)/tenants.js -x node tenants.js",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint --fix",
     "test:unit": "vue-cli-service test:unit",
