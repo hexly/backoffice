@@ -60,6 +60,9 @@
           </template>
         </v-layout>
       </template>
+      <template v-slot:item.cpsv="{ item }">
+        <v-chip :color="item.next.stats.lifetimeTotalPoints.satisfied ? '#4CAF50' : '#EF5350'" :class="{'white--text': true}">{{ item.cpsv }}</v-chip>
+      </template>
       <template v-slot:item.stats="{ item }">
         <v-row class="the-grid">
           <v-col cols="6" class="bottom-border right-border grid-cell" :class="{'satisfied': item.next.stats.personalTotalPoints.satisfied}">
@@ -81,11 +84,20 @@
         </v-row>
       </template>
       <template v-slot:item.pabql="{ item }">
-        <v-chip v-for="(value, key) in item.current.stats.anyRankCount.earned" :key="`${key}${item.mrn}`">
-          <v-avatar dark left color="#FFFFFF"> {{value}} </v-avatar>
-          Rank {{key}}
-        </v-chip>
-      </template>
+          <template v-if="Object.keys(item.next.stats.anyRankCount.required).length == 0">
+            <v-chip color="#4CAF50">N/A</v-chip>
+          </template>
+          <template v-else>
+            <v-chip
+              v-for="(value, key) in item.next.stats.anyRankCount.earned"
+              :color="item.next.stats.anyRankCount.satisfied ? '#4CAF50' : '#EF5350'"
+              :key="`${key}${item.mrn}`"
+            >
+              <v-avatar dark left color="#FFFFFF"> {{value}} </v-avatar>
+              Rank {{key}}
+            </v-chip>
+          </template>
+        </template>
     </v-data-table>
     <v-pagination class="py-4" v-model="page" :length="Math.ceil(totalResults/pageSize)"></v-pagination>
     <v-navigation-drawer v-model="drawer" absolute right temporary>
@@ -131,6 +143,7 @@
       </v-expansion-panels>
       <v-btn class="ma-2" color="green" @click="drawer = !drawer">Ok</v-btn>
     </v-navigation-drawer>
+
     </template>
   </div>
 </template>
@@ -161,7 +174,7 @@ export default {
       // let's add this back in once breakouts are a thing
       // { text: 'Group Size', value: 'groupCount' },
       { text: 'Stats', value: 'stats' },
-      { text: 'Career Total', value(i) { console.log(i); return Math.round } },
+      { text: 'Career Total', value: 'cpsv' },
       { text: 'PABQL', value: 'pabql' }
     ]
 
