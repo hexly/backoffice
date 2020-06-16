@@ -3,18 +3,20 @@
     <v-tabs centered background-color="secondary" dark icons-and-text>
       <v-tabs-slider color="white"></v-tabs-slider>
 
-      <v-tab to="#hierarchy">Generations
+      <v-tab to="#hierarchy" v-if="GET($tenantInfo, 'features.team.generations', false)">Generations
         <v-icon>portrait</v-icon>
       </v-tab>
-      <template v-if="$tenantInfo.features.activity">
+      <template v-if="GET($tenantInfo, 'features.team.activity', false)">
         <v-tab to="#activity">Activity
           <v-icon>whatshot</v-icon>
         </v-tab>
       </template>
-      <v-tab to="#search">Search
+      <v-tab to="#search" v-if="GET($tenantInfo, 'features.team.search', true)">
+        Search
         <v-icon>search</v-icon>
       </v-tab>
-      <v-tab to="#graph">Graph
+      <v-tab to="#graph" v-if="GET($tenantInfo, 'features.team.graph', false)">
+        Graph
         <v-icon>scatter_plot</v-icon>
       </v-tab>
 
@@ -45,6 +47,7 @@
 </template>
 
 <script>
+import GET from 'lodash/get'
 import HierarchyCards from '@/components/team/HierarchyCards.vue'
 import TeamActivity from '@/components/team/TeamActivity.vue'
 import TeamSearch from '@/components/team/Search.vue'
@@ -57,6 +60,11 @@ export default {
     TeamSearch,
     TeamGraph,
     TeamActivity
+  },
+  data() {
+    return {
+      GET
+    }
   }
 }
 </script>

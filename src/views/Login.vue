@@ -128,7 +128,6 @@ export default {
           tenantId: this.$tenantId
         })
         const { success, issued, principal } = loginRes
-
         if (success && !issued) {
           try {
             if (!principal || !principal.memberId) {
@@ -188,6 +187,8 @@ export default {
     onError (errorMessage) {
       if (typeof errorMessage === 'string') {
         this.error = errorMessage
+      } else if (errorMessage instanceof Error) {
+        this.error = errorMessage.message
       } else {
         const errors = pathOr({}, 'response.data.errors', errorMessage)
         this.error = pathOr(

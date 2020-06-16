@@ -131,7 +131,7 @@ export default {
   },
   data() {
     return {
-      statuses: ['completed', 'processing', 'refunded', 'awaiting-shipment', 'dispatched'],
+      statuses: ['completed', 'processing', 'refunded', 'awaiting-shipment', 'export_for_shipping', 'POSTED', 'Awaiting Approval', 'SHIPPED', 'AWAITING FUNDS', 'ENTERED'],
       datePickerStartDate: null,
       datePickerEndDate: null,
       modalStart: false,

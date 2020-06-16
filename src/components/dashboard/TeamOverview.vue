@@ -22,10 +22,10 @@
               <v-row class="pt-1">
                 <v-col></v-col>
                 <v-col>
-                  <div class="caption text-center">Total Influencers</div>
+                  <div class="caption text-center">Total {{$tenantInfo.distributorsLabel}}</div>
                 </v-col>
                 <v-col>
-                  <div class="caption  text-center">Active Influencers</div>
+                  <div class="caption  text-center">Active {{$tenantInfo.distributorsLabel}}</div>
                 </v-col>
               </v-row>
             </v-timeline-item>
