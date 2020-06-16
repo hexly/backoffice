@@ -26,7 +26,7 @@
         <v-flex v-for="(i, index) in memberTeamSearch.team" :key="index">
           <TeamCard
             @viewTeam="showTeam"
-            :user="i"
+            :user="getMember(i)"
             :stats="statsMap[i.id]"
             :actions="true"
             noData="No data available"
@@ -154,6 +154,9 @@ export default {
         mergedArr.push(newMtsObj)
       })
       this.mergedTeamArr = mergedArr
+    },
+    getMember(user) {
+      return { ...user, addresses: user.member.addresses }
     }
   },
   computed: {
