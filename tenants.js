@@ -268,6 +268,10 @@ const tenantOptions = {
         companyLeaders: true,
         teamLeaders: true,
         teamOverview: true,
+        newsletters: true,
+        assetTags: {
+          newsletter: 'search:newsletter'
+        },
         incentives: ['I1010March2020'],
         directory: true,
         map: true
@@ -359,6 +363,10 @@ const tenantOptions = {
       social: false,
       payouts: false,
       generalDashboard: true,
+      newsletters: false,
+      assetTags: {
+        newsletter: 'search:newsletter'
+      },
       dashboard: {
         annoucements: true,
         personalCard: true,
@@ -366,11 +374,7 @@ const tenantOptions = {
         rankRequirements: true,
         teamOverview: true,
         directory: true,
-        incentives: [ 'I1010March2020' ],
-        newsletters: false,
-        assetTags: {
-          newsletter: 'search:newsletter'
-        }
+        incentives: [ 'I1010March2020' ]
       }
     }
   }
