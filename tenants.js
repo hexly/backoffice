@@ -258,6 +258,10 @@ const tenantOptions = {
       social: true,
       payouts: true,
       generalDashboard: false,
+      newsletters: true,
+      assetTags: {
+        newsletter: 'search:newsletter'
+      },
       dashboard: {
         payoutHistory: true,
         annoucements: true,
@@ -268,10 +272,6 @@ const tenantOptions = {
         companyLeaders: true,
         teamLeaders: true,
         teamOverview: true,
-        newsletters: true,
-        assetTags: {
-          newsletter: 'search:newsletter'
-        },
         incentives: ['I1010March2020'],
         directory: true,
         map: true
