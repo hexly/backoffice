@@ -6,6 +6,7 @@ query orderQuery($input: PurchaseSearchOrderInput!) {
     id
     customerId
     total
+    customerName
   }
 }
 `

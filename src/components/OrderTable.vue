@@ -15,7 +15,8 @@ export default {
       headers: [
         { text: 'Order ID', value: 'id' },
         { text: 'Total', value: 'total' },
-        { text: 'Customer ID', value: 'customerId' }
+        { text: 'Customer ID', value: 'customerId' },
+        { text: 'Customer Name', value: 'customerName' }
       ]
     }
   },
@@ -33,7 +34,6 @@ export default {
         client: 'federated'
       })
       this.orderData = results.data.purchaseSearchOrders
-      console.log(this.orderData)
     }
   },
   async mounted() {
