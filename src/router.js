@@ -17,6 +17,7 @@ import Impersonate from './views/Impersonate.vue'
 import Redirect from './views/Redirect.vue'
 import Zendesk from './zendesk/Zendesk.vue'
 import ZendeskRoot from './zendesk/root.vue'
+import Orders from './views/Orders.vue'
 
 Vue.use(Router)
 
@@ -133,6 +134,11 @@ export default new Router({
           component: () => {
             return import('./components/Newsletters.vue')
           }
+        },
+        {
+          path: 'orders',
+          name: 'orders',
+          component: Orders
         }
       ]
     },
