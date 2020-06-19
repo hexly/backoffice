@@ -1,32 +1,59 @@
 <template>
   <div class="profile">
-    <v-tabs centered background-color="secondary" dark icons-and-text>
-      <v-tabs-slider color="white"/>
-
-      <v-tab to="#recentOrders">Recent Orders</v-tab>
-      <v-tab to="#orderList">Order List</v-tab>
-
-      <v-tab-item value="recentOrders" class="py-3">
-        <v-lazy>
-          recent Orders
-        </v-lazy>
-      </v-tab-item>
-
-      <v-tab-item value="orderList" class="py-3">
-        <v-lazy>
-          <OrderTable/>
-        </v-lazy>
-      </v-tab-item>
-    </v-tabs>
+    <v-row wrap>
+      <v-col cols="12" md="6">
+        <v-flex>
+          <RecentOrders :orderData="orderData"/>
+        </v-flex>
+      </v-col>
+      <v-col cols="12" md="6">
+        <OrderTable :orderData="orderData"/>
+      </v-col>
+    </v-row>
   </div>
 </template>
 
 <script>
+import RecentOrders from '@/components/RecentOrders.vue'
 import OrderTable from '@/components/OrderTable.vue'
+import { mapState } from 'vuex'
+import { ORDERS_QUERY } from '@/graphql/Orders.js'
+
 export default {
   components: {
-    OrderTable
+    OrderTable,
+    RecentOrders
   },
-  name: 'Orders'
+  data() {
+    return {
+      orderData: []
+    }
+  },
+  methods: {
+    async loadOrders() {
+      const results = await this.$apollo.query({
+        query: ORDERS_QUERY,
+        variables: {
+          input: {
+            referrerIn: this.user.principal.memberId,
+            start: '2007-12-03',
+            end: new Date().toISOString().split('T')[0]
+          }
+        },
+        client: 'federated'
+      })
+      this.orderData = results.data.purchaseSearchOrders
+    }
+  },
+  async mounted() {
+    this.loadOrders()
+  },
+  computed: {
+    ...mapState({
+      user: state => state.user,
+      showGate: state => state.showGate,
+      integrations: state => state.integrations
+    })
+  }
 }
 </script>
