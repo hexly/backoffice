@@ -173,7 +173,7 @@ export default {
     parseStats(stats) {
       const { current, next } = stats
       this.currentRank = this._.get(current, 'metadata.name', `Rank ${current.rank}`)
-      this.nextRank = this._.get(next, 'metadata.name', `Rank ${current.rank}`)
+      this.nextRank = this._.get(next, 'metadata.name', `Rank ${next.rank}`)
       this.current = current.metrics.reduce((carry, stat) => {
         carry[stat.prop] = stat
         return carry
