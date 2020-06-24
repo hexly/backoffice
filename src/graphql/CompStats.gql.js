@@ -4,21 +4,11 @@ export const COMP_PAYOUTS_QUERY = gql`
 query compRecentEarnings($input: CompRecentEarningsInput) {
   compRecentEarnings(input: $input){
     results {
-      reason
-      payout
-      payeeMarket
-
-      sellerId
-      seller
-
-      integrationOid
-      tenantIntegrationId
-      awardedDate
-
-      base
-      modifier
-      peg
-      vat
+      issuedOn
+      amount
+      note
+      currency
+      metadata
     }
   }
 }
