@@ -34,7 +34,7 @@
               </td>
               <td>{{ $moment(item.issuedOn).format('lll') }}</td>
               <td>{{ item.releasedOn ? $moment(item.releasedOn).format('lll') : '--' }}</td>
-              <td>{{ item.note ? item.note : '--' }}{{item.currency}}</td>
+              <td>{{ item.note ? item.note : '--' }}</td>
               <td>
                 <v-tooltip class="deduction-tooltip" v-if="item.deductions" left>
                   <template v-slot:activator="{ on }">
