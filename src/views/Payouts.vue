@@ -34,7 +34,7 @@
               </td>
               <td>{{ $moment(item.issuedOn).format('lll') }}</td>
               <td>{{ item.releasedOn ? $moment(item.releasedOn).format('lll') : '--' }}</td>
-              <td>{{ item.note ? item.note : '--' }}</td>
+              <td>{{ item.note ? item.note : '--' }}{{item.currency}}</td>
               <td>
                 <v-tooltip class="deduction-tooltip" v-if="item.deductions" left>
                   <template v-slot:activator="{ on }">
@@ -52,7 +52,7 @@
               </td>
               <td v-if="item.deductions.length">
                 <v-icon @click="expanded = []" v-if="isExpanded">expand_less</v-icon>
-                <v-icon  @click="expanded = [item]" v-else>expand_more</v-icon>
+                <v-icon @click="expanded = [item]" v-else>expand_more</v-icon>
               </td>
             </tr>
           </template>
@@ -148,17 +148,6 @@ export default {
         this.setLoading(isLoading)
       },
       query: GET_MEMBER_PAYOUTS,
-      variables() {
-        return {
-          saleSearchInput: {
-            sellerId: this.memberId,
-            tenantId: this.$tenantId,
-            query: null,
-            endDate: this.endDate,
-            startDate: this.startDate
-          }
-        }
-      },
       error(err) {
         this.setLoading(false)
         console.error({ err })

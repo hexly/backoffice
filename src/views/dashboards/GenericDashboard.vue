@@ -105,7 +105,7 @@ import {
   FRONTLINE_LEADERBOARD_BY_RANGE,
   COMPANY_FRONTLINE_LEADERBOARD_BY_RANGE
 } from '@/graphql/Leaderboard.js'
-import { COMP_PAYOUTS_QUERY, ENGINE_DASHBOARD_PROMOS } from '@/graphql/CompStats.gql'
+import { ENGINE_DASHBOARD_PROMOS } from '@/graphql/CompStats.gql'
 import {
   MEMBER_STATS_BY_DEPTH,
   MAX_MRN
@@ -340,18 +340,6 @@ export default {
       },
       update(obj) {
         return _.get(obj, 'engineStatsMemberPromotionStatus.metadata', [])
-      }
-    },
-    earnings: {
-      query: COMP_PAYOUTS_QUERY,
-      variables: {
-        input: {
-          page: 1,
-          pageSize: 25
-        }
-      },
-      update({ compRecentEarnings }) {
-        return _.get(compRecentEarnings, 'results', [])
       }
     },
     team: {

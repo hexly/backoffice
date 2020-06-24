@@ -30,9 +30,6 @@
       </h2>
       <br/>
       <v-btn :loading="fetchingLoginUrl" :disabled="fetchingLoginUrl" class="ma-0" color="success" @click="visitIPayouts" small>Visit eWallet</v-btn>
-      <div v-if="!isNewMember">
-        <b>Note: If you have any unpaid payouts in our system, we will get those paid to the new eWallet over the coming days.</b>
-      </div>
     </template>
   </v-card-text>
 </template>

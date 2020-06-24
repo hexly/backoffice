@@ -43,7 +43,10 @@
               :items   ="earnings"
               :loading ="$apollo.queries.earnings.loading"
             >
-            <template v-slot:item.payout="{ item }">
+            <template v-slot:item.issuedOn="{ item }">
+              {{$moment(item.issuedOn).format('L')}}
+            </template>
+            <template v-slot:item.amount="{ item }">
               {{formatEarning(item)}}
             </template>
             </v-data-table>
@@ -84,7 +87,7 @@ import {
   FRONTLINE_LEADERBOARD_BY_RANGE,
   COMPANY_FRONTLINE_LEADERBOARD_BY_RANGE
 } from '@/graphql/Leaderboard.js'
-import { COMP_PAYOUTS_QUERY } from '@/graphql/CompStats.gql'
+import { GET_MEMBER_PAYOUTS } from '@/graphql/Member.gql'
 import {
   MEMBER_STATS_BY_DEPTH,
   MAX_MRN
@@ -118,11 +121,9 @@ export default {
         }
       },
       dataTableHeaders: [
-        { text: 'Order #', value: 'integrationOid', sortable: false },
-        { text: 'Date', value: 'awardedDate', sortable: false },
-        { text: 'Reason', value: 'reason', sortable: false },
-        { text: 'Seller', value: 'seller', sortable: false },
-        { text: 'Payout', value: 'payout', sortable: false }
+        { text: 'Payout', value: 'amount', sortable: false },
+        { text: 'Reason', value: 'note', sortable: false },
+        { text: 'Date', value: 'issuedOn', sortable: false }
       ],
       memberCount: 0,
       team: [],
@@ -138,23 +139,17 @@ export default {
     }
   },
   async mounted() {
-    if (this.isMobile) {
-      this.dataTableHeaders = [
-        { text: 'Order #', value: 'integrationOid', sortable: false },
-        { text: 'Date', value: 'awardedDate', sortable: false },
-        { text: 'Payout', value: 'payout', sortable: false }
-      ]
-    }
     await this.compGetPeriods({ when: this.$moment(this.getCompanyTime()).format('YYYY-MM-DD') })
   },
   methods: {
     formatEarning(earning) {
+      console.log(earning)
       let currency = '$'
-      if (earning.payeeMarket === 'gbr') {
+      if (earning.currencyId === 2) {
         currency = '£'
       }
 
-      return `${currency}${earning.payout.toFixed(2)}`
+      return `${currency}${earning.amount / 100}`
     },
     getCompanyTime(time) {
       const date = time ? new Date(time) : new Date()
@@ -221,15 +216,9 @@ export default {
   },
   apollo: {
     earnings: {
-      query: COMP_PAYOUTS_QUERY,
-      variables: {
-        input: {
-          page: 1,
-          pageSize: 25
-        }
-      },
-      update({ compRecentEarnings }) {
-        return _.get(compRecentEarnings, 'results', [])
+      query: GET_MEMBER_PAYOUTS,
+      update({ getPrincipal }) {
+        return _.get(getPrincipal, 'member.payouts', []).filter(p => p.status !== 'REVERSED' && p.metadata.origination.type === 'sale')
       }
     },
     team: {
