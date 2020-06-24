@@ -5,7 +5,13 @@
           <v-toolbar-title>Order List</v-toolbar-title>
           <v-spacer/>
         </v-toolbar>
-        <v-data-table :headers="headers" :items="orderData" item-key="id"/>
+        <v-text-field
+          v-model="search"
+          append-icon="mdi-magnify"
+          label="Search"
+          single-line
+          hide-details/>
+        <v-data-table :headers="headers" :items="orderData" item-key="id" :search="search"/>
       </v-card>
     </div>
 </template>
@@ -18,11 +24,11 @@ export default {
   data() {
     return {
       headers: [
-        { text: 'Order ID', value: 'id' },
-        { text: 'Total', value: 'total' },
-        { text: 'Customer ID', value: 'customerId' },
+        { text: 'Date', value: 'openedOn' },
+        { text: 'Product', value: 'productName' },
         { text: 'Customer Name', value: 'customerName' }
-      ]
+      ],
+      search: ''
     }
   }
 }

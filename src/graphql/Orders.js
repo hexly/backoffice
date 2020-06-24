@@ -7,7 +7,9 @@ query orderQuery($input: PurchaseSearchOrderInput!) {
     customerId
     total
     customerName
+    productName
     openedOn
+    metadata
   }
 }
 `

@@ -7,13 +7,18 @@
         </v-toolbar>
         <v-row justify-space-between v-for="order in sortedData" :key="order.id">
           <v-col>
-            <v-card-text>ID: {{ order.id }}</v-card-text>
+            <v-card-text>{{ order.customerName }}</v-card-text>
           </v-col>
           <v-col>
-            <v-card-text>Customer: {{ order.customerName }}</v-card-text>
+            <v-card-text>{{ order.productName }}</v-card-text>
           </v-col>
           <v-col>
-            <v-card-text>Opened On: {{ order.openedOn }}</v-card-text>
+            <v-card-text>{{ order.openedOn }}</v-card-text>
+          </v-col>
+          <v-col>
+            <v-card-text>
+              <Currency :amount="order.total / 100"/>
+            </v-card-text>
           </v-col>
         </v-row>
       </v-card>
@@ -21,7 +26,12 @@
 </template>
 
 <script>
+import Currency from '@/components/Currency'
+
 export default {
+  components: {
+    Currency
+  },
   props: {
     orderData: Array
   },
