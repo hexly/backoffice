@@ -11,7 +11,11 @@
           label="Search"
           single-line
           hide-details/>
-        <v-data-table :headers="headers" :items="orderData" item-key="id" :search="search"/>
+        <v-data-table :headers="headers" :items="orderData" item-key="id" :search="search">
+          <template v-slot:item.openedOn="{ item }">
+            {{ item.openedOn.split('T')[0] }}
+          </template>
+        </v-data-table>
       </v-card>
     </div>
 </template>
@@ -26,7 +30,8 @@ export default {
       headers: [
         { text: 'Date', value: 'openedOn' },
         { text: 'Product', value: 'productName' },
-        { text: 'Customer Name', value: 'customerName' }
+        { text: 'Customer Name', value: 'customerName' },
+        { text: 'Order Type', value: 'orderType' }
       ],
       search: ''
     }

@@ -6,8 +6,10 @@ query orderQuery($input: PurchaseSearchOrderInput!) {
     id
     customerId
     total
+    orderType
     customerName
     productName
+    productType
     openedOn
     metadata
   }
