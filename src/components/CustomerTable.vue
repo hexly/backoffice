@@ -4,7 +4,11 @@
         <v-toolbar-title>Customers</v-toolbar-title>
         <v-spacer/>
       </v-toolbar>
-    <v-data-table :headers="table.headers" :items="table.items" :key="table.key" @click:row="onClick"/>
+    <v-data-table :headers="table.headers" :items="table.items" :key="table.key" @click:row="onClick">
+      <template v-slot:footer v-if="this.customerName">
+        <v-btn @click="customerName = ''">Back</v-btn>
+      </template>
+    </v-data-table>
   </v-card>
 </template>
 
