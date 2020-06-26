@@ -10,19 +10,26 @@
         <OrderTable :orderData="orderData"/>
       </v-col>
     </v-row>
+    <v-row>
+      <v-col cols="12" md="6">
+        <CustomerTable :orderData="orderData"/>
+      </v-col>
+    </v-row>
   </div>
 </template>
 
 <script>
 import RecentOrders from '@/components/RecentOrders.vue'
 import OrderTable from '@/components/OrderTable.vue'
+import CustomerTable from '@/components/CustomerTable.vue'
 import { mapState } from 'vuex'
 import { ORDERS_QUERY } from '@/graphql/Orders.js'
 
 export default {
   components: {
     OrderTable,
-    RecentOrders
+    RecentOrders,
+    CustomerTable
   },
   data() {
     return {

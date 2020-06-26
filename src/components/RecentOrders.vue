@@ -44,7 +44,7 @@ export default {
     orderData: function(val) {
       this.sortedData = val.slice(0).sort((a, b) => {
         return new Date(b.openedOn) - new Date(a.openedOn)
-      }).slice(0, 10)
+      }).slice(0, 5)
     }
   }
 }
