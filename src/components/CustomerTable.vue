@@ -36,6 +36,10 @@ export default {
           {
             text: 'Number of Orders',
             value: 'orderCount'
+          },
+          {
+            text: 'Most recent order date',
+            value: 'recentOrder'
           }
         ],
         order: [
@@ -77,10 +81,15 @@ export default {
       let customerList = []
 
       uniqueCustomers.forEach(customer => {
-        const orderCount = this.orderData.filter((obj) => obj.customerName === customer).length
+        const customerOrders = this.orderData.filter((obj) => obj.customerName === customer)
+        const orderCount = customerOrders.length
+        const recentOrder = customerOrders.slice(0).sort((a, b) => {
+          return new Date(b.openedOn) - new Date(a.openedOn)
+        })[0].openedOn.split('T')[0]
         customerList.push({
           customerName: customer,
-          orderCount: orderCount
+          orderCount: orderCount,
+          recentOrder: recentOrder
         })
       })
       return customerList
