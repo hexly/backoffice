@@ -3,16 +3,16 @@
     <v-row wrap>
       <v-col cols="12" md="6">
         <v-flex>
-          <RecentOrders :orderData="orderData"/>
+          <CustomerTable :orderData="orderData"/>
         </v-flex>
       </v-col>
       <v-col cols="12" md="6">
-        <OrderTable :orderData="orderData"/>
+        <RecentOrders :orderData="orderData"/>
       </v-col>
     </v-row>
     <v-row>
       <v-col cols="12" md="6">
-        <CustomerTable :orderData="orderData"/>
+        <OrderTable :orderData="orderData"/>
       </v-col>
     </v-row>
   </div>
