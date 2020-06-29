@@ -1,19 +1,27 @@
 <template>
   <v-card>
-      <v-toolbar color="secondary" dark>
-        <v-toolbar-title>Customers</v-toolbar-title>
-        <v-spacer/>
-      </v-toolbar>
-    <v-data-table :headers="table.headers" :items="table.items" :key="table.key" @click:row="onClick">
+    <v-toolbar color="secondary" dark>
+      <v-toolbar-title>Customers</v-toolbar-title>
+      <v-spacer/>
+    </v-toolbar>
+    <v-text-field v-model="search" append-icon="mdi-magnify" label="Search"/>
+    <v-data-table :headers="table.headers" :items="table.items" :key="table.key" @click:row="onClick" :search="search">
       <template v-slot:footer v-if="this.customerName">
-        <v-btn @click="customerName = ''">Back</v-btn>
+        <v-btn @click="backClick()">Back</v-btn>
+      </template>
+      <template v-slot:item.total="{ item }">
+        <Currency :amount="item.total / 100"/>
       </template>
     </v-data-table>
   </v-card>
 </template>
 
 <script>
+import Currency from '@/components/Currency.vue'
 export default {
+  components: {
+    Currency
+  },
   props: {
     orderData: Array
   },
@@ -24,6 +32,10 @@ export default {
           {
             text: 'Name',
             value: 'customerName'
+          },
+          {
+            text: 'Number of Orders',
+            value: 'orderCount'
           }
         ],
         order: [
@@ -34,15 +46,29 @@ export default {
           {
             text: 'Date',
             value: 'date'
+          },
+          {
+            text: 'Total',
+            value: 'total'
+          },
+          {
+            text: 'Order Type',
+            value: 'orderType'
           }
         ]
       },
-      customerName: ''
+      customerName: '',
+      search: ''
     }
   },
   methods: {
     onClick(item, details) {
       this.customerName = item.customerName
+      this.search = ''
+    },
+    backClick() {
+      this.customerName = ''
+      this.search = ''
     }
   },
   computed: {
@@ -51,8 +77,10 @@ export default {
       let customerList = []
 
       uniqueCustomers.forEach(customer => {
+        const orderCount = this.orderData.filter((obj) => obj.customerName === customer).length
         customerList.push({
-          customerName: customer
+          customerName: customer,
+          orderCount: orderCount
         })
       })
       return customerList
