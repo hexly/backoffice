@@ -185,7 +185,8 @@ export default {
             orderDirection: 'asc',
             orderByColumn: 'depth',
             limit: 500,
-            offset: 0
+            offset: 0,
+            depth: [0]
           }
         }
       },

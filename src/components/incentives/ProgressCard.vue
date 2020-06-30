@@ -15,7 +15,7 @@
              <v-icon class="no-data">warning</v-icon>
              <h6>No Data</h6>
            </template>
-          <template v-else-if="col.type === 'circular'">
+          <template v-else-if="col.metadata.visualisation.type === 'circular'">
             <h4 v-if="col.title" v-html="col.title"></h4>
             <v-progress-circular
               :rotate="270"
@@ -28,7 +28,7 @@
             </v-progress-circular>
             <h6 v-if="col.hint" v-html="col.hint"></h6>
           </template>
-          <template v-else-if="col.type === 'linear'">
+          <template v-else-if="col.metadata.visualisation.type === 'linear'">
             <h4 v-if="col.title" v-html="col.title"></h4>
             <v-progress-linear
               :rotate="270"
@@ -41,6 +41,16 @@
               <div v-if="col.label" v-html="col.label"></div>
             </v-progress-linear>
             <h6 v-if="col.hint" v-html="col.hint"></h6>
+          </template>
+          <template v-else>
+            <h4 v-if="col.title" v-html="col.title"></h4>
+            <v-tooltip bottom>
+              <template v-slot:activator="{ on }">
+                <v-icon v-on="on" class="visualization-failed">warning</v-icon>
+              </template>
+              <span> Could not load this visualization </span>
+            </v-tooltip>
+            <h6 v-if="col.metadata.visualisation.hint" v-html="col.metadata.visualisation.hint"></h6>
           </template>
         </v-col>
       </v-row>
@@ -57,7 +67,7 @@ export default {
     PeriodSwitcher
   },
   props: {
-    id: String,
+    id: Number,
     title: String,
     rows: {
       type: Array,
@@ -70,5 +80,15 @@ export default {
 <style scoped>
 .no-data {
   padding: 15px !important;
+}
+</style>
+
+<style scoped>
+.visualization-failed {
+  font-size: 50px;
+  border: 1px solid #efefef;
+  border-radius: 50%;
+  padding: 35px;
+  margin: 5px 0;
 }
 </style>
