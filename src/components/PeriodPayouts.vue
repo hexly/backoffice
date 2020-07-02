@@ -10,26 +10,28 @@
           <h3>{{value}}</h3>
         </v-col>
         <v-col cols="6" class="text-right body-1">
-          <Currency :amount="payouts[key]" />
+          <strong>
+            <Currency :amount="payouts[key]" />
+          </strong>
         </v-col>
       </v-row>
       <v-row>
         <v-divider/>
       </v-row>
       <v-row v-for="(value, key) in mapping.overrides" :key="key" class="pa-0">
-        <v-col cols="6" class="body-2" v-if="key === 'total'">
+        <v-col cols="6" class="body-2" v-if="['total', 'overrides'].indexOf(key) >= 0">
           <h3>{{value}}</h3>
         </v-col>
-        <v-col cols="6" class="body-2" v-else-if="key === 'overrides'">
-          <h3>{{value}}</h3>
-        </v-col>
-        <v-col v-else cols="6" class="body-2">
+        <v-col cols="6" class="body-2" v-else>
           {{value}}
         </v-col>
-        <v-col cols="6" class="text-right body-1">
+        <v-col cols="6" class="text-right body-1" v-if="['total', 'overrides'].indexOf(key) >= 0">
           <strong>
             <Currency :amount="payouts[key]" />
           </strong>
+        </v-col>
+        <v-col cols="6" class="text-right body-1" v-else>
+          <Currency :amount="payouts[key]" />
         </v-col>
       </v-row>
       <v-row>

@@ -12,6 +12,16 @@ export const TEAM_SEARCH_QUERY = gql`
         email
         joinedOn
         relativeDepth
+        member {
+          addresses {
+            street
+            street2
+            city
+            province
+            postalCode
+            country
+          }
+        }
         relativePathMembers {
           profileUrl
           name
@@ -57,6 +67,14 @@ export const TEAM_QUERY = gql`
         mrn
         slugs {
           slug
+        }
+        addresses {
+          street
+          street2
+          city
+          province
+          postalCode
+          country
         }
         contacts {
           emails {

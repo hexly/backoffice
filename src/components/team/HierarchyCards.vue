@@ -165,12 +165,13 @@ export default {
         }
       },
       update ({ target, team }) {
-        if (team.nodes && team.nodes.length) {
-          this.teamIds = team.nodes.map(t => t.id)
+        const nodes = team ? team.nodes : []
+        if (nodes && nodes.length) {
+          this.teamIds = nodes.map(t => t.id)
         }
         return {
           target: target.nodes[0],
-          team: team.nodes
+          team: nodes
         }
       }
     },
@@ -184,7 +185,8 @@ export default {
             orderDirection: 'asc',
             orderByColumn: 'depth',
             limit: 500,
-            offset: 0
+            offset: 0,
+            depth: [0]
           }
         }
       },

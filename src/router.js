@@ -89,8 +89,19 @@ export default new Router({
           path: 'dashboard',
           alias: '',
           name: 'dashboard',
-          component: () => {
-            return import(`./views/dashboards/${process.env.VUE_APP_TENANT_ID}.vue`)
+          component: async function() {
+            const tid = process.env.VUE_APP_TENANT_ID
+            let view
+            if (tenantInfo.features.generalDashboard) {
+              view = await require(`./views/dashboards/GenericDashboard.vue`)
+            } else {
+              try {
+                view = await require(`./views/dashboards/${tid}.vue`)
+              } catch (err) {
+                view = await require(`./views/dashboards/NotFound.vue`)
+              }
+            }
+            return view
           }
         },
         {

@@ -43,12 +43,12 @@
           <v-row justify-space-between :class="tabMode ? 'rank-row' : ''" class="pa-1">
             <v-col class="pa-0">
               <div v-if="!currentRank" class="title">Unranked</div>
-              <div v-else class="title">Rank {{currentRank}}</div>
+              <div v-else class="title">{{currentRank}}</div>
               <div class="caption grey--text darken-1"> Current Rank </div>
             </v-col>
             <v-spacer></v-spacer>
             <v-col class="text-right pa-1" v-if="nextRank">
-              <div class="title">Rank {{nextRank}}</div>
+              <div class="title">{{nextRank}}</div>
               <div class="caption grey--text darken-1"> Next Rank </div>
             </v-col>
           </v-row>
@@ -135,10 +135,10 @@
 </template>
 
 <script>
+import * as moment from 'moment'
 import { mapState } from 'vuex'
 import PeriodSwitcher from '@/components/PeriodSwitcher.vue'
 import PeriodPayouts from '@/components/PeriodPayouts.vue'
-
 export default {
   name: 'RankRequirementsCard',
   components: {
@@ -166,65 +166,38 @@ export default {
       year: ~~this.$moment().format('Y'),
       month: ~~this.$moment().format('M'),
       lastRefreshed: null,
-      statMapping: {
-        lifetimeTotalPoints: {
-          title: 'CPSV',
-          description: 'Career Personal Sales Volume'
-        },
-        personalTotalPoints: {
-          title: 'PSV',
-          description: 'Personal Sales Volume'
-        },
-        groupPoints: {
-          title: 'GSV',
-          description: 'Group Sales Volume'
-        },
-        activeLeg: {
-          title: 'Active Legs',
-          description: 'Active Legs'
-        },
-        downlinePoints: {
-          title: 'DSV',
-          description: 'Downline Sales volume'
-        },
-        anyRankCount: {
-          title: 'PABQL',
-          description: 'Paid-As Bonus Qualified Legs'
-        },
-        downlineAdjustedPoints: {
-          title: 'ADSV',
-          description: 'Adjusted Downline Sales volume'
-        }
-      }
+      statMapping: this.$tenantInfo.statMapping
     }
   },
   methods: {
     parseStats(stats) {
       const { current, next } = stats
-      this.currentRank = current.rank
-      this.nextRank = next.rank
+      this.currentRank = this._.get(current, 'metadata.name', `Rank ${current.rank}`)
+      this.nextRank = this._.get(next, 'metadata.name', `Rank ${next.rank}`)
       this.current = current.metrics.reduce((carry, stat) => {
         carry[stat.prop] = stat
         return carry
       }, {})
-
       this.next = next.metrics.reduce((carry, stat) => {
         carry[stat.prop] = stat
         return carry
       }, {})
     },
     showBanner() {
+      const { open, status } = this.selectedPeriod || {}
+      const days = moment().diff(moment(open), 'days')
       if (this.tabMode) {
         return false
-      } else if (this.selectedPeriod.status === 'open' &&
-          this.periods.under_review &&
-          this.periods.under_review.length) {
+      } else if (status === 'open' &&
+          // this.periods.under_review &&
+          // this.periods.under_review.length) {
+          days <= 5) {
         this.bannerMessage = `Hey There, you're looking at requirements for a new month. To check previous months select the three dot icon and choose a past month.`
         return true
-      } else if (this.selectedPeriod.status === 'under_review') {
+      } else if (status === 'under_review') {
         this.bannerMessage = `This period is still under review.`
         return true
-      } else if (this.selectedPeriod.status === 'closed') {
+      } else if (status === 'closed') {
         this.bannerMessage = `You are currently viewing a past period. This period is closed`
         return true
       }

@@ -1,7 +1,7 @@
 <template>
-    <div id="newsletters">
+    <div id="newsletters" class="pa-4">
       <v-card v-for="newsletter in newsletterList" :key="newsletter.id" class="d-inline-block mx-auto mr-4" style="max-width: 300px;">
-          <pdf src="./test-newsletter.pdf" :page="1" style="max-width: 300px; min-height: 200px;">
+          <pdf :src="newsletter.url" :page="1" style="max-width: 300px; min-height: 200px;">
             <template slot="loading">
               <p class="text-center">Loading PDF Preview</p>
             </template>
