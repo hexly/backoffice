@@ -143,7 +143,6 @@ export default {
   },
   methods: {
     formatEarning(earning) {
-      console.log(earning)
       let currency = '$'
       if (earning.currencyId === 2) {
         currency = '£'
