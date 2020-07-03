@@ -66,19 +66,19 @@
       <template v-slot:item.stats="{ item }">
         <v-row class="the-grid">
           <v-col cols="6" class="bottom-border right-border grid-cell" :class="{'satisfied': item.next.stats.personalTotalPoints.satisfied}">
-            <h6>PSV</h6>
+            <h6>{{$tenantInfo.statMapping.personalTotalPoints.title}}</h6>
             <div class="text-center">{{item.psv}}</div>
           </v-col>
           <v-col cols="6" class="bottom-border grid-cell"  :class="{'satisfied': item.next.stats.groupPoints.satisfied}">
-            <h6>GSV</h6>
+            <h6>{{$tenantInfo.statMapping.groupPoints.title}}</h6>
             <div class="text-center">{{item.gsv}}</div>
           </v-col>
           <v-col cols="6" class="right-border grid-cell"  :class="{'satisfied': item.next.stats.downlinePoints.satisfied}">
-            <h6>DSV</h6>
+            <h6>{{$tenantInfo.statMapping.downlinePoints.title}}</h6>
             <div class="text-center">{{item.dsv}}</div>
           </v-col>
           <v-col cols="6" class="grid-cell"  :class="{'satisfied': item.next.stats.activeLeg.satisfied}">
-            <h6>Active Legs</h6>
+            <h6>{{$tenantInfo.statMapping.activeLeg.title}}</h6>
             <div class="text-center">{{item.legs}}</div>
           </v-col>
         </v-row>
@@ -175,7 +175,7 @@ export default {
       // { text: 'Group Size', value: 'groupCount' },
       { text: 'Stats', value: 'stats' },
       { text: 'Career Total', value: 'cpsv' },
-      { text: 'PABQL', value: 'pabql' }
+      { text: this.$tenantInfo.statMapping.anyRankCount.title, value: 'pabql' }
     ]
 
     return {
@@ -189,11 +189,11 @@ export default {
       drawer: false,
       sortBy: 'rank',
       sortByOptions: {
-        psv: 'PSV',
-        gsv: 'GSV',
-        dsv: 'DSV',
+        psv: this.$tenantInfo.statMapping.personalTotalPoints.title,
+        gsv: this.$tenantInfo.statMapping.groupPoints.title,
+        dsv: this.$tenantInfo.statMapping.downlinePoints.title,
         rank: 'Rank',
-        legs: 'Active Legs'
+        legs: this.$tenantInfo.statMapping.activeLeg.title
       },
       showActive: true,
       filterBy: [],

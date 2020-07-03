@@ -32,7 +32,7 @@
             <v-timeline-item large :color="$tenantInfo.primaryColor">
               <v-row class="pt-1">
                 <v-col class="pa-1">
-                  <strong>Everra</strong>
+                  <strong>{{$tenantInfo.name}}</strong>
                 </v-col>
                 <v-col class="text-center">
                   <strong>{{total}}</strong>
