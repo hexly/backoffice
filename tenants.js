@@ -294,14 +294,14 @@ const tenantOptions = {
         title: 'CV',
         description: 'Commissionable Volume'
       },
-      // lifetimeTotalPoints: {
-      //   title: 'LPV',
-      //   description: 'Lifetime Commissionable Volume'
-      // },
-      // groupPoints: {
-      //   title: 'GSV',
-      //   description: 'Group Sales Volume'
-      // },
+      lifetimeTotalPoints: {
+        title: 'LPV',
+        description: 'Lifetime Commissionable Volume'
+      },
+      groupPoints: {
+        title: 'GSV',
+        description: 'Group Sales Volume'
+      },
       activeLeg: {
         title: 'Active Legs',
         description: 'Active Legs'

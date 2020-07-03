@@ -65,19 +65,19 @@
       </template>
       <template v-slot:item.stats="{ item }">
         <v-row class="the-grid">
-          <v-col cols="6" class="bottom-border right-border grid-cell" :class="{'satisfied': item.next.stats.personalTotalPoints.satisfied}">
+          <v-col v-if="$tenantInfo.statMapping.personalTotalPoints" cols="6" class="bottom-border right-border grid-cell" :class="{'satisfied': item.next.stats.personalTotalPoints.satisfied}">
             <h6>{{$tenantInfo.statMapping.personalTotalPoints.title}}</h6>
             <div class="text-center">{{item.psv}}</div>
           </v-col>
-          <v-col cols="6" class="bottom-border grid-cell"  :class="{'satisfied': item.next.stats.groupPoints.satisfied}">
+          <v-col v-if="$tenantInfo.statMapping.groupPoints" cols="6" class="bottom-border grid-cell"  :class="{'satisfied': item.next.stats.groupPoints.satisfied}">
             <h6>{{$tenantInfo.statMapping.groupPoints.title}}</h6>
             <div class="text-center">{{item.gsv}}</div>
           </v-col>
-          <v-col cols="6" class="right-border grid-cell"  :class="{'satisfied': item.next.stats.downlinePoints.satisfied}">
+          <v-col v-if="$tenantInfo.statMapping.downlinePoints" cols="6" class="right-border grid-cell"  :class="{'satisfied': item.next.stats.downlinePoints.satisfied}">
             <h6>{{$tenantInfo.statMapping.downlinePoints.title}}</h6>
             <div class="text-center">{{item.dsv}}</div>
           </v-col>
-          <v-col cols="6" class="grid-cell"  :class="{'satisfied': item.next.stats.activeLeg.satisfied}">
+          <v-col v-if="$tenantInfo.statMapping.activeLeg" cols="6" class="grid-cell"  :class="{'satisfied': item.next.stats.activeLeg.satisfied}">
             <h6>{{$tenantInfo.statMapping.activeLeg.title}}</h6>
             <div class="text-center">{{item.legs}}</div>
           </v-col>
@@ -173,10 +173,33 @@ export default {
       { text: 'Active In Downline', value: 'downlineCount.qualified' },
       // let's add this back in once breakouts are a thing
       // { text: 'Group Size', value: 'groupCount' },
-      { text: 'Stats', value: 'stats' },
-      { text: 'Career Total', value: 'cpsv' },
-      { text: this.$tenantInfo.statMapping.anyRankCount.title, value: 'pabql' }
+      { text: 'Stats', value: 'stats' }
     ]
+
+    if (this.$tenantInfo.statMapping.lifetimeTotalPoints) {
+      headers.push({ text: 'Career Total', value: 'cpsv' })
+    }
+
+    if (this.$tenantInfo.statMapping.anyRankCount) {
+      headers.push({ text: this.$tenantInfo.statMapping.anyRankCount.title, value: 'pabql' })
+    }
+
+    const sortByOptions = {
+      rank: 'Rank',
+      psv: this.$tenantInfo.statMapping.personalTotalPoints.title
+    }
+
+    if (this.$tenantInfo.statMapping.groupPoints) {
+      sortByOptions.gsv = this.$tenantInfo.statMapping.groupPoints.title
+    }
+
+    if (this.$tenantInfo.statMapping.downlinePoints) {
+      sortByOptions.gsv = this.$tenantInfo.statMapping.downlinePoints.title
+    }
+
+    if (this.$tenantInfo.statMapping.activeLeg) {
+      sortByOptions.gsv = this.$tenantInfo.statMapping.activeLeg.title
+    }
 
     return {
       GET: _.get,
@@ -188,13 +211,7 @@ export default {
       loading: 0,
       drawer: false,
       sortBy: 'rank',
-      sortByOptions: {
-        psv: this.$tenantInfo.statMapping.personalTotalPoints.title,
-        gsv: this.$tenantInfo.statMapping.groupPoints.title,
-        dsv: this.$tenantInfo.statMapping.downlinePoints.title,
-        rank: 'Rank',
-        legs: this.$tenantInfo.statMapping.activeLeg.title
-      },
+      sortByOptions,
       showActive: true,
       filterBy: [],
       orderBy: 'desc',
@@ -253,7 +270,8 @@ export default {
           results: []
         }
         this.totalResults = activity.totalResults
-        return activity.results
+        // Filtering out nulls
+        return activity.results.filter(r => r)
       }
     }
   },
