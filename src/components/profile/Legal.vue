@@ -239,7 +239,6 @@ export default {
   computed: {
     canSave() {
       if (this.$tenantInfo.features.legal.ssn || this.$tenantInfo.features.legal === true) {
-        console.log(!this.redacted, !this.agreed)
         return !this.redacted || !this.agreed
       }
       return !this.agreed

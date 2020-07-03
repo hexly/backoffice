@@ -64,7 +64,6 @@ export default {
           const { supportUserCommand: { metadata } } = data
           if (metadata && metadata.token) {
             const url = `${process.env.VUE_APP_ZENDESK_BASE_URL}/access/jwt?jwt=${metadata.token}`
-            console.log('Redirecting to zendesk', { url })
             window.open(url, '_blank')
           } else {
             console.warn('Failed to get response from GraphQL')
