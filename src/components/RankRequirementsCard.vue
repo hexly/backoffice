@@ -71,7 +71,7 @@
               </v-col>
               <v-spacer></v-spacer>
               <v-col class="text-right pa-1" v-if="stat !== 'anyRankCount'">
-                <div class="title">{{next[stat].earned}}</div>
+                <div class="title">{{Math.floor(next[stat].earned)}}</div>
                 <div v-if="next[stat].required && parseInt(next[stat].earned)" class="caption grey--text darken-1">
                   {{Math.round(next[stat].earned/next[stat].required*100)}}%
                   <br>
