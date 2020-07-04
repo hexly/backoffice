@@ -24,7 +24,7 @@
               :width="15"
               color="green lighten-3"
             >
-              <div v-if="col.data.labels.progress" v-html="col.data.labels.progress"></div>
+              <div v-if="col.data.labels.progress">{{cleanProgress(col.data.labels.progress)}}</div>
             </v-progress-circular>
             <h6 v-if="col.hint" v-html="col.hint"></h6>
           </template>
@@ -72,6 +72,15 @@ export default {
     rows: {
       type: Array,
       required: true
+    }
+  },
+  methods: {
+    cleanProgress(progress) {
+      if (progress.indexOf('/') >= 0) {
+        const splits = progress.split('/')
+        return `${Math.floor(splits[0])} / ${Math.floor(splits[1])}`
+      }
+      return progress
     }
   }
 }

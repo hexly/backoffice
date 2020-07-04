@@ -61,25 +61,25 @@
         </v-layout>
       </template>
       <template v-slot:item.cpsv="{ item }">
-        <v-chip :color="item.next.stats.lifetimeTotalPoints.satisfied ? '#4CAF50' : '#EF5350'" :class="{'white--text': true}">{{ item.cpsv }}</v-chip>
+        <v-chip :color="item.next.stats.lifetimeTotalPoints.satisfied ? '#4CAF50' : '#EF5350'" :class="{'white--text': true}">{{ Math.floor(item.cpsv) }}</v-chip>
       </template>
       <template v-slot:item.stats="{ item }">
         <v-row class="the-grid">
           <v-col v-if="$tenantInfo.statMapping.personalTotalPoints" cols="6" class="bottom-border right-border grid-cell" :class="{'satisfied': item.next.stats.personalTotalPoints.satisfied}">
             <h6>{{$tenantInfo.statMapping.personalTotalPoints.title}}</h6>
-            <div class="text-center">{{item.psv}}</div>
+            <div class="text-center">{{Math.floor(item.psv)}}</div>
           </v-col>
           <v-col v-if="$tenantInfo.statMapping.groupPoints" cols="6" class="bottom-border grid-cell"  :class="{'satisfied': item.next.stats.groupPoints.satisfied}">
             <h6>{{$tenantInfo.statMapping.groupPoints.title}}</h6>
-            <div class="text-center">{{item.gsv}}</div>
+            <div class="text-center">{{Math.floor(item.gsv)}}</div>
           </v-col>
           <v-col v-if="$tenantInfo.statMapping.downlinePoints" cols="6" class="right-border grid-cell"  :class="{'satisfied': item.next.stats.downlinePoints.satisfied}">
             <h6>{{$tenantInfo.statMapping.downlinePoints.title}}</h6>
-            <div class="text-center">{{item.dsv}}</div>
+            <div class="text-center">{{Math.floor(item.dsv)}}</div>
           </v-col>
           <v-col v-if="$tenantInfo.statMapping.activeLeg" cols="6" class="grid-cell"  :class="{'satisfied': item.next.stats.activeLeg.satisfied}">
             <h6>{{$tenantInfo.statMapping.activeLeg.title}}</h6>
-            <div class="text-center">{{item.legs}}</div>
+            <div class="text-center">{{Math.floor(item.legs)}}</div>
           </v-col>
         </v-row>
       </template>
