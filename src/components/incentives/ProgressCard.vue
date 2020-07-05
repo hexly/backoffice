@@ -77,8 +77,16 @@ export default {
   methods: {
     cleanProgress(progress) {
       if (progress.indexOf('/') >= 0) {
-        const splits = progress.split('/')
-        return `${Math.floor(splits[0])} / ${Math.floor(splits[1])}`
+        let value
+        let [ earned, needed ] = progress.split('/')
+
+        value = Math.floor(earned)
+        earned = isNaN(value) ? earned : value
+
+        value = Math.floor(needed)
+        needed = isNaN(value) ? needed : value
+
+        return `${earned} / ${needed}`
       }
       return progress
     }
