@@ -46,6 +46,9 @@
       <template v-slot:item.rank="{ item }">
         <v-chip :color="item.rank > 5 ? '#a1213b' : 'gray'" :class="{'white--text': item.rank > 5}">Rank {{item.rank}}</v-chip>
       </template>
+      <template v-slot:item.recognizedRank="{ item }">
+        <v-chip :color="item.current.recognizedRank > 5 ? '#a1213b' : 'gray'" :class="{'white--text': item.current.recognizedRank > 5}">Rank {{item.current.recognizedRank}}</v-chip>
+      </template>
       <template v-slot:item.memberPath="{ item }">
         <v-layout class="generation-badge-container" align-center row wrap>
           <template v-for="(parent, index) in item.ancestors">
@@ -169,6 +172,7 @@ export default {
       { text: 'Level', value: 'depth' },
       { text: 'Upline', value: 'memberPath' },
       { text: 'Rank', value: 'rank' },
+      { text: 'Lifetime Rank', value: 'recognizedRank' },
       { text: 'Downline Size', value: 'downlineCount.total' },
       { text: 'Active In Downline', value: 'downlineCount.qualified' },
       // let's add this back in once breakouts are a thing
