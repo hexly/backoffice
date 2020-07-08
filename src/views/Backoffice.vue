@@ -82,6 +82,14 @@
             <v-list-item-title>Shop</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
+        <v-list-item v-for="link in $tenantInfo.externalLinks" :href="link.href" target="_blank" :key="link.href">
+          <v-list-item-action>
+            <v-icon>{{link.icon || 'link'}}</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>{{link.name}}</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
       </v-list>
       <v-divider v-if="hasAdminMenu"></v-divider>
       <v-list v-if="hasAdminMenu">

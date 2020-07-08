@@ -240,6 +240,13 @@ const tenantOptions = {
       }
     ],
     privacyPolicy: '/docs/1010/Privacy-Policy.pdf',
+    externalLinks: [
+      {
+        href: 'https://everra.go.customprintcenter.com/',
+        name: 'ProShop',
+        icon: 'business_center'
+      }
+    ],
     features: {
       annoucements: true,
       sales: true,
