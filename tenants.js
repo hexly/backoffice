@@ -368,7 +368,7 @@ const tenantOptions = {
         ssn: false
       },
       social: false,
-      payouts: false,
+      payouts: true,
       generalDashboard: true,
       newsletters: false,
       assetTags: {
