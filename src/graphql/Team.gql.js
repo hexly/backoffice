@@ -13,6 +13,7 @@ export const TEAM_SEARCH_QUERY = gql`
         joinedOn
         relativeDepth
         member {
+          birthdate
           addresses {
             street
             street2
@@ -46,6 +47,7 @@ export const TEAM_QUERY = gql`
         slugs {
           slug
         }
+        birthdate
         contacts {
           emails {
             email
@@ -65,6 +67,7 @@ export const TEAM_QUERY = gql`
         name
         displayName
         mrn
+        birthdate
         slugs {
           slug
         }
