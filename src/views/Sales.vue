@@ -58,6 +58,7 @@
                   <ul>
                     <li>{{item.shippingFirstName}} {{item.shippingLastName}}</li>
                     <li>{{item.billingEmail}}</li>
+                    <li>{{item.shippingAddress1}}</li>
                     <li>{{item.shippingCity}}, {{item.shippingState}} {{item.shippingZip}}</li>
                   </ul>
                 </v-flex>

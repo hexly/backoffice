@@ -180,6 +180,7 @@ export default {
         }
       },
       update({ memberTeamSearch }) {
+        console.log(memberTeamSearch)
         return memberTeamSearch
       },
       loadingKey: 'loading',

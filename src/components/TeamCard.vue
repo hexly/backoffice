@@ -3,16 +3,17 @@
     <v-img
       :src="getAvatar"
       cover
-      top
+      center
       aspect-ratio="1"
       class="cardImg white--text"
       gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
     >
-    <v-card-title class="fill-height align-end">
-      <v-flex row>
-        <h3>{{(user.name).toUpperCase()}}</h3>
-      </v-flex>
-    </v-card-title>
+      <v-card-title class="fill-height align-end">
+        <v-flex row>
+          <h3>{{(user.name).toUpperCase()}}</h3>
+          <small v-if="joinedOn" style="position: absolute; bottom: 0; font-size: 12px;">{{$tenantInfo.distributorLabel}} since: {{$moment(joinedOn, 'YYYY-MM-DD').format('ll')}}</small>
+        </v-flex>
+      </v-card-title>
     </v-img>
     <div v-if="actions">
       <v-tabs @change="handleTabChange" :value="activeTab">
@@ -32,7 +33,11 @@
               <span v-if="!$apollo.loading">Get Rank</span>
               <v-progress-circular indeterminate v-else size="20" />
             </v-btn> -->
-            <div class="text-center" v-if="email">{{(email).toLowerCase()}}</div>
+            <div class="text-center">
+              <span v-if="email">{{(email).toLowerCase()}}</span>
+              <br v-if="email"/>
+              <span v-if="birthday">Birthday: {{$moment(birthday, 'YYYY-MM-DD').format('MMMM Do')}}</span>
+            </div>
             <div class="text-center" v-if="address">
               {{address.street}}
               <br/>
@@ -47,7 +52,7 @@
               {{slug}}
               </a>
             </div>
-            <div class="generation-container">
+            <div v-if="user.relativeDepth" class="generation-container">
               <h5>Generation: {{user.relativeDepth}}</h5>
               <v-layout class="generation-badge-container" align-center row wrap>
                 <template v-for="parent in user.relativePathMembers">
@@ -290,6 +295,12 @@ export default {
     }
   },
   computed: {
+    birthday () {
+      return this.user.birthdate || this.user.member.birthdate
+    },
+    joinedOn () {
+      return this.user.joinedOn || (this.stats && this.stats.joinedOn)
+    },
     getAvatar () {
       return (
         (this.user && this.user.profileUrl) ||
