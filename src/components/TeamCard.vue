@@ -296,7 +296,11 @@ export default {
   },
   computed: {
     birthday () {
-      return this.user.birthdate || this.user.member.birthdate
+      let birthday = this.user.birthdate
+      if (this.user.member) {
+        birthday = this.user.member.birthdate
+      }
+      return birthday
     },
     joinedOn () {
       return this.user.joinedOn || (this.stats && this.stats.joinedOn)
