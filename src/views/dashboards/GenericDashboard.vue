@@ -154,7 +154,6 @@ export default {
         { text: 'Seller', value: 'seller', sortable: false },
         { text: 'Payout', value: 'payout', sortable: false }
       ],
-      daveSadness: null,
       memberCount: 0,
       team: [],
       generationCount: {},
