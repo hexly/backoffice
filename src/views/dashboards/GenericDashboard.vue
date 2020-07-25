@@ -154,6 +154,7 @@ export default {
         { text: 'Seller', value: 'seller', sortable: false },
         { text: 'Payout', value: 'payout', sortable: false }
       ],
+      daveSadness: null,
       memberCount: 0,
       team: [],
       generationCount: {},
@@ -316,7 +317,8 @@ export default {
       user: state => state.user,
       engineStats: state => state.comp.stats,
       engineStatsLoading: state => state.comp.engineStatsLoading,
-      openPeriod: state => state.comp.periods.open && state.comp.periods.open[0]
+      openPeriod: state => state.comp.periods.open && state.comp.periods.open[0],
+      selectedPeriod: state => state.comp.selectedPeriod
     }),
     features() {
       return this.$tenantInfo.features.dashboard
@@ -331,10 +333,13 @@ export default {
   apollo: {
     promos: {
       query: ENGINE_DASHBOARD_PROMOS,
+      deep: true,
       variables() {
+        const date = this.selectedPeriod ? this.selectedPeriod.open || null : null
         return {
           input: {
-            memberId: this.memberId
+            memberId: this.memberId,
+            date
           }
         }
       },
