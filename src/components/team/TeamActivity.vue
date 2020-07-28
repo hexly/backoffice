@@ -72,6 +72,10 @@
             <h6>{{$tenantInfo.statMapping.personalTotalPoints.title}}</h6>
             <div class="text-center">{{Math.floor(item.psv)}}</div>
           </v-col>
+          <v-col v-if="$tenantInfo.statMapping.personalTotalAmount" cols="6" class="bottom-border right-border grid-cell" :class="{'satisfied': item.next.stats.personalTotalAmount.satisfied}">
+            <h6>{{$tenantInfo.statMapping.personalTotalAmount.title}}</h6>
+            <div class="text-center">{{Math.floor(item.next.stats.personalTotalAmount.earned)}}</div>
+          </v-col>
           <v-col v-if="$tenantInfo.statMapping.groupPoints" cols="6" class="bottom-border grid-cell"  :class="{'satisfied': item.next.stats.groupPoints.satisfied}">
             <h6>{{$tenantInfo.statMapping.groupPoints.title}}</h6>
             <div class="text-center">{{Math.floor(item.gsv)}}</div>
@@ -198,11 +202,11 @@ export default {
     }
 
     if (this.$tenantInfo.statMapping.downlinePoints) {
-      sortByOptions.gsv = this.$tenantInfo.statMapping.downlinePoints.title
+      sortByOptions.dsv = this.$tenantInfo.statMapping.downlinePoints.title
     }
 
     if (this.$tenantInfo.statMapping.activeLeg) {
-      sortByOptions.gsv = this.$tenantInfo.statMapping.activeLeg.title
+      sortByOptions.legs = this.$tenantInfo.statMapping.activeLeg.title
     }
 
     return {
