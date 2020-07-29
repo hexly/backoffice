@@ -68,13 +68,13 @@
       </template>
       <template v-slot:item.stats="{ item }">
         <v-row class="the-grid">
-          <v-col v-if="$tenantInfo.statMapping.personalTotalPoints" cols="6" class="bottom-border right-border grid-cell" :class="{'satisfied': item.next.stats.personalTotalPoints.satisfied}">
-            <h6>{{$tenantInfo.statMapping.personalTotalPoints.title}}</h6>
-            <div class="text-center">{{Math.floor(item.psv)}}</div>
-          </v-col>
           <v-col v-if="$tenantInfo.statMapping.personalTotalAmount" cols="6" class="bottom-border right-border grid-cell" :class="{'satisfied': item.next.stats.personalTotalAmount.satisfied}">
             <h6>{{$tenantInfo.statMapping.personalTotalAmount.title}}</h6>
             <div class="text-center">{{Math.floor(item.next.stats.personalTotalAmount.earned)}}</div>
+          </v-col>
+          <v-col v-if="$tenantInfo.statMapping.personalTotalPoints" cols="6" class="bottom-border right-border grid-cell" :class="{'satisfied': item.next.stats.personalTotalPoints.satisfied}">
+            <h6>{{$tenantInfo.statMapping.personalTotalPoints.title}}</h6>
+            <div class="text-center">{{Math.floor(item.psv)}}</div>
           </v-col>
           <v-col v-if="$tenantInfo.statMapping.groupPoints" cols="6" class="bottom-border grid-cell"  :class="{'satisfied': item.next.stats.groupPoints.satisfied}">
             <h6>{{$tenantInfo.statMapping.groupPoints.title}}</h6>
