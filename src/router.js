@@ -17,6 +17,7 @@ import Impersonate from './views/Impersonate.vue'
 import Redirect from './views/Redirect.vue'
 import Zendesk from './zendesk/Zendesk.vue'
 import ZendeskRoot from './zendesk/root.vue'
+import Customers from './views/Customers.vue'
 
 Vue.use(Router)
 
@@ -144,6 +145,11 @@ export default new Router({
           component: () => {
             return import('./components/Newsletters.vue')
           }
+        },
+        {
+          path: 'customers',
+          name: 'customers',
+          component: Customers
         }
       ]
     },
