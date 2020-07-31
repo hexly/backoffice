@@ -8,9 +8,9 @@
               <v-toolbar-title>Customers</v-toolbar-title>
               <v-spacer/>
             </v-toolbar>
-            <v-card-text class="px-2">
+            <v-card-text class="px-2 customer-list">
               <v-text-field v-model="search" append-icon="mdi-magnify" label="Search"/>
-              <v-data-table :headers="customerHeaders" :items="customers" @click:row="onClick" :search="search">
+              <v-data-table single-select :headers="customerHeaders" item-key="customerName" :items="customers" @click:row="onClick" :search="search">
                 <template v-slot:item.customerName="{ item }">
                   {{item.customerName || 'Guest Customer'}}
                 </template>
@@ -28,7 +28,7 @@
             <v-toolbar-title>Customer Ordered Products</v-toolbar-title>
             <v-spacer/>
           </v-toolbar>
-          <v-data-table :headers="orderHeaders" no-data-text="Please Select A Customer" :items="orders">
+          <v-data-table item-key="id" :headers="orderHeaders" no-data-text="Please Select A Customer" :items="orders">
             <template v-slot:item.itemPrice="{ item }">
               <Currency :amount="item.itemPrice" :currency="item.currency"/>
             </template>
@@ -92,13 +92,17 @@ export default {
     }
   },
   methods: {
-    onClick(item, details) {
+    onClick(item, row) {
+      console.log(item, row)
+      row.select(true)
       this.customerName = item.customerName
-      this.search = ''
     },
-    backClick() {
-      this.customerName = ''
-      this.search = ''
+    isSelected(item) {
+      console.log(item)
+      if (item.customerName === this.customerName) {
+        return 'selected'
+      }
+      return ''
     }
   },
   computed: {
@@ -139,3 +143,9 @@ export default {
   }
 }
 </script>
+
+<style>
+  .customer-list tr {
+    cursor: pointer !important;
+  }
+</style>

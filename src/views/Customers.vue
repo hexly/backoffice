@@ -45,7 +45,6 @@ export default {
         client: 'federated'
       })
       this.orderData = results.data.purchaseSearchOrders
-      console.log(results.data.purchaseSearchOrders)
     }
   },
   async mounted() {
