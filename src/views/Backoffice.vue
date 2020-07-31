@@ -62,6 +62,14 @@
             <v-list-item-title>Integrations</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
+        <v-list-item v-if="$tenantInfo.features.customers" to="/customers">
+          <v-list-item-action>
+            <v-icon>people_outline</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>Customers</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
         <v-list-item v-if="$tenantInfo.features.newsletters" to="/newsletters">
           <v-list-item-action>
             <v-icon>today</v-icon>
@@ -253,6 +261,7 @@ export default {
     })
   },
   async mounted () {
+    console.log(this.user.principal)
     if (this.$tenantInfo.features.legal === true) {
       const { data } = await this.getAttributes({
         key: ['affiliate-agreement', 'entity-details'],

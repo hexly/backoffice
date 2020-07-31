@@ -262,6 +262,7 @@ const tenantOptions = {
         search: true,
         graph: true
       },
+      customers: true,
       social: true,
       payouts: true,
       generalDashboard: false,
@@ -367,6 +368,7 @@ const tenantOptions = {
         docs: false,
         ssn: false
       },
+      customers: true,
       social: false,
       payouts: true,
       generalDashboard: true,
