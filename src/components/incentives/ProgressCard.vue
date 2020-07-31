@@ -17,7 +17,7 @@
            </template>
           <template v-else-if="col.metadata.visualisation.type === 'circular'">
             <h4 v-if="col.title" v-html="col.title"></h4>
-              <v-tooltip >
+              <v-tooltip bottom>
                 <template v-slot:activator="{ on }">
                   <v-progress-circular
                     v-on="on"
