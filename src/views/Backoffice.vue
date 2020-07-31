@@ -62,9 +62,9 @@
             <v-list-item-title>Integrations</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
-        <v-list-item to="/customers">
+        <v-list-item v-if="$tenantInfo.features.customers" to="/customers">
           <v-list-item-action>
-            <v-icon>compare_arrows</v-icon>
+            <v-icon>people_outline</v-icon>
           </v-list-item-action>
           <v-list-item-content>
             <v-list-item-title>Customers</v-list-item-title>
