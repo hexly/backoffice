@@ -17,15 +17,21 @@
            </template>
           <template v-else-if="col.metadata.visualisation.type === 'circular'">
             <h4 v-if="col.title" v-html="col.title"></h4>
-            <v-progress-circular
-              :rotate="270"
-              :size="100"
-              :value="col.data.progress"
-              :width="15"
-              color="green lighten-3"
-            >
-              <div v-if="col.data.labels.progress">{{cleanProgress(col.data.labels.progress)}}</div>
-            </v-progress-circular>
+              <v-tooltip >
+                <template v-slot:activator="{ on }">
+                  <v-progress-circular
+                    v-on="on"
+                    :rotate="270"
+                    :size="100"
+                    :value="col.data.progress"
+                    :width="15"
+                    color="green lighten-3"
+                  >
+                    <div v-if="col.data.labels.progress">{{cleanProgress(col.data.labels.progress)}}</div>
+                  </v-progress-circular>
+                </template>
+                <span v-if="col.data.labels.progressTooltip" v-html="col.data.labels.progressTooltip.replace('\n', '<br>')"></span>
+              </v-tooltip>
             <h6 v-if="col.hint" v-html="col.hint"></h6>
           </template>
           <template v-else-if="col.metadata.visualisation.type === 'linear'">
