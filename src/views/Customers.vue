@@ -1,19 +1,14 @@
 <template>
-  <div class="profile">
-    <v-row wrap>
-      <v-col cols="12" md="6">
+  <div class="customers">
+    <v-row wrap class="px-2">
+      <v-col cols="12">
         <v-flex>
           <CustomerTable :orderData="orderData"/>
         </v-flex>
       </v-col>
-      <v-col cols="12" md="6">
+      <!-- <v-col cols="12">
         <RecentOrders :orderData="orderData"/>
-      </v-col>
-    </v-row>
-    <v-row>
-      <v-col cols="12" md="6">
-        <OrderTable :orderData="orderData"/>
-      </v-col>
+      </v-col> -->
     </v-row>
   </div>
 </template>
@@ -50,6 +45,7 @@ export default {
         client: 'federated'
       })
       this.orderData = results.data.purchaseSearchOrders
+      console.log(results.data.purchaseSearchOrders)
     }
   },
   async mounted() {

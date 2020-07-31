@@ -4,14 +4,15 @@ export const ORDERS_QUERY = gql`
 query orderQuery($input: PurchaseSearchOrderInput!) {
   purchaseSearchOrders(input: $input) {
     id
-    customerId
     total
     orderType
+    integrationOid
     customerName
     productName
     productType
-    openedOn
+    checkedOutOn
     metadata
+    itemPrice
   }
 }
 `
