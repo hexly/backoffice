@@ -209,6 +209,10 @@ export default {
       sortByOptions.legs = this.$tenantInfo.statMapping.activeLeg.title
     }
 
+    if (this.$tenantInfo.statMapping.personalTotalAmount) {
+      sortByOptions.psa = this.$tenantInfo.statMapping.personalTotalAmount.title
+    }
+
     return {
       GET: _.get,
       headers,
