@@ -262,7 +262,7 @@ export default {
             orderBy: [`${this.sortBy},${this.orderBy}`],
             qualified: this.showActive,
             psvGte: null,
-            levelsIn: this.filterBy.length ? this.filterBy : null,
+            levelsIn: _.get('filterBy', this, []),
             page: this.page,
             pageSize: this.pageSize,
             periodDate: this.selectedPeriod.open,
