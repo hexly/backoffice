@@ -288,8 +288,8 @@ const tenantOptions = {
   },
   1011: {
     id: 1011,
-    distributorLabel: 'Affiliate',
-    distributorsLabel: 'Affiliates',
+    distributorLabel: 'Representative',
+    distributorsLabel: 'Representatives',
     trends: {
       teamOverview: false
     },
@@ -298,7 +298,7 @@ const tenantOptions = {
         title: 'PV',
         description: 'Personal Volume'
       },
-      personalTotalPoints: {
+      personalCommissionableAmount: {
         title: 'CV',
         description: 'Commissionable Volume'
       },
