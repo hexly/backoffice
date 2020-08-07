@@ -298,7 +298,7 @@ const tenantOptions = {
         title: 'PV',
         description: 'Personal Volume'
       },
-      personalCommissionableAmount: {
+      personalCommissionablePoints: {
         title: 'CV',
         description: 'Commissionable Volume'
       },
