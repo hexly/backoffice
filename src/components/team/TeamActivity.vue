@@ -193,8 +193,15 @@ export default {
     }
 
     const sortByOptions = {
-      rank: 'Rank',
-      psv: this.$tenantInfo.statMapping.personalTotalPoints.title
+      rank: 'Rank'
+    }
+
+    if (this.$tenantInfo.statMapping.personalTotalAmount) {
+      sortByOptions.psa = this.$tenantInfo.statMapping.personalTotalAmount.title
+    }
+
+    if (this.$tenantInfo.statMapping.personalCommissionableAmount) {
+      sortByOptions.pv = this.$tenantInfo.statMapping.personalCommissionableAmount.title
     }
 
     if (this.$tenantInfo.statMapping.groupPoints) {
@@ -207,10 +214,6 @@ export default {
 
     if (this.$tenantInfo.statMapping.activeLeg) {
       sortByOptions.legs = this.$tenantInfo.statMapping.activeLeg.title
-    }
-
-    if (this.$tenantInfo.statMapping.personalTotalAmount) {
-      sortByOptions.psa = this.$tenantInfo.statMapping.personalTotalAmount.title
     }
 
     return {
