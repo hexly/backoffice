@@ -140,10 +140,10 @@ export default new Router({
           component: Integrations
         },
         {
-          path: 'newsletters',
-          name: 'newsletters',
+          path: 'files',
+          name: 'files',
           component: () => {
-            return import('./components/Newsletters.vue')
+            return import('./components/Files.vue')
           }
         },
         {
