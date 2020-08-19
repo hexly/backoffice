@@ -28,9 +28,9 @@ const tenantOptions = {
     features: {
       team: true,
       legal: true,
-      newsletters: false,
+      files: false,
       assetTags: {
-        newsletter: 'search:newsletter'
+        files: 'search:files'
       }
     }
   },
@@ -43,9 +43,9 @@ const tenantOptions = {
     features: {
       team: true,
       legal: true,
-      newsletters: false,
+      files: false,
       assetTags: {
-        newsletter: 'search:newsletter'
+        files: 'search:files'
       }
     },
     strings: {}
@@ -88,9 +88,9 @@ const tenantOptions = {
       sales: true,
       team: true,
       legal: true,
-      newsletters: false,
+      files: false,
       assetTags: {
-        newsletter: 'search:newsletter'
+        files: 'search:files'
       }
     }
   },
@@ -120,9 +120,9 @@ const tenantOptions = {
       sales: true,
       team: false,
       legal: false,
-      newsletters: false,
+      files: false,
       assetTags: {
-        newsletter: 'search:newsletter'
+        files: 'search:files'
       }
     }
   },
@@ -165,9 +165,9 @@ const tenantOptions = {
       sales: true,
       legal: true,
       payouts: true,
-      newsletters: false,
+      files: false,
       assetTags: {
-        newsletter: 'search:newsletter'
+        files: 'search:files'
       }
     }
   },
@@ -262,13 +262,13 @@ const tenantOptions = {
         search: true,
         graph: true
       },
-      customers: true,
+      customers: false,
       social: true,
       payouts: true,
       generalDashboard: false,
-      newsletters: true,
+      files: true,
       assetTags: {
-        newsletter: 'search:newsletter'
+        files: 'search:files'
       },
       dashboard: {
         payoutHistory: true,
@@ -372,9 +372,9 @@ const tenantOptions = {
       social: false,
       payouts: true,
       generalDashboard: true,
-      newsletters: false,
+      files: false,
       assetTags: {
-        newsletter: 'search:newsletter'
+        files: 'search:files'
       },
       dashboard: {
         annoucements: true,

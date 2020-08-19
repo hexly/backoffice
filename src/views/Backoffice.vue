@@ -70,12 +70,12 @@
             <v-list-item-title>Customers</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
-        <v-list-item v-if="$tenantInfo.features.newsletters" to="/newsletters">
+        <v-list-item v-if="$tenantInfo.features.files" to="/files">
           <v-list-item-action>
-            <v-icon>today</v-icon>
+            <v-icon>topic</v-icon>
           </v-list-item-action>
           <v-list-item-content>
-            <v-list-item-title>Newsletters</v-list-item-title>
+            <v-list-item-title>Files</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
       </v-list>
