@@ -67,7 +67,7 @@
         <v-chip :color="item.next.stats.lifetimeTotalPoints.satisfied ? '#4CAF50' : '#EF5350'" :class="{'white--text': true}">{{ Math.floor(item.cpsv) }}</v-chip>
       </template>
       <template v-slot:item.stats="{ item }">
-        <v-row class="the-grid">
+        <v-row class="the-grid" v-if="$tenantInfo.id == 1010">
           <v-col v-if="$tenantInfo.statMapping.personalTotalAmount" cols="6" class="bottom-border right-border grid-cell" :class="{'satisfied': item.next.stats.personalTotalAmount.satisfied}">
             <h6>{{$tenantInfo.statMapping.personalTotalAmount.title}}</h6>
             <div class="text-center">{{Math.floor(item.next.stats.personalTotalAmount.earned)}}</div>
@@ -87,6 +87,29 @@
           <v-col v-if="$tenantInfo.statMapping.activeLeg" cols="6" class="grid-cell"  :class="{'satisfied': item.next.stats.activeLeg.satisfied}">
             <h6>{{$tenantInfo.statMapping.activeLeg.title}}</h6>
             <div class="text-center">{{Math.floor(item.legs)}}</div>
+          </v-col>
+        </v-row>
+        <v-row class="the-grid" v-else-if="$tenantInfo.id == 1011">
+          <v-col v-if="$tenantInfo.statMapping.personalTotalAmount" cols="6" class="bottom-border right-border grid-cell" :class="{'satisfied': item.next.stats.personalTotalAmount.satisfied}">
+            <h6>{{$tenantInfo.statMapping.personalTotalAmount.title}}</h6>
+            <div class="text-center">{{Math.floor(item.next.stats.personalTotalAmount.earned)}}</div>
+          </v-col>
+          <v-col v-if="$tenantInfo.statMapping.personalCommissionablePoints" cols="6" class="bottom-border grid-cell" :class="{'satisfied': item.next.stats.personalCommissionablePoints.satisfied}">
+            <h6>{{$tenantInfo.statMapping.personalCommissionablePoints.title}}</h6>
+            <div class="text-center">{{Math.floor(item.next.stats.personalCommissionablePoints.earned)}}</div>
+          </v-col>
+          <v-col v-if="$tenantInfo.statMapping.groupPoints" cols="6" class="right-border grid-cell"  :class="{'satisfied': item.next.stats.groupPoints.satisfied}">
+            <h6>{{$tenantInfo.statMapping.groupPoints.title}}</h6>
+            <div class="text-center">{{Math.floor(item.gsv)}}</div>
+          </v-col>
+          <v-col v-if="$tenantInfo.statMapping.activeLeg" cols="6" class="grid-cell"  :class="{'satisfied': item.next.stats.activeLeg.satisfied}">
+            <h6>{{$tenantInfo.statMapping.activeLeg.title}}</h6>
+            <div class="text-center">{{Math.floor(item.legs)}}</div>
+          </v-col>
+        </v-row>
+        <v-row class="the-grid" v-else>
+          <v-col cols="12" class="grid-cell" >
+            <p> We're sorry, but it looks like there is a configuration error. </p>
           </v-col>
         </v-row>
       </template>
@@ -193,8 +216,23 @@ export default {
     }
 
     const sortByOptions = {
-      rank: 'Rank',
-      psv: this.$tenantInfo.statMapping.personalTotalPoints.title
+      rank: 'Rank'
+    }
+
+    if (this.$tenantInfo.statMapping.personalTotalPoints) {
+      sortByOptions.psv = this.$tenantInfo.statMapping.personalTotalPoints.title
+    }
+
+    if (this.$tenantInfo.statMapping.personalTotalAmount) {
+      sortByOptions.psa = this.$tenantInfo.statMapping.personalTotalAmount.title
+    }
+
+    if (this.$tenantInfo.statMapping.personalCommissionablePoints) {
+      sortByOptions.csv = this.$tenantInfo.statMapping.personalCommissionablePoints.title
+    }
+
+    if (this.$tenantInfo.statMapping.personalCommissionableTotal) {
+      sortByOptions.csa = this.$tenantInfo.statMapping.personalCommissionableTotal.title
     }
 
     if (this.$tenantInfo.statMapping.groupPoints) {
@@ -207,10 +245,6 @@ export default {
 
     if (this.$tenantInfo.statMapping.activeLeg) {
       sortByOptions.legs = this.$tenantInfo.statMapping.activeLeg.title
-    }
-
-    if (this.$tenantInfo.statMapping.personalTotalAmount) {
-      sortByOptions.psa = this.$tenantInfo.statMapping.personalTotalAmount.title
     }
 
     return {
@@ -262,7 +296,7 @@ export default {
             orderBy: [`${this.sortBy},${this.orderBy}`],
             qualified: this.showActive,
             psvGte: null,
-            levelsIn: this.filterBy.length ? this.filterBy : null,
+            levelsIn: _.get('filterBy', this, []),
             page: this.page,
             pageSize: this.pageSize,
             periodDate: this.selectedPeriod.open,
