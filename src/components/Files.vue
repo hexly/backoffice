@@ -90,7 +90,7 @@ export default {
 
       const result = await searchAssetsByKey('BetterAssetSearch', input)
       result.results.forEach(a => {
-        set(this.directory, a.name.split('/'), a)
+        set(this.directory, a.name.toLowerCase().split('/'), a)
       })
       this.current = this.directory
     },
