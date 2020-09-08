@@ -157,6 +157,7 @@ export const GET_PRINCIPAL = gql`
           statusId
           name
           key
+          integrationMetadata
         }
       }
     }

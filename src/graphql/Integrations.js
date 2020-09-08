@@ -29,3 +29,37 @@ export const MEMBER_INTEGRATION_COMMAND = gql`
     }
   }
 `
+
+export const UPSERT_MEMBER_TENANT_INTEGRATION = gql`
+  mutation upsertMemberTenantIntegration($input: UpsertMemberTenantIntegrationsInput!) {
+    upsertMemberTenantIntegrations(input: $input) {
+      id
+      tenantIntegrationId
+      integrationOid
+      integrationStatusId
+      metadata
+      priority
+      key
+      name
+    }
+  }
+`
+
+export const GET_MEMBER_TENANT_INTEGRATIONS = gql`
+  query principal {
+    getPrincipal {
+      member {
+        tenantIntegrations {
+          id
+          tenantIntegrationId
+          integrationOid
+          integrationStatusId
+          metadata
+          priority
+          name
+          key
+        }
+      }
+    }
+  }
+`

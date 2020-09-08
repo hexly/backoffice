@@ -25,6 +25,10 @@ export const GET_MEMBER_PAYOUTS = gql`
           issuedOn
           releasedOn
           acceptedOn
+          integration {
+            name
+            key
+          }
           deductions {
             id
             amount
