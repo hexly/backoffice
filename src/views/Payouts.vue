@@ -2,7 +2,7 @@
   <v-flex xs12>
     <div class="payouts">
       <v-card>
-        <PayoutsSelector @reload="loadSelectedIntegration" v-if="payoutIntegrations.length > 0" :integrations="payoutIntegrations"/>
+        <PayoutsSelector @reload="loadSelectedIntegration" v-if="payoutIntegrations.length > 1" :integrations="payoutIntegrations"/>
         <StripeBalanceInfo v-if="selectedIntegration === 'stripe_connect'"/>
         <PaypalBalanceInfo v-else-if="selectedIntegration === 'paypal_payouts'"/>
         <iPayoutsBalanceInfo v-else-if="selectedIntegration === 'i_payouts'"/>
