@@ -206,7 +206,8 @@ export default {
       GET: get,
       impersonationPrefix,
       drawer: null,
-      activeIntegrations: []
+      activeIntegrations: [],
+      payoutIntegrations: []
     }
   },
   props: {
@@ -261,7 +262,6 @@ export default {
     })
   },
   async mounted () {
-    console.log(this.user.principal)
     if (this.$tenantInfo.features.legal === true) {
       const { data } = await this.getAttributes({
         key: ['affiliate-agreement', 'entity-details'],

@@ -106,7 +106,7 @@ export default {
       return this.$moment(this.member.joinedOn).isAfter(this.$moment('2020-05-23', 'YYYY-MM-DD'))
     },
     hasIntegration() {
-      return this.integrations.find(i => i.key === 'i_payouts' && i.statusId === 200)
+      return this.integrations.find(i => i.key === 'i_payouts' && i.statusId === 200 && i.priority === 0)
     },
     ...mapGetters(['memberId', 'currencyCode', 'integrations', 'member'])
   }

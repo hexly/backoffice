@@ -1,6 +1,9 @@
 import { apolloHexlyClient } from '@/vue-apollo'
 import { LOGIN } from '@/graphql/iam.gql'
-import { CREATE_MEMBER_INTEGRATION } from '@/graphql/Integrations'
+import {
+  CREATE_MEMBER_INTEGRATION,
+  GET_MEMBER_TENANT_INTEGRATIONS
+} from '@/graphql/Integrations'
 import { ADJUST_TAGS, UPDATE_PROFILE } from '@/graphql/Member.gql'
 import _ from 'lodash'
 
@@ -10,7 +13,8 @@ export const UserActions = {
   SAVE_PROFILE: 'saveProfile',
   ADJUST_TAGS: 'adjustTags',
   CREATE_INTEGRATION: 'createIntegration',
-  REMOVE_INTEGRATION: 'removeIntegration'
+  REMOVE_INTEGRATION: 'removeIntegration',
+  RELOAD_INTEGRATIONS: 'reloadIntegrations'
 }
 
 export const UserMutations = {
@@ -21,6 +25,7 @@ export const UserMutations = {
   TOGGLE_IMPERSONATION: 'toggleImpersonation',
   SET_PROFILE: 'setProfilePic',
   ADD_INTEGRATION: 'addTenantIntegration',
+  SET_INTEGRATIONS: 'setTenantIntegration',
   REMOVE_INTEGRATION: 'removeTenantIntegration',
   SET_SLUG: 'user:setSlug',
   SET_TAGS: 'user:setTags',
@@ -93,6 +98,11 @@ export const UserStore = {
       principal.member.tenantIntegrations = [...arr, integration]
       state.principal = principal
     },
+    [UserMutations.SET_INTEGRATIONS]: (state, integrations) => {
+      const principal = _.cloneDeep(state.principal)
+      _.merge(principal, integrations)
+      state.principal = principal
+    },
     [UserMutations.REMOVE_INTEGRATION]: (state, integration) => {
       const index = state.principal.member.tenantIntegrations.findIndex(
         i => integration.id === i.id
@@ -161,6 +171,15 @@ export const UserStore = {
 
       commit(UserMutations.SET_TAGS, data.adjustTags.tags)
       return data.adjustTags.tags
+    },
+    async [UserActions.RELOAD_INTEGRATIONS]({ commit }, input) {
+      const { data } = await apolloHexlyClient.query({
+        query: GET_MEMBER_TENANT_INTEGRATIONS,
+        fetchPolicy: 'network-only'
+      })
+
+      commit(UserMutations.SET_INTEGRATIONS, data.getPrincipal)
+      return data.getPrincipal.member.tenantIntegrations
     },
     async [UserActions.CREATE_INTEGRATION](
       { commit },

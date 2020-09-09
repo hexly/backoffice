@@ -2,11 +2,10 @@
   <v-flex xs12>
     <div class="payouts">
       <v-card>
-        <v-card-title class="headline font-weight-regular white--text secondary">
-          Payouts
-        </v-card-title>
-        <StripeBalanceInfo/>
-        <iPayoutsBalanceInfo/>
+        <PayoutsSelector @reload="loadSelectedIntegration" v-if="payoutIntegrations.length > 0" :integrations="payoutIntegrations"/>
+        <StripeBalanceInfo v-if="selectedIntegration === 'stripe_connect'"/>
+        <PaypalBalanceInfo v-else-if="selectedIntegration === 'paypal_payouts'"/>
+        <iPayoutsBalanceInfo v-else-if="selectedIntegration === 'i_payouts'"/>
       </v-card>
       <v-responsive>
         <v-data-table
@@ -33,23 +32,9 @@
                 </v-tooltip>
               </td>
               <td>{{ $moment(item.issuedOn).format('lll') }}</td>
-              <td>{{ item.releasedOn ? $moment(item.releasedOn).format('lll') : '--' }}</td>
+              <!-- <td>{{ item.releasedOn ? $moment(item.releasedOn).format('lll') : '--' }}</td> -->
               <td>{{ item.note ? item.note : '--' }}</td>
-              <td>
-                <v-tooltip class="deduction-tooltip" v-if="item.deductions" left>
-                  <template v-slot:activator="{ on }">
-                    <Currency
-                      v-on="on"
-                      :amount="item.deductions.reduce((accumulator, curVal) => {
-                        const retVal = accumulator + (curVal.amount / 100)
-                        return retVal
-                      }, 0)" :currency="item.currency"
-                    />
-                  </template>
-                  <span>Total deductions. Click to see itemized deductions</span>
-                </v-tooltip>
-                <span v-else>--</span>
-              </td>
+              <td>{{ item.integration.name }}</td>
               <td v-if="item.deductions.length">
                 <v-icon @click="expanded = []" v-if="isExpanded">expand_less</v-icon>
                 <v-icon @click="expanded = [item]" v-else>expand_more</v-icon>
@@ -86,10 +71,12 @@
 </template>
 
 <script>
+import _ from 'lodash'
 import Currency from '@/components/Currency'
-import StripeBalanceInfo from '@/components/dashboard/StripeBalanceInfo'
-import iPayoutsBalanceInfo from '@/components/dashboard/iPayoutsBalanceInfo'
-import { MEMBER_INTEGRATION_COMMAND } from '@/graphql/Integrations'
+import StripeBalanceInfo from '@/components/payouts/StripeBalanceInfo'
+import iPayoutsBalanceInfo from '@/components/payouts/iPayoutsBalanceInfo'
+import PaypalBalanceInfo from '@/components/payouts/PaypalBalanceInfo'
+import PayoutsSelector from '@/components/PayoutsSelector'
 import { GET_MEMBER_PAYOUTS } from '@/graphql/Member.gql'
 import { Mutations } from '@/store'
 import { mapMutations, mapState, mapGetters } from 'vuex'
@@ -98,15 +85,16 @@ export default {
   components: {
     Currency,
     StripeBalanceInfo,
-    iPayoutsBalanceInfo
+    PaypalBalanceInfo,
+    iPayoutsBalanceInfo,
+    PayoutsSelector
   },
   mounted() {
-    if (this.stripeConnect) {
-      this.loadBalance()
-    }
+    this.loadSelectedIntegration()
   },
   data() {
     return {
+      selectedIntegration: null,
       transferDialog: false,
       transferingFunds: false,
       transferError: null,
@@ -116,9 +104,9 @@ export default {
         { text: 'Payout Total', value: 'amount' },
         { text: 'Status', value: 'status' },
         { text: 'Issued Date', value: 'issuedOn' },
-        { text: 'Released Date', value: 'releasedOn' },
+        // { text: 'Released Date', value: 'releasedOn' },
         { text: 'Notes', value: 'notes' },
-        { text: 'Deductions', value: 'deductions' },
+        { text: 'Provider', value: 'integration.name' },
         { text: '', value: 'data-table-expand' }
       ],
       feeEnumMap: {
@@ -138,7 +126,8 @@ export default {
         SUBMITTED: 'Payment has been sent to payout processor',
         PROCESSING: 'Processing payment',
         FAILED: 'This payment failed. Please contact support for more information.',
-        NEEDS_ATTENTION: 'This payment requires help from support. Please open a support ticket if you have questions.'
+        NEEDS_ATTENTION: 'This payment requires help from support. Please open a support ticket if you have questions.',
+        PENDING_REQUIREMENTS: 'You must be qualified this month to receive this payout'
       }
     }
   },
@@ -161,43 +150,31 @@ export default {
   },
   methods: {
     ...mapMutations([ Mutations.SET_LOADING ]),
-    startDateChanged(date) {
-      this.$refs.dialogStart.save(date)
-    },
-    endDateChanged(date) {
-      this.$refs.dialogEnd.save(date)
-    },
-    loadBalance() {
-      this.$apollo.mutate({
-        mutation: MEMBER_INTEGRATION_COMMAND,
-        variables: {
-          input: {
-            command: 'stripe_connect_balance',
-            tenantIntegrationId: this.stripeConnect.tenantIntegrationId,
-            data: {
-              accountOid: this.stripeConnect.integrationOid
-            }
-          }
-        },
-        update: (store, { data: { integrationCommand } }) => {
-          this.balance = integrationCommand.metadata
-        }
-      })
+    loadSelectedIntegration() {
+      let selectedIntegration = _.minBy(this.payoutMemberIntegrations, 'priority')
+      if (!selectedIntegration) {
+        selectedIntegration = _.minBy(this.payoutIntegrations, 'priority')
+      }
+      this.selectedIntegration = selectedIntegration.key
     }
   },
   computed: {
     ...mapState({
-      loading: state => state.loading,
-      stripeConnect: state => {
-        return state.user.principal.member.tenantIntegrations.find(i => i.key === 'stripe_connect')
-      }
+      loading: state => state.loading
     }),
-    ...mapGetters(['memberId']),
-    currentBalance() {
-      if (this.balance.instant_available && this.balance.instant_available[0]) {
-        return this.balance.instant_available[0]
-      }
-      return null
+    ...mapGetters(['memberId', 'integrations', 'tenantIntegrations']),
+    payoutIntegrations() {
+      return this.integrations.filter(i => {
+        return i.statusId === 200 &&
+                  i.integrationMetadata &&
+                  i.integrationMetadata.capabilities &&
+                  i.integrationMetadata.capabilities.indexOf('payouts') >= 0
+      })
+    },
+    payoutMemberIntegrations() {
+      return this.tenantIntegrations.filter(i => {
+        return _.find(this.payoutIntegrations, { key: i.key })
+      })
     }
   }
 }
