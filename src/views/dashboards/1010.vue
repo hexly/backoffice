@@ -1,5 +1,8 @@
 <template>
   <div class="full-wrapper dashboard">
+    <template v-if="banners">
+      <Banner v-for="banner in banners" :key="banner.key" :banner="banner"/>
+    </template>
     <Announcement />
     <v-row wrap>
       <v-col cols="12" md="6">
@@ -78,6 +81,7 @@ import Directory from '@/components/dashboard/Directory.vue'
 import DashCard from '@/components/DashboardCard.vue'
 import CompanyMap from '@/components/dashboard/CompanyMap.vue'
 import Announcement from '@/components/dashboard/Announcement.vue'
+import Banner from '@/components/dashboard/Banner.vue'
 import Badges from '@/components/Badges.vue'
 import RankRequirementsCard from '@/components/RankRequirementsCard.vue'
 import TeamOverview from '@/components/dashboard/TeamOverview.vue'
@@ -87,6 +91,7 @@ import {
   FRONTLINE_LEADERBOARD_BY_RANGE,
   COMPANY_FRONTLINE_LEADERBOARD_BY_RANGE
 } from '@/graphql/Leaderboard.js'
+import { ENGINE_DASHBOARD_BANNERS } from '@/graphql/CompStats.gql'
 import { GET_MEMBER_PAYOUTS } from '@/graphql/Member.gql'
 import {
   MEMBER_STATS_BY_DEPTH,
@@ -105,6 +110,7 @@ export default {
     Directory,
     CompanyMap,
     Announcement,
+    Banner,
     Badges,
     Social,
     RankRequirementsCard,
@@ -214,6 +220,22 @@ export default {
     }
   },
   apollo: {
+    banners: {
+      query: ENGINE_DASHBOARD_BANNERS,
+      deep: true,
+      variables() {
+        const date = this.selectedPeriod ? this.selectedPeriod.open || null : null
+        return {
+          input: {
+            memberId: this.memberId,
+            date
+          }
+        }
+      },
+      update(obj) {
+        return _.get(obj, 'banners.results', [])
+      }
+    },
     earnings: {
       query: GET_MEMBER_PAYOUTS,
       update({ getPrincipal }) {
