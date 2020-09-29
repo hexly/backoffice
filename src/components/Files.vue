@@ -6,7 +6,8 @@
       </v-btn>
       <v-toolbar-title> {{$tenantInfo.strings.files || 'Files'}} / {{path.join(' / ')}}</v-toolbar-title>
     </v-toolbar>
-     <v-subheader v-if="folder.folders.length > 0">Folders</v-subheader>
+    <v-progress-circular v-if="loading" class="ma-4" indeterminate :size="30" :width="3" color="grey"></v-progress-circular>
+    <v-subheader v-if="folder.folders.length > 0">Folders</v-subheader>
     <div id="files" class="d-flex flex-wrap justify-start align-content-start">
       <v-card v-for="name in folder.folders" :key="name" class="ma-4">
         <v-list-item @click="enterFolder(name)">
@@ -28,7 +29,7 @@
           </pdf>
         </template>
         <template v-else-if="file.categoryKey === 'image'">
-          <v-img :src="file.url" aspect-ratio="2.75"></v-img>
+          <v-img  height="388" :src="file.url"></v-img>
         </template>
         <template v-else>
           <v-img :src="file.thumbnailUrl" aspect-ratio="2.75"></v-img>
@@ -58,7 +59,8 @@ export default {
     return {
       directory: {},
       path: [],
-      current: []
+      current: [],
+      loading: false
     }
   },
   mounted() {
@@ -78,6 +80,7 @@ export default {
       }
     },
     async getFiles() {
+      this.loading = true
       const input = {
         tenantId: this.$tenantId,
         anyTags: this.$tenantInfo.features.assetTags.files,
@@ -93,6 +96,7 @@ export default {
         set(this.directory, a.name.toLowerCase().split('/'), a)
       })
       this.current = this.directory
+      this.loading = false
     },
     navigateToAsset(item) {
       window.open(item.url, '_blank')
