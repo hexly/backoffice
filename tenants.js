@@ -225,7 +225,8 @@ const tenantOptions = {
       }
     ],
     strings: {
-      stripeConnect: 'Everra Connect'
+      stripeConnect: 'Everra Connect',
+      files: 'Influencer Resources'
     },
     agreements: [
       {
