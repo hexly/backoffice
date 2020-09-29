@@ -30,7 +30,7 @@ export default {
       if (messages) {
         const { progress } = this
         let { numerator, denominator } = this.banner.results
-        numerator = 30
+        // numerator = 30
         const match = messages.find(msg => numerator >= msg.min && (msg.max === undefined || msg.max >= numerator))
         if (match) {
           let message = match.message
