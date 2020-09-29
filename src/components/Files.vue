@@ -4,7 +4,7 @@
       <v-btn v-if="path.length > 0" icon class="hidden-xs-only" @click="goBack">
         <v-icon>mdi-arrow-left</v-icon>
       </v-btn>
-      <v-toolbar-title> Root Folder / {{path.join(' / ')}}</v-toolbar-title>
+      <v-toolbar-title> {{$tenantInfo.strings.files || 'Files'}} / {{path.join(' / ')}}</v-toolbar-title>
     </v-toolbar>
      <v-subheader v-if="folder.folders.length > 0">Folders</v-subheader>
     <div id="files" class="d-flex flex-wrap justify-start align-content-start">
@@ -85,7 +85,7 @@ export default {
         includeThumbnails: false,
         includeSources: false,
         page: 1,
-        pageSize: 25
+        pageSize: 100
       }
 
       const result = await searchAssetsByKey('BetterAssetSearch', input)
