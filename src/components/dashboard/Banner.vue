@@ -9,9 +9,9 @@
         <div class="message" v-if="message" v-html="message"/>
       </v-progress-linear>
     </v-card-text>
-    <!-- <v-card-actions>
-      <small>Date?</small>
-    </v-card-actions> -->
+    <v-card-actions v-if="staged">
+      <small><strong>Test data being used:</strong> {{numerator}} members, {{denominator}} threshold, {{ progress }}% progress  </small>
+    </v-card-actions>
   </v-card>
 </template>
 
@@ -21,16 +21,25 @@ export default {
   props: {
     banner: Object
   },
+  data() {
+    return {
+      // staged: { numerator: 150, denominator: 1000.0 }
+    }
+  },
   computed: {
     progress() {
-      return this.banner.results.progress * 100
+      return this.staged ? Math.round((this.staged.numerator / this.staged.denominator) * 100) : (this.banner.results.progress * 100)
+    },
+    numerator() {
+      return this._.get(this, 'staged.numerator', this.banner.results.numerator)
+    },
+    denominator() {
+      return this._.get(this, 'staged.denominator', this.banner.results.denominator)
     },
     message() {
       const messages = this._.get(this, 'banner.metadata.messages.valueRanges')
       if (messages) {
-        const { progress } = this
-        let { numerator, denominator } = this.banner.results
-        // numerator = 30
+        let { progress, numerator, denominator } = this
         const match = messages.find(msg => numerator >= msg.min && (msg.max === undefined || msg.max >= numerator))
         if (match) {
           let message = match.message
