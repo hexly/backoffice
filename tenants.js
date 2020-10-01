@@ -246,7 +246,12 @@ const tenantOptions = {
         href: 'https://everra.go.customprintcenter.com/',
         name: 'ProShop',
         icon: 'business_center'
-      }
+      } // ,
+      // {
+      //   href: 'https://www.everra.com/product-category/swag/',
+      //   name: 'Swag Shop',
+      //   icon: 'shopping_basket'
+      // }
     ],
     features: {
       annoucements: true,

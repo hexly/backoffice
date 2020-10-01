@@ -71,14 +71,6 @@
         </v-tab-item>
         <v-tab-item>
           <div class="item-container-card">
-            <RankRequirementsCard :stats="engineStats" tabMode v-if="!$apolloData.loading" />
-            <v-flex v-else d-flex justify-center align-center class="text-center">
-              <v-progress-circular indeterminate :size="50" :width="5" color="primary"></v-progress-circular>
-            </v-flex>
-          </div>
-        </v-tab-item>
-        <v-tab-item>
-          <div class="item-container-card">
             <v-card v-if="!$apolloData.loading" flat>
               <v-layout justify-center row wrap class="text-center">
                 <v-flex xs3>
@@ -168,13 +160,8 @@ import { get } from 'lodash'
 
 import { TEAM_SIZE_BY_GENERATION } from '@/graphql/MemberStats.gql'
 import { AWARDS_BY_ID } from '@/graphql/Team.gql'
-import { ENGINE_STATS_QUERY } from '@/graphql/CompStats.gql'
-import RankRequirementsCard from '@/components/RankRequirementsCard'
 export default {
   name: 'TeamCard',
-  components: {
-    RankRequirementsCard
-  },
   data() {
     return {
       month: new Date().getMonth() + 1,
@@ -190,7 +177,6 @@ export default {
       engineStats: null,
       tabHeadings: [
         'Info',
-        'Rank',
         'Team',
         'Awards'
       ],
@@ -386,20 +372,6 @@ export default {
         const awards = get(data, 'members.nodes[0].awards')
         this.awards = awards
         return awards
-      }
-    },
-    engineStats: {
-      query: ENGINE_STATS_QUERY,
-      variables() {
-        return {
-          input: {
-            forDate: this.$moment().format('YYYY-MM-DD'),
-            membersIn: [this.id]
-          }
-        }
-      },
-      update({ engineStatsByMemberIds }) {
-        return engineStatsByMemberIds[0]
       }
     }
   }

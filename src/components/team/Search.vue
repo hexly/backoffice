@@ -212,5 +212,6 @@ export default {
   left: 0;
   background: rgba(0,0,0,0.4);
   z-index: 1000;
+  border: 10px solid purple;
 }
 </style>

@@ -1,6 +1,7 @@
 import _ from 'lodash'
 import moment from 'moment'
-import { apolloHexlyClient } from '@/vue-apollo'
+import { apolloHexlyClient, apolloFederatedClient } from '@/vue-apollo'
+import { getCompStats, parseData } from '@/graphql/comp.gql'
 
 import {
   ENGINE_STATS_QUERY,
@@ -50,18 +51,30 @@ export const CompStore = {
     }
   },
   actions: {
-    [CompActions.GET_STATS]: async ({ state, commit }, { input, transient }) => {
+    [CompActions.GET_STATS]: async ({ state, commit }, { input, version, transient }) => {
       commit(CompMutations.STATS_LOADING, true)
-      const { data: { engineStatsByMemberIds } } = await apolloHexlyClient.query({
-        query: ENGINE_STATS_QUERY,
-        fetchPolicy: 'network-only',
-        variables: { input }
-      })
-      if (!transient) {
-        commit(CompMutations.SET_STATS, engineStatsByMemberIds[0])
+      if (version === 2) {
+        const memberId = input.membersIn[0]
+        const { data } = await apolloFederatedClient.query(getCompStats(memberId, ['descendant']))
+        const newComp = parseData(data)
+        // GO AND GET NEW COMP INFO FROM THE FEDERATED GRAPHQL
+
+        const memberStats = newComp.members.find(s => ~~s.awardeeId === memberId)
+        commit(CompMutations.SET_STATS, memberStats)
+        commit(CompMutations.STATS_LOADING, false)
+        return newComp.members
+      } else {
+        const { data: { engineStatsByMemberIds } } = await apolloHexlyClient.query({
+          query: ENGINE_STATS_QUERY,
+          fetchPolicy: 'network-only',
+          variables: { input }
+        })
+        if (!transient) {
+          commit(CompMutations.SET_STATS, engineStatsByMemberIds[0])
+        }
+        commit(CompMutations.STATS_LOADING, false)
+        return engineStatsByMemberIds
       }
-      commit(CompMutations.STATS_LOADING, false)
-      return engineStatsByMemberIds
     },
     [CompActions.GET_PERIODS]: async ({ dispatch, commit, state, rootState }, input) => {
       const { data: { engineStatsPeriodsByMemberId } } = await apolloHexlyClient.query({
@@ -79,9 +92,10 @@ export const CompStore = {
             forDate: moment(currentPeriod.open, 'YYYY-MM-DD').subtract(1, 'day').format('YYYY-MM-DD'),
             membersIn: [rootState.user.principal.memberId]
           },
+          version: _.get(currentPeriod, 'metadata.version', 1),
           transient: true
         })
-        if (previous && previous.memberId) {
+        if (previous && (previous.memberId || previous.awardeeId)) {
           commit(CompMutations.SET_PREVIOUS_STATS, previous)
         }
       }
@@ -90,7 +104,10 @@ export const CompStore = {
     },
     [CompActions.SELECT_PERIOD]: async ({ dispatch, commit, rootState }, period) => {
       commit(CompMutations.SET_SELECTED_PERIOD, period)
-      await dispatch(CompActions.GET_STATS, { input: { forDate: period.open, membersIn: [rootState.user.principal.memberId] } })
+      await dispatch(CompActions.GET_STATS, {
+        input: { forDate: period.open, membersIn: [rootState.user.principal.memberId] },
+        version: _.get(period, 'metadata.version', 1)
+      })
     }
   },
   getters: {
