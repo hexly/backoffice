@@ -82,6 +82,7 @@ import * as gql from '@/graphql/comp.gql.js'
 import CompAwardRow from '@/components/comp/CompAwardRow'
 import CompItemRow from '@/components/comp/CompItemRow'
 import CompPeriodSummaryRow from '@/components/comp/CompPeriodSummaryRow'
+import { mapGetters } from 'vuex'
 
 export default {
   components: {
@@ -160,20 +161,20 @@ export default {
     memberRow() {
       return this._.chain(this)
         .get('data.members')
-        .filter(e => e.awardeeId === 82988)
+        .filter(e => e.awardeeId === this.memberId)
         .first()
         .value()
-    }
+    },
+    ...mapGetters(['memberId'])
   },
   apollo: {
     data: {
       query: gql.TEST_QUERY,
       variables () {
         return {
-          dummy: {
+          payload: {
             input: {
-              memberId: 82988,
-              runId: 9
+              memberId: this.memberId
               // rowTypeIn: ['level']
             }
           }
@@ -185,7 +186,7 @@ export default {
       update (res) {
         let idx = 0
         const data = this._.chain(res)
-          .get('comp.dummy.data.slice')
+          .get('comp.previewRun.data.slice')
           .transform((map, obj, key) => {
             const rl = obj.relativeLevel
             const token = rl || 'root'

@@ -2,9 +2,9 @@ import gql from 'graphql-tag'
 import _ from 'lodash'
 
 export const TEST_QUERY = gql`
-query Foo1($dummy: CompRunDataInput) {
+query Foo1($payload: CompRunDataInput) {
   comp {
-    dummy(input: $dummy){
+    previewRun(input: $payload){
       key
       data
     }
@@ -61,10 +61,9 @@ export const BINDER = {
 export const getCompStats = (memberId, types) => ({
   query: TEST_QUERY,
   variables: {
-    dummy: {
+    payload: {
       input: {
         memberId,
-        runId: 11,
         rowTypeIn: types
       }
     }
@@ -75,7 +74,7 @@ export const getCompStats = (memberId, types) => ({
 export const parseData = (res) => {
   let idx = 0
   const data = _.chain(res)
-    .get('comp.dummy.data.slice')
+    .get('comp.previewRun.data.slice')
     .transform((map, obj, key) => {
       const rl = obj.relativeLevel
       const token = rl || 'root'
@@ -96,6 +95,6 @@ export const parseData = (res) => {
       }
     }, { levels: {}, members: [] })
     .value()
-  console.log(data)
+
   return data
 }

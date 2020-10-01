@@ -1,6 +1,6 @@
 import _ from 'lodash'
 import moment from 'moment'
-import { apolloHexlyClient } from '@/vue-apollo'
+import { apolloHexlyClient, apolloFederatedClient } from '@/vue-apollo'
 import { getCompStats, parseData } from '@/graphql/comp.gql'
 
 import {
@@ -54,12 +54,15 @@ export const CompStore = {
     [CompActions.GET_STATS]: async ({ state, commit }, { input, version, transient }) => {
       commit(CompMutations.STATS_LOADING, true)
       if (version === 2) {
-        const { data } = await apolloHexlyClient.query(getCompStats(input.membersIn[0], ['levels']))
+        const memberId = input.membersIn[0]
+        const { data } = await apolloFederatedClient.query(getCompStats(memberId, ['descendant']))
         const newComp = parseData(data)
         // GO AND GET NEW COMP INFO FROM THE FEDERATED GRAPHQL
-        commit(CompMutations.SET_STATS, newComp)
+
+        const memberStats = newComp.members.find(s => ~~s.awardeeId === memberId)
+        commit(CompMutations.SET_STATS, memberStats)
         commit(CompMutations.STATS_LOADING, false)
-        return [newComp]
+        return newComp.members
       } else {
         const { data: { engineStatsByMemberIds } } = await apolloHexlyClient.query({
           query: ENGINE_STATS_QUERY,
@@ -92,7 +95,7 @@ export const CompStore = {
           version: _.get(currentPeriod, 'metadata.version', 1),
           transient: true
         })
-        if (previous && previous.memberId) {
+        if (previous && (previous.memberId || previous.awardeeId)) {
           commit(CompMutations.SET_PREVIOUS_STATS, previous)
         }
       }

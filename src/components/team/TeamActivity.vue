@@ -321,7 +321,7 @@ export default {
         personal_stat_downline: 'DSV',
         personal_stat_group: 'GSV',
         personal_stat_personal: 'PSV',
-        career_stat_undefined: 'DSV',
+        career_stat_undefined: 'CPSV',
         adjusted_downline_volume_downline: 'ADSV'
       }
     }

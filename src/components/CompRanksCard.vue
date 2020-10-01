@@ -47,14 +47,37 @@
               <div class="caption grey--text darken-1"> Current Rank </div>
             </v-col>
             <v-spacer></v-spacer>
-            <!-- <v-col class="text-right pa-1" v-if="nextRank">
+            <v-col class="text-right pa-1" v-if="nextRank">
               <div class="title">{{nextRank}}</div>
               <div class="caption grey--text darken-1"> Next Rank </div>
-            </v-col> -->
+            </v-col>
           </v-row>
 
-          <template class="stats-container pa-2" v-if="current">
-            New Comp Stuff
+          <template class="stats-container px-2 py-4" v-if="stats">
+            <v-row class="py-3" :class="tabMode ? 'rank-data-row' : null" justify="space-between" wrap v-for="(stat, i) in stats.metadata.requirements" :key="i">
+              <v-col class="pa-1">
+                <div class="title">
+                  {{statsMapping[`${stat.type}_${stat.metric}`]}}
+                  <v-icon color="green" v-if="stat.achieved">check_circle</v-icon>
+                </div>
+              </v-col>
+              <v-spacer></v-spacer>
+              <v-col class="pa-1 text-right">
+                <div class="title">{{Math.floor(stat.earned)}}</div>
+                <div v-if="stat.achieved && parseInt(stat.earned)" class="caption grey--text darken-1">
+                  <span v-if="!tabMode">{{Math.round(stat.earned)}} of {{Math.round(stat.required)}}</span>
+                </div>
+                <template v-if="stat.achieved">
+                  <div class="caption grey--text darken-1"> 100% </div>
+                </template>
+                <template v-else>
+                  <div class="caption grey--text darken-1"> 0% </div>
+                </template>
+              </v-col>
+              <v-col cols="12" class="pa-1">
+                <v-progress-linear :class="tabMode ? 'progress-bar' : null" :color="'success'" :height="tabMode ? 2 : 5" :value="Math.round(stat.earned/stat.required*100)"></v-progress-linear>
+              </v-col>
+            </v-row>
           </template>
         </template>
       </v-card-text>
@@ -89,7 +112,7 @@ import { mapState } from 'vuex'
 import PeriodSwitcher from '@/components/PeriodSwitcher.vue'
 import PeriodPayouts from '@/components/PeriodPayouts.vue'
 export default {
-  name: 'RankRequirementsCard',
+  name: 'CompRanksCard',
   components: {
     PeriodSwitcher,
     PeriodPayouts
@@ -115,35 +138,22 @@ export default {
       year: ~~this.$moment().format('Y'),
       month: ~~this.$moment().format('M'),
       lastRefreshed: null,
-      statMapping: this.$tenantInfo.statMapping
+      statsMapping: {
+        personal_stat_downline: 'DSV',
+        personal_stat_group: 'GSV',
+        personal_stat_personal: 'PSV',
+        career_stat_undefined: 'CPSV',
+        adjusted_downline_volume_downline: 'ADSV'
+      }
     }
   },
   methods: {
     parseStats(stats) {
-      const reqs = stats.ranking.earnedRanks.reduce((obj, r) => {
-        console.log(r.name, obj)
-        r.requirements.forEach(req => {
-          obj[req.type] = req
-        })
-        return obj
-      }, {})
-
-      // now add the ones we missed / hit for the next rank
-      stats.ranking.missedRanks[0].requirements.forEach(req => {
-        reqs[req.type] = req
-      })
-
-      console.log(reqs)
-      this.currentRank = stats.rank
-      // this.nextRank = this._.get(next, 'metadata.name', `Rank ${next.rank}`)
-      // this.current = current.metrics.reduce((carry, stat) => {
-      //   carry[stat.prop] = stat
-      //   return carry
-      // }, {})
-      // this.next = next.metrics.reduce((carry, stat) => {
-      //   carry[stat.prop] = stat
-      //   return carry
-      // }, {})
+      if (stats && stats.metadata) {
+        console.log(stats)
+        this.currentRank = stats.metadata.ranking.name
+        this.nextRank = stats.metadata.nextRanking.name
+      }
     },
     showBanner() {
       const { open, status } = this.selectedPeriod || {}
@@ -167,9 +177,7 @@ export default {
     }
   },
   mounted() {
-    if (this.stats) {
-      this.parseStats(this.stats)
-    }
+    this.parseStats(this.stats)
   },
   computed: {
     showStatsMaintenance() {
@@ -183,9 +191,7 @@ export default {
   },
   watch: {
     stats(newVal) {
-      if (newVal && newVal.current) {
-        this.parseStats(newVal)
-      }
+      this.parseStats(newVal)
     }
   }
 }
