@@ -6,10 +6,24 @@
         <v-icon  @click="$emit('expand')" v-else>expand_more</v-icon>
       </template>
       <template v-if="header.value == 'awardeeId'">
-        {{ _.get(memberRow, `_level.${header.value}.totalPoints`, _.get(memberRow, `_level.${header.value}`)) }}{{ rank.name }}
+        <v-avatar v-if="awardee.profileAsset">
+          <img
+            :src="awardee.profileAsset"
+            alt="awardee.name"
+          >
+        </v-avatar>
+        {{ awardee.id }} <br>
+        {{ awardee.name }} <br>
+        {{ awardee.email }} <br>
+        {{ awardee.market }} <br>
       </template>
       <template v-if="header.value == 'details'">
         {{ rank.name }}
+
+        <div v-for="req in requirements" :key="`${req.type}_${req.metric || ''}`">
+          {{req.achieved}} {{ `${req.type}_${req.metric || ''}` }}
+        </div>
+
       </template>
       <template v-else-if="memberRow">
         {{ _.get(memberRow, `_level.${header.value}.totalPoints`, _.get(memberRow, `_level.${header.value}`)) }}
@@ -53,6 +67,17 @@ export default {
         rank: -1,
         name: 'Not Available'
       })
+    },
+    requirements() {
+      return this._.chain(this.memberRow)
+        .get('metadata.requirements', [])
+        .value()
+    },
+    awardee() {
+      return this._.chain(this)
+        .get('memberRow.metadata', {})
+        .pick('name', 'email', 'mrn', 'market', 'profileAsset')
+        .value()
     },
     upline() {
       return this._.chain(this)

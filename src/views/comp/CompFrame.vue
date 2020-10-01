@@ -173,7 +173,7 @@ export default {
           dummy: {
             input: {
               memberId: 82988,
-              runId: 4
+              runId: 15
               // rowTypeIn: ['level']
             }
           }
