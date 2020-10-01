@@ -21,7 +21,7 @@
         {{ rank.name }}
 
         <div v-for="req in requirements" :key="`${req.type}_${req.metric || ''}`">
-          {{req.achieved}} {{ `${req.type}_${req.metric || ''}` }}
+          {{req.achieved}} {{ `${req.type}_${req.metric || ''}` }}!
         </div>
 
       </template>
