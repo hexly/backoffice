@@ -47,18 +47,19 @@
                 </td>
               </template>
               <template v-slot:body.prepend="props" v-if="data && data.levels && data.levels.root">
-                <CompPeriodSummaryRow :data="data" :headers="headers"/>
+                <CompPeriodSummaryRow :data="data" :row="memberRow" :headers="headers"/>
               </template>
 
               <template v-slot:item="{ headers, item }">
                 <CompItemRow
                   :headers="headers"
                   :item="item"
-                  :expanded="expanded"
+                  :members="data.members"
+                  :expanded="expanded.find(e => e === item._id) >= 0"
                   @expand="() => expanded.push(item._id)"
                   @close="() => removeItem(item)"
                   />
-                <template v-if="expanded.find(e => e === item._id)">
+                <template v-if="expanded.find(e => e === item._id) >= 0">
                   <CompAwardRow
                     :headers="headers"
                     :award="award"
@@ -155,6 +156,15 @@ export default {
       return value
     }
   },
+  computed: {
+    memberRow() {
+      return this._.chain(this)
+        .get('data.members')
+        .filter(e => e.awardeeId === 82988)
+        .first()
+        .value()
+    }
+  },
   apollo: {
     data: {
       query: gql.TEST_QUERY,
@@ -163,7 +173,7 @@ export default {
           dummy: {
             input: {
               memberId: 82988,
-              runId: 26
+              runId: 4
               // rowTypeIn: ['level']
             }
           }
@@ -178,14 +188,15 @@ export default {
           .get('comp.dummy.data.slice')
           .transform((map, obj, key) => {
             const rl = obj.relativeLevel
+            const token = rl || 'root'
             switch (obj.type) {
             case 'level':
-              map.levels[`${rl || 'root'}`] = obj
+              map.levels[`${token}`] = obj
               break
 
             case 'descendant':
               obj._id = idx++
-              obj._level = map.levels[`${rl}`]
+              obj._level = map.levels[`${token}`]
               map.members.push(obj)
               break
 

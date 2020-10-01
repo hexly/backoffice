@@ -2,6 +2,11 @@
   <tr class="sale-row">
     <td>
       {{ award.details }}
+      <br/>
+      {{ award.awardedDate }}
+    </td>
+
+    <td>
       <div v-if="billing">
         {{ billing.firstName }}
         {{ billing.lastName}}
@@ -10,11 +15,6 @@
       <div v-else>
         No Customer Information Available ({{ customerOid }})
       </div>
-      {{ award.awardedDate }}
-    </td>
-
-    <td>
-
     </td>
 
     <td class="outter-hover" v-for="sc in statColumns" :key="sc.metric">
@@ -120,7 +120,7 @@ export default {
           const modifier = this._.get(d, [decisioningMetric, decisioningModifier])
 
           const codex = MAPPING.reasons[code]
-          console.log(codex)
+          console.log(this, codex)
 
           return {
             label,

@@ -4,13 +4,13 @@
       Period Summary
     </td>
     <td>
-      You got a rank!
+      {{ _.get(row, 'ranking.name', 'No Rank Information Available')}}
     </td>
     <td v-for="(header) in headers.filter( (_,idx) => idx > 2)" :key="header.value">
       <template v-if="header.value == 'actions'">
       </template>
       <template v-else>
-        {{ _.get(data.levels.root, `${header.value}.totalPoints`, _.get(data.levels.root, header.value)) }}
+        {{ _.get(row, `${header.value}.totalPoints`, _.get(row.stats, header.value)) }}
       </template>
     </td>
   </tr>
@@ -20,7 +20,8 @@
 export default {
   props: {
     headers: Array,
-    data: Object
+    data: Object,
+    row: Object
   }
 }
 </script>
