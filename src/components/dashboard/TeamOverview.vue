@@ -51,16 +51,36 @@
                   <strong>Circle Of Influence</strong>
                 </v-col>
                 <v-col class="text-center">
-                  <strong>{{stats.downlineCount && stats.downlineCount.total}}</strong>
+                  <strong v-if="selectedPeriod.metadata && selectedPeriod.metadata.version === 2">{{stats.metadata.counts.downline}}</strong>
+                  <strong v-else>{{stats.downlineCount && stats.downlineCount.total}}</strong>
                 </v-col>
                 <v-col class="text-center">
                   <div>
-                    <strong>{{stats.downlineCount && stats.downlineCount.qualified}}</strong>
+                    <strong v-if="selectedPeriod.metadata && selectedPeriod.metadata.version === 2">{{stats.metadata.counts.qualified}}</strong>
+                    <strong v-else>{{stats.downlineCount && stats.downlineCount.qualified}}</strong>
                   </div>
                   <Trend v-if="showTrend" :previous="previous.downlineCount.qualified" :current="current.downlineCount.qualified"/>
                 </v-col>
               </v-row>
             </v-timeline-item>
+            <template v-if="selectedPeriod.metadata && selectedPeriod.metadata.version === 2">
+              <v-timeline-item color="grey" small v-for="value in stats.metadata.counts.levels" :key="value.level" class="pb-1">
+                <v-row class="pt-1">
+                  <v-col class="pa-1">
+                    <strong>Level {{value.level}}</strong>
+                  </v-col>
+                  <v-col class="text-center">
+                    <strong>{{value.memberCount}}</strong>
+                  </v-col>
+                  <v-col class="text-center">
+                    <div>
+                      <strong>{{value.qualifiedCount}}</strong>
+                    </div>
+                  </v-col>
+                </v-row>
+              </v-timeline-item>
+            </template>
+            <template v-else>
             <v-timeline-item color="grey" small v-for="(value, key) in stats.levelCounts" :key="key" class="pb-1">
               <v-row class="pt-1">
                 <v-col class="pa-1">
@@ -77,6 +97,7 @@
                 </v-col>
               </v-row>
             </v-timeline-item>
+            </template>
           </v-timeline>
         </template>
         <template v-else>
@@ -102,6 +123,11 @@ export default {
     total: Number,
     loading: Boolean
   },
+  data() {
+    return {
+      info: {}
+    }
+  },
   methods: {
     getPrevious(key) {
       if (this.previous.levelCounts[key]) {
@@ -121,7 +147,8 @@ export default {
     },
     ...mapState({
       current: state => state.comp.currentPeriod,
-      previous: state => state.comp.previousPeriod
+      previous: state => state.comp.previousPeriod,
+      selectedPeriod: state => state.comp.selectedPeriod
     }),
     ...mapGetters(['member', 'isSelectedCurrent'])
   }

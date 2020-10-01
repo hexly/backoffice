@@ -19,6 +19,8 @@ import Zendesk from './zendesk/Zendesk.vue'
 import ZendeskRoot from './zendesk/root.vue'
 import Customers from './views/Customers.vue'
 
+import CompFrame from './views/comp/CompFrame'
+
 Vue.use(Router)
 
 export default new Router({
@@ -67,6 +69,22 @@ export default new Router({
           component: ZendeskRoot
         }
       ]
+    },
+    {
+      path: '/comp/',
+      component: CompFrame
+      // beforeEnter: (from, __, next) => {
+      //   return !store.state.user.jwt
+      //     ? next('/login?returnTo=' + encodeURI(from.fullPath))
+      //     : next()
+      // },
+      // children: [
+      //   {
+      //     path: '',
+      //     name: 'zendesk',
+      //     component: ZendeskRoot
+      //   }
+      // ]
     },
     {
       path: '/',

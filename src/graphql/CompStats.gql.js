@@ -46,6 +46,7 @@ export const ENGINE_STATS_PERIODS_QUERY = gql`
       status
       hasMaterializedStats
       hasPayroll
+      metadata
     }
   }
 `
@@ -185,6 +186,24 @@ export const ENGINE_DASHBOARD_PROMOS = gql`
 query engineStatsMemberPromotionStatus($input: EngineStatsMemberPromotionStatusInput!){
   engineStatsMemberPromotionStatus(input: $input){
     metadata
+  }
+}
+`
+
+export const ENGINE_DASHBOARD_BANNERS = gql`
+query banners($input: EngineStatsMemberBannersInput!){
+  banners: engineStatsMemberBanners(input: $input){
+    results {
+      id
+      name
+      key
+      tenantIntegrationId
+      description
+      metadata
+      startDate
+      endDate
+      results
+    }
   }
 }
 `
