@@ -189,3 +189,21 @@ query engineStatsMemberPromotionStatus($input: EngineStatsMemberPromotionStatusI
   }
 }
 `
+
+export const ENGINE_DASHBOARD_BANNERS = gql`
+query banners($input: EngineStatsMemberBannersInput!){
+  banners: engineStatsMemberBanners(input: $input){
+    results {
+      id
+      name
+      key
+      tenantIntegrationId
+      description
+      metadata
+      startDate
+      endDate
+      results
+    }
+  }
+}
+`
