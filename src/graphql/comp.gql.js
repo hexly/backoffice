@@ -1,9 +1,9 @@
 import gql from 'graphql-tag'
 
 export const TEST_QUERY = gql`
-query Foo1($dummy: CompRunDataInput) {
+query Foo1($payload: CompRunDataInput) {
   comp {
-    dummy(input: $dummy){
+    previewRun(input: $payload){
       key
       data
     }

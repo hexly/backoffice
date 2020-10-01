@@ -170,10 +170,10 @@ export default {
       query: gql.TEST_QUERY,
       variables () {
         return {
-          dummy: {
+          payload: {
             input: {
               memberId: 82988,
-              runId: 18
+              runId: 2
               // rowTypeIn: ['level']
             }
           }
@@ -185,7 +185,7 @@ export default {
       update (res) {
         let idx = 0
         const data = this._.chain(res)
-          .get('comp.dummy.data.slice')
+          .get('comp.previewRun.data.slice')
           .transform((map, obj, key) => {
             const rl = obj.relativeLevel
             const token = rl || 'root'
