@@ -1,0 +1,226 @@
+<template>
+  <v-card id="rank-card" width="100%" :class="tabMode ? 'elevation-0 item-container-card' : null">
+    <v-toolbar v-if="!tabMode" color="secondary" dark>
+      <v-toolbar-title>Rank Requirements</v-toolbar-title>
+      <v-spacer></v-spacer>
+      <PeriodSwitcher v-if="!loading"></PeriodSwitcher>
+      <template v-if="$tenantInfo.features.dashboard && $tenantInfo.features.dashboard.payoutHistory">
+        <v-btn v-if="!showPayouts" icon small @click="showPayouts = !showPayouts">
+          <v-icon>mdi-currency-usd</v-icon>
+        </v-btn>
+        <v-btn icon small v-else @click="showPayouts = !showPayouts">
+          <v-icon>mdi-chart-gantt</v-icon>
+        </v-btn>
+      </template>
+    </v-toolbar>
+    <template v-if="showStatsMaintenance">
+      <v-card-text>
+        <v-alert
+          class="inner-alert"
+          icon="mdi-calendar-check"
+          text
+          dense
+          type="info">
+          Our system is currently undergoing maintenance. We will be back up shortly
+        </v-alert>
+      </v-card-text>
+    </template>
+    <template v-else>
+      <v-card-text v-if="stats && Object.keys(stats).length && !statsDisabled && !loading">
+        <v-alert
+          class="inner-alert"
+          :value="selectedPeriod && showBanner()"
+          icon="mdi-calendar-check"
+          text
+          dense
+          type="info">
+          {{bannerMessage}}
+        </v-alert>
+        <template v-if="showPayouts">
+          <!-- <PeriodPayouts :payouts="stats.payouts" /> -->
+        </template>
+        <template v-else>
+          <v-row justify-space-between :class="tabMode ? 'rank-row' : ''" class="pa-1">
+            <v-col class="pa-0">
+              <div v-if="!currentRank" class="title">Unranked</div>
+              <div v-else class="title">{{currentRank}}</div>
+              <div class="caption grey--text darken-1"> Current Rank </div>
+            </v-col>
+            <v-spacer></v-spacer>
+            <!-- <v-col class="text-right pa-1" v-if="nextRank">
+              <div class="title">{{nextRank}}</div>
+              <div class="caption grey--text darken-1"> Next Rank </div>
+            </v-col> -->
+          </v-row>
+
+          <template class="stats-container pa-2" v-if="current">
+            New Comp Stuff
+          </template>
+        </template>
+      </v-card-text>
+      <v-card-text v-else-if="!statsDisabled && !loading" class="pa-3">
+        <v-layout row justify-space-between :class="tabMode ? null : 'pb-4'">
+          <v-flex px-3>
+            <div class="title text-center">No Rank Data Found</div>
+          </v-flex>
+        </v-layout>
+      </v-card-text>
+      <v-card-text v-else-if="statsDisabled && !loading" class="pa-3">
+        <v-layout row justify-space-between pb-4>
+          <v-flex px-3>
+            <div class="title text-center">Realtime Stats Temporarily Unavailable</div>
+          </v-flex>
+        </v-layout>
+      </v-card-text>
+      <v-card-text v-else-if="loading" class="pa-3">
+        <v-layout row justify-space-between pb-4>
+          <v-flex id="loading-container" px-3>
+            <v-progress-circular indeterminate />
+          </v-flex>
+        </v-layout>
+      </v-card-text>
+    </template>
+  </v-card>
+</template>
+
+<script>
+import * as moment from 'moment'
+import { mapState } from 'vuex'
+import PeriodSwitcher from '@/components/PeriodSwitcher.vue'
+import PeriodPayouts from '@/components/PeriodPayouts.vue'
+export default {
+  name: 'RankRequirementsCard',
+  components: {
+    PeriodSwitcher,
+    PeriodPayouts
+  },
+  props: {
+    stats: Object,
+    statsDisabled: Boolean,
+    tabMode: Boolean,
+    loading: Boolean
+  },
+  data() {
+    return {
+      showPayouts: false,
+      bannerMessage: null,
+      rank: null,
+      current: null,
+      next: null,
+      nextRank: null,
+      currentRank: null,
+      nextRankReqs: {},
+      nextRankSatisfied: {},
+      currentProgress: {},
+      year: ~~this.$moment().format('Y'),
+      month: ~~this.$moment().format('M'),
+      lastRefreshed: null,
+      statMapping: this.$tenantInfo.statMapping
+    }
+  },
+  methods: {
+    parseStats(stats) {
+      const reqs = stats.ranking.earnedRanks.reduce((obj, r) => {
+        console.log(r.name, obj)
+        r.requirements.forEach(req => {
+          obj[req.type] = req
+        })
+        return obj
+      }, {})
+
+      // now add the ones we missed / hit for the next rank
+      stats.ranking.missedRanks[0].requirements.forEach(req => {
+        reqs[req.type] = req
+      })
+
+      console.log(reqs)
+      this.currentRank = stats.rank
+      // this.nextRank = this._.get(next, 'metadata.name', `Rank ${next.rank}`)
+      // this.current = current.metrics.reduce((carry, stat) => {
+      //   carry[stat.prop] = stat
+      //   return carry
+      // }, {})
+      // this.next = next.metrics.reduce((carry, stat) => {
+      //   carry[stat.prop] = stat
+      //   return carry
+      // }, {})
+    },
+    showBanner() {
+      const { open, status } = this.selectedPeriod || {}
+      const days = moment().diff(moment(open), 'days')
+      if (this.tabMode) {
+        return false
+      } else if (status === 'open' &&
+          // this.periods.under_review &&
+          // this.periods.under_review.length) {
+          days <= 5) {
+        this.bannerMessage = `Hey There, you're looking at requirements for a new month. To check previous months select the three dot icon and choose a past month.`
+        return true
+      } else if (status === 'under_review') {
+        this.bannerMessage = `This period is still under review.`
+        return true
+      } else if (status === 'closed') {
+        this.bannerMessage = `You are currently viewing a past period. This period is closed`
+        return true
+      }
+      return false
+    }
+  },
+  mounted() {
+    if (this.stats) {
+      this.parseStats(this.stats)
+    }
+  },
+  computed: {
+    showStatsMaintenance() {
+      // all env vars come in as strings! yay!
+      return process.env.VUE_APP_STATS_MAINTENANCE === 'true'
+    },
+    ...mapState({
+      periods: state => state.comp.periods,
+      selectedPeriod: state => state.comp.selectedPeriod
+    })
+  },
+  watch: {
+    stats(newVal) {
+      if (newVal && newVal.current) {
+        this.parseStats(newVal)
+      }
+    }
+  }
+}
+</script>
+
+<style scoped>
+#rank-card {
+  width: 100%;
+  margin: auto;
+}
+.rank-tooltip span{
+  display: flex;
+  align-items: center;
+}
+#loading-container {
+  justify-content: center;
+  display: flex;
+}
+.item-container-card {
+  min-height: 215px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+}
+.progress-bar {
+  margin: 0;
+  margin-bottom: 11px;
+}
+.stats-container {
+  max-height: unset;
+}
+.rank-row {
+  padding-bottom: 10px;
+}
+.inner-alert {
+  margin: -15px -16px 6px -16px;
+}
+</style>
