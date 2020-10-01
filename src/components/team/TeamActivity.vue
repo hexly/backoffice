@@ -28,7 +28,42 @@
       </v-alert>
     </template>
     <template v-else>
-      <v-data-table hide-default-footer disable-pagination disable-sort :headers="headers" :items="members" class="elevation-1" :loading="loading > 0 ">
+      <v-data-table hide-default-footer disable-pagination disable-sort :headers="newHeaders" :items="descendants" class="elevation-1" :loading="loading > 0" v-if="selectedPeriod.metadata && selectedPeriod.metadata.version === 2">
+        <template v-slot:item.name="{ item }">
+          <v-tooltip top slot="append">
+            <template v-slot:activator="{ on }">
+              <v-avatar size="24px" v-on="on">
+                <img v-if="item.metadata.profileAsset" alt="Avatar" :src="item.metadata.profileAsset">
+                <v-icon v-else color="primary" dark>mdi-account-circle</v-icon>
+              </v-avatar>
+            </template>
+            <span>#{{item.metadata.mrn}}</span>
+          </v-tooltip>
+          {{item.metadata.name}} ({{item.metadata.market}})
+          <br/>
+          <small class="pl-5">{{ item.metadata.email }}</small>
+          <br/>
+          <v-chip :color="item.metadata.ranking.rank > 5 ? '#a1213b' : 'gray'" :class="{'white--text': item.metadata.ranking.rank > 5}">{{item.metadata.ranking.name}}</v-chip>
+        </template>
+        <template v-slot:item.rank="{ item }">
+          <v-chip :color="item.metadata.ranking.rank > 5 ? '#a1213b' : 'gray'" :class="{'white--text': item.metadata.ranking.rank > 5}">{{item.metadata.ranking.name}}</v-chip>
+        </template>
+        <template v-slot:item.stats="{ item }">
+          <div style="display: inline-block;" class="ma-2 text-center" v-for="(stat, i) in item.metadata.requirements" :key="i">
+            <h5>{{statsMapping[`${stat.type}_${stat.metric}`]}}</h5>
+            <v-progress-circular
+              :rotate="-90"
+              :size="85"
+              :value="stat.earned/ stat.required * 100"
+              :width="5"
+              :color="stat.achieved ? 'green' : 'red'"
+            >
+              <div>{{stat.earned}}<hr/>{{stat.required}}</div>
+            </v-progress-circular>
+          </div>
+        </template>
+      </v-data-table>
+      <v-data-table hide-default-footer disable-pagination disable-sort :headers="headers" :items="members" class="elevation-1" :loading="loading > 0 " v-else>
       <template v-slot:item.name="{ item }">
         <v-tooltip top slot="append">
           <template v-slot:activator="{ on }">
@@ -180,6 +215,7 @@
 
 <script>
 import _ from 'lodash'
+import { getCompStats, parseData } from '@/graphql/comp.gql'
 import { mapGetters, mapState, mapActions } from 'vuex'
 import { CompActions } from '@/stores/CompStore'
 import { ENGINE_TEAM_ACTIVITY } from '@/graphql/CompStats.gql'
@@ -214,6 +250,20 @@ export default {
     if (this.$tenantInfo.statMapping.anyRankCount) {
       headers.push({ text: this.$tenantInfo.statMapping.anyRankCount.title, value: 'pabql' })
     }
+
+    const newHeaders = [
+      {
+        text: this.$tenantInfo.distributorLabel,
+        align: 'center',
+        value: 'name'
+      },
+      { text: 'Level', align: 'center', value: 'relativeLevel' },
+      { text: 'Rank', align: 'center', value: 'rank' },
+      { text: 'Downline Size', align: 'center', value: 'metadata.counts.downline' },
+      { text: 'Group Size', align: 'center', value: 'metadata.counts.group' },
+      { text: 'Active In Downline', align: 'center', value: 'metadata.counts.qualified' },
+      { text: 'Stats', align: 'start', value: 'stats' }
+    ]
 
     const sortByOptions = {
       rank: 'Rank'
@@ -250,6 +300,7 @@ export default {
     return {
       GET: _.get,
       headers,
+      newHeaders,
       members: [],
       page: 1,
       pageSize: 25,
@@ -264,12 +315,24 @@ export default {
       orderByOptions: {
         desc: 'Greatest => Least',
         asc: 'Least => Greatest'
+      },
+      descendants: [],
+      statsMapping: {
+        personal_stat_downline: 'DSV',
+        personal_stat_group: 'GSV',
+        personal_stat_personal: 'PSV',
+        career_stat_undefined: 'DSV',
+        adjusted_downline_volume_downline: 'ADSV'
       }
     }
   },
   async mounted() {
     if (_.isEmpty(this.periods)) {
       await this.compGetPeriods({ when: this.$moment(this.getCompanyTime()).format('YYYY-MM-DD') })
+    }
+    if (this.selectedPeriod.metadata && this.selectedPeriod.metadata.version === 2) {
+      const { data } = await this.$apollo.query(getCompStats(this.memberId, ['descendant']))
+      this.descendants = parseData(data).members
     }
   },
   methods: {

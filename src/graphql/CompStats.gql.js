@@ -46,6 +46,7 @@ export const ENGINE_STATS_PERIODS_QUERY = gql`
       status
       hasMaterializedStats
       hasPayroll
+      metadata
     }
   }
 `

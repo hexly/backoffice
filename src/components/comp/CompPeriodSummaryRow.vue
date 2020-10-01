@@ -10,7 +10,7 @@
       <template v-if="header.value == 'actions'">
       </template>
       <template v-else>
-        {{ _.get(row, `${header.value}.totalPoints`, _.get(row.stats, header.value)) }}
+        {{ _.get(row, `${header.value}.totalPoints`, _.get(row, `stats.${header.value}`)) }}
       </template>
     </td>
   </tr>

@@ -21,7 +21,14 @@
         </v-layout>
       </v-col>
       <v-col cols="12" md="6">
+        <CompRanksCard
+          v-if="selectedPeriod.metadata && selectedPeriod.metadata.version === 2"
+          :stats         ="engineStats"
+          :statsDisabled ="statsDisabled"
+          :loading       ="engineStatsLoading"
+        />
         <RankRequirementsCard
+          v-else
           :stats         ="engineStats"
           :statsDisabled ="statsDisabled"
           :loading       ="engineStatsLoading"
@@ -80,6 +87,7 @@ import CompanyMap from '@/components/dashboard/CompanyMap.vue'
 import Announcement from '@/components/dashboard/Announcement.vue'
 import Badges from '@/components/Badges.vue'
 import RankRequirementsCard from '@/components/RankRequirementsCard.vue'
+import CompRanksCard from '@/components/CompRanksCard.vue'
 import TeamOverview from '@/components/dashboard/TeamOverview.vue'
 import LeaderBoard from '@/components/Leaderboard.vue'
 
@@ -109,7 +117,8 @@ export default {
     Social,
     RankRequirementsCard,
     TeamOverview,
-    LeaderBoard
+    LeaderBoard,
+    CompRanksCard
   },
   data() {
     return {
@@ -204,7 +213,8 @@ export default {
       user: state => state.user,
       engineStats: state => state.comp.stats,
       engineStatsLoading: state => state.comp.engineStatsLoading,
-      openPeriod: state => state.comp.periods.open && state.comp.periods.open[0]
+      openPeriod: state => state.comp.periods.open && state.comp.periods.open[0],
+      selectedPeriod: state => state.comp.selectedPeriod
     }),
     ...mapGetters(['contactId', 'memberId', 'member', 'slug', 'tenantIntegrations'])
   },
