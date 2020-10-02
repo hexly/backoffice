@@ -335,7 +335,13 @@ export default {
     }
     if (this.selectedPeriod.metadata && this.selectedPeriod.metadata.version === 2) {
       const { data } = await this.$apollo.query(getCompStats(this.memberId, ['descendant'], this.selectedPeriod.id))
-      this.descendants = parseData(data).members
+      const descendants = parseData(data).members
+      this.descendants = descendants.filter(d => {
+        if (d.metadata && d.metadata.ranking.rank > 0) {
+          return true
+        }
+        return false
+      })
     }
   },
   methods: {
