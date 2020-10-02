@@ -70,11 +70,11 @@
                     <strong>Level {{value.level}}</strong>
                   </v-col>
                   <v-col class="text-center">
-                    <strong>{{value.memberCount}}</strong>
+                    <strong>{{value.total}}</strong>
                   </v-col>
                   <v-col class="text-center">
                     <div>
-                      <strong>{{value.qualifiedCount}}</strong>
+                      <strong>{{value.qualified}}</strong>
                     </div>
                   </v-col>
                 </v-row>
