@@ -4,7 +4,7 @@
       <v-toolbar-title>Team Activity</v-toolbar-title>
       <v-spacer></v-spacer>
       <PeriodSwitcher></PeriodSwitcher>
-      <v-btn icon @click="drawer = !drawer">
+      <v-btn icon @click="drawer = !drawer" :disabled="selectedPeriod.metadata && selectedPeriod.metadata.version === 2">
         <v-icon dark>mdi-format-list-bulleted-square</v-icon>
       </v-btn>
     </v-toolbar>
@@ -28,22 +28,27 @@
       </v-alert>
     </template>
     <template v-else>
-      <v-data-table hide-default-footer disable-pagination disable-sort :headers="newHeaders" :items="descendants" class="elevation-1" :loading="loading > 0" v-if="selectedPeriod.metadata && selectedPeriod.metadata.version === 2">
+      <v-data-table
+        hide-default-footer
+        disable-pagination
+        disable-sort
+        :headers="newHeaders"
+        :items="descendants"
+        class="elevation-1"
+        :loading="loading > 0"
+        v-if="selectedPeriod.metadata && selectedPeriod.metadata.version === 2"
+      >
         <template v-slot:item.name="{ item }">
-          <v-tooltip top slot="append">
-            <template v-slot:activator="{ on }">
-              <v-avatar size="24px" v-on="on">
-                <img v-if="item.metadata.profileAsset" alt="Avatar" :src="item.metadata.profileAsset">
-                <v-icon v-else color="primary" dark>mdi-account-circle</v-icon>
-              </v-avatar>
-            </template>
-            <span>#{{item.metadata.mrn}}</span>
-          </v-tooltip>
-          {{item.metadata.name}} ({{item.metadata.market}})
+          <v-avatar size="24px" v-on="on">
+            <img v-if="item.metadata.profileAsset" alt="Avatar" :src="item.metadata.profileAsset">
+            <v-icon v-else color="primary" dark>mdi-account-circle</v-icon>
+          </v-avatar>
+          {{item.metadata.name}} <Flag :name="item.metadata.market" />
+          <br/>
+          <span>#{{item.metadata.mrn}}</span>
           <br/>
           <small class="pl-5">{{ item.metadata.email }}</small>
-          <br/>
-          <v-chip :color="item.metadata.ranking.rank > 5 ? '#a1213b' : 'gray'" :class="{'white--text': item.metadata.ranking.rank > 5}">{{item.metadata.ranking.name}}</v-chip>
+          <!-- <v-chi1p :color="item.metadata.ranking.rank > 5 ? '#a1213b' : 'gray'" :class="{'white--text': item.metadata.ranking.rank > 5}">{{item.metadata.ranking.name}}</v-chip> -->
         </template>
         <template v-slot:item.rank="{ item }">
           <v-chip :color="item.metadata.ranking.rank > 5 ? '#a1213b' : 'gray'" :class="{'white--text': item.metadata.ranking.rank > 5}">{{item.metadata.ranking.name}}</v-chip>
@@ -58,7 +63,7 @@
               :width="5"
               :color="stat.achieved ? 'green' : 'red'"
             >
-              <div>{{stat.earned}}<hr/>{{stat.required}}</div>
+              <div>{{stat.earned || 0}}<hr/>{{stat.required}}</div>
             </v-progress-circular>
           </div>
         </template>
@@ -220,10 +225,12 @@ import { mapGetters, mapState, mapActions } from 'vuex'
 import { CompActions } from '@/stores/CompStore'
 import { ENGINE_TEAM_ACTIVITY } from '@/graphql/CompStats.gql'
 import PeriodSwitcher from '@/components/PeriodSwitcher.vue'
+import Flag from '@/components/Flag.vue'
 export default {
   name: 'TeamActivity',
   components: {
-    PeriodSwitcher
+    PeriodSwitcher,
+    Flag
   },
   data() {
     const headers = [
@@ -252,13 +259,9 @@ export default {
     }
 
     const newHeaders = [
-      {
-        text: this.$tenantInfo.distributorLabel,
-        align: 'center',
-        value: 'name'
-      },
+      { text: this.$tenantInfo.distributorLabel, align: 'center', value: 'name' },
       { text: 'Level', align: 'center', value: 'relativeLevel' },
-      { text: 'Rank', align: 'center', value: 'rank' },
+      { text: 'Current Rank', align: 'center', value: 'rank' },
       { text: 'Downline Size', align: 'center', value: 'metadata.counts.downline' },
       { text: 'Group Size', align: 'center', value: 'metadata.counts.group' },
       { text: 'Active In Downline', align: 'center', value: 'metadata.counts.qualified' },
