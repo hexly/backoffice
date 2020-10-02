@@ -51,11 +51,11 @@ export const CompStore = {
     }
   },
   actions: {
-    [CompActions.GET_STATS]: async ({ state, commit }, { input, version, transient }) => {
+    [CompActions.GET_STATS]: async ({ state, commit }, { input, version, transient, periodId }) => {
       commit(CompMutations.STATS_LOADING, true)
       if (version === 2) {
         const memberId = input.membersIn[0]
-        const { data } = await apolloFederatedClient.query(getCompStats(memberId, ['descendant']))
+        const { data } = await apolloFederatedClient.query(getCompStats(memberId, ['descendant'], periodId))
         const newComp = parseData(data)
         // GO AND GET NEW COMP INFO FROM THE FEDERATED GRAPHQL
 
@@ -93,6 +93,7 @@ export const CompStore = {
             membersIn: [rootState.user.principal.memberId]
           },
           version: _.get(currentPeriod, 'metadata.version', 1),
+          periodId: currentPeriod.id,
           transient: true
         })
         if (previous && (previous.memberId || previous.awardeeId)) {
