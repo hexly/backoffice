@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Vuetify from 'vuetify'
 import VueClipboard from 'vue-clipboard2'
+import Fragment from 'vue-fragment'
 import Gravatar from 'vue-gravatar'
 import VueAnalytics from 'vue-analytics'
 import 'vuetify/dist/vuetify.min.css'
@@ -33,6 +34,7 @@ Vue.use(VueClipboard)
 Vue.component('v-gravatar', Gravatar)
 
 Vue.use(Vuetify)
+Vue.use(Fragment.Plugin)
 
 const vuetify = new Vuetify({
   theme: {

@@ -1,5 +1,8 @@
 <template>
   <div class="full-wrapper dashboard">
+    <template v-if="banners">
+      <Banner v-for="banner in banners" :key="banner.key" :banner="banner"/>
+    </template>
     <Announcement />
     <v-row wrap>
       <v-col cols="12" md="6">
@@ -21,7 +24,14 @@
         </v-layout>
       </v-col>
       <v-col cols="12" md="6">
+        <CompRanksCard
+          v-if="selectedPeriod.metadata && selectedPeriod.metadata.version === 2"
+          :stats         ="engineStats"
+          :statsDisabled ="statsDisabled"
+          :loading       ="engineStatsLoading"
+        />
         <RankRequirementsCard
+          v-else
           :stats         ="engineStats"
           :statsDisabled ="statsDisabled"
           :loading       ="engineStatsLoading"
@@ -78,8 +88,10 @@ import Directory from '@/components/dashboard/Directory.vue'
 import DashCard from '@/components/DashboardCard.vue'
 import CompanyMap from '@/components/dashboard/CompanyMap.vue'
 import Announcement from '@/components/dashboard/Announcement.vue'
+import Banner from '@/components/dashboard/Banner.vue'
 import Badges from '@/components/Badges.vue'
 import RankRequirementsCard from '@/components/RankRequirementsCard.vue'
+import CompRanksCard from '@/components/CompRanksCard.vue'
 import TeamOverview from '@/components/dashboard/TeamOverview.vue'
 import LeaderBoard from '@/components/Leaderboard.vue'
 
@@ -87,6 +99,7 @@ import {
   FRONTLINE_LEADERBOARD_BY_RANGE,
   COMPANY_FRONTLINE_LEADERBOARD_BY_RANGE
 } from '@/graphql/Leaderboard.js'
+import { ENGINE_DASHBOARD_BANNERS } from '@/graphql/CompStats.gql'
 import { GET_MEMBER_PAYOUTS } from '@/graphql/Member.gql'
 import {
   MEMBER_STATS_BY_DEPTH,
@@ -105,11 +118,13 @@ export default {
     Directory,
     CompanyMap,
     Announcement,
+    Banner,
     Badges,
     Social,
     RankRequirementsCard,
     TeamOverview,
-    LeaderBoard
+    LeaderBoard,
+    CompRanksCard
   },
   data() {
     return {
@@ -204,7 +219,8 @@ export default {
       user: state => state.user,
       engineStats: state => state.comp.stats,
       engineStatsLoading: state => state.comp.engineStatsLoading,
-      openPeriod: state => state.comp.periods.open && state.comp.periods.open[0]
+      openPeriod: state => state.comp.periods.open && state.comp.periods.open[0],
+      selectedPeriod: state => state.comp.selectedPeriod
     }),
     ...mapGetters(['contactId', 'memberId', 'member', 'slug', 'tenantIntegrations'])
   },
@@ -214,6 +230,22 @@ export default {
     }
   },
   apollo: {
+    banners: {
+      query: ENGINE_DASHBOARD_BANNERS,
+      deep: true,
+      variables() {
+        const date = this.selectedPeriod ? this.selectedPeriod.open || null : null
+        return {
+          input: {
+            memberId: this.memberId,
+            date
+          }
+        }
+      },
+      update(obj) {
+        return _.get(obj, 'banners.results', [])
+      }
+    },
     earnings: {
       query: GET_MEMBER_PAYOUTS,
       update({ getPrincipal }) {

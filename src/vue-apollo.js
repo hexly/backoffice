@@ -66,3 +66,4 @@ if (process.env.VUE_APP_FEDERATED_GRAPHQL_ENDPOINT) {
 
 // Create vue apollo provider
 export const apolloProvider = new VueApollo(apolloProviderOptions)
+export const apolloFederatedClient = apolloProviderOptions.clients.federated
