@@ -150,7 +150,6 @@ export default {
   methods: {
     parseStats(stats) {
       if (stats && stats.metadata) {
-        console.log(stats)
         this.currentRank = stats.metadata.ranking.name
         this.nextRank = stats.metadata.nextRanking.name
       }

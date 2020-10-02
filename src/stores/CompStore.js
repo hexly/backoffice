@@ -55,6 +55,7 @@ export const CompStore = {
       commit(CompMutations.STATS_LOADING, true)
       if (version === 2) {
         const memberId = input.membersIn[0]
+        console.log('period', periodId)
         const { data } = await apolloFederatedClient.query(getCompStats(memberId, ['descendant'], periodId))
         const newComp = parseData(data)
         // GO AND GET NEW COMP INFO FROM THE FEDERATED GRAPHQL
@@ -107,7 +108,8 @@ export const CompStore = {
       commit(CompMutations.SET_SELECTED_PERIOD, period)
       await dispatch(CompActions.GET_STATS, {
         input: { forDate: period.open, membersIn: [rootState.user.principal.memberId] },
-        version: _.get(period, 'metadata.version', 1)
+        version: _.get(period, 'metadata.version', 1),
+        periodId: period.id
       })
     }
   },
