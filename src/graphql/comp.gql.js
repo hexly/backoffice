@@ -87,7 +87,9 @@ export const parseData = (res) => {
       case 'descendant':
         obj._id = idx++
         obj._level = map.levels[`${token}`]
-        map.members.push(obj)
+        if (obj.metadata) {
+          map.members.push(obj)
+        }
         break
 
       default:
