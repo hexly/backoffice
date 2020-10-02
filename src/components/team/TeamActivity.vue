@@ -334,7 +334,7 @@ export default {
       await this.compGetPeriods({ when: this.$moment(this.getCompanyTime()).format('YYYY-MM-DD') })
     }
     if (this.selectedPeriod.metadata && this.selectedPeriod.metadata.version === 2) {
-      const { data } = await this.$apollo.query(getCompStats(this.memberId, ['descendant']))
+      const { data } = await this.$apollo.query(getCompStats(this.memberId, ['descendant'], this.selectedPeriod.id))
       this.descendants = parseData(data).members
     }
   },
