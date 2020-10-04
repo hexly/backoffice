@@ -28,7 +28,6 @@
       </v-alert>
     </template>
     <template v-else>
-      {{loading}}
       <v-data-table
         disable-sort
         :footer-props="{
@@ -38,7 +37,7 @@
         }"
         :headers="newHeaders"
         :items="descendants"
-        class="elevation-1"
+        class="elevation-1 mb-12 pb-8"
         :loading="loading > 0"
         v-if="selectedPeriod.metadata && selectedPeriod.metadata.version === 2"
       >
@@ -66,7 +65,7 @@
               :size="85"
               :value="100"
               :width="5"
-              color="gray"
+              color="grey"
             >
               <div>N/A</div>
             </v-progress-circular>
