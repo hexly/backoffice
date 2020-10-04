@@ -67,7 +67,8 @@
               :width="5"
               color="grey"
             >
-              <div>N/A</div>
+              <div v-if="s.earned === null || s.earned === undefined">N/A</div>
+              <div v-else>{{s.earned}}</div>
             </v-progress-circular>
             <v-progress-circular
               v-else
