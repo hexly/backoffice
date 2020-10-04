@@ -62,7 +62,7 @@
               :size="85"
               :value="100"
               :width="5"
-              :color="gray"
+              color="gray"
             >
               <div>N/A</div>
             </v-progress-circular>
