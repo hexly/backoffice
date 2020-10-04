@@ -57,8 +57,8 @@
             <v-row class="py-3" :class="tabMode ? 'rank-data-row' : null" justify="space-between" wrap v-for="(stat, i) in stats.metadata.requirements" :key="i">
               <v-col class="pa-1">
                 <div class="title">
-                  {{statsMapping[`${stat.type}_${stat.metric}`]}}
-                  <v-icon color="green" v-if="stat.achieved">check_circle</v-icon>
+                  {{ stat.category ? stat.category.toUpperCase() : statsMapping[`${stat.type}_${stat.metric}`]}}
+                  <v-icon color="green" v-if="!stat.notApplicable && stat.achieved">check_circle</v-icon>
                 </div>
               </v-col>
               <v-spacer></v-spacer>
@@ -67,15 +67,20 @@
                 <div v-if="stat.achieved && parseInt(stat.earned)" class="caption grey--text darken-1">
                   <span v-if="!tabMode">{{Math.round(stat.earned)}} of {{Math.round(stat.required)}}</span>
                 </div>
-                <template v-if="stat.achieved">
-                  <div class="caption grey--text darken-1"> 100% </div>
+                <template v-if="!stat.notApplicable">
+                  <template v-if="stat.achieved">
+                    <div class="caption grey--text darken-1"> 100% </div>
+                  </template>
+                  <template v-else>
+                    <div class="caption grey--text darken-1"> 0% </div>
+                  </template>
                 </template>
                 <template v-else>
-                  <div class="caption grey--text darken-1"> 0% </div>
+                  <div class="caption grey--text darken-1"> N/A </div>
                 </template>
               </v-col>
               <v-col cols="12" class="pa-1">
-                <v-progress-linear :class="tabMode ? 'progress-bar' : null" :color="'success'" :height="tabMode ? 2 : 5" :value="Math.round(stat.earned/stat.required*100)"></v-progress-linear>
+                <v-progress-linear :class="tabMode ? 'progress-bar' : null" :color="stat.notApplicable ? 'grey' : 'success'" :height="tabMode ? 2 : 5" :value="Math.round(stat.earned/stat.required*100)"></v-progress-linear>
               </v-col>
             </v-row>
           </template>
