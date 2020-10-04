@@ -28,10 +28,14 @@
       </v-alert>
     </template>
     <template v-else>
+      {{loading}}
       <v-data-table
-        hide-default-footer
-        disable-pagination
         disable-sort
+        :footer-props="{
+          showFirstLastPage: true,
+          showCurrentPage: true,
+          itemsPerPageOptions: [20,40,80,-1]
+        }"
         :headers="newHeaders"
         :items="descendants"
         class="elevation-1"
@@ -39,7 +43,7 @@
         v-if="selectedPeriod.metadata && selectedPeriod.metadata.version === 2"
       >
         <template v-slot:item.name="{ item }">
-          <v-avatar size="24px" v-on="on">
+          <v-avatar size="24px">
             <img v-if="item.metadata.profileAsset" alt="Avatar" :src="item.metadata.profileAsset">
             <v-icon v-else color="primary" dark>mdi-account-circle</v-icon>
           </v-avatar>
@@ -180,7 +184,7 @@
           </template>
         </template>
     </v-data-table>
-    <v-pagination class="py-4" v-model="page" :length="Math.ceil(totalResults/pageSize)"></v-pagination>
+    <v-pagination  v-if="!selectedPeriod.metadata" class="py-4" v-model="page" :length="Math.ceil(totalResults/pageSize)"></v-pagination>
     <v-navigation-drawer v-model="drawer" absolute right temporary>
       <v-expansion-panels>
         <v-expansion-panel>
@@ -345,14 +349,16 @@ export default {
       await this.compGetPeriods({ when: this.$moment(this.getCompanyTime()).format('YYYY-MM-DD') })
     }
     if (this.selectedPeriod.metadata && this.selectedPeriod.metadata.version === 2) {
+      this.loading = 1
       const { data } = await this.$apollo.query(getCompStats(this.memberId, ['descendant'], this.selectedPeriod.id))
-      const descendants = parseData(data).members
-      this.descendants = descendants.filter(d => {
+      const descendants = parseData(data).members.filter(d => {
         if (d.metadata && d.metadata.ranking.rank > 0) {
           return true
         }
         return false
       })
+      this.descendants = descendants
+      this.loading = 0
     }
   },
   methods: {
@@ -389,7 +395,7 @@ export default {
       },
       loadingKey: 'loading',
       skip() {
-        return _.isEmpty(this.periods) || this.drawer
+        return _.isEmpty(this.periods) || this.drawer || (this.selectedPeriod.metadata && this.selectedPeriod.metadata.version === 2)
       },
       update({ engineStatsGetTeamActivity }) {
         const activity = engineStatsGetTeamActivity || {

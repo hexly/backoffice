@@ -59,7 +59,7 @@
                     <strong v-if="selectedPeriod.metadata && selectedPeriod.metadata.version === 2">{{stats.metadata.counts.qualified}}</strong>
                     <strong v-else>{{stats.downlineCount && stats.downlineCount.qualified}}</strong>
                   </div>
-                  <Trend v-if="showTrend" :previous="previous.downlineCount.qualified" :current="current.downlineCount.qualified"/>
+                  <Trend v-if="showTrend && !selectedPeriod.metadata" :previous="previous.downlineCount.qualified" :current="current.downlineCount.qualified"/>
                 </v-col>
               </v-row>
             </v-timeline-item>

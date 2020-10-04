@@ -60,6 +60,7 @@ export const CompStore = {
         // GO AND GET NEW COMP INFO FROM THE FEDERATED GRAPHQL
 
         const memberStats = newComp.members.find(s => ~~s.awardeeId === memberId)
+        console.log(memberStats)
         commit(CompMutations.SET_STATS, memberStats)
         commit(CompMutations.STATS_LOADING, false)
         return newComp.members
@@ -114,7 +115,7 @@ export const CompStore = {
   },
   getters: {
     isSelectedCurrent: state => {
-      return state.selectedPeriod.id === state.currentPeriod.periodId
+      return ~~state.selectedPeriod.id === ~~state.currentPeriod.periodId
     },
     isMonthInReview: state => {
       return !!(state.periods.under_review && state.periods.under_review.length)
