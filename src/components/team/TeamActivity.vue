@@ -64,7 +64,7 @@
               :width="5"
               :color="gray"
             >
-              <div>Not<hr/>Applicable</div>
+              <div>N/A</div>
             </v-progress-circular>
             <v-progress-circular
               v-else
