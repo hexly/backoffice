@@ -57,6 +57,17 @@
           <div style="display: inline-block;" class="ma-2 text-center" v-for="(stat, i) in item.metadata.requirements" :key="i">
             <h5>{{statsMapping[`${stat.type}_${stat.metric}`]}}</h5>
             <v-progress-circular
+              v-if="stat.notApplicable"
+              :rotate="-90"
+              :size="85"
+              :value="100"
+              :width="5"
+              :color="gray"
+            >
+              <div>Not<hr/>Applicable</div>
+            </v-progress-circular>
+            <v-progress-circular
+              v-else
               :rotate="-90"
               :size="85"
               :value="stat.earned/ stat.required * 100"
