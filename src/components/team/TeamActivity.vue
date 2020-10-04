@@ -30,11 +30,8 @@
     <template v-else>
       <v-data-table
         disable-sort
-        :footer-props="{
-          showFirstLastPage: true,
-          showCurrentPage: true,
-          itemsPerPageOptions: [20,40,80,-1]
-        }"
+        disable-pagination
+        hide-default-footer
         :headers="newHeaders"
         :items="descendants"
         class="elevation-1 mb-12 pb-8"
@@ -62,7 +59,7 @@
             <v-progress-circular
               v-if="stat.notApplicable"
               :rotate="-90"
-              :size="85"
+              :size="75"
               :value="100"
               :width="5"
               color="grey"
@@ -73,7 +70,7 @@
             <v-progress-circular
               v-else
               :rotate="-90"
-              :size="85"
+              :size="75"
               :value="stat.earned/ stat.required * 100"
               :width="5"
               :color="stat.achieved ? 'green' : 'red'"
@@ -184,7 +181,7 @@
           </template>
         </template>
     </v-data-table>
-    <v-pagination  v-if="!selectedPeriod.metadata" class="py-4" v-model="page" :length="Math.ceil(totalResults/pageSize)"></v-pagination>
+    <v-pagination  class="pb-12 mb-12" v-model="page" :length="Math.ceil(totalResults/pageSize)" :total-visible="15"></v-pagination>
     <v-navigation-drawer v-model="drawer" absolute right temporary>
       <v-expansion-panels>
         <v-expansion-panel>
@@ -241,6 +238,7 @@ import { CompActions } from '@/stores/CompStore'
 import { ENGINE_TEAM_ACTIVITY } from '@/graphql/CompStats.gql'
 import PeriodSwitcher from '@/components/PeriodSwitcher.vue'
 import Flag from '@/components/Flag.vue'
+
 export default {
   name: 'TeamActivity',
   components: {
@@ -349,19 +347,18 @@ export default {
       await this.compGetPeriods({ when: this.$moment(this.getCompanyTime()).format('YYYY-MM-DD') })
     }
     if (this.selectedPeriod.metadata && this.selectedPeriod.metadata.version === 2) {
-      this.loading = 1
-      const { data } = await this.$apollo.query(getCompStats(this.memberId, ['descendant'], this.selectedPeriod.id))
-      const descendants = parseData(data).members.filter(d => {
-        if (d.metadata && d.metadata.ranking.rank > 0) {
-          return true
-        }
-        return false
-      })
-      this.descendants = descendants
-      this.loading = 0
+      await this.getCompStatsPage()
     }
   },
   methods: {
+    async getCompStatsPage() {
+      this.loading = 1
+      const { data } = await this.$apollo.query(getCompStats(this.memberId, ['descendant'], this.selectedPeriod.id, this.page, this.pageSize))
+      const paging = _.get(data, 'comp.previewRun.data')
+      this.totalResults = paging.totalResults
+      this.descendants = parseData(data).members
+      this.loading = 0
+    },
     getCompanyTime(time) {
       const date = time ? new Date(time) : new Date()
       return new Intl.DateTimeFormat('en-US', {
@@ -408,6 +405,12 @@ export default {
         // Filtering out nulls
         return activity.results.filter(r => r)
       }
+    }
+  },
+  watch: {
+    page(newVal, oldVal) {
+      window.scrollTo(0, 0)
+      this.getCompStatsPage()
     }
   },
   computed: {
