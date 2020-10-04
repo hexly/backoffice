@@ -58,14 +58,16 @@ export const BINDER = {
   client: 'federated'
 }
 
-export const getCompStats = (memberId, types, periodId) => ({
+export const getCompStats = (memberId, types, periodId, page = 1, pageSize = 25) => ({
   query: TEST_QUERY,
   variables: {
     payload: {
       input: {
         memberId,
         periodId,
-        rowTypeIn: types
+        rowTypeIn: types,
+        page,
+        pageSize
       }
     }
   },
