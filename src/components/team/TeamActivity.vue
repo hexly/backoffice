@@ -55,7 +55,7 @@
         </template>
         <template v-slot:item.stats="{ item }">
           <div style="display: inline-block;" class="ma-2 text-center" v-for="(stat, i) in item.metadata.requirements" :key="i">
-            <h5>{{statsMapping[`${stat.type}_${stat.metric}`]}}</h5>
+            <h5>{{ stat.category ? stat.category.toUpperCase() : statsMapping[`${stat.type}_${stat.metric}`]}}</h5>
             <v-progress-circular
               v-if="stat.notApplicable"
               :rotate="-90"
