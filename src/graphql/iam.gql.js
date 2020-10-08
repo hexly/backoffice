@@ -91,6 +91,7 @@ export const GET_PRINCIPAL = gql`
         market {
           supportedCurrencyIds
         }
+        statusId
         firstName
         lastName
         id
