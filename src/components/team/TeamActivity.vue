@@ -236,9 +236,9 @@
           <v-expansion-panel-content>
             <template v-if="selectedPeriod.metadata && selectedPeriod.metadata.version === 2 && engineStats.metadata">
               <v-checkbox
-                v-for="(value, key) in engineStats.metadata.counts.ranks"
-                :label="`Level ${key.replace('level', '')}`"
-                :value="~~key.replace('level', '')"
+                v-for="(value, key) in engineStats.metadata.counts.levels"
+                :label="`Level ${value.level}`"
+                :value="value.level"
                 :key="key"
                 v-model="filterBy"
               ></v-checkbox>
