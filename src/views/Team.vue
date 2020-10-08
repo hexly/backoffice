@@ -26,7 +26,7 @@
         </v-lazy>
       </v-tab-item>
       <template v-if="$tenantInfo.features.activity">
-        <v-tab-item value="activity" class="py-3">
+        <v-tab-item value="activity">
           <v-lazy>
             <TeamActivity />
           </v-lazy>

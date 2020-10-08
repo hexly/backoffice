@@ -1,8 +1,8 @@
 import gql from 'graphql-tag'
 import _ from 'lodash'
 
-export const TEST_QUERY = gql`
-query Foo1($payload: CompRunDataInput) {
+export const COMP_PREVIEW_QUERY = gql`
+query compRunPreview($payload: CompRunDataInput) {
   comp {
     previewRun(input: $payload){
       key
@@ -13,7 +13,7 @@ query Foo1($payload: CompRunDataInput) {
 `
 
 export const BINDER = {
-  query: TEST_QUERY,
+  query: COMP_PREVIEW_QUERY,
   variables () {
     return {
       dummy: {
@@ -58,21 +58,42 @@ export const BINDER = {
   client: 'federated'
 }
 
-export const getCompStats = (memberId, types, periodId, page = 1, pageSize = 25) => ({
-  query: TEST_QUERY,
-  variables: {
-    payload: {
-      input: {
-        memberId,
-        periodId,
-        rowTypeIn: types,
-        page,
-        pageSize
+export const getCompStats = (params) => {
+  const {
+    memberId,
+    types,
+    periodId,
+    page = 1,
+    pageSize = 25,
+    levelIn,
+    memberIn,
+    rankIn,
+    qualifiedIn,
+    nameIn
+  } = params
+
+  return {
+    query: COMP_PREVIEW_QUERY,
+    variables: {
+      payload: {
+        input: {
+          memberId,
+          periodId,
+          rowTypeIn: types,
+          page,
+          pageSize,
+          levelIn,
+          memberIn,
+          rankIn,
+          qualifiedIn,
+          nameIn
+        }
       }
-    }
-  },
-  client: 'federated'
-})
+    },
+    fetchPolicy: 'network-only',
+    client: 'federated'
+  }
+}
 
 export const parseData = (res) => {
   let idx = 0

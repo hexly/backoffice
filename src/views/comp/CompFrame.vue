@@ -169,7 +169,7 @@ export default {
   },
   apollo: {
     data: {
-      query: gql.TEST_QUERY,
+      query: gql.COMP_PREVIEW_QUERY,
       variables () {
         return {
           payload: {

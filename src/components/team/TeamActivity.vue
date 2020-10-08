@@ -4,7 +4,7 @@
       <v-toolbar-title>Team Activity</v-toolbar-title>
       <v-spacer></v-spacer>
       <PeriodSwitcher></PeriodSwitcher>
-      <v-btn icon @click="drawer = !drawer" :disabled="selectedPeriod.metadata && selectedPeriod.metadata.version === 2">
+      <v-btn icon @click="drawer = !drawer">
         <v-icon dark>mdi-format-list-bulleted-square</v-icon>
       </v-btn>
     </v-toolbar>
@@ -28,16 +28,34 @@
       </v-alert>
     </template>
     <template v-else>
-      <v-data-table
-        disable-sort
-        disable-pagination
-        hide-default-footer
-        :headers="newHeaders"
-        :items="descendants"
-        class="elevation-1 mb-12 pb-8"
-        :loading="loading > 0"
-        v-if="selectedPeriod.metadata && selectedPeriod.metadata.version === 2"
-      >
+      <template v-if="selectedPeriod.metadata && selectedPeriod.metadata.version === 2">
+        <v-sheet class="pa-3">
+          <v-text-field
+            v-model="search"
+            outlined
+            clearable
+            label="Search by name..."
+            type="text"
+            @click:clear="clearSearch"
+            @keydown.enter="getCompStatsPage"
+          >
+            <template v-slot:append-outer>
+              <v-btn class="button-fix" large color="primary" @click="searchActivity">
+                <v-icon left>mdi-account-search</v-icon>
+                Search
+              </v-btn>
+            </template>
+          </v-text-field>
+        </v-sheet>
+        <v-data-table
+          disable-sort
+          disable-pagination
+          hide-default-footer
+          :headers="newHeaders"
+          :items="descendants"
+          class="elevation-1 mb-12 pb-8"
+          :loading="loading > 0"
+        >
         <template v-slot:item.name="{ item }">
           <v-avatar size="24px">
             <img v-if="item.metadata.profileAsset" alt="Avatar" :src="item.metadata.profileAsset">
@@ -80,107 +98,110 @@
           </div>
         </template>
       </v-data-table>
-      <v-data-table hide-default-footer disable-pagination disable-sort :headers="headers" :items="members" class="elevation-1" :loading="loading > 0 " v-else>
-      <template v-slot:item.name="{ item }">
-        <v-tooltip top slot="append">
-          <template v-slot:activator="{ on }">
-            <v-avatar size="24px" v-on="on">
-              <img v-if="item.member.profileUrl" alt="Avatar" :src="item.member.profileUrl">
-              <v-icon v-else color="primary" dark>mdi-account-circle</v-icon>
-            </v-avatar>
-          </template>
-          <span>#{{item.mrn}}</span>
-        </v-tooltip>
-        {{item.name}}
-        <br/>
-        <small class="pl-5">{{ GET(item, 'member.contacts[0].emails[0].email', 'N/A') }}</small>
       </template>
-      <template v-slot:item.rank="{ item }">
-        <v-chip :color="item.rank > 5 ? '#a1213b' : 'gray'" :class="{'white--text': item.rank > 5}">Rank {{item.rank}}</v-chip>
-      </template>
-      <template v-slot:item.recognizedRank="{ item }">
-        <v-chip :color="item.current.recognizedRank > 5 ? '#a1213b' : 'gray'" :class="{'white--text': item.current.recognizedRank > 5}">Rank {{item.current.recognizedRank}}</v-chip>
-      </template>
-      <template v-slot:item.memberPath="{ item }">
-        <v-layout class="generation-badge-container" align-center row wrap>
-          <template v-for="(parent, index) in item.ancestors">
-            <v-tooltip v-if="index > 0 && (index + 1) !== item.ancestors.length" top slot="append" :key="parent.profileUrl">
+      <template v-else>
+        <v-data-table hide-default-footer disable-pagination disable-sort :headers="headers" :items="members" class="elevation-1" :loading="loading > 0 ">
+          <template v-slot:item.name="{ item }">
+            <v-tooltip top slot="append">
               <template v-slot:activator="{ on }">
-                <v-avatar class="generation-avatar ma-0 elevation-3" size="24px" v-on="on">
-                  <img :src="parent.profileUrl || $tenantInfo.placeholder" alt="Avatar" >
+                <v-avatar size="24px" v-on="on">
+                  <img v-if="item.member.profileUrl" alt="Avatar" :src="item.member.profileUrl">
+                  <v-icon v-else color="primary" dark>mdi-account-circle</v-icon>
                 </v-avatar>
               </template>
-              <span>{{parent.displayName}}</span>
+              <span>#{{item.mrn}}</span>
             </v-tooltip>
+            {{item.name}}
+            <br/>
+            <small class="pl-5">{{ GET(item, 'member.contacts[0].emails[0].email', 'N/A') }}</small>
           </template>
-        </v-layout>
-      </template>
-      <template v-slot:item.cpsv="{ item }">
-        <v-chip :color="item.next.stats.lifetimeTotalPoints.satisfied ? '#4CAF50' : '#EF5350'" :class="{'white--text': true}">{{ Math.floor(item.cpsv) }}</v-chip>
-      </template>
-      <template v-slot:item.stats="{ item }">
-        <v-row class="the-grid" v-if="$tenantInfo.id == 1010">
-          <v-col v-if="$tenantInfo.statMapping.personalTotalAmount" cols="6" class="bottom-border right-border grid-cell" :class="{'satisfied': item.next.stats.personalTotalAmount.satisfied}">
-            <h6>{{$tenantInfo.statMapping.personalTotalAmount.title}}</h6>
-            <div class="text-center">{{Math.floor(item.next.stats.personalTotalAmount.earned)}}</div>
-          </v-col>
-          <v-col v-if="$tenantInfo.statMapping.personalTotalPoints" cols="6" class="bottom-border right-border grid-cell" :class="{'satisfied': item.next.stats.personalTotalPoints.satisfied}">
-            <h6>{{$tenantInfo.statMapping.personalTotalPoints.title}}</h6>
-            <div class="text-center">{{Math.floor(item.psv)}}</div>
-          </v-col>
-          <v-col v-if="$tenantInfo.statMapping.groupPoints" cols="6" class="bottom-border grid-cell"  :class="{'satisfied': item.next.stats.groupPoints.satisfied}">
-            <h6>{{$tenantInfo.statMapping.groupPoints.title}}</h6>
-            <div class="text-center">{{Math.floor(item.gsv)}}</div>
-          </v-col>
-          <v-col v-if="$tenantInfo.statMapping.downlinePoints" cols="6" class="right-border grid-cell"  :class="{'satisfied': item.next.stats.downlinePoints.satisfied}">
-            <h6>{{$tenantInfo.statMapping.downlinePoints.title}}</h6>
-            <div class="text-center">{{Math.floor(item.dsv)}}</div>
-          </v-col>
-          <v-col v-if="$tenantInfo.statMapping.activeLeg" cols="6" class="grid-cell"  :class="{'satisfied': item.next.stats.activeLeg.satisfied}">
-            <h6>{{$tenantInfo.statMapping.activeLeg.title}}</h6>
-            <div class="text-center">{{Math.floor(item.legs)}}</div>
-          </v-col>
-        </v-row>
-        <v-row class="the-grid" v-else-if="$tenantInfo.id == 1011">
-          <v-col v-if="$tenantInfo.statMapping.personalTotalAmount" cols="6" class="bottom-border right-border grid-cell" :class="{'satisfied': item.next.stats.personalTotalAmount.satisfied}">
-            <h6>{{$tenantInfo.statMapping.personalTotalAmount.title}}</h6>
-            <div class="text-center">{{Math.floor(item.next.stats.personalTotalAmount.earned)}}</div>
-          </v-col>
-          <v-col v-if="$tenantInfo.statMapping.personalCommissionablePoints" cols="6" class="bottom-border grid-cell" :class="{'satisfied': item.next.stats.personalCommissionablePoints.satisfied}">
-            <h6>{{$tenantInfo.statMapping.personalCommissionablePoints.title}}</h6>
-            <div class="text-center">{{Math.floor(item.next.stats.personalCommissionablePoints.earned)}}</div>
-          </v-col>
-          <v-col v-if="$tenantInfo.statMapping.groupPoints" cols="6" class="right-border grid-cell"  :class="{'satisfied': item.next.stats.groupPoints.satisfied}">
-            <h6>{{$tenantInfo.statMapping.groupPoints.title}}</h6>
-            <div class="text-center">{{Math.floor(item.gsv)}}</div>
-          </v-col>
-          <v-col v-if="$tenantInfo.statMapping.activeLeg" cols="6" class="grid-cell"  :class="{'satisfied': item.next.stats.activeLeg.satisfied}">
-            <h6>{{$tenantInfo.statMapping.activeLeg.title}}</h6>
-            <div class="text-center">{{Math.floor(item.legs)}}</div>
-          </v-col>
-        </v-row>
-        <v-row class="the-grid" v-else>
-          <v-col cols="12" class="grid-cell" >
-            <p> We're sorry, but it looks like there is a configuration error. </p>
-          </v-col>
-        </v-row>
-      </template>
-      <template v-slot:item.pabql="{ item }">
-          <template v-if="Object.keys(item.next.stats.anyRankCount.required).length == 0">
-            <v-chip color="#4CAF50">N/A</v-chip>
+          <template v-slot:item.rank="{ item }">
+            <v-chip :color="item.rank > 5 ? '#a1213b' : 'gray'" :class="{'white--text': item.rank > 5}">Rank {{item.rank}}</v-chip>
           </template>
-          <template v-else>
-            <v-chip
-              v-for="(value, key) in item.next.stats.anyRankCount.earned"
-              :color="item.next.stats.anyRankCount.satisfied ? '#4CAF50' : '#EF5350'"
-              :key="`${key}${item.mrn}`"
-            >
-              <v-avatar dark left color="#FFFFFF"> {{value}} </v-avatar>
-              Rank {{key}}
-            </v-chip>
+          <template v-slot:item.recognizedRank="{ item }">
+            <v-chip :color="item.current.recognizedRank > 5 ? '#a1213b' : 'gray'" :class="{'white--text': item.current.recognizedRank > 5}">Rank {{item.current.recognizedRank}}</v-chip>
           </template>
-        </template>
-    </v-data-table>
+          <template v-slot:item.memberPath="{ item }">
+            <v-layout class="generation-badge-container" align-center row wrap>
+              <template v-for="(parent, index) in item.ancestors">
+                <v-tooltip v-if="index > 0 && (index + 1) !== item.ancestors.length" top slot="append" :key="parent.profileUrl">
+                  <template v-slot:activator="{ on }">
+                    <v-avatar class="generation-avatar ma-0 elevation-3" size="24px" v-on="on">
+                      <img :src="parent.profileUrl || $tenantInfo.placeholder" alt="Avatar" >
+                    </v-avatar>
+                  </template>
+                  <span>{{parent.displayName}}</span>
+                </v-tooltip>
+              </template>
+            </v-layout>
+          </template>
+          <template v-slot:item.cpsv="{ item }">
+            <v-chip :color="item.next.stats.lifetimeTotalPoints.satisfied ? '#4CAF50' : '#EF5350'" :class="{'white--text': true}">{{ Math.floor(item.cpsv) }}</v-chip>
+          </template>
+          <template v-slot:item.stats="{ item }">
+            <v-row class="the-grid" v-if="$tenantInfo.id == 1010">
+              <v-col v-if="$tenantInfo.statMapping.personalTotalAmount" cols="6" class="bottom-border right-border grid-cell" :class="{'satisfied': item.next.stats.personalTotalAmount.satisfied}">
+                <h6>{{$tenantInfo.statMapping.personalTotalAmount.title}}</h6>
+                <div class="text-center">{{Math.floor(item.next.stats.personalTotalAmount.earned)}}</div>
+              </v-col>
+              <v-col v-if="$tenantInfo.statMapping.personalTotalPoints" cols="6" class="bottom-border right-border grid-cell" :class="{'satisfied': item.next.stats.personalTotalPoints.satisfied}">
+                <h6>{{$tenantInfo.statMapping.personalTotalPoints.title}}</h6>
+                <div class="text-center">{{Math.floor(item.psv)}}</div>
+              </v-col>
+              <v-col v-if="$tenantInfo.statMapping.groupPoints" cols="6" class="bottom-border grid-cell"  :class="{'satisfied': item.next.stats.groupPoints.satisfied}">
+                <h6>{{$tenantInfo.statMapping.groupPoints.title}}</h6>
+                <div class="text-center">{{Math.floor(item.gsv)}}</div>
+              </v-col>
+              <v-col v-if="$tenantInfo.statMapping.downlinePoints" cols="6" class="right-border grid-cell"  :class="{'satisfied': item.next.stats.downlinePoints.satisfied}">
+                <h6>{{$tenantInfo.statMapping.downlinePoints.title}}</h6>
+                <div class="text-center">{{Math.floor(item.dsv)}}</div>
+              </v-col>
+              <v-col v-if="$tenantInfo.statMapping.activeLeg" cols="6" class="grid-cell"  :class="{'satisfied': item.next.stats.activeLeg.satisfied}">
+                <h6>{{$tenantInfo.statMapping.activeLeg.title}}</h6>
+                <div class="text-center">{{Math.floor(item.legs)}}</div>
+              </v-col>
+            </v-row>
+            <v-row class="the-grid" v-else-if="$tenantInfo.id == 1011">
+              <v-col v-if="$tenantInfo.statMapping.personalTotalAmount" cols="6" class="bottom-border right-border grid-cell" :class="{'satisfied': item.next.stats.personalTotalAmount.satisfied}">
+                <h6>{{$tenantInfo.statMapping.personalTotalAmount.title}}</h6>
+                <div class="text-center">{{Math.floor(item.next.stats.personalTotalAmount.earned)}}</div>
+              </v-col>
+              <v-col v-if="$tenantInfo.statMapping.personalCommissionablePoints" cols="6" class="bottom-border grid-cell" :class="{'satisfied': item.next.stats.personalCommissionablePoints.satisfied}">
+                <h6>{{$tenantInfo.statMapping.personalCommissionablePoints.title}}</h6>
+                <div class="text-center">{{Math.floor(item.next.stats.personalCommissionablePoints.earned)}}</div>
+              </v-col>
+              <v-col v-if="$tenantInfo.statMapping.groupPoints" cols="6" class="right-border grid-cell"  :class="{'satisfied': item.next.stats.groupPoints.satisfied}">
+                <h6>{{$tenantInfo.statMapping.groupPoints.title}}</h6>
+                <div class="text-center">{{Math.floor(item.gsv)}}</div>
+              </v-col>
+              <v-col v-if="$tenantInfo.statMapping.activeLeg" cols="6" class="grid-cell"  :class="{'satisfied': item.next.stats.activeLeg.satisfied}">
+                <h6>{{$tenantInfo.statMapping.activeLeg.title}}</h6>
+                <div class="text-center">{{Math.floor(item.legs)}}</div>
+              </v-col>
+            </v-row>
+            <v-row class="the-grid" v-else>
+              <v-col cols="12" class="grid-cell" >
+                <p> We're sorry, but it looks like there is a configuration error. </p>
+              </v-col>
+            </v-row>
+          </template>
+          <template v-slot:item.pabql="{ item }">
+              <template v-if="Object.keys(item.next.stats.anyRankCount.required).length == 0">
+                <v-chip color="#4CAF50">N/A</v-chip>
+              </template>
+              <template v-else>
+                <v-chip
+                  v-for="(value, key) in item.next.stats.anyRankCount.earned"
+                  :color="item.next.stats.anyRankCount.satisfied ? '#4CAF50' : '#EF5350'"
+                  :key="`${key}${item.mrn}`"
+                >
+                  <v-avatar dark left color="#FFFFFF"> {{value}} </v-avatar>
+                  Rank {{key}}
+                </v-chip>
+              </template>
+            </template>
+        </v-data-table>
+      </template>
     <v-pagination  class="pb-12 mb-12" v-model="page" :length="Math.ceil(totalResults/pageSize)" :total-visible="15"></v-pagination>
     <v-navigation-drawer v-model="drawer" absolute right temporary>
       <v-expansion-panels>
@@ -194,7 +215,7 @@
             ></v-checkbox>
           </v-expansion-panel-content>
         </v-expansion-panel>
-        <v-expansion-panel>
+        <v-expansion-panel v-if="!selectedPeriod.metadata">
           <v-expansion-panel-header>Sort By: {{sortByOptions[sortBy]}}</v-expansion-panel-header>
           <v-expansion-panel-content>
             <v-radio-group v-model="sortBy">
@@ -202,7 +223,7 @@
             </v-radio-group>
           </v-expansion-panel-content>
         </v-expansion-panel>
-        <v-expansion-panel>
+        <v-expansion-panel v-if="!selectedPeriod.metadata">
           <v-expansion-panel-header>Order By: {{orderByOptions[orderBy]}}</v-expansion-panel-header>
           <v-expansion-panel-content>
             <v-radio-group v-model="orderBy">
@@ -213,13 +234,24 @@
         <v-expansion-panel>
           <v-expansion-panel-header>Filter By: {{filterBy}}</v-expansion-panel-header>
           <v-expansion-panel-content>
-            <v-checkbox
-              v-for="(value, key) in engineStats.levelCounts"
-              :label="`Level ${key.replace('level', '')}`"
-              :value="~~key.replace('level', '')"
-              :key="key"
-              v-model="filterBy"
-            ></v-checkbox>
+            <template v-if="selectedPeriod.metadata && selectedPeriod.metadata.version === 2 && engineStats.metadata">
+              <v-checkbox
+                v-for="(value, key) in engineStats.metadata.counts.ranks"
+                :label="`Level ${key.replace('level', '')}`"
+                :value="~~key.replace('level', '')"
+                :key="key"
+                v-model="filterBy"
+              ></v-checkbox>
+            </template>
+            <template v-else>
+              <v-checkbox
+                v-for="(value, key) in engineStats.levelCounts"
+                :label="`Level ${key.replace('level', '')}`"
+                :value="~~key.replace('level', '')"
+                :key="key"
+                v-model="filterBy"
+              ></v-checkbox>
+            </template>
           </v-expansion-panel-content>
         </v-expansion-panel>
       </v-expansion-panels>
@@ -332,6 +364,7 @@ export default {
         desc: 'Greatest => Least',
         asc: 'Least => Greatest'
       },
+      search: null,
       descendants: [],
       statsMapping: {
         personal_stat_downline: 'DSV',
@@ -351,9 +384,30 @@ export default {
     }
   },
   methods: {
+    clearSearch() {
+      this.search = null
+      this.getCompStatsPage()
+    },
+    searchActivity() {
+      this.getCompStatsPage()
+    },
     async getCompStatsPage() {
       this.loading = 1
-      const { data } = await this.$apollo.query(getCompStats(this.memberId, ['descendant'], this.selectedPeriod.id, this.page, this.pageSize))
+      const params = {
+        memberId: this.memberId,
+        type: ['descendant'],
+        periodId: this.selectedPeriod.id,
+        page: this.page,
+        pageSize: this.pageSize,
+        qualifiedIn: [this.showActive]
+      }
+      if (this.filterBy.length > 0) {
+        params.levelIn = this.filterBy
+      }
+      if (this.search) {
+        params.nameIn = [this.search]
+      }
+      const { data } = await this.$apollo.query(getCompStats(params))
       const paging = _.get(data, 'comp.previewRun.data')
       this.totalResults = paging.totalResults
       this.descendants = parseData(data).members
@@ -411,6 +465,11 @@ export default {
     page(newVal, oldVal) {
       window.scrollTo(0, 0)
       this.getCompStatsPage()
+    },
+    drawer(newVal, oldVal) {
+      if (!newVal) {
+        this.getCompStatsPage()
+      }
     }
   },
   computed: {
@@ -447,6 +506,9 @@ export default {
 }
 .the-grid .grid-cell.satisfied{
   background-color: #4CAF50;
+}
+.button-fix {
+  margin-top: -12px;
 }
 
 </style>
