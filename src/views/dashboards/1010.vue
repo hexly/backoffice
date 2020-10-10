@@ -249,7 +249,8 @@ export default {
     earnings: {
       query: GET_MEMBER_PAYOUTS,
       update({ getPrincipal }) {
-        return _.get(getPrincipal, 'member.payouts', []).filter(p => p.status !== 'REVERSED' && p.metadata.origination.type === 'sale')
+        return _.get(getPrincipal, 'member.payouts', [])
+          .filter(p => p.status !== 'REVERSED' && (p.metadata.origination && p.metadata.origination.type === 'sale'))
       }
     },
     team: {
