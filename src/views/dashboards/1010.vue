@@ -153,9 +153,6 @@ export default {
       companyLeaderboard: []
     }
   },
-  async mounted() {
-    await this.compGetPeriods({ when: this.$moment(this.getCompanyTime()).format('YYYY-MM-DD') })
-  },
   methods: {
     formatEarning(earning) {
       let currency = '$'
@@ -164,18 +161,6 @@ export default {
       }
 
       return `${currency}${earning.amount / 100}`
-    },
-    getCompanyTime(time) {
-      const date = time ? new Date(time) : new Date()
-      return new Intl.DateTimeFormat('en-US', {
-        timeZone: this.$tenantInfo.companyTime,
-        year: 'numeric',
-        month: 'numeric',
-        day: 'numeric',
-        hour: 'numeric',
-        minute: 'numeric',
-        second: 'numeric'
-      }).format(date)
     },
     async loadLeaderboards(period) {
       const variables = {
@@ -203,7 +188,6 @@ export default {
       Mutations.SET_GATE
     ]),
     ...mapActions([
-      CompActions.GET_PERIODS,
       CompActions.GET_STATS
     ])
   },

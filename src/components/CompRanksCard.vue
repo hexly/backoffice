@@ -54,7 +54,7 @@
           </v-row>
 
           <template class="stats-container px-2 py-4" v-if="stats">
-            <v-row class="py-3" :class="tabMode ? 'rank-data-row' : null" justify="space-between" wrap v-for="(stat, i) in stats.metadata.requirements" :key="i">
+            <v-row :class="{ 'rank-data-row' : tabMode, 'py-3': !tabMode }" justify="space-between" wrap v-for="(stat, i) in stats.metadata.requirements" :key="i">
               <v-col class="pa-1">
                 <div class="title">
                   {{ stat.category ? stat.category.toUpperCase() : statsMapping[`${stat.type}_${stat.metric}`]}}

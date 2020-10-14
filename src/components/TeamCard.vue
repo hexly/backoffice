@@ -116,6 +116,19 @@
           </div>
         </v-tab-item>
         <v-tab-item>
+          <div class="item-container-card">
+            <CompRanksCard
+              v-if="!$apolloData.loading"
+              :stats         ="compStatsData"
+              :statsDisabled ="statsDisabled"
+              :tabMode       ="true"
+            />
+            <v-flex v-else d-flex justify-center align-center class="text-center">
+              <v-progress-circular indeterminate :size="50" :width="5" color="primary"></v-progress-circular>
+            </v-flex>
+          </div>
+        </v-tab-item>
+        <v-tab-item>
           <div v-if="!$apolloData.loading">
             <v-card v-if="awards.length" class="badge-card" d-flex justify-center wrap flat>
               <v-chip
@@ -158,12 +171,17 @@
 <script>
 import { get } from 'lodash'
 
+import CompRanksCard from '@/components/CompRanksCard.vue'
 import { TEAM_SIZE_BY_GENERATION } from '@/graphql/MemberStats.gql'
 import { AWARDS_BY_ID } from '@/graphql/Team.gql'
 export default {
   name: 'TeamCard',
+  components: {
+    CompRanksCard
+  },
   data() {
     return {
+      statsDisabled: false,
       month: new Date().getMonth() + 1,
       year: new Date().getFullYear(),
       displayedRank: null,
@@ -178,6 +196,7 @@ export default {
       tabHeadings: [
         'Info',
         'Team',
+        'Rank',
         'Awards'
       ],
       tabContent: {
@@ -327,8 +346,8 @@ export default {
       if (this.user) {
         this.awards = this.user.awards
       }
-      this.compStatsData = this.compStats
     }
+    this.compStatsData = this.compStats
   },
   apollo: {
     counts: {
