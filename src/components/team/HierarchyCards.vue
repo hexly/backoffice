@@ -33,7 +33,7 @@
                 :user="i"
                 :actions="true"
                 :stats="statsMap[i.id]"
-                :compStats="compStats[teamIds.indexOf(i.id)]"
+                :compStats="compStats[i.id]"
                 noData="No data available"
                 @tabActivated="tabActivated"
                 :activeTab="activeTab"
@@ -51,12 +51,11 @@
 
 <script>
 import { mapMutations, mapState, mapGetters } from 'vuex'
-
 import MonthSelector from '@/components/MonthSelector.vue'
 import TeamCard from '@/components/TeamCard.vue'
 import { TEAM_QUERY, TEAM_SEARCH_QUERY } from '@/graphql/Team.gql'
 import { MONTHLY_STATS_QUERY } from '@/graphql/MemberStats.gql'
-import { COMP_STATS_QUERY } from '@/graphql/CompStats.gql'
+import { COMP_PREVIEW_QUERY, parseData } from '@/graphql/comp.gql'
 import { Mutations } from '@/store'
 
 export default {
@@ -78,12 +77,16 @@ export default {
       mergedTeamArr: [],
       hashResTeam: [],
       teamIds: [],
-      activeTab: null
+      activeTab: null,
+      compStats: {}
     }
   },
   computed: {
     ...mapState({
-      loading: state => state.loading
+      loading: state => state.loading,
+      openPeriod: state => {
+        return state.comp.periods.open && state.comp.periods.open[0]
+      }
     }),
     ...mapGetters(['member', 'memberId'])
   },
@@ -231,19 +234,32 @@ export default {
       }
     },
     compStats: {
-      query: COMP_STATS_QUERY,
+      query: COMP_PREVIEW_QUERY,
       variables() {
         return {
-          input: {
-            year: this.year,
-            month: this.month,
-            membersIn: this.teamIds
+          payload: {
+            input: {
+              memberId: this.currentId,
+              periodId: this.openPeriod.id,
+              rowTypeIn: ['descendant'],
+              page: 1,
+              pageSize: 500,
+              memberIn: this.teamIds
+            }
           }
         }
       },
-      update({ compStatsQuery: { results } }) {
-        return results
-      }
+      skip() {
+        return !this.openPeriod
+      },
+      update(res) {
+        const stats = parseData(res)
+        return stats.members.reduce((orig, s) => {
+          orig[s.awardeeId] = s
+          return orig
+        }, {})
+      },
+      client: 'federated'
     }
   },
   mounted () {

@@ -192,6 +192,7 @@
 import moment from 'moment'
 import { Actions, Mutations } from '@/store'
 import { UserMutations } from '@/stores/UserStore'
+import { CompActions } from '@/stores/CompStore'
 import { Actions as MemberActions } from '@/Members/Store'
 import { mapState, mapActions, mapMutations, mapGetters } from 'vuex'
 import { GET_PRINCIPAL } from '@/graphql/iam.gql'
@@ -251,6 +252,18 @@ export default {
     }
   },
   methods: {
+    getCompanyTime(time) {
+      const date = time ? new Date(time) : new Date()
+      return new Intl.DateTimeFormat('en-US', {
+        timeZone: this.$tenantInfo.companyTime,
+        year: 'numeric',
+        month: 'numeric',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric',
+        second: 'numeric'
+      }).format(date)
+    },
     logout () {
       this.logoutUser()
       window.location.reload(true)
@@ -258,10 +271,12 @@ export default {
     ...mapMutations([Mutations.SET_GATE, UserMutations.SET_PRINCIPAL]),
     ...mapActions({
       logoutUser: Actions.LOGOUT,
-      getAttributes: MemberActions.GET_ATTRIBUTES
+      getAttributes: MemberActions.GET_ATTRIBUTES,
+      compGetPeriods: CompActions.GET_PERIODS
     })
   },
   async mounted () {
+    await this.compGetPeriods({ when: this.$moment(this.getCompanyTime()).format('YYYY-MM-DD') })
     if (this.$tenantInfo.features.legal === true) {
       const { data } = await this.getAttributes({
         key: ['affiliate-agreement', 'entity-details'],

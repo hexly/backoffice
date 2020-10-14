@@ -28,6 +28,7 @@
             @viewTeam="showTeam"
             :user="getMember(i)"
             :stats="statsMap[i.id]"
+            :compStats="compStats[i.id]"
             :actions="true"
             noData="No data available"
             teamSearchMode
@@ -47,8 +48,9 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapState } from 'vuex'
 import TeamCard from '@/components/TeamCard.vue'
+import { COMP_PREVIEW_QUERY, parseData } from '@/graphql/comp.gql'
 import { TEAM_SEARCH_QUERY } from '@/graphql/Team.gql'
 
 export default {
@@ -63,6 +65,8 @@ export default {
       mergedTeamArr: [],
       hashResTeam: [],
       page: 1,
+      teamIds: [],
+      compStats: {},
       memberTeamSearch: {
         team: [],
         totalCount: 0
@@ -74,7 +78,7 @@ export default {
         orderDirection: 'asc',
         orderByColumn: 'depth'
       },
-      limit: 28,
+      limit: 14,
       loading: 0,
       sorts: [
         {
@@ -110,57 +114,17 @@ export default {
       this.lineage.push(user)
       this.currentId = currentId
     },
-    hashResultsTeam(results, memberTeamSearch) {
-      let matchArr = []
-
-      if (!memberTeamSearch || !results) {
-        return
-      }
-
-      memberTeamSearch.team.forEach(member => {
-        const matchIndex = results.team.findIndex(element => member.id === element.id)
-        matchArr.push(matchIndex)
-      })
-
-      this.hashResTeam = matchArr
-
-      this.mergeUserTeam()
-    },
-    mergeUserTeam() {
-      let mergedArr = []
-      const { results: { team: resTeam }, memberTeamSearch: { team: mtsTeam }, hashResTeam } = this
-
-      if (!hashResTeam || !hashResTeam.length || !mtsTeam) {
-        this.mergedTeamArr = mtsTeam
-        return
-      }
-
-      mtsTeam.forEach((mtsObject, index) => {
-        let newMtsObj = { ...mtsObject }
-        const resObject = resTeam[hashResTeam[index]]
-        if (!resObject) {
-          mergedArr.push(newMtsObj)
-          return
-        }
-        const resObjectKeys = Object.keys(resObject)
-
-        resObjectKeys.forEach(resKey => {
-          const mtsObjHasProp = mtsObject.hasOwnProperty(resKey)
-
-          if (!mtsObjHasProp) {
-            newMtsObj[resKey] = resObject[resKey]
-          }
-        })
-        mergedArr.push(newMtsObj)
-      })
-      this.mergedTeamArr = mergedArr
-    },
     getMember(user) {
       return { ...user, addresses: user.member.addresses }
     }
   },
   computed: {
     ...mapGetters(['member', 'memberId']),
+    ...mapState({
+      openPeriod: state => {
+        return state.comp.periods.open && state.comp.periods.open[0]
+      }
+    }),
     length() {
       return Math.ceil(this.memberTeamSearch.totalCount / this.limit)
     }
@@ -180,10 +144,42 @@ export default {
         }
       },
       update({ memberTeamSearch }) {
+        this.teamIds = []
+        memberTeamSearch.team.forEach(member => {
+          this.teamIds.push(member.id)
+        })
         return memberTeamSearch
       },
       loadingKey: 'loading',
       debounce: 500
+    },
+    compStats: {
+      query: COMP_PREVIEW_QUERY,
+      variables() {
+        return {
+          payload: {
+            input: {
+              memberId: this.currentId,
+              periodId: this.openPeriod.id,
+              rowTypeIn: ['descendant'],
+              page: 1,
+              pageSize: 500,
+              memberIn: this.teamIds
+            }
+          }
+        }
+      },
+      skip() {
+        return !this.openPeriod
+      },
+      update(res) {
+        const stats = parseData(res)
+        return stats.members.reduce((orig, s) => {
+          orig[s.awardeeId] = s
+          return orig
+        }, {})
+      },
+      client: 'federated'
     }
   },
   mounted () {
