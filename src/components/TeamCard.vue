@@ -348,6 +348,22 @@ export default {
       }
     }
     this.compStatsData = this.compStats
+    const counts = get(this, 'compStatsData.metadata.counts')
+    if (counts) {
+      this.skipTeamQuery = true
+      const levels = {}
+      if (counts.levels) {
+        counts.levels.forEach(l => {
+          levels[l.level] = l.total
+        })
+      }
+      this.tabContent = {
+        teamSize: counts.downline || 0,
+        frontLine: levels[1] || 0,
+        secondLine: levels[2] || 0,
+        thirdLine: levels[3] || 0
+      }
+    }
   },
   apollo: {
     counts: {
