@@ -56,14 +56,22 @@
           class="elevation-1 mb-12 pb-8"
           :loading="loading > 0"
         >
+        <template v-slot:item.avatar="{ item }">
+          <div style="position: relative;">
+            <v-badge avatar overlap bottom color="white">
+              <template v-slot:badge>
+                <Flag :name="item.metadata.market" />
+              </template>
+              <v-avatar :size="$vuetify.breakpoint.xs ? '50px' : '75px'">
+                <img v-if="item.metadata.profileAsset" alt="Avatar" :src="item.metadata.profileAsset">
+                <v-icon v-else color="primary" dark>mdi-account-circle</v-icon>
+              </v-avatar>
+            </v-badge>
+            <div class="mrn">#{{item.metadata.mrn}}</div>
+          </div>
+        </template>
         <template v-slot:item.name="{ item }">
-          <v-avatar size="24px">
-            <img v-if="item.metadata.profileAsset" alt="Avatar" :src="item.metadata.profileAsset">
-            <v-icon v-else color="primary" dark>mdi-account-circle</v-icon>
-          </v-avatar>
-          {{item.metadata.name}} <Flag :name="item.metadata.market" />
-          <br/>
-          <span>#{{item.metadata.mrn}}</span>
+          {{item.metadata.name}}
           <br/>
           <small class="pl-5">{{ item.metadata.email }}</small>
           <!-- <v-chi1p :color="item.metadata.ranking.rank > 5 ? '#a1213b' : 'gray'" :class="{'white--text': item.metadata.ranking.rank > 5}">{{item.metadata.ranking.name}}</v-chip> -->
@@ -77,9 +85,9 @@
             <v-progress-circular
               v-if="stat.notApplicable"
               :rotate="-90"
-              :size="75"
+              :size="$vuetify.breakpoint.xs ? 50 : 75"
               :value="100"
-              :width="5"
+              :width="$vuetify.breakpoint.xs ? 2 : 5"
               color="grey"
             >
               <div v-if="stat == null || stat.earned === null || stat.earned === undefined">N/A</div>
@@ -88,12 +96,12 @@
             <v-progress-circular
               v-else
               :rotate="-90"
-              :size="75"
+              :size="$vuetify.breakpoint.xs ? 50 : 75"
               :value="stat.earned/ stat.required * 100"
-              :width="5"
+              :width="$vuetify.breakpoint.xs ? 2 : 5"
               :color="stat.achieved ? 'green' : 'red'"
             >
-              <div>{{stat.earned || 0}}<hr/>{{stat.required}}</div>
+              <div :class="{'tiny-font': $vuetify.breakpoint.xs}">{{stat.earned || 0}}<hr/>{{stat.required}}</div>
             </v-progress-circular>
           </div>
         </template>
@@ -215,7 +223,15 @@
             ></v-checkbox>
           </v-expansion-panel-content>
         </v-expansion-panel>
-        <v-expansion-panel v-if="!selectedPeriod.metadata">
+        <v-expansion-panel v-if="selectedPeriod.metadata && selectedPeriod.metadata.version === 2 && engineStats.metadata">
+          <v-expansion-panel-header>Sort By: {{newSortByOptions[sortBy]}}</v-expansion-panel-header>
+          <v-expansion-panel-content>
+            <v-radio-group v-model="sortBy">
+              <v-radio v-for="(value, key) in newSortByOptions" :label="value" :value="key" :key="key"></v-radio>
+            </v-radio-group>
+          </v-expansion-panel-content>
+        </v-expansion-panel>
+        <v-expansion-panel v-else>
           <v-expansion-panel-header>Sort By: {{sortByOptions[sortBy]}}</v-expansion-panel-header>
           <v-expansion-panel-content>
             <v-radio-group v-model="sortBy">
@@ -223,7 +239,7 @@
             </v-radio-group>
           </v-expansion-panel-content>
         </v-expansion-panel>
-        <v-expansion-panel v-if="!selectedPeriod.metadata">
+        <v-expansion-panel>
           <v-expansion-panel-header>Order By: {{orderByOptions[orderBy]}}</v-expansion-panel-header>
           <v-expansion-panel-content>
             <v-radio-group v-model="orderBy">
@@ -304,6 +320,7 @@ export default {
     }
 
     const newHeaders = [
+      { text: '', align: 'center', value: 'avatar' },
       { text: this.$tenantInfo.distributorLabel, align: 'center', value: 'name' },
       { text: 'Level', align: 'center', value: 'relativeLevel' },
       { text: 'Current Rank', align: 'center', value: 'rank' },
@@ -312,6 +329,17 @@ export default {
       { text: 'Active In Downline', align: 'center', value: 'metadata.counts.qualified' },
       { text: 'Stats', align: 'start', value: 'stats' }
     ]
+
+    const newSortByOptions = {
+      RANK: 'Rank',
+      PSV: 'PSV',
+      GSV: 'GSV',
+      DLSV: 'DLSV',
+      LEVEL: 'Level',
+      DOWNLINE_SIZE: 'Downline Size',
+      GROUP_SIZE: 'Group Size',
+      QUALIFIED_COUNT: 'Active In Download'
+    }
 
     const sortByOptions = {
       rank: 'Rank'
@@ -355,11 +383,12 @@ export default {
       totalResults: 0,
       loading: 0,
       drawer: false,
-      sortBy: 'rank',
+      sortBy: 'RANK',
       sortByOptions,
       showActive: true,
       filterBy: [],
       orderBy: 'desc',
+      newSortByOptions,
       orderByOptions: {
         desc: 'Greatest => Least',
         asc: 'Least => Greatest'
@@ -392,6 +421,7 @@ export default {
       this.getCompStatsPage()
     },
     async getCompStatsPage() {
+      console.log(this.sortBy, this.orderBy)
       this.loading = 1
       const params = {
         memberId: this.memberId,
@@ -399,7 +429,8 @@ export default {
         periodId: this.selectedPeriod.id,
         page: this.page,
         pageSize: this.pageSize,
-        qualifiedIn: [this.showActive]
+        qualifiedIn: [this.showActive],
+        sortBy: [ { column: this.sortBy, dir: this.orderBy.toUpperCase() } ]
       }
       if (this.filterBy.length > 0) {
         params.levelIn = this.filterBy
@@ -510,5 +541,21 @@ export default {
 .button-fix {
   margin-top: -12px;
 }
-
+.tiny-font {
+  font-size: 11px;
+}
+.mrn {
+  position: absolute;
+  background-color: rgb(161, 33, 59);
+  color: white;
+  z-index: 1000;
+  line-height: 15px;
+  font-weight: bold;
+  bottom: -3px;
+  right: 65%;
+  min-width: 35px;
+  font-size: 12px;
+  padding: 1px 3px;
+  text-align: center;
+}
 </style>
