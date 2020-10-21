@@ -248,12 +248,12 @@
           </v-expansion-panel-content>
         </v-expansion-panel>
         <v-expansion-panel>
-          <v-expansion-panel-header>Filter By: {{filterBy}}</v-expansion-panel-header>
+          <v-expansion-panel-header>Filter By Level: {{filterBy}}</v-expansion-panel-header>
           <v-expansion-panel-content>
             <template v-if="selectedPeriod.metadata && selectedPeriod.metadata.version === 2 && engineStats.metadata">
               <v-checkbox
                 v-for="(value, key) in engineStats.metadata.counts.levels"
-                :label="`Level ${value.level}`"
+                :label="`Level ${value.level} (${value.total})`"
                 :value="value.level"
                 :key="key"
                 v-model="filterBy"
@@ -268,6 +268,18 @@
                 v-model="filterBy"
               ></v-checkbox>
             </template>
+          </v-expansion-panel-content>
+        </v-expansion-panel>
+        <v-expansion-panel v-if="selectedPeriod.metadata && selectedPeriod.metadata.version === 2 && engineStats.metadata">
+          <v-expansion-panel-header>Filter By Rank: {{filterByRank}}</v-expansion-panel-header>
+          <v-expansion-panel-content>
+            <v-checkbox
+              v-for="(value, key) in engineStats.metadata.counts.ranks"
+              :label="`Rank ${key} (${value})`"
+              :value="key"
+              :key="key"
+              v-model="filterByRank"
+            ></v-checkbox>
           </v-expansion-panel-content>
         </v-expansion-panel>
       </v-expansion-panels>
@@ -387,6 +399,7 @@ export default {
       sortByOptions,
       showActive: true,
       filterBy: [],
+      filterByRank: [],
       orderBy: 'desc',
       newSortByOptions,
       orderByOptions: {
@@ -421,7 +434,6 @@ export default {
       this.getCompStatsPage()
     },
     async getCompStatsPage() {
-      console.log(this.sortBy, this.orderBy)
       this.loading = 1
       const params = {
         memberId: this.memberId,
@@ -434,6 +446,9 @@ export default {
       }
       if (this.filterBy.length > 0) {
         params.levelIn = this.filterBy
+      }
+      if (this.filterByRank.length > 0) {
+        params.rankIn = this.filterByRank
       }
       if (this.search) {
         params.nameIn = [this.search]
@@ -548,7 +563,6 @@ export default {
   position: absolute;
   background-color: rgb(161, 33, 59);
   color: white;
-  z-index: 1000;
   line-height: 15px;
   font-weight: bold;
   bottom: -3px;
