@@ -69,7 +69,8 @@ export const getCompStats = (params) => {
     memberIn,
     rankIn,
     qualifiedIn,
-    nameIn
+    nameIn,
+    sortBy
   } = params
 
   return {
@@ -86,7 +87,8 @@ export const getCompStats = (params) => {
           memberIn,
           rankIn,
           qualifiedIn,
-          nameIn
+          nameIn,
+          sortBy
         }
       }
     },
