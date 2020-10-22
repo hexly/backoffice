@@ -42,7 +42,7 @@
               <Currency :amount="parseFloat(item.total)" :currency="item.currency"/>
             </td>
             <td>{{ item.totalPoints }}</td>
-            <td>{{ item.status }}</td>
+            <td>{{statusMap[item.status] || item.status}}</td>
             <td>
               <v-icon @click="expanded = []" v-if="isExpanded">expand_less</v-icon>
               <v-icon  @click="expanded = [item]" v-else>expand_more</v-icon>
@@ -66,7 +66,7 @@
                   <h4>Details:</h4>
                   <ul>
                     <li>Originating ID: {{item.providerOid}}</li>
-                    <li>Status: {{item.status}}</li>
+                    <li>Status: {{statusMap[item.status] || item.status}}</li>
                     <li v-if="item.customerNote">Customer Note: {{item.customerNote}}</li>
                   </ul>
                 </v-flex>
@@ -132,7 +132,12 @@ export default {
   },
   data() {
     return {
-      statuses: ['completed', 'processing', 'refunded', 'awaiting-shipment', 'export_for_shipping', 'POSTED', 'Awaiting Approval', 'SHIPPED', 'AWAITING FUNDS', 'ENTERED'],
+      statusMap: {
+        'completed': 'Completed',
+        'processing': 'Processing',
+        'hxro-paid-await': 'Subscription Paid - Awaiting Shipping'
+      },
+      statuses: ['completed', 'processing', 'refunded', 'awaiting-shipment', 'export_for_shipping', 'POSTED', 'Awaiting Approval', 'SHIPPED', 'AWAITING FUNDS', 'ENTERED', 'hxro-paid-await'],
       datePickerStartDate: null,
       datePickerEndDate: null,
       modalStart: false,
@@ -184,6 +189,7 @@ export default {
       debounce: 500,
       update({ searchSalesBySellerId }) {
         this.setLoading(false)
+        console.log(searchSalesBySellerId)
         return searchSalesBySellerId.filter(sale => this.statuses.indexOf(sale.status) >= 0)
       }
     }
