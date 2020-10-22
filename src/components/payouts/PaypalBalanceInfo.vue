@@ -3,6 +3,9 @@
     <v-alert type="success" v-if="transferSuccess">
       PayPal transfer successfully initiated!
     </v-alert>
+    <v-alert type="warning" v-if="!!warningMessage">
+      {{warningMessage}}
+    </v-alert>
     <h4>
         Available Funds:
         <v-tooltip slot="append" bottom>
@@ -16,9 +19,9 @@
         <Currency :amount="releasedBalance.amount / 100" :currency="releasedBalance.currency"/>
     </h2>
     <br/>
-    <v-dialog v-model="transferDialog" width="500" :disabled="releasedBalance.amount < 25 || disableBalanceTransfer">
+    <v-dialog v-model="transferDialog" width="500" :disabled="releasedBalance.amount < 25 || transferDisabled">
         <template v-slot:activator="{ on }">
-        <v-btn class="ma-0" color="success" v-on="on" small :disabled="releasedBalance.amount < 25 || disableBalanceTransfer">Transfer To PayPal</v-btn>
+        <v-btn class="ma-0" color="success" v-on="on" small :disabled="releasedBalance.amount < 25 || transferDisabled">Transfer To PayPal</v-btn>
         </template>
         <v-card>
         <v-card-title class="headline grey lighten-2" primary-title >
@@ -97,7 +100,6 @@ export default {
         })
         const releasedPayouts = _.find(payouts.groupedByStatus, { key: this.status.released })
         if (releasedPayouts) {
-          console.log(releasedPayouts)
           this.releasedBalance.amount = releasedPayouts.total
           this.releasedBalance.currency = releasedPayouts.currency
         }
@@ -141,12 +143,24 @@ export default {
         return state.user.principal.member.tenantIntegrations.find(i => {
           return i.key === 'paypal_payouts' && i.priority === 0
         })
-      },
-      disableBalanceTransfer() {
-      // all env vars come in as strings! yay!
-        return process.env.VUE_APP_DISABLE_PAYPAL_FUNDING === 'true'
       }
     }),
+    payPalIntegration() {
+      return this.integrations.find(i => {
+        console.log(i.key)
+        return i.key === 'paypal_payouts'
+      })
+    },
+    transferDisabled() {
+      return this.payPalIntegration && this.payPalIntegration.metadata && this.payPalIntegration.metadata.disableTransfer
+    },
+    warningMessage() {
+      console.log('something')
+      if (this.payPalIntegration && this.payPalIntegration.metadata && this.payPalIntegration.metadata.warning) {
+        return this.payPalIntegration.metadata.warning
+      }
+      return false
+    },
     ...mapGetters(['memberId', 'currencyCode', 'integrations', 'member'])
   }
 }

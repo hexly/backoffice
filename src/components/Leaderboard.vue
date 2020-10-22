@@ -15,7 +15,6 @@
       >
         <v-list-item
           :key="item.name"
-          avatar
         >
           <v-list-item-avatar>
             <img :src="scaleImage(item.profileUrl)">
