@@ -70,7 +70,7 @@ export default {
       metadata: {},
       settings: {
         'paypal_payouts': {
-          types: ['phone', 'email']
+          types: ['email']
         }
       }
     }

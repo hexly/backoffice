@@ -7,10 +7,43 @@
         <PaypalBalanceInfo v-else-if="selectedIntegration === 'paypal_payouts'"/>
         <iPayoutsBalanceInfo v-else-if="selectedIntegration === 'i_payouts'"/>
       </v-card>
+      <v-card>
+        <v-card-title class="headline font-weight-regular white--text secondary">Order History</v-card-title>
+        <v-card-text>
+          <v-subheader>Range</v-subheader>
+          <v-container grid-list-md text-center>
+            <v-layout row align-center justify-space-around wrap>
+              <v-dialog ref="dialogStart" v-model="modalStart" width="290px">
+                <template v-slot:activator="{ on }">
+                  <v-text-field v-on="on" v-model="startDate" label="Select Start Date" prepend-icon="event" readonly/>
+                </template>
+                <v-date-picker ref="pickerStart" color="secondary" v-model="datePickerStartDate" :reactive="true">
+                  <v-spacer></v-spacer>
+                  <v-btn text color="primary" @click="modalStart = false">Cancel</v-btn>
+                  <v-btn text color="primary" @click="dateSave(datePickerStartDate, 'start'); $refs.dialogStart.save()">OK</v-btn>
+                </v-date-picker>
+              </v-dialog>
+              <v-dialog ref="dialogEnd" v-model="modalEnd" width="290px">
+                <template v-slot:activator="{ on }">
+                  <v-text-field v-on="on" v-model="endDate" label="Select End Date" prepend-icon="event" readonly/>
+                </template>
+                <v-date-picker ref="pickerEnd" color="secondary" v-model="datePickerEndDate" :reactive="true">
+                  <v-spacer></v-spacer>
+                  <v-btn text color="primary" @click="modalEnd = false">Cancel</v-btn>
+                  <v-btn text color="primary" @click="dateSave(datePickerEndDate, 'end'); $refs.dialogEnd.save()">OK</v-btn>
+                </v-date-picker>
+              </v-dialog>
+            </v-layout>
+          </v-container>
+        </v-card-text>
+      </v-card>
       <v-responsive>
         <v-data-table
+          disable-sort
+          disable-pagination
+          hide-default-footer
           :headers="headers"
-          :items="items"
+          :items="payouts"
           class="elevation-1"
           item-key="id"
           :loading="loading"
@@ -34,7 +67,7 @@
               <td>{{ $moment(item.issuedOn).format('lll') }}</td>
               <!-- <td>{{ item.releasedOn ? $moment(item.releasedOn).format('lll') : '--' }}</td> -->
               <td>{{ item.note ? item.note : '--' }}</td>
-              <td>{{ item.integration.name }}</td>
+              <td>{{ item.integrationName }}</td>
               <td v-if="item.deductions.length">
                 <v-icon @click="expanded = []" v-if="isExpanded">expand_less</v-icon>
                 <v-icon @click="expanded = [item]" v-else>expand_more</v-icon>
@@ -57,12 +90,11 @@
             </td>
           </template>
         </v-data-table>
+        <v-pagination  class="pb-12 mb-12" v-model="page" :length="Math.ceil(totalResults/pageSize)" :total-visible="15"></v-pagination>
       </v-responsive>
     </div>
     <v-dialog
       v-model="transferDialog"
-      lazy
-      full-width
       width="290px"
     >
       <v-card></v-card>
@@ -77,7 +109,7 @@ import StripeBalanceInfo from '@/components/payouts/StripeBalanceInfo'
 import iPayoutsBalanceInfo from '@/components/payouts/iPayoutsBalanceInfo'
 import PaypalBalanceInfo from '@/components/payouts/PaypalBalanceInfo'
 import PayoutsSelector from '@/components/PayoutsSelector'
-import { GET_MEMBER_PAYOUTS } from '@/graphql/Member.gql'
+import { SEARCH_PAYOUTS } from '@/graphql/Payouts.gql'
 import { Mutations } from '@/store'
 import { mapMutations, mapState, mapGetters } from 'vuex'
 
@@ -94,6 +126,19 @@ export default {
   },
   data() {
     return {
+      page: 1,
+      pageSize: 25,
+      totalResults: 0,
+      datePickerStartDate: null,
+      datePickerEndDate: null,
+      modalStart: false,
+      modalEnd: false,
+      startDate: this.$moment()
+        .startOf('month')
+        .format('MM/DD/YYYY'),
+      endDate: this.$moment()
+        .endOf('month')
+        .format('MM/DD/YYYY'),
       selectedIntegration: null,
       transferDialog: false,
       transferingFunds: false,
@@ -106,7 +151,7 @@ export default {
         { text: 'Issued Date', value: 'issuedOn' },
         // { text: 'Released Date', value: 'releasedOn' },
         { text: 'Notes', value: 'notes' },
-        { text: 'Provider', value: 'integration.name' },
+        { text: 'Provider', value: 'integrationName' },
         { text: '', value: 'data-table-expand' }
       ],
       feeEnumMap: {
@@ -132,19 +177,26 @@ export default {
     }
   },
   apollo: {
-    items: {
+    payouts: {
+      query: SEARCH_PAYOUTS,
+      variables() {
+        return {
+          input: {
+            memberId: this.memberId,
+            page: this.page,
+            pageSize: this.pageSize,
+            startDate: this.$moment(this.startDate).format('YYYY-MM-DD'),
+            endDate: this.$moment(this.endDate).format('YYYY-MM-DD')
+          }
+        }
+      },
+      client: 'federated',
       watchLoading(isLoading, countModifier) {
         this.setLoading(isLoading)
       },
-      query: GET_MEMBER_PAYOUTS,
-      error(err) {
-        this.setLoading(false)
-        console.error({ err })
-      },
-      debounce: 500,
-      update({ getPrincipal }) {
-        this.setLoading(false)
-        return getPrincipal.member.payouts.filter(p => this.filterOut.indexOf(p.status) < 0)
+      update({ payouts }) {
+        this.totalResults = payouts.search.totalResults
+        return payouts.search.results
       }
     }
   },
@@ -156,6 +208,16 @@ export default {
         selectedIntegration = _.minBy(this.payoutIntegrations, 'priority')
       }
       this.selectedIntegration = selectedIntegration.key
+    },
+    dateSave(datePickerDate, startOrEnd) {
+      const varName = `${startOrEnd}Date`
+      this[varName] = this.$moment(datePickerDate).format('MM/DD/YYYY')
+    },
+    startDateChanged(date) {
+      this.$refs.dialogStart.save(date)
+    },
+    endDateChanged(date) {
+      this.$refs.dialogEnd.save(date)
     }
   },
   computed: {
