@@ -73,8 +73,12 @@
         <template v-slot:item.name="{ item }">
           {{item.metadata.name}}
           <br/>
-          <small class="pl-5">{{ item.metadata.email }}</small>
-          <!-- <v-chi1p :color="item.metadata.ranking.rank > 5 ? '#a1213b' : 'gray'" :class="{'white--text': item.metadata.ranking.rank > 5}">{{item.metadata.ranking.name}}</v-chip> -->
+          <small>{{ item.metadata.email }}</small>
+          <template v-if="item.metadata.recognizedRank">
+            <br/>
+            <small>Recognized:</small>
+            <v-chip small :color="item.metadata.recognizedRank > 5 ? '#a1213b' : 'gray'" :class="{'white--text': item.metadata.recognizedRank > 5}">Rank {{item.metadata.recognizedRank}}</v-chip>
+          </template>
         </template>
         <template v-slot:item.rank="{ item }">
           <v-chip :color="item.metadata.ranking.rank > 5 ? '#a1213b' : 'gray'" :class="{'white--text': item.metadata.ranking.rank > 5}">{{item.metadata.ranking.name}}</v-chip>
@@ -335,7 +339,7 @@ export default {
       { text: '', align: 'center', value: 'avatar' },
       { text: this.$tenantInfo.distributorLabel, align: 'center', value: 'name' },
       { text: 'Level', align: 'center', value: 'relativeLevel' },
-      { text: 'Current Rank', align: 'center', value: 'rank' },
+      { text: 'Rank', align: 'center', value: 'rank' },
       { text: 'Downline Size', align: 'center', value: 'metadata.counts.downline' },
       { text: 'Group Size', align: 'center', value: 'metadata.counts.group' },
       { text: 'Active In Downline', align: 'center', value: 'metadata.counts.qualified' },

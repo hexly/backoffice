@@ -14,17 +14,20 @@ s<template>
       </v-avatar>
       <h3 class="headline"> {{ user.principal.member.name }}</h3>
       <div v-if="showMrn" class="primary--text subheading font-weight-bold">{{memberName || 'Member'}} #<b>{{user.principal.member.mrn}}</b></div>
-      <div v-if="stats && stats.current">
+      <div v-if="stats && stats">
         <v-alert class="inner-alert" :value="isMonthInReview" icon="mdi-calendar-check" text dense type="info">
           <p>It's a new month and last month is in review. Your achieved status will be updated once the review has been finished.</p>
-          <b v-if="previous">
+          <b v-if="previous && !previous.metadata">
             Last month you reached: Rank&nbsp;{{previous.current.rank}}
+          </b>
+          <b v-else-if="previous && previous.metadata">
+            Last month you reached: Rank&nbsp;{{previous.metadata.rank}}
           </b>
         </v-alert>
         <p>
-          Achieved Status:
+          Recognized Rank:
           <v-btn x-small dark color="primary" class="body-2">
-            Rank {{stats.current.recognizedRank}}
+            Rank {{stats.metadata.recognizedRank}}
           </v-btn>
         </p>
       </div>
