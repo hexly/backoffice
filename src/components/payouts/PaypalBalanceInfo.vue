@@ -147,7 +147,6 @@ export default {
     }),
     payPalIntegration() {
       return this.integrations.find(i => {
-        console.log(i.key)
         return i.key === 'paypal_payouts'
       })
     },
@@ -155,7 +154,6 @@ export default {
       return this.payPalIntegration && this.payPalIntegration.metadata && this.payPalIntegration.metadata.disableTransfer
     },
     warningMessage() {
-      console.log('something')
       if (this.payPalIntegration && this.payPalIntegration.metadata && this.payPalIntegration.metadata.warning) {
         return this.payPalIntegration.metadata.warning
       }
