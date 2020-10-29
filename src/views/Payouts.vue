@@ -8,7 +8,6 @@
         <iPayoutsBalanceInfo v-else-if="selectedIntegration === 'i_payouts'"/>
       </v-card>
       <v-card>
-        <v-card-title class="headline font-weight-regular white--text secondary">Order History</v-card-title>
         <v-card-text>
           <v-subheader>Range</v-subheader>
           <v-container grid-list-md text-center>
