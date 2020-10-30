@@ -24,7 +24,7 @@ s<template>
             Last month you reached: Rank&nbsp;{{previous.metadata.rank}}
           </b>
         </v-alert>
-        <p>
+        <p v-if="stats && stats.metadata">
           Recognized Rank:
           <v-btn x-small dark color="primary" class="body-2">
             Rank {{stats.metadata.recognizedRank}}

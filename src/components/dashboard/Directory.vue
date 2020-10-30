@@ -125,8 +125,6 @@ export default {
     Badges
   },
   props: {
-    self: Object,
-    frontline: Array,
     title: String,
     membersTypeName: {
       type: String,
@@ -139,6 +137,13 @@ export default {
   },
   data() {
     return {
+      self: {
+        counts: {
+          total: 0,
+          level1: 0
+        }
+      },
+      frontline: [],
       console,
       searchSuffix: null,
       active: [],
@@ -275,6 +280,26 @@ export default {
         this.addedToUsers.push(target.id)
       }
       return children
+    }
+  },
+  apollo: {
+    frontline: {
+      query: MEMBER_STATS_BY_DEPTH,
+      variables () {
+        return {
+          input: {
+            relativeDepthIn: [1],
+            targetId: this.memberId
+          }
+        }
+      },
+      loadingKey: 'loadingStats',
+      update ({ getTeamDataByDepth }) {
+        // Frist one is always personal stats
+        const [personal, ...rest] = getTeamDataByDepth
+        this.self = personal
+        return rest
+      }
     }
   },
   watch: {

@@ -72,7 +72,16 @@
         <LeaderBoard :leaders="teamLeaderboard" title="Top Team Builders (Your Team)" message="New influencers this period: "/>
       </v-col>
     </v-row>
-    <Directory class="py-2" :self="personalStats" :frontline="team" title="Your Circle of Influence" membersTypeName="Influencer"/>
+    <v-card>
+      <v-card-title class="secondary white--text headline">
+        Your Circle Of Influencer
+      </v-card-title>
+      <v-card-text>
+        <p class="title pt-5">
+        Your circle of influence has moved to the team page. <a href="/team#directory">View My Circle Of Influence</a>
+        </p>
+      </v-card-text>
+    </v-card>
     <CompanyMap class="py-2" title="Influencers around the world"/>
   </div>
 </template>
@@ -84,7 +93,6 @@ import { isMobile } from '@/utils/isMobile'
 
 import Social from '@/components/profile/Social.vue'
 import PersonalCard from '@/components/dashboard/PersonalCard.vue'
-import Directory from '@/components/dashboard/Directory.vue'
 import DashCard from '@/components/DashboardCard.vue'
 import CompanyMap from '@/components/dashboard/CompanyMap.vue'
 import Announcement from '@/components/dashboard/Announcement.vue'
@@ -101,10 +109,7 @@ import {
 } from '@/graphql/Leaderboard.js'
 import { ENGINE_DASHBOARD_BANNERS } from '@/graphql/CompStats.gql'
 import { GET_MEMBER_PAYOUTS } from '@/graphql/Member.gql'
-import {
-  MEMBER_STATS_BY_DEPTH,
-  MAX_MRN
-} from '@/graphql/MemberStats.gql'
+import { MAX_MRN } from '@/graphql/MemberStats.gql'
 import { mapMutations, mapState, mapGetters, mapActions } from 'vuex'
 import { UserMutations } from '@/stores/UserStore'
 import { CompActions } from '@/stores/CompStore'
@@ -115,7 +120,6 @@ export default {
   components: {
     DashCard,
     PersonalCard,
-    Directory,
     CompanyMap,
     Announcement,
     Banner,
@@ -129,12 +133,6 @@ export default {
   data() {
     return {
       year: ~~this.$moment().format('Y'),
-      personalStats: {
-        counts: {
-          total: 0,
-          level1: 0
-        }
-      },
       dataTableHeaders: [
         { text: 'Payout', value: 'amount', sortable: false },
         { text: 'Reason', value: 'note', sortable: false },
@@ -235,24 +233,6 @@ export default {
       update({ getPrincipal }) {
         return _.get(getPrincipal, 'member.payouts', [])
           .filter(p => p.status !== 'REVERSED' && (p.metadata.origination && p.metadata.origination.type === 'sale'))
-      }
-    },
-    team: {
-      query: MEMBER_STATS_BY_DEPTH,
-      variables () {
-        return {
-          input: {
-            relativeDepthIn: [1],
-            targetId: this.memberId
-          }
-        }
-      },
-      loadingKey: 'loadingStats',
-      update ({ getTeamDataByDepth }) {
-        // Frist one is always personal stats
-        const [personal, ...rest] = getTeamDataByDepth
-        this.personalStats = personal
-        return rest
       }
     },
     memberCount: {
