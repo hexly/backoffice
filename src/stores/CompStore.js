@@ -2,7 +2,6 @@ import _ from 'lodash'
 import moment from 'moment'
 import { apolloHexlyClient, apolloFederatedClient } from '@/vue-apollo'
 import { getCompStats, parseData } from '@/graphql/comp.gql'
-import { delay } from '@/utils/timer.js'
 
 import {
   ENGINE_STATS_QUERY,
@@ -65,7 +64,6 @@ export const CompStore = {
           }
         ))
         const newComp = parseData(data)
-        // GO AND GET NEW COMP INFO FROM THE FEDERATED GRAPHQL
 
         const memberStats = newComp.members.find(s => ~~s.awardeeId === memberId)
         if (!transient) {
