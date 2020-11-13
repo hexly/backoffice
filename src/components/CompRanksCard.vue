@@ -5,7 +5,7 @@
       <v-spacer></v-spacer>
       <PeriodSwitcher v-if="!loading"></PeriodSwitcher>
       <template v-if="$tenantInfo.features.dashboard && $tenantInfo.features.dashboard.payoutHistory">
-        <v-btn v-if="!showPayouts" icon small @click="showPayouts = !showPayouts">
+        <v-btn :disabled="!stats.earnings" v-if="!showPayouts" icon small @click="showPayouts = !showPayouts">
           <v-icon>mdi-currency-usd</v-icon>
         </v-btn>
         <v-btn icon small v-else @click="showPayouts = !showPayouts">
@@ -37,7 +37,7 @@
           {{bannerMessage}}
         </v-alert>
         <template v-if="showPayouts">
-          <!-- <PeriodPayouts :payouts="stats.payouts" /> -->
+          <EarningBreakdown :earnings="stats.earnings" />
         </template>
         <template v-else>
           <v-row justify-space-between :class="tabMode ? 'rank-row' : ''" class="pa-1">
@@ -115,12 +115,12 @@
 import * as moment from 'moment'
 import { mapState } from 'vuex'
 import PeriodSwitcher from '@/components/PeriodSwitcher.vue'
-import PeriodPayouts from '@/components/PeriodPayouts.vue'
+import EarningBreakdown from '@/components/EarningBreakdown.vue'
 export default {
   name: 'CompRanksCard',
   components: {
     PeriodSwitcher,
-    PeriodPayouts
+    EarningBreakdown
   },
   props: {
     stats: Object,
