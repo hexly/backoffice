@@ -61,3 +61,18 @@ mutation AttemptPayoutsGrouped($input: groupedByStatusInput!){
   }
 }
 `
+
+export const PAYOUTS_SUMMARY = gql`
+query payoutsSummary($input: PayoutsSummaryInput!){
+  payouts{
+    summary(input: $input){
+      reason
+      rate
+      ledgerMemberId
+      currency
+      amountPaid
+      amountEarned
+    }
+  }
+}
+`

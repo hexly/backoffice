@@ -43,25 +43,7 @@
         <TeamOverview :stats="engineStats" :total="memberCount" :loading="engineStatsLoading"/>
       </v-col>
       <v-col col="12" sm="6">
-        <v-card id="recent-sales-card">
-          <v-toolbar color="secondary" dark>
-            <v-toolbar-title>Recent Earnings</v-toolbar-title>
-          </v-toolbar>
-          <v-responsive>
-            <v-data-table
-              :headers ="dataTableHeaders"
-              :items   ="earnings"
-              :loading ="$apollo.queries.earnings.loading"
-            >
-            <template v-slot:item.issuedOn="{ item }">
-              {{$moment(item.issuedOn).format('L')}}
-            </template>
-            <template v-slot:item.amount="{ item }">
-              {{formatEarning(item)}}
-            </template>
-            </v-data-table>
-          </v-responsive>
-        </v-card>
+        <EarningsCard />
       </v-col>
     </v-row>
     <v-row wrap>
@@ -96,6 +78,7 @@ import PersonalCard from '@/components/dashboard/PersonalCard.vue'
 import DashCard from '@/components/DashboardCard.vue'
 import CompanyMap from '@/components/dashboard/CompanyMap.vue'
 import Announcement from '@/components/dashboard/Announcement.vue'
+import EarningsCard from '@/components/dashboard/EarningsCard.vue'
 import Banner from '@/components/dashboard/Banner.vue'
 import Badges from '@/components/Badges.vue'
 import RankRequirementsCard from '@/components/RankRequirementsCard.vue'
@@ -128,7 +111,8 @@ export default {
     RankRequirementsCard,
     TeamOverview,
     LeaderBoard,
-    CompRanksCard
+    CompRanksCard,
+    EarningsCard
   },
   data() {
     return {
