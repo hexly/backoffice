@@ -48,7 +48,8 @@
 
 <script>
 import { searchAssetsByKey } from '@/modules/content/service.js'
-import pdf from 'pdfvuer'
+// import pdf from 'pdfvuer'
+import pdf from '@/components/LocalPdfViewer.vue'
 import { set, get } from 'lodash'
 
 export default {
