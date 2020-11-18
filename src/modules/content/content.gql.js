@@ -74,15 +74,6 @@ export const seachAllAssets = opName => gql`
         slug
         description
         categoryKey
-        visibilityId
-        owner{
-          displayName
-          mrn
-        }
-        tags{
-          key
-          name
-        }
       }
     }
   }
@@ -103,15 +94,6 @@ export const betterSearchAllAssets = opName => gql`
         slug
         description
         categoryKey
-        visibilityId
-        owner{
-          displayName
-          mrn
-        }
-        tags{
-          key
-          name
-        }
       }
     }
   }
