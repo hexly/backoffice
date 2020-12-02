@@ -5,7 +5,7 @@
       <v-spacer></v-spacer>
       <PeriodSwitcher v-if="!loading"></PeriodSwitcher>
       <template v-if="$tenantInfo.features.dashboard && $tenantInfo.features.dashboard.payoutHistory">
-        <v-btn :disabled="!stats.earnings" v-if="!showPayouts" icon small @click="showPayouts = !showPayouts">
+        <v-btn :disabled="stats && !stats.earnings" v-if="!showPayouts" icon small @click="showPayouts = !showPayouts">
           <v-icon>mdi-currency-usd</v-icon>
         </v-btn>
         <v-btn icon small v-else @click="showPayouts = !showPayouts">
@@ -86,7 +86,7 @@
           </template>
         </template>
       </v-card-text>
-      <v-card-text v-else-if="!statsDisabled && !loading" class="pa-3">
+      <v-card-text v-else-if="(!statsDisabled && !loading) || !stats" class="pa-3">
         <v-layout row justify-space-between :class="tabMode ? null : 'pb-4'">
           <v-flex px-3>
             <div class="title text-center">No Rank Data Found</div>
