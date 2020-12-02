@@ -16,18 +16,27 @@ s<template>
       <div v-if="showMrn" class="primary--text subheading font-weight-bold">{{memberName || 'Member'}} #<b>{{user.principal.member.mrn}}</b></div>
       <div v-if="stats && stats">
         <v-alert class="inner-alert" :value="isMonthInReview" icon="mdi-calendar-check" text dense type="info">
-          <p>It's a new month and last month is in review. Your achieved status will be updated once the review has been finished.</p>
+          <p>It's a new month and last month is in review. Your Recognized status will be updated once the review has been finished.</p>
           <b v-if="previous && !previous.metadata">
             Last month you reached: Rank&nbsp;{{previous.current.rank}}
           </b>
-          <b v-else-if="previous && previous.metadata">
+          <b v-else-if="previous && previous.metadata && previous.metadata.ranking">
+            Last month you reached: Rank&nbsp;{{previous.metadata.ranking.rank}}
+          </b>
+          <b v-else-if="previous && previous.metadata && previous.metadata.rank">
             Last month you reached: Rank&nbsp;{{previous.metadata.rank}}
           </b>
         </v-alert>
-        <p v-if="stats && stats.metadata">
+        <p v-if="stats && stats.metadata && stats.metadata.recognizedRank">
           Recognized Rank:
           <v-btn x-small dark color="primary" class="body-2">
             Rank {{stats.metadata.recognizedRank}}
+          </v-btn>
+        </p>
+        <p v-else-if="previous && previous.metadata && previous.metadata.recognizedRank">
+          Recognized Rank:
+          <v-btn x-small dark color="primary" class="body-2">
+            Rank {{previous.metadata.recognizedRank}}
           </v-btn>
         </p>
       </div>
