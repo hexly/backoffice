@@ -185,7 +185,8 @@ export default {
             page: this.page,
             pageSize: this.pageSize,
             startDate: this.$moment(this.startDate).format('YYYY-MM-DD'),
-            endDate: this.$moment(this.endDate).format('YYYY-MM-DD')
+            endDate: this.$moment(this.endDate).format('YYYY-MM-DD'),
+            statusIn: Object.keys(this.statuses)
           }
         }
       },
