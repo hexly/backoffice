@@ -165,6 +165,7 @@ export default {
       payouts: [],
       filterOut: ['REVERSED'],
       statuses: {
+        PAID: 'Paid',
         PENDING_RELEASE: 'Payment has been initialized and is being sent to payout processor',
         RELEASED: 'Payment is available to send to payout processor',
         SUBMITTED: 'Payment has been sent to payout processor',
