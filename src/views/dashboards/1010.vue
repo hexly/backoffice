@@ -43,17 +43,19 @@
         <TeamOverview :stats="engineStats" :total="memberCount" :loading="engineStatsLoading"/>
       </v-col>
       <v-col col="12" sm="6">
-        <EarningsCard />
+        <lazy-component>
+          <EarningsCard />
+        </lazy-component>
       </v-col>
     </v-row>
-    <v-row wrap>
+    <lazy-component wrapper-tag="v-row" wrap @intersected="loadLeaderboards(openPeriod)">
       <v-col cols="12" sm="6">
         <LeaderBoard :leaders="companyLeaderboard" title="Top Team Builders (Company)" message="New influencers this period: "/>
       </v-col>
       <v-col cols="12" sm="6">
         <LeaderBoard :leaders="teamLeaderboard" title="Top Team Builders (Your Team)" message="New influencers this period: "/>
       </v-col>
-    </v-row>
+    </lazy-component>
     <v-card>
       <v-card-title class="secondary white--text headline">
         Your Circle Of Influencer
@@ -64,7 +66,9 @@
         </p>
       </v-card-text>
     </v-card>
-    <CompanyMap class="py-2" title="Influencers around the world"/>
+    <lazy-component wrapper-tag="div">
+      <CompanyMap class="py-2" title="Influencers around the world"/>
+    </lazy-component>
   </div>
 </template>
 
@@ -91,7 +95,6 @@ import {
   COMPANY_FRONTLINE_LEADERBOARD_BY_RANGE
 } from '@/graphql/Leaderboard.js'
 import { ENGINE_DASHBOARD_BANNERS } from '@/graphql/CompStats.gql'
-import { GET_MEMBER_PAYOUTS } from '@/graphql/Member.gql'
 import { MAX_MRN } from '@/graphql/MemberStats.gql'
 import { mapMutations, mapState, mapGetters, mapActions } from 'vuex'
 import { UserMutations } from '@/stores/UserStore'
@@ -190,11 +193,6 @@ export default {
     }),
     ...mapGetters(['contactId', 'memberId', 'member', 'slug', 'tenantIntegrations'])
   },
-  watch: {
-    openPeriod(newVal) {
-      this.loadLeaderboards(newVal)
-    }
-  },
   apollo: {
     banners: {
       query: ENGINE_DASHBOARD_BANNERS,
@@ -210,13 +208,6 @@ export default {
       },
       update(obj) {
         return _.get(obj, 'banners.results', [])
-      }
-    },
-    earnings: {
-      query: GET_MEMBER_PAYOUTS,
-      update({ getPrincipal }) {
-        return _.get(getPrincipal, 'member.payouts', [])
-          .filter(p => p.status !== 'REVERSED' && (p.metadata.origination && p.metadata.origination.type === 'sale'))
       }
     },
     memberCount: {
