@@ -165,6 +165,7 @@ export default {
       payouts: [],
       filterOut: ['REVERSED'],
       statuses: {
+        PAID: 'Paid',
         PENDING_RELEASE: 'Payment has been initialized and is being sent to payout processor',
         RELEASED: 'Payment is available to send to payout processor',
         SUBMITTED: 'Payment has been sent to payout processor',
@@ -185,7 +186,8 @@ export default {
             page: this.page,
             pageSize: this.pageSize,
             startDate: this.$moment(this.startDate).format('YYYY-MM-DD'),
-            endDate: this.$moment(this.endDate).format('YYYY-MM-DD')
+            endDate: this.$moment(this.endDate).format('YYYY-MM-DD'),
+            statusIn: Object.keys(this.statuses)
           }
         }
       },

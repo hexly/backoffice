@@ -62,7 +62,7 @@ export default {
     formatCurrency (total) {
       return total.toLocaleString('us-EN', {
         style: 'currency',
-        currency: 'USD'
+        currency: this.currency || 'USD'
       })
     },
     scaleImage (image) {
