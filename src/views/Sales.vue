@@ -68,6 +68,12 @@
                     <li>Originating ID: {{item.providerOid}}</li>
                     <li>Status: {{statusMap[item.status] || item.status}}</li>
                     <li v-if="item.customerNote">Customer Note: {{item.customerNote}}</li>
+                    <li v-if="checkShippingDate(item.metadata.WcShipmentTrackingItems)">
+                      Shipped On: {{$moment(item.metadata.WcShipmentTrackingItems[0][0].dateShipped * 1000).format('ll')}}
+                    </li>
+                    <li v-if="checkTrackingInfo(item.metadata.WcShipmentTrackingItems)">
+                      Tracking Info: <a target="_blank" :href="formatTrackingLink(item.metadata.WcShipmentTrackingItems[0][0])">{{item.metadata.WcShipmentTrackingItems[0][0].trackingNumber}}</a>
+                    </li>
                   </ul>
                 </v-flex>
               </v-layout>
@@ -119,11 +125,20 @@
 </template>
 
 <script>
+import _ from 'lodash'
 import Currency from '@/components/Currency.vue'
 import DateSelector from '@/components/DateSelector.vue'
 import { SEARCH_SALES_QUERY } from '@/graphql/Sales.gql'
 import { Mutations } from '@/store'
 import { mapMutations, mapState, mapGetters } from 'vuex'
+
+const trackingProviders = {
+  usps: 'https://tools.usps.com/go/TrackConfirmAction?qtc_tLabels1=',
+  parcelforce: 'https://www.parcelforce.com/portal/pw/track?trackNumber=',
+  royalmail: 'https://www3.royalmail.com/track-your-item#/tracking-results/',
+  ups: 'https://www.ups.com/track?loc=null&tracknum=',
+  'canada-post': 'http://www.canadapost.ca/cpotools/apps/track/personal/findByTrackNumber?trackingNumber='
+}
 
 export default {
   components: {
@@ -189,13 +204,25 @@ export default {
       debounce: 500,
       update({ searchSalesBySellerId }) {
         this.setLoading(false)
-        console.log(searchSalesBySellerId)
         return searchSalesBySellerId.filter(sale => this.statuses.indexOf(sale.status) >= 0)
       }
     }
   },
   methods: {
     ...mapMutations([ Mutations.SET_LOADING ]),
+    checkShippingDate(trackingInfo) {
+      return _.get(trackingInfo, '0.0.dateShipped', false)
+    },
+    checkTrackingInfo(trackingInfo) {
+      return _.get(trackingInfo, '0.0.trackingNumber', false)
+    },
+    formatTrackingLink(trackingInfo) {
+      if (trackingInfo.customTrackingLink) {
+        return trackingInfo.customTrackingLink
+      }
+      const provider = trackingInfo.trackingProvider || trackingInfo.customTrackingProvider
+      return trackingProviders[provider] + trackingInfo.trackingNumber
+    },
     dateSave(datePickerDate, startOrEnd) {
       const varName = `${startOrEnd}Date`
       this[varName] = this.$moment(datePickerDate).format('MM/DD/YYYY')

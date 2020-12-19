@@ -1,6 +1,27 @@
 import gql from 'graphql-tag'
 import _ from 'lodash'
 
+export const INSIGHTS = gql`
+query insights($input: InsightInput) {
+  comp {
+    insights(input: $input){
+      insights {
+        key
+        labels {
+          header
+          tagline
+        }
+        values {
+          tagline
+          tooltip
+          formatted
+        }
+        metadata
+      }
+    }
+  }
+}
+`
 export const COMP_PREVIEW_QUERY = gql`
 query compRunPreview($payload: CompRunDataInput) {
   comp {

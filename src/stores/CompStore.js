@@ -124,6 +124,9 @@ export const CompStore = {
   },
   getters: {
     isSelectedCurrent: state => {
+      if (!state.currentPeriod) {
+        return false
+      }
       return ~~state.selectedPeriod.id === ~~state.currentPeriod.periodId
     },
     isMonthInReview: state => {

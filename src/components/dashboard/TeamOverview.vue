@@ -148,9 +148,9 @@ export default {
         this.previous
     },
     ...mapState({
-      current: state => state.comp.currentPeriod,
-      previous: state => state.comp.previousPeriod,
-      selectedPeriod: state => state.comp.selectedPeriod
+      current: state => state.comp && state.comp.currentPeriod,
+      previous: state => state.comp && state.comp.previousPeriod,
+      selectedPeriod: state => state.comp && state.comp.selectedPeriod
     }),
     ...mapGetters(['member', 'isSelectedCurrent'])
   }

@@ -148,6 +148,9 @@ export default {
       return `${currency}${earning.amount / 100}`
     },
     async loadLeaderboards(period) {
+      if (!period) {
+        return
+      }
       const variables = {
         input: {
           tenantId: this.$tenantInfo.id,

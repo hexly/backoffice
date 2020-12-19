@@ -80,97 +80,29 @@
       </v-container>
     </v-card-text>
     <v-card-text class="pa-0" v-else>
-      <!-- <v-container fluid grid-list-xs class="text-center">
-        <v-layout row wrap>
-          <v-flex xs6 pa-3>
-            <v-icon large color="light-blue">mdi-cash-usd-outline</v-icon>
-            <h2>Top Seller</h2>
-            <small>Team</small>
-            <h3>David Welch</h3>
-            <h4>12 Sales</h4>
-          </v-flex>
-          <v-flex xs6 pa-3>
-            <v-icon large color="light-blue">mdi-cash-usd-outline</v-icon>
-            <h2>Top Earner</h2>
-            <small>Team</small>
-            <h3>Andre Kradolfer</h3>
-            <h4>$354</h4>
-          </v-flex>
-          <v-flex xs6 pa-3>
-            <v-icon large color="light-blue">mdi-package-variant-closed</v-icon>
-            <h2>Top Sold Product</h2>
-            <small>Personal</small>
-            <h3>Love Your Lips Gloss - Cheeky Cherry</h3>
-          </v-flex>
-          <v-flex xs6 pa-3>
-            <v-icon large color="light-blue">mdi-package-variant-closed</v-icon>
-            <h2>Top Sold Product</h2>
-            <small>Team</small>
-            <h3>I Am Posh</h3>
-          </v-flex>
-        </v-layout>
-      </v-container> -->
       <v-container>
-        <v-row class="pa-0 earnings-row">
+        <v-alert
+          v-if="selectedPeriod.status === 'closed'"
+          class="inner-alert"
+          icon="mdi-calendar-check"
+          text
+          dense
+          type="info">
+          You are currently viewing a past period
+        </v-alert>
+        <v-row class="pa-0 earnings-row" v-for="insight in insights" :key="insight.key">
           <v-col cols="1">
-            <v-icon large color="light-blue">mdi-cash-usd-outline</v-icon>
+            <v-icon large color="light-blue">{{insightInfo[insight.key].icon}}</v-icon>
           </v-col>
-          <v-col cols="5">
-            <h3>Top Seller</h3>
-            <small>Team</small>
+          <v-col cols="7">
+            <h3>{{insight.labels.header}}</h3>
+            <h5>{{insight.labels.tagline}}</h5>
+            <small v-if="insightInfo[insight.key].desc">{{insightInfo[insight.key].desc}}</small>
           </v-col>
-          <v-col cols="6" class="text-right body-1">
-            <strong>
-              David Welch
-            </strong>
+          <v-col cols="4" class="text-right body-1">
+            <strong>{{insight.values.formatted}}</strong>
             <br/>
-            <small>12 Sales</small>
-          </v-col>
-        </v-row>
-        <v-row class="pa-0 earnings-row">
-          <v-col cols="1">
-            <v-icon large color="light-blue">mdi-cash-usd-outline</v-icon>
-          </v-col>
-          <v-col cols="5">
-            <h3>Top Earner</h3>
-            <small>Team</small>
-          </v-col>
-          <v-col cols="6" class="text-right body-1">
-            <strong>
-              Andre Kradolfer
-            </strong>
-            <br/>
-            <small>$356.21</small>
-          </v-col>
-        </v-row>
-        <v-row class="pa-0 earnings-row">
-          <v-col cols="1">
-            <v-icon large color="light-blue">mdi-package-variant-closed</v-icon>
-          </v-col>
-          <v-col cols="5">
-            <h3>Top Sold Product</h3>
-            <small>Team</small>
-          </v-col>
-          <v-col cols="6" class="text-right body-1">
-            <strong>
-              Love Your Lips Gloss
-            </strong>
-            <br/>
-            <small>Cheeky Cherry</small>
-          </v-col>
-        </v-row>
-        <v-row class="pa-0 earnings-row">
-          <v-col cols="1">
-            <v-icon large color="light-blue">mdi-package-variant-closed</v-icon>
-          </v-col>
-          <v-col cols="5">
-            <h3>Top Sold Product</h3>
-            <small>Personal</small>
-          </v-col>
-          <v-col cols="6" class="text-right body-1">
-            <strong>
-              I Am Posh
-            </strong>
+            <small>{{insight.values.tagline}}</small>
           </v-col>
         </v-row>
       </v-container>
@@ -180,11 +112,12 @@
 
 <script>
 // import * as _ from 'lodash'
-import { mapState } from 'vuex'
+import { mapState, mapGetters } from 'vuex'
 
 import Currency from '@/components/Currency'
 import PeriodSwitcher from '@/components/PeriodSwitcher.vue'
 import { PAYOUTS_SUMMARY } from '@/graphql/Payouts.gql'
+import { INSIGHTS } from '@/graphql/comp.gql'
 
 export default {
   name: 'EarningsCard',
@@ -196,7 +129,22 @@ export default {
     return {
       summary: [],
       loading: false,
-      showInsights: false
+      showInsights: false,
+      insights: [],
+      insightInfo: {
+        top_seller: {
+          icon: 'mdi-package-variant-closed',
+          desc: 'Team member who sold the most orders'
+        },
+        top_gsv_contributor: {
+          icon: 'mdi-account-multiple-plus-outline',
+          desc: 'Team member who contributed the most to your GSV'
+        },
+        top_immediate: {
+          icon: 'mdi-cash-usd-outline',
+          desc: 'Team member who contributed the most to your immediate payouts'
+        }
+      }
     }
   },
   apollo: {
@@ -214,9 +162,30 @@ export default {
       },
       client: 'federated',
       loadingKey: 'loading'
+    },
+    insights: {
+      query: INSIGHTS,
+      variables() {
+        return {
+          input: {
+            memberId: this.member.id,
+            tenantId: this.$tenantInfo.id,
+            periodId: this.selectedPeriod.id
+          }
+        }
+      },
+      update({ comp: { insights } }) {
+        return insights.insights.filter(i => !!i.values.formatted)
+      },
+      skip() {
+        return !this.selectedPeriod.id
+      },
+      client: 'federated',
+      loadingKey: 'loadingInsights'
     }
   },
   computed: {
+    ...mapGetters(['member']),
     ...mapState({
       selectedPeriod: state => state.comp.selectedPeriod
     }),
