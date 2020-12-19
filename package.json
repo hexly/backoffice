@@ -67,6 +67,7 @@
     "sass-loader": "^6.0.6",
     "sha1": "^1.1.1",
     "subscriptions-transport-ws": "^0.9.15",
+    "v-lazy-component": "1.0.5",
     "vue": "2.6.11",
     "vue-analytics": "5.17.2",
     "vue-apollo": "^3.0.3",

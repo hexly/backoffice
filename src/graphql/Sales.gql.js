@@ -42,6 +42,7 @@ export const SEARCH_SALES_QUERY = gql`
       billingFirstName
       billingLastName
       billingEmail
+      metadata
     }
   }
 `
