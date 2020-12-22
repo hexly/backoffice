@@ -187,7 +187,7 @@ export default {
         includeThumbnails: false,
         includeSources: false,
         page: 1,
-        pageSize: 100
+        pageSize: 500
       }
 
       const result = await searchAssetsByKey('BetterAssetSearch', input)
