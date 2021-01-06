@@ -5,33 +5,101 @@
         <v-card-title class="headline font-weight-regular white--text secondary">Order History</v-card-title>
         <v-card-text>
           <v-subheader>Range</v-subheader>
-          <v-container grid-list-md text-center>
-            <v-layout row align-center justify-space-around wrap>
-              <v-dialog ref="dialogStart" v-model="modalStart" lazy full-width width="290px">
+          <v-container
+            grid-list-md
+            text-center
+          >
+            <v-layout
+              row
+              align-center
+              justify-space-around
+              wrap
+            >
+              <v-dialog
+                ref="dialogStart"
+                v-model="modalStart"
+                lazy
+                full-width
+                width="290px"
+              >
                 <template v-slot:activator="{ on }">
-                  <v-text-field v-on="on" v-model="startDate" label="Select Start Date" prepend-icon="event" readonly/>
+                  <v-text-field
+                    v-on="on"
+                    v-model="startDate"
+                    label="Select Start Date"
+                    prepend-icon="event"
+                    readonly
+                  />
                 </template>
-                <v-date-picker ref="pickerStart" color="secondary" v-model="datePickerStartDate" :reactive="true">
+                <v-date-picker
+                  ref="pickerStart"
+                  color="secondary"
+                  v-model="datePickerStartDate"
+                  :reactive="true"
+                >
                   <v-spacer></v-spacer>
-                  <v-btn text color="primary" @click="modalStart = false">Cancel</v-btn>
-                  <v-btn text color="primary" @click="dateSave(datePickerStartDate, 'start'); $refs.dialogStart.save()">OK</v-btn>
+                  <v-btn
+                    text
+                    color="primary"
+                    @click="modalStart = false"
+                  >Cancel</v-btn>
+                  <v-btn
+                    text
+                    color="primary"
+                    @click="dateSave(datePickerStartDate, 'start'); $refs.dialogStart.save()"
+                  >OK</v-btn>
                 </v-date-picker>
               </v-dialog>
-              <v-dialog ref="dialogEnd" v-model="modalEnd" lazy full-width width="290px">
+              <v-dialog
+                ref="dialogEnd"
+                v-model="modalEnd"
+                lazy
+                full-width
+                width="290px"
+              >
                 <template v-slot:activator="{ on }">
-                  <v-text-field v-on="on" v-model="endDate" label="Select End Date" prepend-icon="event" readonly/>
+                  <v-text-field
+                    v-on="on"
+                    v-model="endDate"
+                    label="Select End Date"
+                    prepend-icon="event"
+                    readonly
+                  />
                 </template>
-                <v-date-picker ref="pickerEnd" color="secondary" v-model="datePickerEndDate" :reactive="true">
+                <v-date-picker
+                  ref="pickerEnd"
+                  color="secondary"
+                  v-model="datePickerEndDate"
+                  :reactive="true"
+                >
                   <v-spacer></v-spacer>
-                  <v-btn text color="primary" @click="modalEnd = false">Cancel</v-btn>
-                  <v-btn text color="primary" @click="dateSave(datePickerEndDate, 'end'); $refs.dialogEnd.save()">OK</v-btn>
+                  <v-btn
+                    text
+                    color="primary"
+                    @click="modalEnd = false"
+                  >Cancel</v-btn>
+                  <v-btn
+                    text
+                    color="primary"
+                    @click="dateSave(datePickerEndDate, 'end'); $refs.dialogEnd.save()"
+                  >OK</v-btn>
                 </v-date-picker>
               </v-dialog>
             </v-layout>
           </v-container>
         </v-card-text>
       </v-card>
-      <v-data-table :headers="headers" :items="items" hide-default-footer disable-pagination class="elevation-1" item-key="id" :expanded="expanded" show-expand :loading="loading">
+      <v-data-table
+        :headers="headers"
+        :items="items"
+        hide-default-footer
+        disable-pagination
+        class="elevation-1"
+        item-key="id"
+        :expanded="expanded"
+        show-expand
+        :loading="loading"
+      >
         <template v-slot:item="{ item, isExpanded }">
           <tr>
             <td>{{ item.date }}</td>
@@ -39,18 +107,30 @@
               {{ item.billingFirstName }} {{ item.billingLastName }}
             </td>
             <td>
-              <Currency :amount="parseFloat(item.total)" :currency="item.currency"/>
+              <Currency
+                :amount="parseFloat(item.total)"
+                :currency="item.currency"
+              />
             </td>
             <td>{{ item.totalPoints }}</td>
             <td>{{statusMap[item.status] || item.status}}</td>
             <td>
-              <v-icon @click="expanded = []" v-if="isExpanded">expand_less</v-icon>
-              <v-icon  @click="expanded = [item]" v-else>expand_more</v-icon>
+              <v-icon
+                @click="expanded = []"
+                v-if="isExpanded"
+              >expand_less</v-icon>
+              <v-icon
+                @click="expanded = [item]"
+                v-else
+              >expand_more</v-icon>
             </td>
           </tr>
         </template>
         <template v-slot:expanded-item="{ item, headers }">
-          <td :colspan="headers.length" class="pa-3 sale-details">
+          <td
+            :colspan="headers.length"
+            class="pa-3 sale-details"
+          >
             <v-container fluid>
               <v-layout>
                 <v-flex xs4>
@@ -72,7 +152,10 @@
                       Shipped On: {{$moment(item.metadata.WcShipmentTrackingItems[0][0].dateShipped * 1000).format('ll')}}
                     </li>
                     <li v-if="checkTrackingInfo(item.metadata.WcShipmentTrackingItems)">
-                      Tracking Info: <a target="_blank" :href="formatTrackingLink(item.metadata.WcShipmentTrackingItems[0][0])">{{item.metadata.WcShipmentTrackingItems[0][0].trackingNumber}}</a>
+                      Tracking Info: <a
+                        target="_blank"
+                        :href="formatTrackingLink(item.metadata.WcShipmentTrackingItems[0][0])"
+                      >{{item.metadata.WcShipmentTrackingItems[0][0].trackingNumber}}</a>
                     </li>
                   </ul>
                 </v-flex>
@@ -80,13 +163,20 @@
               <v-layout my-4>
                 <v-flex xs12>
                   <h4>Products & Services</h4>
-                  <v-data-table :headers="productHeads" :items="item.lineItems" hide-default-footer>
+                  <v-data-table
+                    :headers="productHeads"
+                    :items="item.lineItems"
+                    hide-default-footer
+                  >
                     <template v-slot:item="{ item: line }">
                       <tr>
                         <td>{{ line.name }}</td>
                         <td>{{ line.quantity }}</td>
                         <td>
-                          <Currency :amount="parseFloat(line.subtotal)" :currency="item.currency"/>
+                          <Currency
+                            :amount="parseFloat(line.subtotal)"
+                            :currency="item.currency"
+                          />
                         </td>
                       </tr>
                     </template>
@@ -95,21 +185,30 @@
                         <td>Discounts/Product Credit</td>
                         <td></td>
                         <td>
-                          <Currency :amount="parseFloat(item.discountTotal)" :currency="item.currency"/>
+                          <Currency
+                            :amount="parseFloat(item.discountTotal)"
+                            :currency="item.currency"
+                          />
                         </td>
                       </tr>
                       <tr v-if="item.taxTotal > 0">
                         <td>Taxes</td>
                         <td></td>
                         <td>
-                          <Currency :amount="parseFloat(item.taxTotal)" :currency="item.currency"/>
+                          <Currency
+                            :amount="parseFloat(item.taxTotal)"
+                            :currency="item.currency"
+                          />
                         </td>
                       </tr>
                       <tr v-if="item.shippingTotal > 0">
                         <td>Shipping</td>
                         <td></td>
                         <td>
-                          <Currency :amount="parseFloat(item.shippingTotal)" :currency="item.currency"/>
+                          <Currency
+                            :amount="parseFloat(item.shippingTotal)"
+                            :currency="item.currency"
+                          />
                         </td>
                       </tr>
                     </template>
@@ -145,7 +244,7 @@ export default {
     DateSelector,
     Currency
   },
-  data() {
+  data () {
     return {
       statusMap: {
         'completed': 'Completed',
@@ -182,11 +281,11 @@ export default {
   },
   apollo: {
     sales: {
-      watchLoading(isLoading, countModifier) {
+      watchLoading (isLoading, countModifier) {
         this.setLoading(isLoading)
       },
       query: SEARCH_SALES_QUERY,
-      variables() {
+      variables () {
         return {
           saleSearchInput: {
             sellerId: this.memberId,
@@ -197,40 +296,40 @@ export default {
           }
         }
       },
-      error(err) {
+      error (err) {
         this.setLoading(false)
         console.error({ err })
       },
       debounce: 500,
-      update({ searchSalesBySellerId }) {
+      update ({ searchSalesBySellerId }) {
         this.setLoading(false)
         return searchSalesBySellerId.filter(sale => this.statuses.indexOf(sale.status) >= 0)
       }
     }
   },
   methods: {
-    ...mapMutations([ Mutations.SET_LOADING ]),
-    checkShippingDate(trackingInfo) {
+    ...mapMutations([Mutations.SET_LOADING]),
+    checkShippingDate (trackingInfo) {
       return _.get(trackingInfo, '0.0.dateShipped', false)
     },
-    checkTrackingInfo(trackingInfo) {
+    checkTrackingInfo (trackingInfo) {
       return _.get(trackingInfo, '0.0.trackingNumber', false)
     },
-    formatTrackingLink(trackingInfo) {
+    formatTrackingLink (trackingInfo) {
       if (trackingInfo.customTrackingLink) {
         return trackingInfo.customTrackingLink
       }
       const provider = trackingInfo.trackingProvider || trackingInfo.customTrackingProvider
       return trackingProviders[provider] + trackingInfo.trackingNumber
     },
-    dateSave(datePickerDate, startOrEnd) {
+    dateSave (datePickerDate, startOrEnd) {
       const varName = `${startOrEnd}Date`
       this[varName] = this.$moment(datePickerDate).format('MM/DD/YYYY')
     },
-    startDateChanged(date) {
+    startDateChanged (date) {
       this.$refs.dialogStart.save(date)
     },
-    endDateChanged(date) {
+    endDateChanged (date) {
       this.$refs.dialogEnd.save(date)
     }
   },
@@ -239,7 +338,7 @@ export default {
       loading: state => state.loading
     }),
     ...mapGetters(['memberId']),
-    items() {
+    items () {
       return (this.sales || []).map(sale => ({
         ...sale,
         id: sale.saleId,
@@ -251,6 +350,9 @@ export default {
 </script>
 
 <style scoped>
+.sale-details {
+  word-wrap: break-word;
+}
 .sale-details ul li {
   list-style: none;
 }
