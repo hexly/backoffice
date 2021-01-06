@@ -18,6 +18,7 @@ import Redirect from './views/Redirect.vue'
 import Zendesk from './zendesk/Zendesk.vue'
 import ZendeskRoot from './zendesk/root.vue'
 import Customers from './views/Customers.vue'
+import Insights from './views/Insights.vue'
 
 import CompFrame from './views/comp/CompFrame'
 
@@ -107,7 +108,7 @@ export default new Router({
           path: 'dashboard',
           alias: '',
           name: 'dashboard',
-          component: async function() {
+          component: async function () {
             const tid = process.env.VUE_APP_TENANT_ID
             let view
             if (tenantInfo.features.generalDashboard) {
@@ -168,6 +169,11 @@ export default new Router({
           path: 'customers',
           name: 'customers',
           component: Customers
+        },
+        {
+          path: 'insights',
+          name: 'insights',
+          component: Insights
         }
       ]
     },
