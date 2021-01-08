@@ -1,6 +1,9 @@
 <template>
-  <div style="height: calc(100vh - 128px);">
-    <v-toolbar
+  <div
+    style="height: calc(100vh - 128px);"
+    class="mt-5 px-3"
+  >
+    <!-- <v-toolbar
       color="secondary"
       dark
     >
@@ -13,7 +16,7 @@
       >
         <v-icon dark>mdi-format-list-bulleted-square</v-icon>
       </v-btn>
-    </v-toolbar>
+    </v-toolbar> -->
     <!-- <v-row justify="space-between">
       <v-col>
         <h2>Team Activity</h2>
@@ -23,6 +26,11 @@
 
       </v-col>
     </v-row> -->
+    <v-row justify="space-around mb-5">
+      <v-btn color="primary">Run Report 1</v-btn>
+      <v-btn color="primary">Run Report 2</v-btn>
+      <v-btn color="primary">Run Report 3</v-btn>
+    </v-row>
     <template v-if="showStatsMaintenance">
       <v-alert
         class="inner-alert"
@@ -35,122 +43,7 @@
       </v-alert>
     </template>
     <template v-else>
-      <template v-if="selectedPeriod.metadata && selectedPeriod.metadata.version === 2">
-        <v-sheet class="pa-3">
-          <v-text-field
-            v-model="search"
-            outlined
-            clearable
-            label="Search by name..."
-            type="text"
-            @click:clear="clearSearch"
-            @keydown.enter="getCompStatsPage"
-          >
-            <template v-slot:append-outer>
-              <v-btn
-                class="button-fix"
-                large
-                color="primary"
-                @click="searchActivity"
-              >
-                <v-icon left>mdi-account-search</v-icon>
-                Search
-              </v-btn>
-            </template>
-          </v-text-field>
-        </v-sheet>
-        <v-data-table
-          disable-sort
-          disable-pagination
-          hide-default-footer
-          :headers="newHeaders"
-          :items="descendants"
-          class="elevation-1 mb-12 pb-8"
-          :loading="loading > 0"
-        >
-          <template v-slot:item.avatar="{ item }">
-            <div style="position: relative;">
-              <v-badge
-                avatar
-                overlap
-                bottom
-                color="white"
-              >
-                <template v-slot:badge>
-                  <Flag :name="item.metadata.market" />
-                </template>
-                <v-avatar :size="$vuetify.breakpoint.xs ? '50px' : '75px'">
-                  <img
-                    v-if="item.metadata.profileAsset"
-                    alt="Avatar"
-                    :src="item.metadata.profileAsset"
-                  >
-                  <v-icon
-                    v-else
-                    color="primary"
-                    dark
-                  >mdi-account-circle</v-icon>
-                </v-avatar>
-              </v-badge>
-              <div class="mrn">#{{item.metadata.mrn}}</div>
-            </div>
-          </template>
-          <template v-slot:item.name="{ item }">
-            {{item.metadata.name}}
-            <br />
-            <small>{{ item.metadata.email }}</small>
-            <template v-if="item.metadata.recognizedRank">
-              <br />
-              <small>Recognized:</small>
-              <v-chip
-                small
-                :color="item.metadata.recognizedRank > 5 ? '#a1213b' : 'gray'"
-                :class="{'white--text': item.metadata.recognizedRank > 5}"
-              >Rank {{item.metadata.recognizedRank}}</v-chip>
-            </template>
-          </template>
-          <template v-slot:item.rank="{ item }">
-            <v-chip
-              :color="item.metadata.ranking.rank > 5 ? '#a1213b' : 'gray'"
-              :class="{'white--text': item.metadata.ranking.rank > 5}"
-            >{{item.metadata.ranking.name}}</v-chip>
-          </template>
-          <template v-slot:item.stats="{ item }">
-            <div
-              style="display: inline-block;"
-              class="ma-2 text-center"
-              v-for="(stat, i) in item.metadata.requirements"
-              :key="i"
-            >
-              <h5>{{ stat.category ? stat.category.toUpperCase() : statsMapping[`${stat.type}_${stat.metric}`]}}</h5>
-              <v-progress-circular
-                v-if="stat.notApplicable"
-                :rotate="-90"
-                :size="$vuetify.breakpoint.xs ? 50 : 75"
-                :value="100"
-                :width="$vuetify.breakpoint.xs ? 2 : 5"
-                color="grey"
-              >
-                <div v-if="stat == null || stat.earned === null || stat.earned === undefined">N/A</div>
-                <div v-else>{{stat.earned}}</div>
-              </v-progress-circular>
-              <v-progress-circular
-                v-else
-                :rotate="-90"
-                :size="$vuetify.breakpoint.xs ? 50 : 75"
-                :value="stat.earned/ stat.required * 100"
-                :width="$vuetify.breakpoint.xs ? 2 : 5"
-                :color="stat.achieved ? 'green' : 'red'"
-              >
-                <div :class="{'tiny-font': $vuetify.breakpoint.xs}">{{stat.earned || 0}}
-                  <hr />{{stat.required}}
-                </div>
-              </v-progress-circular>
-            </div>
-          </template>
-        </v-data-table>
-      </template>
-      <template v-else>
+      <template>
         <v-data-table
           hide-default-footer
           disable-pagination
@@ -488,29 +381,10 @@ export default {
   },
   data () {
     const headers = [
-      {
-        text: this.$tenantInfo.distributorLabel,
-        align: 'start',
-        value: 'name'
-      },
-      { text: 'Level', value: 'depth' },
-      { text: 'Upline', value: 'memberPath' },
-      { text: 'Rank', value: 'rank' },
-      { text: 'Lifetime Rank', value: 'recognizedRank' },
-      { text: 'Downline Size', value: 'downlineCount.total' },
-      { text: 'Active In Downline', value: 'downlineCount.qualified' },
-      // let's add this back in once breakouts are a thing
-      // { text: 'Group Size', value: 'groupCount' },
-      { text: 'Stats', value: 'stats' }
+      { text: 'Report Name', value: 'name' },
+      { text: 'Type', value: 'type' },
+      { text: 'Report Details', value: 'details' }
     ]
-
-    if (this.$tenantInfo.statMapping.lifetimeTotalPoints) {
-      headers.push({ text: 'Career Total', value: 'cpsv' })
-    }
-
-    if (this.$tenantInfo.statMapping.anyRankCount) {
-      headers.push({ text: this.$tenantInfo.statMapping.anyRankCount.title, value: 'pabql' })
-    }
 
     const newHeaders = [
       { text: '', align: 'center', value: 'avatar' },

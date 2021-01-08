@@ -9,27 +9,27 @@
       <v-tabs-slider color="white"></v-tabs-slider>
 
       <v-tab
-        to="#hierarchy"
+        to="#dashboard"
         v-if="true"
       >Dashboard
         <v-icon>dashboard</v-icon>
       </v-tab>
       <template v-if="true">
-        <v-tab to="#activity">Reports
+        <v-tab to="#reports">Reports
           <v-icon>trending_up</v-icon>
         </v-tab>
       </template>
 
       <v-tab-item
-        value="hierarchy"
+        value="dashboard"
         class="py-3"
       >
         <v-lazy>
           <Dasboard />
         </v-lazy>
       </v-tab-item>
-      <template v-if="$tenantInfo.features.activity">
-        <v-tab-item value="activity">
+      <template v-if="true">
+        <v-tab-item value="reports">
           <v-lazy>
             <Reports />
           </v-lazy>
