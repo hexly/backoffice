@@ -5,10 +5,13 @@
   >
     <v-row justify="space-around mb-5">
       <v-col cols="12">
+        <v-toolbar color="primary white--text">
+          <v-toolbar-title>Reports</v-toolbar-title>
+        </v-toolbar>
         <v-data-table
           :headers="possibleReportsHeaders"
           :items="possibleReports"
-          hide-actions
+          hide-default-footer
           class="elevation-1"
         >
           <template v-slot:item.actions="{ item }">
@@ -21,10 +24,18 @@
     </v-row>
     <v-row justify="space-around mb-5">
       <v-col cols="12">
+        <v-toolbar color="primary white--text">
+          <v-toolbar-title>Results</v-toolbar-title>
+          <v-spacer />
+          <v-btn>
+            <v-icon class="mr-1">trending_up</v-icon>
+            Download
+          </v-btn>
+        </v-toolbar>
         <v-data-table
           :headers="resultsHeaders"
           :items="reportResults"
-          hide-actions
+          hide-default-footer
           class="elevation-1"
         >
           <template v-slot:item.actions="{ item }">
