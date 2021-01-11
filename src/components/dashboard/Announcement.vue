@@ -5,7 +5,7 @@
     </v-card-title>
     <v-card-text v-html="post.content"></v-card-text>
     <v-card-actions>
-      <small>{{post.date}}</small>
+      <small>Updated: {{$moment(post.node.date).format('ll')}}</small>
     </v-card-actions>
   </v-card>
 </template>
