@@ -3,70 +3,55 @@
     style="height: calc(100vh - 128px);"
     class="mt-5 px-3"
   >
-    <v-row justify="space-around mb-5">
+    <v-row justify="space-around">
       <v-col cols="12">
-        <v-toolbar color="primary white--text">
-          <v-toolbar-title>Reports</v-toolbar-title>
-        </v-toolbar>
-        <v-data-table
-          :headers="possibleReportsHeaders"
-          :items="possibleReports"
-          hide-default-footer
-          class="elevation-1"
-        >
-          <template v-slot:item.actions="{ item }">
-            <v-icon @click="handleRunClick(item)">
-              play_circle
-            </v-icon>
-          </template>
-        </v-data-table>
+        <PossibleReportsTable
+          :possibleReportsHeaders="possibleReportsHeaders"
+          :possibleReports="possibleReports"
+          @runClick="handleRunClick"
+        />
       </v-col>
     </v-row>
-    <v-row justify="space-around mb-5">
+    <v-row justify="space-around">
       <v-col cols="12">
-        <v-toolbar color="primary white--text">
-          <v-toolbar-title>Results</v-toolbar-title>
-          <v-spacer />
-          <v-btn>
-            <v-icon class="mr-1">trending_up</v-icon>
-            Download
-          </v-btn>
-        </v-toolbar>
-        <v-data-table
-          :headers="resultsHeaders"
-          :items="reportResults"
-          hide-default-footer
-          class="elevation-1"
-        >
-          <template v-slot:item.actions="{ item }">
-            <v-icon @click="handleRunClick(item)">
-              play_circle
-            </v-icon>
-          </template>
-        </v-data-table>
+        <ReportResultsTable
+          :resultsHeaders="resultsHeaders"
+          :reportResults="reportResults"
+          @downloadClicked="handleDownloadClick"
+        />
       </v-col>
     </v-row>
+    <ReportsDialog
+      :showRunningDialog="showRunningDialog"
+      :reportTitle="selectedReportTitle"
+      :running="running"
+      @closeDialog="showRunningDialog = false"
+      @runConfirm="handleRunConfirm"
+    />
   </div>
 </template>
 
 <script>
 import _ from 'lodash'
 import { mapGetters } from 'vuex'
-import PeriodSwitcher from '@/components/PeriodSwitcher.vue'
-import Flag from '@/components/Flag.vue'
+import ReportsDialog from '@/components/insights/ReportsDialog'
+import ReportResultsTable from '@/components/insights/ReportResultsTable'
+import PossibleReportsTable from '@/components/insights/PossibleReportsTable'
+import { RUN_REPORT } from '@/components/insights/insights.gql'
 
 export default {
   name: 'Reports',
   components: {
-    PeriodSwitcher,
-    Flag
+    ReportsDialog,
+    PossibleReportsTable,
+    ReportResultsTable
   },
   data () {
-    const resultsHeaders = [
-      { text: 'Dynamic Result Name!', value: 'name' },
-      { text: 'Dynamic Result Type!', value: 'type' },
-      { text: 'Dynamic Result Report Details', value: 'details' }
-    ]
+    // const resultsHeaders = [
+    //   { text: 'Dynamic Result Name!', value: 'name' },
+    //   { text: 'Dynamic Result Type!', value: 'type' },
+    //   { text: 'Dynamic Result Report Details', value: 'details' }
+    // ]
 
     const possibleReportsHeaders = [
       { text: 'Report Name', value: 'name' },
@@ -83,25 +68,73 @@ export default {
       }
     ]
 
-    const reportResults = [
-      {
-        name: 'Report 1',
-        type: 'standard',
-        details: 'None'
-      }
-    ]
+    // Todo: const sampleParams = ... for dynamic params showing in the dialog
+
+    // const reportResults = [
+    //   {
+    //     name: 'Report 1',
+    //     type: 'standard',
+    //     details: 'None'
+    //   }
+    // ]
 
     return {
       GET: _.get,
-      resultsHeaders,
+      resultsHeaders: null,
       possibleReportsHeaders,
       possibleReports,
-      reportResults
+      reportResults: null,
+      showRunningDialog: false,
+      selectedReportTitle: null,
+      running: false
     }
   },
   methods: {
     handleRunClick (item) {
-      console.log({ item })
+      this.showRunningDialog = true
+      this.selectedReportTitle = item.name
+    },
+    async handleRunConfirm () {
+      try {
+        this.reportResults = null
+        this.running = true
+        const res = await this.$apollo.mutate({
+          mutation: RUN_REPORT,
+          variables: {
+            input: {
+              id: 1,
+              params: [
+                { key: 'foobar', value: 123 }
+              ]
+            }
+          },
+          client: 'federated'
+        })
+
+        const sample = _.get(res, 'data.bi.reporting.run.sample', [])
+        this.resultsHeaders = this.generateHeadersFromSample(sample)
+        this.reportResults = sample
+        this.showRunningDialog = false
+      } catch (error) {
+        console.error(error)
+      }
+
+      this.running = false
+      console.log('runConfirm!')
+    },
+    generateHeadersFromSample (sample) {
+      const sampleKeys = Object.keys(sample[0])
+      console.log({ sample, sampleKeys })
+      const headers = sampleKeys.map(key => {
+        return {
+          text: key,
+          value: key
+        }
+      })
+      return headers
+    },
+    handleDownloadClick () {
+      console.log('Download Clicked!')
     }
   },
   computed: {
@@ -109,44 +142,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-.the-grid {
-  border: 1px solid black;
-  width: 135px;
-  margin: 3px auto;
-}
-.the-grid .bottom-border {
-  border-bottom: 1px solid black;
-}
-.the-grid .right-border {
-  border-right: 1px solid black;
-}
-.the-grid .grid-cell {
-  padding: 2px 5px;
-  background-color: #ef5350;
-  background-clip: padding-box;
-}
-.the-grid .grid-cell.satisfied {
-  background-color: #4caf50;
-}
-.button-fix {
-  margin-top: -12px;
-}
-.tiny-font {
-  font-size: 11px;
-}
-.mrn {
-  position: absolute;
-  background-color: rgb(161, 33, 59);
-  color: white;
-  line-height: 15px;
-  font-weight: bold;
-  bottom: -3px;
-  right: 65%;
-  min-width: 35px;
-  font-size: 12px;
-  padding: 1px 3px;
-  text-align: center;
-}
-</style>
