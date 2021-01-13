@@ -17,6 +17,7 @@
         <ReportResultsTable
           :resultsHeaders="resultsHeaders"
           :reportResults="reportResults"
+          :downloadURL="downloadURL"
           @downloadClicked="handleDownloadClick"
         />
       </v-col>
@@ -25,9 +26,19 @@
       :showRunningDialog="showRunningDialog"
       :reportTitle="selectedReportTitle"
       :running="running"
+      :reportParams="reportParams"
       @closeDialog="showRunningDialog = false"
       @runConfirm="handleRunConfirm"
+      @updateParams="newVal => reportParams = newVal"
     />
+    <v-snackbar v-model="showSnackbar">
+      {{snackbarText}}
+      <v-btn
+        flat
+        color="primary"
+        @click.native="showSnackbar = false"
+      >Close</v-btn>
+    </v-snackbar>
   </div>
 </template>
 
@@ -47,15 +58,8 @@ export default {
     ReportResultsTable
   },
   data () {
-    // const resultsHeaders = [
-    //   { text: 'Dynamic Result Name!', value: 'name' },
-    //   { text: 'Dynamic Result Type!', value: 'type' },
-    //   { text: 'Dynamic Result Report Details', value: 'details' }
-    // ]
-
     const possibleReportsHeaders = [
       { text: 'Report Name', value: 'name' },
-      { text: 'Type', value: 'type' },
       { text: 'Report Details', value: 'details' },
       { text: 'Actions', value: 'actions' }
     ]
@@ -63,20 +67,10 @@ export default {
     const possibleReports = [
       {
         name: 'Report 1',
-        type: 'standard',
-        details: 'None'
+        params: '[{ "key": "foobar", "value": 123 }]',
+        details: 'Sample Report...'
       }
     ]
-
-    // Todo: const sampleParams = ... for dynamic params showing in the dialog
-
-    // const reportResults = [
-    //   {
-    //     name: 'Report 1',
-    //     type: 'standard',
-    //     details: 'None'
-    //   }
-    // ]
 
     return {
       GET: _.get,
@@ -86,26 +80,36 @@ export default {
       reportResults: null,
       showRunningDialog: false,
       selectedReportTitle: null,
-      running: false
+      running: false,
+      reportParams: '{}',
+      downloadURL: null,
+      showSnackbar: false,
+      snackbarText: null
     }
   },
   methods: {
     handleRunClick (item) {
+      if (!item) {
+        console.warn('"item" required for function handleRunClick!')
+        return
+      }
+
+      this.reportParams = item.params
       this.showRunningDialog = true
       this.selectedReportTitle = item.name
     },
     async handleRunConfirm () {
+      this.reportResults = null
+      this.running = true
+      const params = JSON.parse(this.reportParams)
+
       try {
-        this.reportResults = null
-        this.running = true
         const res = await this.$apollo.mutate({
           mutation: RUN_REPORT,
           variables: {
             input: {
               id: 1,
-              params: [
-                { key: 'foobar', value: 123 }
-              ]
+              params
             }
           },
           client: 'federated'
@@ -114,17 +118,21 @@ export default {
         const sample = _.get(res, 'data.bi.reporting.run.sample', [])
         this.resultsHeaders = this.generateHeadersFromSample(sample)
         this.reportResults = sample
+        this.downloadURL = _.get(res, 'data.bi.reporting.run.processUrl')
         this.showRunningDialog = false
+
+        this.snackbarText = `${this.selectedReportTitle} Successfully Run!`
+        this.showSnackbar = true
       } catch (error) {
+        this.snackbarText = 'There Was an Error Running Your Report! Please Try Again or Contact Support'
+        this.showSnackbar = true
         console.error(error)
       }
 
       this.running = false
-      console.log('runConfirm!')
     },
     generateHeadersFromSample (sample) {
       const sampleKeys = Object.keys(sample[0])
-      console.log({ sample, sampleKeys })
       const headers = sampleKeys.map(key => {
         return {
           text: key,
@@ -134,7 +142,13 @@ export default {
       return headers
     },
     handleDownloadClick () {
-      console.log('Download Clicked!')
+      const { downloadURL } = this
+      if (!downloadURL) {
+        console.warn('this.downloadURL was null in handleDownloadClick!')
+        return
+      }
+
+      window.open(this.downloadURL, '_blank')
     }
   },
   computed: {

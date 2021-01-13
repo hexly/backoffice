@@ -14,19 +14,25 @@
         </v-toolbar-title>
       </v-toolbar>
       <v-card-text>
-        <v-form>
-          <v-text-field
-            readonly
-            label="Dynamic Params HERE!"
-          ></v-text-field>
+        <v-form ref="form">
+          <v-textarea
+            v-model="_reportParams"
+            label="Report Parameters"
+            rows="1"
+            :rules="[jsonChecker]"
+          ></v-textarea>
         </v-form>
       </v-card-text>
-      <v-card-actions class="justify-center">
-        <v-btn @click="$emit('closeDialog')">cancel</v-btn>
+      <v-card-actions class="justify-center pb-4">
         <v-btn
+          class="mr-2 primary lighten-1 white--text"
+          @click="$emit('closeDialog')"
+        >cancel</v-btn>
+        <v-btn
+          class="primary lighten-1 white--text"
           :disabled="running"
           :loading="running"
-          @click="$emit('runConfirm')"
+          @click="handleConfirmClick"
         >confirm</v-btn>
       </v-card-actions>
     </v-card>
@@ -39,7 +45,33 @@ export default {
   props: {
     showRunningDialog: Boolean,
     reportTitle: String,
-    running: Boolean
+    running: Boolean,
+    reportParams: String
+  },
+  methods: {
+    jsonChecker (v) {
+      try {
+        JSON.parse(v)
+        return true
+      } catch (error) {
+        console.warn(error)
+        return error.message
+      }
+    },
+    handleConfirmClick () {
+      const { form } = this.$refs
+
+      if (!form) {
+        console.warn('"form" not found in $refs!')
+        return
+      }
+
+      if (!form.validate()) {
+        return
+      }
+
+      this.$emit('runConfirm')
+    }
   },
   computed: {
     _showRunningDialog: {
@@ -48,6 +80,14 @@ export default {
       },
       set () {
         this.$emit('closeDialog')
+      }
+    },
+    _reportParams: {
+      get () {
+        return this.reportParams
+      },
+      set (newVal) {
+        this.$emit('updateParams', newVal)
       }
     }
   }

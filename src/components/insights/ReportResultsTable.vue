@@ -4,7 +4,10 @@
       <v-toolbar color="primary white--text">
         <v-toolbar-title>Results</v-toolbar-title>
         <v-spacer />
-        <v-btn @click="$emit('downloadClicked')">
+        <v-btn
+          :disabled="!downloadURL"
+          @click="$emit('downloadClicked')"
+        >
           <v-icon class="mr-1">trending_up</v-icon>
           Download
         </v-btn>
@@ -24,7 +27,8 @@ export default {
   name: 'ReportResultsTable',
   props: {
     resultsHeaders: Array,
-    reportResults: Array
+    reportResults: Array,
+    downloadURL: String
   }
 }
 </script>
