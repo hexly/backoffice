@@ -1,7 +1,7 @@
 <template>
   <div
     style="height: calc(100vh - 128px);"
-    class="mt-5 px-3"
+    class="mt-3 px-3"
   >
     <v-row justify="space-around">
       <v-col cols="12">
@@ -82,7 +82,7 @@ export default {
       selectedReportTitle: null,
       loading: false,
       running: false,
-      reportParams: [],
+      reportParams: null,
       downloadURL: null,
       showSnackbar: false,
       snackbarText: null
@@ -103,7 +103,7 @@ export default {
     async handleRunConfirm () {
       this.reportResults = null
       this.running = true
-      const params = JSON.parse(this.reportParams)
+      const params = this.reportParams
 
       try {
         const res = await this.$apollo.mutate({

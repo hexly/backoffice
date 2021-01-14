@@ -13,7 +13,7 @@
           Run {{reportTitle}}
         </v-toolbar-title>
       </v-toolbar>
-      <v-card-text v-if="reportParams.length">
+      <v-card-text v-if="reportParams">
         <v-form ref="form">
           <div
             v-for="(param, i) in reportParams"
@@ -22,6 +22,7 @@
             <v-text-field
               v-model="reportParamsModel[i]"
               :label="param.name"
+              :rules="[v => (param.implicit || !!v) || 'Required Field']"
               v-if="param.key !== '__tenantId'"
             ></v-text-field>
           </div>
@@ -87,7 +88,6 @@ export default {
   watch: {
     reportParams (newVal) {
       const length = _.get(this, 'reportParams.length', 0)
-      console.log({ length })
       this.reportParamsModel = new Array(length)
     }
   },
@@ -111,7 +111,6 @@ export default {
   },
   mounted () {
     const length = _.get(this, 'reportParams.length', 0)
-    console.log({ length })
     this.reportParamsModel = new Array(length)
   }
 }
