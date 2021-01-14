@@ -25,8 +25,16 @@
               :rules="[v => (param.implicit || !!v) || 'Required Field']"
               v-if="param.key !== '__tenantId'"
             ></v-text-field>
+            <div
+              class="text-center"
+              v-else-if="reportParams.length === 1"
+            >No Parameters Required</div>
           </div>
         </v-form>
+        <div
+          v-if="reportParams.length === 0"
+          class="text-center"
+        >No Parameters Required</div>
       </v-card-text>
       <v-card-actions class="justify-center pb-4">
         <v-btn

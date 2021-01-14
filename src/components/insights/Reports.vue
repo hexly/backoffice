@@ -65,14 +65,6 @@ export default {
       { text: 'Actions', value: 'actions' }
     ]
 
-    // const possibleReports = [
-    //   {
-    //     name: 'Report 1',
-    //     params: '[{ "key": "foobar", "value": 123 }]',
-    //     details: 'Sample Report...'
-    //   }
-    // ]
-
     return {
       GET: _.get,
       resultsHeaders: null,
