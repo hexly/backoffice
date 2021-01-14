@@ -6,7 +6,7 @@
     <v-data-table
       :headers="possibleReportsHeaders"
       :items="possibleReports"
-      hide-default-footer
+      :loading="loading"
       class="elevation-1"
     >
       <template v-slot:item.actions="{ item }">
@@ -23,7 +23,8 @@ export default {
   name: 'PossibleReportsTable',
   props: {
     possibleReportsHeaders: Array,
-    possibleReports: Array
+    possibleReports: Array,
+    loading: Boolean
   }
 }
 </script>

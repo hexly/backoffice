@@ -45,7 +45,7 @@ import Dasboard from '@/components/insights/Dashboard.vue'
 import Reports from '@/components/insights/Reports.vue'
 
 export default {
-  name: 'Team',
+  name: 'Insights',
   components: {
     Dasboard,
     Reports

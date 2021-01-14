@@ -8,6 +8,7 @@
         <PossibleReportsTable
           :possibleReportsHeaders="possibleReportsHeaders"
           :possibleReports="possibleReports"
+          :loading="loading"
           @runClick="handleRunClick"
         />
       </v-col>
@@ -34,7 +35,7 @@
     <v-snackbar v-model="showSnackbar">
       {{snackbarText}}
       <v-btn
-        flat
+        text
         color="primary"
         @click.native="showSnackbar = false"
       >Close</v-btn>
@@ -48,7 +49,7 @@ import { mapGetters } from 'vuex'
 import ReportsDialog from '@/components/insights/ReportsDialog'
 import ReportResultsTable from '@/components/insights/ReportResultsTable'
 import PossibleReportsTable from '@/components/insights/PossibleReportsTable'
-import { RUN_REPORT } from '@/components/insights/insights.gql'
+import { RUN_REPORT, GET_REPORTS } from '@/components/insights/insights.gql'
 
 export default {
   name: 'Reports',
@@ -60,28 +61,28 @@ export default {
   data () {
     const possibleReportsHeaders = [
       { text: 'Report Name', value: 'name' },
-      { text: 'Report Details', value: 'details' },
+      { text: 'Report Description', value: 'description' },
       { text: 'Actions', value: 'actions' }
     ]
 
-    const possibleReports = [
-      {
-        name: 'Report 1',
-        params: '[{ "key": "foobar", "value": 123 }]',
-        details: 'Sample Report...'
-      }
-    ]
+    // const possibleReports = [
+    //   {
+    //     name: 'Report 1',
+    //     params: '[{ "key": "foobar", "value": 123 }]',
+    //     details: 'Sample Report...'
+    //   }
+    // ]
 
     return {
       GET: _.get,
       resultsHeaders: null,
       possibleReportsHeaders,
-      possibleReports,
       reportResults: null,
       showRunningDialog: false,
       selectedReportTitle: null,
+      loading: false,
       running: false,
-      reportParams: '{}',
+      reportParams: [],
       downloadURL: null,
       showSnackbar: false,
       snackbarText: null
@@ -89,12 +90,13 @@ export default {
   },
   methods: {
     handleRunClick (item) {
+      console.log({ item })
       if (!item) {
         console.warn('"item" required for function handleRunClick!')
         return
       }
 
-      this.reportParams = item.params
+      this.reportParams = item.parameters
       this.showRunningDialog = true
       this.selectedReportTitle = item.name
     },
@@ -153,6 +155,21 @@ export default {
   },
   computed: {
     ...mapGetters(['memberId'])
+  },
+  apollo: {
+    possibleReports: {
+      query: GET_REPORTS,
+      variables: {
+        input: {}
+      },
+      watchLoading (isLoading) {
+        this.loading = isLoading
+      },
+      update (data) {
+        const reports = _.get(data, 'reports')
+        return reports
+      }
+    }
   }
 }
 </script>

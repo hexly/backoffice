@@ -13,3 +13,14 @@ export const RUN_REPORT = gql`
     }
   }
 `
+
+export const GET_REPORTS = gql`
+  query Reports($input: ReportsQueryInput!){
+    reports(input: $input){
+      id
+      name
+      description
+      parameters
+    }
+  }
+`

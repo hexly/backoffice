@@ -13,14 +13,18 @@
           Run {{reportTitle}}
         </v-toolbar-title>
       </v-toolbar>
-      <v-card-text>
+      <v-card-text v-if="reportParams.length">
         <v-form ref="form">
-          <v-textarea
-            v-model="_reportParams"
-            label="Report Parameters"
-            rows="1"
-            :rules="[jsonChecker]"
-          ></v-textarea>
+          <div
+            v-for="(param, i) in reportParams"
+            :key="param.name"
+          >
+            <v-text-field
+              v-model="reportParamsModel[i]"
+              :label="param.name"
+              v-if="param.key !== '__tenantId'"
+            ></v-text-field>
+          </div>
         </v-form>
       </v-card-text>
       <v-card-actions class="justify-center pb-4">
@@ -40,13 +44,20 @@
 </template>
 
 <script>
+import * as _ from 'lodash'
+
 export default {
   name: 'ReportsDialog',
+  data () {
+    return {
+      reportParamsModel: []
+    }
+  },
   props: {
     showRunningDialog: Boolean,
     reportTitle: String,
     running: Boolean,
-    reportParams: String
+    reportParams: Array
   },
   methods: {
     jsonChecker (v) {
@@ -73,6 +84,13 @@ export default {
       this.$emit('runConfirm')
     }
   },
+  watch: {
+    reportParams (newVal) {
+      const length = _.get(this, 'reportParams.length', 0)
+      console.log({ length })
+      this.reportParamsModel = new Array(length)
+    }
+  },
   computed: {
     _showRunningDialog: {
       get () {
@@ -90,6 +108,11 @@ export default {
         this.$emit('updateParams', newVal)
       }
     }
+  },
+  mounted () {
+    const length = _.get(this, 'reportParams.length', 0)
+    console.log({ length })
+    this.reportParamsModel = new Array(length)
   }
 }
 </script>
