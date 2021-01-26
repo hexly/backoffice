@@ -1,20 +1,11 @@
 <template>
   <v-card id="recent-sales-card">
     <v-toolbar color="secondary" dark>
-      <v-toolbar-title v-if="!showInsights">Earnings Summary</v-toolbar-title>
-      <v-toolbar-title v-else>Insights <sup>(beta)</sup></v-toolbar-title>
+      <v-toolbar-title>Earnings Summary</v-toolbar-title>
       <v-spacer></v-spacer>
       <PeriodSwitcher v-if="selectedPeriod"></PeriodSwitcher>
-      <template>
-        <v-btn v-if="!showInsights" icon small @click="showInsights = !showInsights">
-          <v-icon>mdi-auto-fix</v-icon>
-        </v-btn>
-        <v-btn icon small v-else @click="showInsights = !showInsights">
-          <v-icon>mdi-cash</v-icon>
-        </v-btn>
-      </template>
     </v-toolbar>
-    <v-card-text class="pa-0" v-if="!showInsights">
+    <v-card-text class="pa-0">
       <v-container>
         <template v-if="!selectedPeriod.id || loading">
           <v-progress-circular indeterminate :size="30" :width="3" color="grey"></v-progress-circular>
@@ -79,34 +70,6 @@
         </template>
       </v-container>
     </v-card-text>
-    <v-card-text class="pa-0" v-else>
-      <v-container>
-        <v-alert
-          v-if="selectedPeriod.status === 'closed'"
-          class="inner-alert"
-          icon="mdi-calendar-check"
-          text
-          dense
-          type="info">
-          You are currently viewing a past period
-        </v-alert>
-        <v-row class="pa-0 earnings-row" v-for="insight in insights" :key="insight.key">
-          <v-col cols="1">
-            <v-icon large color="light-blue">{{insightInfo[insight.key].icon}}</v-icon>
-          </v-col>
-          <v-col cols="7">
-            <h3>{{insight.labels.header}}</h3>
-            <h5>{{insight.labels.tagline}}</h5>
-            <small v-if="insightInfo[insight.key].desc">{{insightInfo[insight.key].desc}}</small>
-          </v-col>
-          <v-col cols="4" class="text-right body-1">
-            <strong>{{insight.values.formatted}}</strong>
-            <br/>
-            <small>{{insight.values.tagline}}</small>
-          </v-col>
-        </v-row>
-      </v-container>
-    </v-card-text>
   </v-card>
 </template>
 
@@ -117,7 +80,6 @@ import { mapState, mapGetters } from 'vuex'
 import Currency from '@/components/Currency'
 import PeriodSwitcher from '@/components/PeriodSwitcher.vue'
 import { PAYOUTS_SUMMARY } from '@/graphql/Payouts.gql'
-import { INSIGHTS } from '@/graphql/comp.gql'
 
 export default {
   name: 'EarningsCard',
@@ -128,23 +90,7 @@ export default {
   data() {
     return {
       summary: [],
-      loading: false,
-      showInsights: false,
-      insights: [],
-      insightInfo: {
-        top_seller: {
-          icon: 'mdi-package-variant-closed',
-          desc: 'Team member who sold the most orders'
-        },
-        top_gsv_contributor: {
-          icon: 'mdi-account-multiple-plus-outline',
-          desc: 'Team member who contributed the most to your GSV'
-        },
-        top_immediate: {
-          icon: 'mdi-cash-usd-outline',
-          desc: 'Team member who contributed the most to your immediate payouts'
-        }
-      }
+      loading: false
     }
   },
   apollo: {
@@ -162,26 +108,6 @@ export default {
       },
       client: 'federated',
       loadingKey: 'loading'
-    },
-    insights: {
-      query: INSIGHTS,
-      variables() {
-        return {
-          input: {
-            memberId: this.member.id,
-            tenantId: this.$tenantInfo.id,
-            periodId: this.selectedPeriod.id
-          }
-        }
-      },
-      update({ comp: { insights } }) {
-        return insights.insights.filter(i => !!i.values.formatted)
-      },
-      skip() {
-        return !this.selectedPeriod.id
-      },
-      client: 'federated',
-      loadingKey: 'loadingInsights'
     }
   },
   computed: {

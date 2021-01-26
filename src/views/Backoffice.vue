@@ -174,27 +174,29 @@
 
       <div
         column
-        class="text-center py-4 footer"
+        class="text-center py-4 footer-wrapper"
       >
-        <div>
-          <a
-            v-for="social in $tenantInfo.social"
-            :key="social.key"
-            :href="social.url"
-            target="_blank"
-          >
-            <img :src="`/img/social/${social.key}.svg`" />
-          </a>
-        </div>
-        <h5 class="py-4">
-          <span v-if="$tenantInfo.privacyPolicy">
+        <div class="footer">
+          <div>
             <a
+              v-for="social in $tenantInfo.social"
+              :key="social.key"
+              :href="social.url"
               target="_blank"
-              :href="$tenantInfo.privacyPolicy"
-            >Privacy Policy</a> ·
-          </span>
-          <span>Copyright {{moment().format('YYYY')}}</span>
-        </h5>
+            >
+              <img :src="`/img/social/${social.key}.svg`" />
+            </a>
+          </div>
+          <h5 class="py-4">
+            <span v-if="$tenantInfo.privacyPolicy">
+              <a
+                target="_blank"
+                :href="$tenantInfo.privacyPolicy"
+              >Privacy Policy</a> ·
+            </span>
+            <span>Copyright {{moment().format('YYYY')}}</span>
+          </h5>
+        </div>
       </div>
     </v-navigation-drawer>
     <v-app-bar
@@ -421,6 +423,12 @@ export default {
   max-width: 100px;
   margin: 15px auto;
   display: block;
+}
+
+.footer-wrapper {
+  flex-grow: 2;
+  position: relative;
+  min-height: 112px;
 }
 
 .footer {

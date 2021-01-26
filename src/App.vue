@@ -116,4 +116,9 @@ export default {
   margin: auto;
   padding: 0 5px;
 }
+
+#backoffice .v-navigation-drawer__content {
+  display: flex;
+  flex-direction: column;
+}
 </style>
