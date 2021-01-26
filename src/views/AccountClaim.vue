@@ -86,15 +86,16 @@
                       v-model="agreement.affiliate"
                       :rules="requiredRule"
                       :persistent-hint="!affiliate"
+                      @click="accept('affiliate')"
                     >
-                      <div slot="label">
+                      <template slot="label">
                         I agree to the
                         <a
-                          @click="accept('affiliate')"
-                          target="_blank"
-                          :href="$tenantInfo.agreements[0].url"
-                        >Independent Contractor Agreement</a>
-                      </div>
+                        @click.stop
+                        target="_blank"
+                        :href="$tenantInfo.agreements[0].url"
+                      >Independent Contractor Agreement</a>
+                      </template>
                     </v-checkbox>
                   </v-flex>
                   <!-- <v-flex xs12 v-for="agreement in agreements" :key="agreement.key">
@@ -105,11 +106,12 @@
                       v-model="agreement.policies"
                       :rules="requiredRule"
                       :persistent-hint="!policies"
+                      @click="accept('policies')"
                     >
                       <div slot="label">
                         I agree to the
                         <a
-                          @click="accept('policies')"
+                          @click.stop
                           target="_blank"
                           :href="$tenantInfo.agreements[1].url"
                         >Policies and Procedures</a>

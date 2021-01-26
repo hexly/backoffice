@@ -255,7 +255,7 @@ const tenantOptions = {
       }
     ],
     features: {
-      annoucements: true,
+      announcements: true,
       sales: true,
       activity: true,
       legal: {
@@ -279,7 +279,7 @@ const tenantOptions = {
       },
       dashboard: {
         payoutHistory: true,
-        annoucements: true,
+        announcements: true,
         personalCard: true,
         personalCardAwards: true,
         personalCardSocial: true,
@@ -358,7 +358,7 @@ const tenantOptions = {
     ],
     privacyPolicy: '/docs/1011/Privacy-Policy.pdf',
     features: {
-      annoucements: false,
+      announcements: false,
       sales: true,
       awards: {
         base: false
@@ -384,7 +384,7 @@ const tenantOptions = {
         files: 'search:files'
       },
       dashboard: {
-        annoucements: true,
+        announcements: true,
         personalCard: true,
         personalCardSocial: true,
         rankRequirements: true,

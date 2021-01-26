@@ -1,14 +1,28 @@
 <template>
   <div>
-    <v-card v-for="post in posts" :key="post.date">
-      <v-card-title>
-        <p class="headline">{{post.title}}</p>
-      </v-card-title>
-      <v-card-text v-html="post.content"></v-card-text>
-      <v-card-actions>
-        <small>{{post.date}}</small>
-      </v-card-actions>
-    </v-card>
+    <template v-if="loading > 0">
+      <div class="text-center pa-3">
+        <v-progress-circular indeterminate :size="30" :width="3" color="grey"></v-progress-circular>
+        <h5>Loading Announcements</h5>
+      </div>
+    </template>
+    <template v-if="loading === 0 && posts.length === 0">
+      <div class="text-center pa-3">
+        <h5>There are no annoucements at this time.</h5>
+        <h5>Please check back later.</h5>
+      </div>
+    </template>
+    <template v-else>
+      <v-card v-for="post in posts" class="ma-2" :key="post.node.date">
+        <v-card-title>
+          <p class="headline">{{post.node.title}}</p>
+        </v-card-title>
+        <v-card-text v-html="post.node.content"></v-card-text>
+        <v-card-actions>
+          <small>{{$moment(post.node.date).format('ll')}}</small>
+        </v-card-actions>
+      </v-card>
+    </template>
   </div>
 </template>
 
@@ -20,7 +34,8 @@ export default {
   name: 'Announcements',
   data() {
     return {
-      posts: []
+      posts: [],
+      loading: 0
     }
   },
   apollo: {
@@ -40,8 +55,9 @@ export default {
       },
       update(data) {
         const { posts: { edges } } = data
-        return edges[0].node
+        return edges
       },
+      loadingKey: 'loading',
       client: 'wordpress',
       skip: function() {
         return !_.get(this, '$apolloProvider.clients.wordpress')

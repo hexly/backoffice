@@ -58,16 +58,6 @@
         </v-col>
       </lazy-component>
     </template>
-    <v-card>
-      <v-card-title class="secondary white--text headline">
-        Your Circle Of Influencer
-      </v-card-title>
-      <v-card-text>
-        <p class="title pt-5">
-        Your circle of influence has moved to the team page. <a href="/team#directory">View My Circle Of Influence</a>
-        </p>
-      </v-card-text>
-    </v-card>
     <lazy-component wrapper-tag="div">
       <CompanyMap class="py-2" title="Influencers around the world"/>
     </lazy-component>
