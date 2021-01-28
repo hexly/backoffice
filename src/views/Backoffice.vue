@@ -260,6 +260,7 @@ export default {
     }
   },
   methods: {
+<<<<<<< Updated upstream
     getCompanyTime(time) {
       const date = time ? new Date(time) : new Date()
       return new Intl.DateTimeFormat('en-US', {
@@ -272,6 +273,8 @@ export default {
         second: 'numeric'
       }).format(date)
     },
+=======
+>>>>>>> Stashed changes
     logout () {
       this.logoutUser()
       window.location.reload(true)
@@ -284,7 +287,7 @@ export default {
     })
   },
   async mounted () {
-    await this.compGetPeriods({ when: this.$moment(this.getCompanyTime()).format('YYYY-MM-DD') })
+    await this.compGetPeriods()
     if (this.$tenantInfo.features.legal === true) {
       const { data } = await this.getAttributes({
         key: ['affiliate-agreement', 'entity-details'],
