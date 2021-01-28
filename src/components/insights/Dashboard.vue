@@ -171,7 +171,7 @@ export default {
             {
               type: 'member',
               labels: {
-                avatar: 'https://platform.hexly.cloud/assets/1010/21662',
+                avatar: 'https://platform.hexly.cloud/assets/1010/12947',
                 header: 'Person 1',
                 tagline: 'Joined: Jan 2, 2020'
               },
@@ -183,7 +183,7 @@ export default {
             {
               type: 'member',
               labels: {
-                avatar: 'https://platform.hexly.cloud/assets/1010/21664',
+                avatar: 'https://platform.hexly.cloud/assets/1010/12948',
                 header: 'Person 2',
                 tagline: 'Joined: Jan 5, 2020'
               },
@@ -195,7 +195,7 @@ export default {
             {
               type: 'member',
               labels: {
-                avatar: 'https://platform.hexly.cloud/assets/1010/21668',
+                avatar: 'https://platform.hexly.cloud/assets/1010/15531',
                 header: 'Person 3',
                 tagline: 'Joined: Jan 8, 2020'
               },
