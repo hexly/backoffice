@@ -251,7 +251,7 @@ export default {
         { text: 'Payout', value: 'payout', sortable: false }
       ]
     }
-    await this.compGetPeriods({ when: this.$moment(this.getCompanyTime()).format('YYYY-MM-DD') })
+    await this.compGetPeriods()
   },
   methods: {
     formatEarning(earning) {
@@ -261,18 +261,6 @@ export default {
       }
 
       return `${currency}${earning.payout.toFixed(2)}`
-    },
-    getCompanyTime(time) {
-      const date = time ? new Date(time) : new Date()
-      return new Intl.DateTimeFormat('en-US', {
-        timeZone: this.$tenantInfo.companyTime,
-        year: 'numeric',
-        month: 'numeric',
-        day: 'numeric',
-        hour: 'numeric',
-        minute: 'numeric',
-        second: 'numeric'
-      }).format(date)
     },
     async loadLeaderboards(period) {
       const variables = {

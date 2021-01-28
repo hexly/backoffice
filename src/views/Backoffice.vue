@@ -339,18 +339,6 @@ export default {
     }
   },
   methods: {
-    getCompanyTime (time) {
-      const date = time ? new Date(time) : new Date()
-      return new Intl.DateTimeFormat('en-US', {
-        timeZone: this.$tenantInfo.companyTime,
-        year: 'numeric',
-        month: 'numeric',
-        day: 'numeric',
-        hour: 'numeric',
-        minute: 'numeric',
-        second: 'numeric'
-      }).format(date)
-    },
     logout () {
       this.logoutUser()
       window.location.reload(true)
@@ -363,7 +351,7 @@ export default {
     })
   },
   async mounted () {
-    await this.compGetPeriods({ when: this.$moment(this.getCompanyTime()).format('YYYY-MM-DD') })
+    await this.compGetPeriods()
     if (this.$tenantInfo.features.legal === true) {
       const { data } = await this.getAttributes({
         key: ['affiliate-agreement', 'entity-details'],

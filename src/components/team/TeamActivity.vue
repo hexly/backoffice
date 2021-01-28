@@ -423,7 +423,7 @@ export default {
   },
   async mounted() {
     if (_.isEmpty(this.periods)) {
-      await this.compGetPeriods({ when: this.$moment(this.getCompanyTime()).format('YYYY-MM-DD') })
+      await this.compGetPeriods()
     }
     if (this.selectedPeriod.metadata && this.selectedPeriod.metadata.version === 2) {
       await this.getCompStatsPage()
@@ -462,18 +462,6 @@ export default {
       this.totalResults = paging.totalResults
       this.descendants = parseData(data).members
       this.loading = 0
-    },
-    getCompanyTime(time) {
-      const date = time ? new Date(time) : new Date()
-      return new Intl.DateTimeFormat('en-US', {
-        timeZone: this.$tenantInfo.companyTime,
-        year: 'numeric',
-        month: 'numeric',
-        day: 'numeric',
-        hour: 'numeric',
-        minute: 'numeric',
-        second: 'numeric'
-      }).format(date)
     },
     ...mapActions([CompActions.GET_PERIODS])
   },
