@@ -23,6 +23,7 @@
           type="info">
           Our system is currently undergoing maintenance. We will be back up shortly
         </v-alert>
+        <div class="title text-center">Realtime Stats Temporarily Unavailable</div>
       </v-card-text>
     </template>
     <template v-else>
