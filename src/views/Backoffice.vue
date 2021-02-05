@@ -24,6 +24,14 @@
             <v-list-item-title>Dashboard</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
+         <v-list-item v-if="true" to="/insights">
+          <v-list-item-action>
+            <v-icon>insights</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>Insights</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
         <v-list-item to="/profile">
           <v-list-item-action>
             <v-icon>contact_mail</v-icon>
@@ -93,17 +101,6 @@
           </v-list-item-action>
           <v-list-item-content>
             <v-list-item-title>Customers</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-        <v-list-item
-          v-if="true"
-          to="/insights"
-        >
-          <v-list-item-action>
-            <v-icon>insights</v-icon>
-          </v-list-item-action>
-          <v-list-item-content>
-            <v-list-item-title>Insights</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
         <v-list-item
