@@ -44,7 +44,7 @@
               <v-select v-model="metadata.type" :items="settings[selected].types" label="Paypal Id Type" ></v-select>
             </v-col>
             <v-col cols="12" sm="6" md="3">
-              <v-text-field v-model="integrationOid" label="Paypal Id"></v-text-field>
+              <v-text-field v-model="integrationOid" label="Paypal Email"></v-text-field>
             </v-col>
           </v-row>
         </v-form>
@@ -68,6 +68,7 @@ export default {
       selected: {},
       integrationOid: null,
       metadata: {},
+      supportedIntegrations: {},
       settings: {
         'paypal_payouts': {
           types: ['email']
@@ -77,6 +78,7 @@ export default {
   },
   mounted() {
     const currentIntegration = _.minBy(this.getPayoutCapableIntegrations, 'priority')
+    this.supportedIntegrations = _.chain(this.integrations).groupBy('key').mapValues(i => _.get(i, '[0].priority')).value()
     this.selected = currentIntegration.key
     this.integrationOid = currentIntegration.integrationOid
     this.metadata = currentIntegration.metadata
@@ -124,9 +126,11 @@ export default {
         integration.priority = priority
         return integration
       })
-      if (this.newIntegration) {
-        if (!this.integrationOid || _.isEmpty(this.metadata)) {
+      const isDefault = this.supportedIntegrations[this.selected] === 0
+      if (this.newIntegration && !isDefault) {
+        if (!this.integrationOid || (this.settings[this.selected] && _.isEmpty(this.metadata))) {
           this.error = 'Please fill in all required information'
+          this.loading = false
           return
         }
         const upsert = {

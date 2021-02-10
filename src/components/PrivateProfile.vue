@@ -6,8 +6,6 @@
       :label="labelName"
       color="primary"
       @change="change"
-      persistent-hint
-      :hint="member.tags.indexOf(tagName) > -1 ? privateHint: publicHint"
     ></v-switch>
   </div>
 </template>

@@ -22,6 +22,30 @@ query insights($input: InsightInput) {
   }
 }
 `
+
+export const INSIGHTS_COLLECTION = gql`
+query insightCollection($input: InsightCollectionInput){
+  comp {
+    insightCollection(input: $input) {
+      layout 
+      sections {
+        type
+        labels
+        display
+        components {
+          key 
+          type
+          visualizations
+          settings
+          metadata
+          display
+        }
+      }
+    }
+  }
+}
+`
+
 export const COMP_PREVIEW_QUERY = gql`
 query compRunPreview($payload: CompRunDataInput) {
   comp {
