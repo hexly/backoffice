@@ -24,7 +24,6 @@ export default {
   methods: {
     getImage (image) {
       if (image && image !== 'null') {
-        console.log(image, this.$tenantInfo.placeholder)
         return image
       }
       return this.$tenantInfo.placeholder
