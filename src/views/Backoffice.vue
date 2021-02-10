@@ -1,8 +1,18 @@
 <template>
   <div class="main">
-    <v-navigation-drawer fixed v-model="drawer" app>
-      <div v-if="$tenantInfo.logoPath" class="text-center">
-        <img :src="$tenantInfo.logoPath" class="logo" />
+    <v-navigation-drawer
+      fixed
+      v-model="drawer"
+      app
+    >
+      <div
+        v-if="$tenantInfo.logoPath"
+        class="text-center"
+      >
+        <img
+          :src="$tenantInfo.logoPath"
+          class="logo"
+        />
       </div>
       <v-divider></v-divider>
       <v-list dense>
@@ -12,6 +22,22 @@
           </v-list-item-action>
           <v-list-item-content>
             <v-list-item-title>Dashboard</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+         <v-list-item v-if="$tenantInfo.features.insights" to="/insights">
+          <v-list-item-action>
+            <v-icon>insights</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>Insights</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+        <v-list-item v-if="$tenantInfo.features.announcements" to="/announcements">
+          <v-list-item-action>
+            <v-icon>announcement</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>Announcements</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
         <v-list-item to="/profile">
@@ -30,7 +56,10 @@
             <v-list-item-title>Assets</v-list-item-title>
           </v-list-item-content>
         </v-list-item>-->
-        <v-list-item v-if="$tenantInfo.features.sales" to="/sales">
+        <v-list-item
+          v-if="$tenantInfo.features.sales"
+          to="/sales"
+        >
           <v-list-item-action>
             <v-icon>shopping_basket</v-icon>
           </v-list-item-action>
@@ -38,7 +67,10 @@
             <v-list-item-title>Order History</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
-        <v-list-item v-if="GET($tenantInfo, 'features.team.base', true)" to="/team">
+        <v-list-item
+          v-if="GET($tenantInfo, 'features.team.base', true)"
+          to="/team"
+        >
           <v-list-item-action>
             <v-icon>people</v-icon>
           </v-list-item-action>
@@ -46,7 +78,10 @@
             <v-list-item-title>Team</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
-        <v-list-item v-if="$tenantInfo.features.payouts" to="/payouts">
+        <v-list-item
+          v-if="$tenantInfo.features.payouts"
+          to="/payouts"
+        >
           <v-list-item-action>
             <v-icon>attach_money</v-icon>
           </v-list-item-action>
@@ -54,7 +89,10 @@
             <v-list-item-title>Payouts</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
-        <v-list-item v-if="activeIntegrations.length" to="/integrations">
+        <v-list-item
+          v-if="activeIntegrations.length"
+          to="/integrations"
+        >
           <v-list-item-action>
             <v-icon>compare_arrows</v-icon>
           </v-list-item-action>
@@ -62,7 +100,10 @@
             <v-list-item-title>Integrations</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
-        <v-list-item v-if="$tenantInfo.features.customers" to="/customers">
+        <v-list-item
+          v-if="$tenantInfo.features.customers"
+          to="/customers"
+        >
           <v-list-item-action>
             <v-icon>people_outline</v-icon>
           </v-list-item-action>
@@ -70,15 +111,10 @@
             <v-list-item-title>Customers</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
-        <v-list-item v-if="$tenantInfo.features.announcements" to="/announcements">
-          <v-list-item-action>
-            <v-icon>announcement</v-icon>
-          </v-list-item-action>
-          <v-list-item-content>
-            <v-list-item-title>Announcements</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-        <v-list-item v-if="$tenantInfo.features.files" to="/files">
+        <v-list-item
+          v-if="$tenantInfo.features.files"
+          to="/files"
+        >
           <v-list-item-action>
             <v-icon>topic</v-icon>
           </v-list-item-action>
@@ -90,7 +126,10 @@
 
       <v-divider></v-divider>
       <v-list>
-        <v-list-item :href="usersStoreUrl" target="_blank">
+        <v-list-item
+          :href="usersStoreUrl"
+          target="_blank"
+        >
           <v-list-item-action>
             <v-icon>store</v-icon>
           </v-list-item-action>
@@ -98,7 +137,12 @@
             <v-list-item-title>Shop</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
-        <v-list-item v-for="link in $tenantInfo.externalLinks" :href="link.href" target="_blank" :key="link.href">
+        <v-list-item
+          v-for="link in $tenantInfo.externalLinks"
+          :href="link.href"
+          target="_blank"
+          :key="link.href"
+        >
           <v-list-item-action>
             <v-icon>{{link.icon || 'link'}}</v-icon>
           </v-list-item-action>
@@ -109,7 +153,10 @@
       </v-list>
       <v-divider v-if="hasAdminMenu"></v-divider>
       <v-list v-if="hasAdminMenu">
-        <v-list-item target="_blank" href="https://admin.hexly.cloud">
+        <v-list-item
+          target="_blank"
+          href="https://admin.hexly.cloud"
+        >
           <v-list-item-action>
             <v-icon>cloud_circle</v-icon>
           </v-list-item-action>
@@ -117,7 +164,10 @@
             <v-list-item-title>Hexly Admin</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
-        <v-list-item v-if="hasZendeskAdmin" to="/zendesk">
+        <v-list-item
+          v-if="hasZendeskAdmin"
+          to="/zendesk"
+        >
           <v-list-item-action>
             <v-icon>supervised_user_circle</v-icon>
           </v-list-item-action>
@@ -127,33 +177,52 @@
         </v-list-item>
       </v-list>
 
-      <div column class="text-center py-4 footer">
-        <div>
-          <a
-            v-for="social in $tenantInfo.social"
-            :key="social.key"
-            :href="social.url"
-            target="_blank"
-          >
-            <img :src="`/img/social/${social.key}.svg`" />
-          </a>
+      <div
+        column
+        class="text-center py-4 footer-wrapper"
+      >
+        <div class="footer">
+          <div>
+            <a
+              v-for="social in $tenantInfo.social"
+              :key="social.key"
+              :href="social.url"
+              target="_blank"
+            >
+              <img :src="`/img/social/${social.key}.svg`" />
+            </a>
+          </div>
+          <h5 class="py-4">
+            <span v-if="$tenantInfo.privacyPolicy">
+              <a
+                target="_blank"
+                :href="$tenantInfo.privacyPolicy"
+              >Privacy Policy</a> ·
+            </span>
+            <span>Copyright {{moment().format('YYYY')}}</span>
+          </h5>
         </div>
-        <h5 class="py-4">
-          <span v-if="$tenantInfo.privacyPolicy">
-            <a target="_blank" :href="$tenantInfo.privacyPolicy">Privacy Policy</a> ·
-          </span>
-          <span>Copyright {{moment().format('YYYY')}}</span>
-        </h5>
       </div>
     </v-navigation-drawer>
-    <v-app-bar :color="$tenantInfo.baseColor" dark fixed app>
-      <v-app-bar-nav-icon v-if="$vuetify.breakpoint.mdAndDown" @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
+    <v-app-bar
+      :color="$tenantInfo.baseColor"
+      dark
+      fixed
+      app
+    >
+      <v-app-bar-nav-icon
+        v-if="$vuetify.breakpoint.mdAndDown"
+        @click.stop="drawer = !drawer"
+      ></v-app-bar-nav-icon>
       <v-toolbar-title class="title">{{$route.name}}</v-toolbar-title>
       <v-spacer></v-spacer>
       <v-toolbar-items>
         <v-menu offset-y>
           <template v-slot:activator="{ on }">
-            <v-btn text v-on="on">
+            <v-btn
+              text
+              v-on="on"
+            >
               <span
                 data-cy="Display Name"
                 v-if="$vuetify.breakpoint.mdAndUp"
@@ -165,10 +234,17 @@
             </v-btn>
           </template>
           <v-list>
-            <v-list-item @click="logout" v-if="user.isImpersonating">
+            <v-list-item
+              @click="logout"
+              v-if="user.isImpersonating"
+            >
               <v-list-item-title>End Impersonation</v-list-item-title>
             </v-list-item>
-            <v-list-item data-cy="Logout" @click="logout" v-if="!user.isImpersonating">
+            <v-list-item
+              data-cy="Logout"
+              @click="logout"
+              v-if="!user.isImpersonating"
+            >
               <v-list-item-title>Log Out</v-list-item-title>
             </v-list-item>
           </v-list>
@@ -180,7 +256,11 @@
         <router-view />
       </div>
     </v-content>
-    <v-dialog v-model="showGateDialog" max-width="290" persistent>
+    <v-dialog
+      v-model="showGateDialog"
+      max-width="290"
+      persistent
+    >
       <v-card>
         <v-card-title class="headline">We need more information!</v-card-title>
         <v-card-text>
@@ -189,7 +269,11 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="primary" text @click="$router.push('/profile')">Go To Profile Page</v-btn>
+          <v-btn
+            color="primary"
+            text
+            @click="$router.push('/profile')"
+          >Go To Profile Page</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -332,6 +416,12 @@ export default {
   max-width: 100px;
   margin: 15px auto;
   display: block;
+}
+
+.footer-wrapper {
+  flex-grow: 2;
+  position: relative;
+  min-height: 112px;
 }
 
 .footer {
