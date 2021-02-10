@@ -1,7 +1,7 @@
 <template>
   <v-card>
     <v-card-title class="secondary white--text headline">{{data.labels.heading}}</v-card-title>
-    <v-card-text class="pa-1">
+    <v-card-text class="pa-1 insights-card">
       <p v-if="data.labels.description">{{data.labels.description}}</p>
       <v-list three-line class="pa-0 insights-list">
         <template v-for="(component, i) in data.components">
@@ -49,6 +49,10 @@ export default {
 </script>
 
 <style>
+.insights-card {
+  max-height: 400px;
+  overflow: auto;
+}
 .insights-row:nth-child(odd){
   background-color: #cecece;
 }

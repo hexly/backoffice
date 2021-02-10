@@ -1,7 +1,7 @@
 <template>
   <div class="insights-dashboard mx-4">
     <v-row wrap>
-       <v-col cols="12" md="6">
+      <v-col cols="12" md="6">
         <v-card>
           <v-toolbar color="secondary" dark>
             <v-toolbar-title>Team Insights</v-toolbar-title>

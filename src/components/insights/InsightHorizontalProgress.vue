@@ -3,7 +3,7 @@
     <v-list-item-content>
       <v-list-item-title>{{data.labels.title}}</v-list-item-title>
       <v-list-item-subtitle>{{data.labels.description}}</v-list-item-subtitle>
-      <v-progress-linear v-if="metadata.scope.parsed.psv" color="green" height="25" :value="(metadata.scope.parsed.psv/data.progress)*100">
+      <v-progress-linear v-if="data.progress" color="green" height="25" :value="data.progress">
         <template v-slot:default="">
             <strong>{{data.labels.bar}}</strong>
           </template>
