@@ -52,7 +52,7 @@
           </v-card-text>
         </v-card>
       </v-col>
-      <v-col cols="12" md="6" v-for="(insight, i) in insights" :key="i">
+      <!-- <v-col cols="12" md="6" v-for="(insight, i) in insights" :key="i">
         <v-card>
           <v-card-title class="secondary white--text headline">
             {{insight.title}}
@@ -104,6 +104,11 @@
             </v-list>
           </v-card-text>
         </v-card>
+      </v-col> -->
+      <v-col cols="12" md="6" v-for="(section, i) in collection.sections" :key="`${section.type}-${i}`">
+        <template v-if="section.type === 'PANEL' && section.display">
+          <InsightsPanel :data="section"/>
+        </template>
       </v-col>
     </v-row>
   </div>
@@ -111,16 +116,19 @@
 
 <script>
 import { mapState, mapGetters } from 'vuex'
-import { INSIGHTS } from '@/graphql/comp.gql'
+import { INSIGHTS, INSIGHTS_COLLECTION } from '@/graphql/comp.gql'
 import PeriodSwitcher from '@/components/PeriodSwitcher.vue'
+import InsightsPanel from '@/components/insights/InsightsPanel.vue'
 
 export default {
   name: 'InsightsDashboard',
   components: {
-    PeriodSwitcher
+    PeriodSwitcher,
+    InsightsPanel
   },
   data () {
     return {
+      collection: {},
       insights: [
         {
           title: 'Success Start Sales Tracker',
@@ -262,6 +270,23 @@ export default {
   },
   methods: {},
   apollo: {
+    collection: {
+      query: INSIGHTS_COLLECTION,
+      variables() {
+        return {
+          input: {
+            memberId: this.member.id,
+            date: this.$moment().format('YYYY-MM-DD'),
+            key: 'backoffice_insights'
+          }
+        }
+      },
+      update({ comp: { insightCollection } }) {
+        return insightCollection
+      },
+      client: 'federated',
+      loadingKey: 'loadingInsightsCollection'
+    },
     betaInsights: {
       query: INSIGHTS,
       variables() {

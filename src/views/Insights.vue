@@ -8,27 +8,25 @@
     >
       <v-tabs-slider color="white"></v-tabs-slider>
 
-      <v-tab
-        to="#dashboard"
-        v-if="true"
-      >Dashboard
-        <v-icon>dashboard</v-icon>
-      </v-tab>
-      <template v-if="true">
+      <template v-if="GET($tenantInfo, 'features.insights.dashboard')">
+        <v-tab to="#dashboard">Dashboard
+          <v-icon>dashboard</v-icon>
+        </v-tab>
+      </template>
+      <template v-if="GET($tenantInfo, 'features.insights.reports')">
         <v-tab to="#reports">Reports
           <v-icon>trending_up</v-icon>
         </v-tab>
       </template>
 
-      <v-tab-item
-        value="dashboard"
-        class="py-3"
-      >
-        <v-lazy>
-          <Dasboard />
-        </v-lazy>
-      </v-tab-item>
-      <template v-if="true">
+      <template v-if="GET($tenantInfo, 'features.insights.dashboard')">
+        <v-tab-item value="dashboard" class="py-3">
+          <v-lazy>
+            <Dasboard />
+          </v-lazy>
+        </v-tab-item>
+      </template>
+      <template v-if="GET($tenantInfo, 'features.insights.reports')">
         <v-tab-item value="reports">
           <v-lazy>
             <Reports />

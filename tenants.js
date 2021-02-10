@@ -256,6 +256,10 @@ const tenantOptions = {
     ],
     features: {
       announcements: true,
+      insights: {
+        dashboard: true,
+        reports: false
+      },
       sales: true,
       activity: true,
       legal: {
