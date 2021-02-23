@@ -34,82 +34,59 @@
                 </v-list-item-action>
               </v-list-item>
             </v-list>
-            <!-- <v-row class="pa-0 insights-row" v-for="insight in betaInsights" :key="insight.key">
-              <v-col cols="1">
-                <v-icon large color="light-blue">{{insightInfo[insight.key].icon}}</v-icon>
-              </v-col>
-              <v-col cols="7">
-                <h3>{{insight.labels.header}}</h3>
-                <h5>{{insight.labels.tagline}}</h5>
-                <small v-if="insightInfo[insight.key].desc">{{insightInfo[insight.key].desc}}</small>
-              </v-col>
-              <v-col cols="4" class="text-right body-1">
-                <strong>{{insight.values.formatted}}</strong>
-                <br/>
-                <small>{{insight.values.tagline}}</small>
-              </v-col>
-            </v-row> -->
           </v-card-text>
         </v-card>
       </v-col>
-      <!-- <v-col cols="12" md="6" v-for="(insight, i) in insights" :key="i">
+      <v-col cols="12" md="6" v-if="coupons.length">
         <v-card>
-          <v-card-title class="secondary white--text headline">
-            {{insight.title}}
-          </v-card-title>
+          <v-toolbar color="secondary" dark>
+            <v-toolbar-title>Earned Rewards</v-toolbar-title>
+          </v-toolbar>
           <v-card-text class="pa-1">
-            <p v-if="insight.subTitle">{{insight.subTitle}}</p>
             <v-list three-line class="pa-0 insights-list">
-              <v-list-item v-for="(component , i) in insight.components" :key="i" class="pa-1 insights-row">
-                <template v-if="component.type === 'progress'">
-                  <v-list-item-content>
-                    <v-list-item-title>{{component.labels.header}}</v-list-item-title>
-                    <v-list-item-subtitle>{{component.labels.tagline}}</v-list-item-subtitle>
-                    <v-progress-linear color="green" height="25" :value="(component.values.value/component.values.total)*100">
-                        <template v-slot:default="">
-                          <strong>{{component.values.formatted}}</strong>
-                        </template>
-                      </v-progress-linear>
-                  </v-list-item-content>
-                </template>
-                <template v-if="component.type === 'member'">
-                  <v-list-item-avatar>
-                    <v-img v-if="component.labels.avatar" :src="component.labels.avatar"></v-img>
-                  </v-list-item-avatar>
-                  <v-list-item-content>
-                    <v-list-item-title>{{component.labels.header}}</v-list-item-title>
-                    <v-list-item-subtitle>{{component.labels.tagline}}</v-list-item-subtitle>
-                  </v-list-item-content>
-                  <v-list-item-action>
-                    <v-list-item-action-text>
-                      <v-chip color="red">{{component.values.formatted}}</v-chip>
-                    </v-list-item-action-text>
-                    <v-list-item-action-text>{{component.values.value}}</v-list-item-action-text>
-                  </v-list-item-action>
-                </template>
-                <template v-if="component.type === 'stat'">
-                  <v-list-item-avatar>
-                    <v-icon v-if="component.labels.icon">{{component.labels.icon}}</v-icon>
-                  </v-list-item-avatar>
-                  <v-list-item-content>
-                    <v-list-item-title>{{component.labels.header}}</v-list-item-title>
-                    <v-list-item-subtitle>{{component.labels.tagline}}</v-list-item-subtitle>
-                  </v-list-item-content>
-                  <v-list-item-action>
-                    <v-list-item-action-text> {{component.values.formatted}} </v-list-item-action-text>
-                    <v-list-item-action-text>{{component.values.value}}</v-list-item-action-text>
-                  </v-list-item-action>
-                </template>
+              <v-list-item v-for="coupon in coupons" :key="coupon.code" class="pa-1 insights-row">
+                <v-list-item-content>
+                  <v-list-item-title>{{coupon.metadata.note}}</v-list-item-title>
+                  <v-list-item-subtitle>
+                    <template v-if="isTouchEnabled()">
+                      <v-chip color="orange" label @click="copyToClipboard(coupon.code.toUpperCase())" >
+                        {{coupon.code.toUpperCase()}}
+                      </v-chip>
+                      <br/>
+                      <small>{{tooltipText.replace('Click', 'Tap Code')}}</small>
+                    </template>
+                    <v-tooltip v-else bottom>
+                      <template v-slot:activator="{ on, attrs }">
+                        <v-chip
+                          v-bind="attrs"
+                          v-on="on"
+                          color="orange"
+                          label
+                          @click="copyToClipboard(coupon.code.toUpperCase())"
+                        >
+                          {{coupon.code.toUpperCase()}}
+                        </v-chip>
+                      </template>
+                      <span>{{tooltipText}}</span>
+                    </v-tooltip>
+                  </v-list-item-subtitle>
+                </v-list-item-content>
+                <v-list-item-action>
+                  <v-list-item-action-text> <v-chip class="my-1" color="green" small>{{couponMapping[coupon.type]}}</v-chip> </v-list-item-action-text>
+                  <v-list-item-action-text> <v-chip color="light-blue" small>{{couponMapping[coupon.status]}}</v-chip> </v-list-item-action-text>
+                </v-list-item-action>
               </v-list-item>
             </v-list>
           </v-card-text>
         </v-card>
-      </v-col> -->
-      <v-col cols="12" md="6" v-for="(section, i) in collection.sections" :key="`${section.type}-${i}`">
-        <template v-if="section.type === 'PANEL' && section.display">
-          <InsightsPanel :data="section"/>
-        </template>
       </v-col>
+      <template v-if="collection.sections && collection.sections.length > 0">
+        <v-col cols="12" md="6" v-for="(section, i) in collection.sections" :key="`${section.type}-${i}`">
+          <template v-if="section.type === 'PANEL' && section.display">
+            <InsightsPanel :data="section"/>
+          </template>
+        </v-col>
+      </template>
     </v-row>
   </div>
 </template>
@@ -117,6 +94,7 @@
 <script>
 import { mapState, mapGetters } from 'vuex'
 import { INSIGHTS, INSIGHTS_COLLECTION } from '@/graphql/comp.gql'
+import { COUPONS } from '@/graphql/Marketing.gql'
 import PeriodSwitcher from '@/components/PeriodSwitcher.vue'
 import InsightsPanel from '@/components/insights/InsightsPanel.vue'
 
@@ -128,123 +106,20 @@ export default {
   },
   data () {
     return {
+      tooltipText: 'Click To Copy',
+      couponMapping: {
+        FREE_PRODUCT: 'Free Product',
+        FIXED_CART: 'Discount',
+        PERCENT: 'Percent Discount',
+        FIXED_PRODUCT: 'Product Discount',
+        ISSUED: 'Available',
+        CONSUMED: 'Used',
+        UNAVAILABLE: 'Unavailable',
+        EXPIRED: 'Expired'
+      },
       collection: {},
-      insights: [
-        {
-          title: 'Success Start Sales Tracker',
-          subTitle: '',
-          components: [
-            {
-              type: 'progress',
-              labels: {
-                header: 'Daily Progress',
-                tagline: 'You are within the first 40 days of being an influencer. We have some exciting opportunties for you!'
-              },
-              values: {
-                formatted: 'Day 23 Of 40',
-                value: 23,
-                total: 40
-              }
-            },
-            {
-              type: 'progress',
-              labels: {
-                header: 'Sales Goal #1',
-                tagline: 'Sell 100 PSV and receive an exclusive I AM Everra LUX lash'
-              },
-              values: {
-                formatted: '75 PSV out of 100 PSV',
-                value: 75,
-                total: 100
-              }
-            },
-            {
-              type: 'progress',
-              labels: {
-                header: 'Sales Goal #2',
-                tagline: 'Sell 200 PSV and receive an $35 product credit'
-              },
-              values: {
-                formatted: '75 PSV out of 200 PSV',
-                value: 75,
-                total: 200
-              }
-            }
-          ]
-        },
-        {
-          title: 'Success Start Team Tracker',
-          subTitle: 'You\'ve helped 3 influencers join Everra and 1 has become active! You\'ve earned $25 product credit',
-          components: [
-            {
-              type: 'member',
-              labels: {
-                avatar: 'https://platform.hexly.cloud/assets/1010/12947',
-                header: 'Person 1',
-                tagline: 'Joined: Jan 2, 2020'
-              },
-              values: {
-                formatted: 'Active',
-                value: '200 PSV'
-              }
-            },
-            {
-              type: 'member',
-              labels: {
-                avatar: 'https://platform.hexly.cloud/assets/1010/12948',
-                header: 'Person 2',
-                tagline: 'Joined: Jan 5, 2020'
-              },
-              values: {
-                formatted: 'Inctive',
-                value: '50 PSV'
-              }
-            },
-            {
-              type: 'member',
-              labels: {
-                avatar: 'https://platform.hexly.cloud/assets/1010/15531',
-                header: 'Person 3',
-                tagline: 'Joined: Jan 8, 2020'
-              },
-              values: {
-                formatted: 'Inctive',
-                value: '0 PSV'
-              }
-            }
-          ]
-        },
-        {
-          title: 'Success Start Rewards',
-          subTitle: '',
-          components: [
-            {
-              type: 'stat',
-              labels: {
-                icon: 'mdi-cash-usd-outline',
-                header: '$35 Coupon',
-                tagline: 'HDNDS2SH'
-              },
-              values: {
-                formatted: 'Sales Goal #1 Reward',
-                value: 'Coupon Code'
-              }
-            },
-            {
-              type: 'stat',
-              labels: {
-                icon: 'mdi-cash-usd-outline',
-                header: '$45 Coupon',
-                tagline: 'HNDF8KD'
-              },
-              values: {
-                formatted: 'Sales Goal #2 Reward',
-                value: 'Coupon Code'
-              }
-            }
-          ]
-        }
-      ],
+      // Temporary approach to coupons
+      coupons: [],
       betaInsights: [],
       insightInfo: {
         top_seller: {
@@ -268,7 +143,19 @@ export default {
       selectedPeriod: state => state.comp.selectedPeriod
     })
   },
-  methods: {},
+  methods: {
+    // Just testing something here... should be global if we like it
+    isTouchEnabled() {
+      try { document.createEvent('TouchEvent'); return true } catch (e) { return false }
+    },
+    async copyToClipboard(code) {
+      await this.$copyText(code)
+      this.tooltipText = 'Copied!'
+      setTimeout(() => {
+        this.tooltipText = 'Click To Copy'
+      }, 3000)
+    }
+  },
   apollo: {
     collection: {
       query: INSIGHTS_COLLECTION,
@@ -306,6 +193,21 @@ export default {
       },
       client: 'federated',
       loadingKey: 'loadingInsights'
+    },
+    coupons: {
+      query: COUPONS,
+      variables() {
+        return {
+          input: {
+            memberId: this.member.id
+          }
+        }
+      },
+      update({ marketing: { couponSearch } }) {
+        return couponSearch
+      },
+      client: 'federated',
+      loadingKey: 'loadingCoupons'
     }
   },
   mounted () {}
