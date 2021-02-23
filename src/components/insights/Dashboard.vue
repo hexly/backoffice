@@ -47,9 +47,14 @@
               <v-list-item v-for="coupon in coupons" :key="coupon.code" class="pa-1 insights-row">
                 <v-list-item-content>
                   <v-list-item-title>{{coupon.metadata.note}}</v-list-item-title>
-                  <v-list-item-subtitle>
+                  <v-list-item-subtitle v-if="['REDEEMED', 'REVOKED'].indexOf(coupon.status) > -1">
+                    <v-chip color="gray" label>
+                        {{coupon.code.toUpperCase()}}
+                      </v-chip>
+                  </v-list-item-subtitle>
+                  <v-list-item-subtitle v-else>
                     <template v-if="isTouchEnabled()">
-                      <v-chip :color="['REDEEMED', 'REVOKED'].indexOf(coupon.status) > -1 ? 'gray' : 'orange'" label @click="copyToClipboard(coupon.code.toUpperCase())" >
+                      <v-chip color="orange" label @click="copyToClipboard(coupon.code.toUpperCase())" >
                         {{coupon.code.toUpperCase()}}
                       </v-chip>
                       <br/>
@@ -60,7 +65,7 @@
                         <v-chip
                           v-bind="attrs"
                           v-on="on"
-                          :color="['REDEEMED', 'REVOKED'].indexOf(coupon.status) > -1 ? 'gray' : 'orange'"
+                          :color="orange"
                           label
                           @click="copyToClipboard(coupon.code.toUpperCase())"
                         >
@@ -73,7 +78,7 @@
                 </v-list-item-content>
                 <v-list-item-action>
                   <v-list-item-action-text> <v-chip class="my-1" color="green" small>{{couponMapping[coupon.type]}}</v-chip> </v-list-item-action-text>
-                  <v-list-item-action-text> <v-chip :color="['REDEEMED', 'REVOKED'].indexOf(coupon.status) > -1 ? 'light-red' : 'light-blue'" small>{{couponMapping[coupon.status]}}</v-chip> </v-list-item-action-text>
+                  <v-list-item-action-text> <v-chip :color="['REDEEMED', 'REVOKED'].indexOf(coupon.status) > -1 ? 'red' : 'light-blue'" small>{{couponMapping[coupon.status]}}</v-chip> </v-list-item-action-text>
                 </v-list-item-action>
               </v-list-item>
             </v-list>
