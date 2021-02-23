@@ -65,7 +65,7 @@
                         <v-chip
                           v-bind="attrs"
                           v-on="on"
-                          :color="orange"
+                          color="orange"
                           label
                           @click="copyToClipboard(coupon.code.toUpperCase())"
                         >
@@ -77,8 +77,8 @@
                   </v-list-item-subtitle>
                 </v-list-item-content>
                 <v-list-item-action>
-                  <v-list-item-action-text> <v-chip class="my-1" color="green" small>{{couponMapping[coupon.type]}}</v-chip> </v-list-item-action-text>
-                  <v-list-item-action-text> <v-chip :color="['REDEEMED', 'REVOKED'].indexOf(coupon.status) > -1 ? 'red' : 'light-blue'" small>{{couponMapping[coupon.status]}}</v-chip> </v-list-item-action-text>
+                  <v-list-item-action-text> <v-chip class="my-1" color="light-blue" small>{{couponMapping[coupon.type]}}</v-chip> </v-list-item-action-text>
+                  <v-list-item-action-text> <v-chip :color="['REDEEMED', 'REVOKED'].indexOf(coupon.status) > -1 ? 'red' : 'green'" small>{{couponMapping[coupon.status]}}</v-chip> </v-list-item-action-text>
                 </v-list-item-action>
               </v-list-item>
             </v-list>
