@@ -42,7 +42,7 @@
           <v-toolbar color="secondary" dark>
             <v-toolbar-title>Earned Rewards</v-toolbar-title>
           </v-toolbar>
-          <v-card-text class="pa-1">
+          <v-card-text class="pa-1 insights-card">
             <v-list three-line class="pa-0 insights-list">
               <v-list-item v-for="coupon in coupons" :key="coupon.code" class="pa-1 insights-row">
                 <v-list-item-content>
@@ -109,9 +109,9 @@ export default {
       tooltipText: 'Click To Copy',
       couponMapping: {
         FREE_PRODUCT: 'Free Product',
-        FIXED_CART: 'Discount',
-        PERCENT: 'Percent Discount',
-        FIXED_PRODUCT: 'Product Discount',
+        FIXED_CART_AMOUNT: 'Discount',
+        FIXED_CART_PERCENT: 'Percent Discount',
+        FIXED_PRODUCT_AMOUNT: 'Product Discount',
         ISSUED: 'Available',
         CONSUMED: 'Used',
         UNAVAILABLE: 'Unavailable',
@@ -215,6 +215,10 @@ export default {
 </script>
 
 <style scoped>
+.insights-card {
+  max-height: 400px;
+  overflow: auto;
+}
 .insights-row:nth-child(odd){
   background-color: #cecece;
 }
