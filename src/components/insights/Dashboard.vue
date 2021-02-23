@@ -49,7 +49,7 @@
                   <v-list-item-title>{{coupon.metadata.note}}</v-list-item-title>
                   <v-list-item-subtitle>
                     <template v-if="isTouchEnabled()">
-                      <v-chip color="orange" label @click="copyToClipboard(coupon.code.toUpperCase())" >
+                      <v-chip :color="['REDEEMED', 'REVOKED'].indexOf(coupon.status) > -1 ? 'gray' : 'orange'" label @click="copyToClipboard(coupon.code.toUpperCase())" >
                         {{coupon.code.toUpperCase()}}
                       </v-chip>
                       <br/>
@@ -60,7 +60,7 @@
                         <v-chip
                           v-bind="attrs"
                           v-on="on"
-                          color="orange"
+                          :color="['REDEEMED', 'REVOKED'].indexOf(coupon.status) > -1 ? 'gray' : 'orange'"
                           label
                           @click="copyToClipboard(coupon.code.toUpperCase())"
                         >
@@ -73,7 +73,7 @@
                 </v-list-item-content>
                 <v-list-item-action>
                   <v-list-item-action-text> <v-chip class="my-1" color="green" small>{{couponMapping[coupon.type]}}</v-chip> </v-list-item-action-text>
-                  <v-list-item-action-text> <v-chip color="light-blue" small>{{couponMapping[coupon.status]}}</v-chip> </v-list-item-action-text>
+                  <v-list-item-action-text> <v-chip :color="['REDEEMED', 'REVOKED'].indexOf(coupon.status) > -1 ? 'light-red' : 'light-blue'" small>{{couponMapping[coupon.status]}}</v-chip> </v-list-item-action-text>
                 </v-list-item-action>
               </v-list-item>
             </v-list>
@@ -113,9 +113,9 @@ export default {
         FIXED_CART_PERCENT: 'Percent Discount',
         FIXED_PRODUCT_AMOUNT: 'Product Discount',
         ISSUED: 'Available',
-        CONSUMED: 'Used',
-        UNAVAILABLE: 'Unavailable',
-        EXPIRED: 'Expired'
+        REDEEMED: 'Redeemed',
+        PARTIALLY_REDEEMED: 'Partially Redeemed',
+        REVOKED: 'Revoked'
       },
       collection: {},
       // Temporary approach to coupons
