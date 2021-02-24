@@ -76,7 +76,7 @@ export default {
         },
         overrides: {
           personal: 'Personal Sales',
-          powerSeller: 'Power Seller Bonus',
+          powerSeller: 'Influencer Bonus',
           fssb: 'Fast Start Sponsor Bonus',
           level1: 'Level 1 Bonus',
           level2: 'Level 2 Bonus',
