@@ -16,7 +16,7 @@
       </v-card-title>
     </v-img>
     <div v-if="actions">
-      <v-tabs @change="handleTabChange" :value="activeTab">
+      <v-tabs @change="handleTabChange" :value="activeTab" :hide-slider="true">
         <v-tab class="dense" @click="$emit('tabActivated', index)" v-for="(heading, index) in tabHeadings" :key="heading">
           {{ heading }}
         </v-tab>
@@ -70,56 +70,68 @@
           </v-card>
         </v-tab-item>
         <v-tab-item>
+          <div class="text-center mb-2">
+            <v-btn
+                small
+                color="secondary white--text"
+                @click="viewTeam()"
+                v-if="!($route.hash === '#search')"
+              >
+                View Team
+              </v-btn>
+          </div>
           <div class="item-container-card">
-            <v-card v-if="!$apolloData.loading" flat>
+            <v-card v-if="!$apolloData.loading && compStats" flat>
               <v-layout justify-center row wrap class="text-center">
-                <v-flex xs3>
-                  <span class="font-weight-black title">{{tabContent.teamSize}}</span>
-                  <br/>
-                  Team Size
-                </v-flex>
+                  <v-flex xs4>
+                    <v-chip label small color="red lighten-5">{{compStats.metadata.counts.qualified}}</v-chip>
+                    <br/>
+                    Qualified
+                  </v-flex>
+                  <v-flex xs4>
+                    <v-chip label small color="red lighten-5">{{compStats.metadata.counts.downline}}</v-chip>
+                    <br/>
+                    Total
+                  </v-flex>
+                  <v-flex xs4>
+                    <v-chip label small color="red lighten-5">{{compStats.metadata.counts.group}}</v-chip>
+                    <br/>
+                    Group
+                  </v-flex>
               </v-layout>
-              <v-layout justify-center row wrap class="text-center">
-                <v-flex xs3>
-                  <span class="font-weight-black title">{{tabContent.frontLine}}</span>
-                  <br/>
-                  Front-Line
-                </v-flex>
-                <v-flex xs3>
-                  <span class="font-weight-black title">{{tabContent.secondLine}}</span>
-                  <br/>
-                  Second line
-                </v-flex>
-                <v-flex xs3>
-                  <span class="font-weight-black title">{{tabContent.thirdLine}}</span>
-                  <br/>
-                  Third line
-                </v-flex>
-              </v-layout>
+              <template v-if="compStats.metadata.counts.levels && compStats.metadata.counts.levels.length">
+                <hr class="my-3"/>
+                <div class="text-center">Qualified Per level</div>
+                <v-layout row wrap class="text-center">
+                  <v-flex xs4 class="my-1" v-for="level in compStats.metadata.counts.levels" :key="level.level">
+                    <b>Level {{level.level}}</b>
+                    <br/>
+                    <v-chip label x-small color="teal lighten-5">{{level.qualified}} / {{level.total}}</v-chip>
+                  </v-flex>
+                </v-layout>
+              </template>
+              <template v-if="compStats.metadata.counts.ranks && compStats.metadata.counts.ranks['1']">
+                <hr class="my-3" />
+                <div class="text-center">Per Rank Total</div>
+                <v-layout row wrap class="text-center">
+                  <v-flex xs3 class="my-1" v-for="(total, rank) in filterRanks(compStats.metadata.counts.ranks)" :key="`${user.name}-${rank}`">
+                    <b>Rank {{rank}}</b>
+                    <br/>
+                    <v-chip label x-small color="deep-purple lighten-5">{{total}}</v-chip>
+                  </v-flex>
+                </v-layout>
+              </template>
             </v-card>
             <v-flex v-else d-flex justify-center align-center class="text-center">
               <v-progress-circular indeterminate :size="50" :width="5" color="primary"></v-progress-circular>
             </v-flex>
-            <v-card flat>
-              <v-layout justify-center row wrap class="text-center">
-                <v-btn
-                  rounded
-                  small
-                  color="secondary white--text"
-                  @click="viewTeam()"
-                  v-if="!($route.hash === '#search')"
-                >
-                  View Team
-                </v-btn>
-              </v-layout>
-            </v-card>
           </div>
         </v-tab-item>
         <v-tab-item>
           <div class="item-container-card">
             <CompRanksCard
-              v-if="!$apolloData.loading"
-              :stats         ="compStatsData"
+              v-if="!$apolloData.loading && compStats"
+              :stats         ="compStats"
               :statsDisabled ="statsDisabled"
               :tabMode       ="true"
             />
@@ -169,10 +181,9 @@
 </template>
 
 <script>
-import { get } from 'lodash'
+import { get, omit } from 'lodash'
 
 import CompRanksCard from '@/components/CompRanksCard.vue'
-import { TEAM_SIZE_BY_GENERATION } from '@/graphql/MemberStats.gql'
 import { AWARDS_BY_ID } from '@/graphql/Team.gql'
 export default {
   name: 'TeamCard',
@@ -191,7 +202,6 @@ export default {
       skipAwardsQuery: true,
       skipRankQuery: true,
       awards: [],
-      compStatsData: {},
       engineStats: null,
       tabHeadings: [
         'Info',
@@ -220,6 +230,9 @@ export default {
     activeTab: Number
   },
   methods: {
+    filterRanks(ranks) {
+      return omit(ranks, ['0'])
+    },
     formatDate (value) {
       return this.$moment(value, 'YYYY-MM-DD').from(this.$moment())
     },
@@ -347,50 +360,8 @@ export default {
         this.awards = this.user.awards
       }
     }
-    this.compStatsData = this.compStats
-    const counts = get(this, 'compStatsData.metadata.counts')
-    if (counts) {
-      this.skipTeamQuery = true
-      const levels = {}
-      if (counts.levels) {
-        counts.levels.forEach(l => {
-          levels[l.level] = l.total
-        })
-      }
-      this.tabContent = {
-        teamSize: counts.downline || 0,
-        frontLine: levels[1] || 0,
-        secondLine: levels[2] || 0,
-        thirdLine: levels[3] || 0
-      }
-    }
   },
   apollo: {
-    counts: {
-      query: TEAM_SIZE_BY_GENERATION,
-      variables() {
-        return {
-          input: {
-            memberId: this.id
-          }
-        }
-      },
-      skip() {
-        return this.skipTeamQuery
-      },
-      update({ membershipTeamSizes }) {
-        const getTeamDataByDepth = membershipTeamSizes.reduce((all, s) => {
-          all[s.generation || 'all'] = s.count
-          return all
-        }, {})
-        this.tabContent = {
-          teamSize: getTeamDataByDepth.all || 0,
-          frontLine: getTeamDataByDepth['1'] || 0,
-          secondLine: getTeamDataByDepth['2'] || 0,
-          thirdLine: getTeamDataByDepth['3'] || 0
-        }
-      }
-    },
     awardsRes: {
       query: AWARDS_BY_ID,
       variables() {
@@ -460,7 +431,6 @@ export default {
   min-height: 215px;
   display: flex;
   flex-direction: column;
-  justify-content: space-evenly;
   font-size: 12px;
 }
 .generation-container {
