@@ -95,7 +95,7 @@
               color="grey"
             >
               <div v-if="stat == null || stat.earned === null || stat.earned === undefined">N/A</div>
-              <div v-else>{{stat.earned}}</div>
+              <div v-else>{{format(stat.earned)}}</div>
             </v-progress-circular>
             <v-progress-circular
               v-else
@@ -105,7 +105,7 @@
               :width="$vuetify.breakpoint.xs ? 2 : 5"
               :color="stat.achieved ? 'green' : 'red'"
             >
-              <div :class="{'tiny-font': $vuetify.breakpoint.xs}">{{stat.earned || 0}}<hr/>{{stat.required}}</div>
+              <div :class="{'tiny-font': $vuetify.breakpoint.xs}">{{format(stat.earned) || 0}}<hr/>{{format(stat.required)}}</div>
             </v-progress-circular>
           </div>
         </template>
@@ -430,6 +430,11 @@ export default {
     }
   },
   methods: {
+    format(num) {
+      num = Math.round(num)
+      num = new Intl.NumberFormat('en-US', {}).format(num)
+      return num
+    },
     clearSearch() {
       this.search = null
       this.getCompStatsPage()

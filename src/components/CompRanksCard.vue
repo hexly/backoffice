@@ -64,16 +64,16 @@
               </v-col>
               <v-spacer></v-spacer>
               <v-col class="pa-1 text-right">
-                <div class="title">{{Math.floor(stat.earned)}}</div>
-                <div v-if="stat.achieved && parseInt(stat.earned)" class="caption grey--text darken-1">
-                  <span v-if="!tabMode">{{Math.round(stat.earned)}} of {{Math.round(stat.required)}}</span>
+                <div class="title">{{format(stat.earned)}}</div>
+                <div v-if="stat.earned && parseInt(stat.earned)" class="caption grey--text darken-1">
+                  <span v-if="!tabMode">{{format(stat.earned)}} of {{format(stat.required)}}</span>
                 </div>
                 <template v-if="!stat.notApplicable">
                   <template v-if="stat.achieved">
                     <div class="caption grey--text darken-1"> 100% </div>
                   </template>
                   <template v-else>
-                    <div class="caption grey--text darken-1"> 0% </div>
+                    <div class="caption grey--text darken-1"> {{format((stat.earned / stat.required) * 100)}}% </div>
                   </template>
                 </template>
                 <template v-else>
@@ -154,6 +154,11 @@ export default {
     }
   },
   methods: {
+    format(num) {
+      num = Math.round(num)
+      num = new Intl.NumberFormat('en-US', {}).format(num)
+      return num
+    },
     parseStats(stats) {
       if (stats && stats.metadata) {
         this.currentRank = stats.metadata.ranking.name

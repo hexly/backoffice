@@ -173,6 +173,7 @@ export default {
         return !this.openPeriod
       },
       update(res) {
+        this.compStats = {}
         const stats = parseData(res)
         return stats.members.reduce((orig, s) => {
           orig[s.awardeeId] = s
