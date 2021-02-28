@@ -1,6 +1,26 @@
 <template>
   <div class="insights-dashboard mx-4">
     <v-row wrap>
+      <v-col cols="12" md="6" v-if="marketCounts.length > 0">
+        <v-card>
+          <v-toolbar color="secondary" dark>
+            <v-toolbar-title>Founding Influencer Tracker</v-toolbar-title>
+          </v-toolbar>
+          <v-card-text class="pa-1">
+            <v-list three-line class="pa-0 insights-list">
+              <v-list-item class="pa-1 insights-row" v-for="market in marketCounts" :key="market.key">
+                <v-list-item-content>
+                  <v-list-item-title>{{market.name}} <Flag :name="market.key" /></v-list-item-title>
+                  <v-progress-linear :value="(market.count/1000)*100" height="25" color="green">
+                    <strong>{{market.count}} out of 1000</strong>
+                  </v-progress-linear>
+                  <v-list-item-action-text>First 1000 Influencers in {{market.name}} get a limited time "Founding Influencer" badge</v-list-item-action-text>
+                </v-list-item-content>
+              </v-list-item>
+            </v-list>
+          </v-card-text>
+        </v-card>
+      </v-col>
       <v-col cols="12" md="6">
         <v-card>
           <v-toolbar color="secondary" dark>
@@ -100,14 +120,17 @@
 import { mapState, mapGetters } from 'vuex'
 import { INSIGHTS, INSIGHTS_COLLECTION } from '@/graphql/comp.gql'
 import { COUPONS } from '@/graphql/Marketing.gql'
+import { MARKET_COUNT } from '@/graphql/Member.gql'
 import PeriodSwitcher from '@/components/PeriodSwitcher.vue'
 import InsightsPanel from '@/components/insights/InsightsPanel.vue'
+import Flag from '@/components/Flag.vue'
 
 export default {
   name: 'InsightsDashboard',
   components: {
     PeriodSwitcher,
-    InsightsPanel
+    InsightsPanel,
+    Flag
   },
   data () {
     return {
@@ -125,6 +148,8 @@ export default {
       collection: {},
       // Temporary approach to coupons
       coupons: [],
+      // Temporary approach to market counts
+      marketCounts: [],
       betaInsights: [],
       insightInfo: {
         top_seller: {
@@ -213,6 +238,17 @@ export default {
       },
       client: 'federated',
       loadingKey: 'loadingCoupons'
+    },
+    marketCounts: {
+      query: MARKET_COUNT,
+      variables: {
+        minThreshold: 0,
+        maxThreshold: 1000
+      },
+      update({ membership: { marketThresholdCount } }) {
+        return marketThresholdCount
+      },
+      client: 'federated'
     }
   },
   mounted () {}

@@ -139,6 +139,7 @@ import { ClaimActions } from '@/stores/ClaimStore'
 import { UserMutations, UserActions } from '@/stores/UserStore'
 import { Actions } from '@/Members/Store'
 import { LOCALE_QUERY } from '@/graphql/GetLocalSettings'
+import { WELCOME_EMAIL } from '@/graphql/Member.gql'
 import { encrypt } from '@/utils/EncryptionService'
 import AgreementCheckbox from '@/components/Agreement'
 import Rules from '@/views/Rules.js'
@@ -291,6 +292,7 @@ export default {
             simpleClaim: false,
             token
           })
+
           if (consumeOneTimeToken && consumeOneTimeToken !== 'done') {
             this.setJwt(consumeOneTimeToken)
             await this.login({
@@ -304,6 +306,21 @@ export default {
               value: encryptedAffiliate.payload,
               signature: encryptedAffiliate.signature
             })
+            // Temporary Welcome Email
+            const emailTemplate = process.env.VUE_APP_WELCOME_EMAIL_TEMPLATE
+            if (emailTemplate) {
+              await this.$apollo.mutate({
+                mutation: WELCOME_EMAIL,
+                variables: {
+                  input: {
+                    memberId: this.editMember.memberId,
+                    tenantId: ~~process.env.VUE_APP_TENANT_ID,
+                    templateId: process.env.VUE_APP_WELCOME_EMAIL_TEMPLATE
+                  }
+                },
+                client: 'federated'
+              })
+            }
             this.$router.push('/dashboard')
           }
         } catch (e) {

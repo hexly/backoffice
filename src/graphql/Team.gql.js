@@ -63,6 +63,7 @@ export const TEAM_QUERY = gql`
           metadata
         }
         id
+        joinedOn
         tenantId
         name
         displayName
