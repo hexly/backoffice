@@ -93,3 +93,25 @@ export const UPDATE_PROFILE = gql`
     }
   }
 `
+
+export const MARKET_COUNT = gql`
+query marketCount($input: MarketTresholdCountInput) {
+  membership {
+    marketThresholdCount(input: $input){
+      name
+      key
+      count
+    }
+  }
+}
+`
+
+export const WELCOME_EMAIL = gql`
+mutation welcomeEmail($input: WelcomeEmailInput) {
+  membership {
+    welcomeEmail(input: $input){
+      status
+    }
+  }
+}
+`

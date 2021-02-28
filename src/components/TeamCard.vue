@@ -11,7 +11,7 @@
       <v-card-title class="fill-height align-end">
         <v-flex row>
           <h3>{{(user.name).toUpperCase()}}</h3>
-          <small v-if="joinedOn" style="position: absolute; bottom: 0; font-size: 12px;">{{$tenantInfo.distributorLabel}} since: {{$moment(joinedOn, 'YYYY-MM-DD').format('ll')}}</small>
+          <small v-if="compStats && compStats.metadata && compStats.metadata.recognizedRank > 0" style="position: absolute; bottom: 0; font-size: 12px;">Recognized Rank: {{compStats.metadata.recognizedRank}}</small>
         </v-flex>
       </v-card-title>
     </v-img>
@@ -22,51 +22,103 @@
         </v-tab>
         <v-tab-item>
           <v-card class="item-container-card" flat>
-            <!-- <h4 class="text-center" v-if="displayedRank">Current Rank: {{displayedRank}}</h4>
-            <v-btn
-              @click="$emit('fetchRank')"
-              class="get-rank-btn primary white--text"
-              rounded
-              small
-              v-else
-            >
-              <span v-if="!$apollo.loading">Get Rank</span>
-              <v-progress-circular indeterminate v-else size="20" />
-            </v-btn> -->
-            <div class="text-center">
-              <span v-if="email">{{(email).toLowerCase()}}</span>
-              <br v-if="email"/>
-              <span v-if="birthday">Birthday: {{$moment(birthday, 'YYYY-MM-DD').format('MMMM Do')}}</span>
-            </div>
-            <div class="text-center" v-if="address">
-              {{address.street}}
-              <br/>
-              {{address.street2}}
-              <br v-if="address.street2"/>
-              {{address.city}}, {{address.province}} {{address.postalCode}}
-              <br/>
-              {{address.country}}
-            </div>
-            <div class="text-center" v-if="slug">
-              Store: <a target="_blank" :href="$tenantInfo.storeUrl.replace('{slug}', slug)">
-              {{slug}}
-              </a>
-            </div>
-            <div v-if="user.relativeDepth" class="generation-container">
-              <h5>Generation: {{user.relativeDepth}}</h5>
-              <v-layout class="generation-badge-container" align-center row wrap>
-                <template v-for="parent in user.relativePathMembers">
-                  <v-tooltip top slot="append" :key="parent.profileUrl">
-                    <template v-slot:activator="{ on }">
-                      <v-avatar class="generation-avatar ma-1 elevation-3" size="60px" v-on="on">
-                        <img :src="parent.profileUrl || $tenantInfo.placeholder" alt="Avatar" >
-                      </v-avatar>
-                    </template>
-                    <span>{{parent.name}}</span>
-                  </v-tooltip>
-                </template>
-              </v-layout>
-            </div>
+            <v-list two-line>
+              <v-list-item>
+                <v-list-item-icon>
+                  <v-icon color="indigo"> mdi-calendar-today </v-icon>
+                </v-list-item-icon>
+
+                <v-list-item-content>
+                  <v-list-item-title>{{$moment(joinedOn, 'YYYY-MM-DD').format('ll')}}</v-list-item-title>
+                  <v-list-item-subtitle>{{$tenantInfo.distributorLabel}} since</v-list-item-subtitle>
+                </v-list-item-content>
+
+              </v-list-item>
+              <v-divider inset></v-divider>
+              <v-list-item>
+                <v-list-item-icon>
+                  <v-icon color="indigo"> mdi-cake </v-icon>
+                </v-list-item-icon>
+
+                <v-list-item-content>
+                  <v-list-item-title>{{$moment(birthday, 'YYYY-MM-DD').format('MMMM Do')}}</v-list-item-title>
+                  <v-list-item-subtitle>Birthday</v-list-item-subtitle>
+                </v-list-item-content>
+
+              </v-list-item>
+              <template v-if="email">
+                <v-divider inset></v-divider>
+
+                <v-list-item>
+                  <v-list-item-icon>
+                    <v-icon color="indigo"> mdi-email </v-icon>
+                  </v-list-item-icon>
+
+                  <v-list-item-content>
+                    <v-list-item-title>{{(email).toLowerCase()}}</v-list-item-title>
+                    <v-list-item-subtitle>Email</v-list-item-subtitle>
+                  </v-list-item-content>
+                </v-list-item>
+              </template>
+              <template v-if="address">
+                <v-divider inset></v-divider>
+
+                <v-list-item>
+                  <v-list-item-icon>
+                    <v-icon color="indigo"> mdi-map-marker </v-icon>
+                  </v-list-item-icon>
+
+                  <v-list-item-content>
+                    <v-list-item-title>{{address.street}}</v-list-item-title>
+                    <v-list-item-subtitle v-if="address.street2">{{address.street2}}</v-list-item-subtitle>
+                    <v-list-item-subtitle>{{address.city}}, {{address.province}} {{address.postalCode}} {{address.country}}</v-list-item-subtitle>
+                  </v-list-item-content>
+                </v-list-item>
+              </template>
+
+              <template v-if="slug">
+                <v-divider inset></v-divider>
+
+                <v-list-item>
+                  <v-list-item-icon>
+                    <v-icon color="indigo"> mdi-store </v-icon>
+                  </v-list-item-icon>
+
+                  <v-list-item-content>
+                    <v-list-item-title><a target="_blank" :href="$tenantInfo.storeUrl.replace('{slug}', slug)">{{slug}}</a></v-list-item-title>
+                    <v-list-item-subtitle>Store Link</v-list-item-subtitle>
+                  </v-list-item-content>
+                </v-list-item>
+
+              </template>
+              <template v-if="user.relativeDepth">
+                <v-divider inset></v-divider>
+
+                <v-list-item>
+                  <v-list-item-icon>
+                    <v-icon color="indigo"> account_tree </v-icon>
+                  </v-list-item-icon>
+
+                  <v-list-item-content>
+                    <v-list-item-title>
+                      <v-layout align-center row wrap>
+                        <template v-for="parent in user.relativePathMembers">
+                          <v-tooltip top slot="append" :key="parent.profileUrl">
+                            <template v-slot:activator="{ on }">
+                              <v-avatar class="generation-avatar ma-1 elevation-3" size="60px" v-on="on">
+                                <img :src="parent.profileUrl || $tenantInfo.placeholder" alt="Avatar" >
+                              </v-avatar>
+                            </template>
+                            <span>{{parent.name}}</span>
+                          </v-tooltip>
+                        </template>
+                      </v-layout>
+                    </v-list-item-title>
+                    <v-list-item-subtitle>Generation: {{user.relativeDepth}}</v-list-item-subtitle>
+                  </v-list-item-content>
+                </v-list-item>
+              </template>
+            </v-list>
           </v-card>
         </v-tab-item>
         <v-tab-item>
@@ -99,7 +151,7 @@
                     Group
                   </v-flex>
               </v-layout>
-              <template v-if="compStats.metadata.counts.levels && compStats.metadata.counts.levels.length">
+              <template v-if="compStats && compStats.metadata.counts.levels && compStats.metadata.counts.levels.length">
                 <hr class="my-3"/>
                 <div class="text-center">Qualified Per level</div>
                 <v-layout row wrap class="text-center">
@@ -110,7 +162,7 @@
                   </v-flex>
                 </v-layout>
               </template>
-              <template v-if="compStats.metadata.counts.ranks && compStats.metadata.counts.ranks['1']">
+              <template v-if="compStats && compStats.metadata.counts.ranks && compStats.metadata.counts.ranks['1']">
                 <hr class="my-3" />
                 <div class="text-center">Per Rank Total</div>
                 <v-layout row wrap class="text-center">
@@ -450,7 +502,6 @@ export default {
   z-index: unset;
   transition: 300ms cubic-bezier(0.075, 0.82, 0.165, 1);
   margin-right: -40px !important;
-  margin-bottom: -23px !important;
 }
 .generation-avatar:hover {
   transform: scale(1) translateY(-5px);
