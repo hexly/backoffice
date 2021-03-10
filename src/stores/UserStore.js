@@ -1,4 +1,4 @@
-import { apolloHexlyClient } from '@/vue-apollo'
+import { apolloHexlyClient, apolloProviderOptions } from '@/vue-apollo'
 import { LOGIN } from '@/graphql/iam.gql'
 import {
   CREATE_MEMBER_INTEGRATION,
@@ -129,8 +129,8 @@ export const UserStore = {
     }
   },
   actions: {
-    async [UserActions.LOGIN]({ commit }, creds) {
-      const response = await apolloHexlyClient.mutate({
+    async [UserActions.LOGIN] ({ commit }, creds) {
+      const response = await apolloProviderOptions.clients.federated.mutate({
         mutation: LOGIN,
         variables: { creds },
         fetchPolicy: 'no-cache'
@@ -147,7 +147,7 @@ export const UserStore = {
       }
       return { success, token, principal, reason, issued }
     },
-    async [UserActions.SAVE_PROFILE]({ commit }, { memberId, profileUrl }) {
+    async [UserActions.SAVE_PROFILE] ({ commit }, { memberId, profileUrl }) {
       await apolloHexlyClient.mutate({
         mutation: UPDATE_PROFILE,
         variables: {
@@ -161,7 +161,7 @@ export const UserStore = {
       commit(UserMutations.SET_PROFILE, profileUrl)
       return profileUrl
     },
-    async [UserActions.ADJUST_TAGS]({ commit }, input) {
+    async [UserActions.ADJUST_TAGS] ({ commit }, input) {
       const { data } = await apolloHexlyClient.mutate({
         mutation: ADJUST_TAGS,
         variables: {
@@ -172,7 +172,7 @@ export const UserStore = {
       commit(UserMutations.SET_TAGS, data.adjustTags.tags)
       return data.adjustTags.tags
     },
-    async [UserActions.RELOAD_INTEGRATIONS]({ commit }, input) {
+    async [UserActions.RELOAD_INTEGRATIONS] ({ commit }, input) {
       const { data } = await apolloHexlyClient.query({
         query: GET_MEMBER_TENANT_INTEGRATIONS,
         fetchPolicy: 'network-only'
@@ -181,7 +181,7 @@ export const UserStore = {
       commit(UserMutations.SET_INTEGRATIONS, data.getPrincipal)
       return data.getPrincipal.member.tenantIntegrations
     },
-    async [UserActions.CREATE_INTEGRATION](
+    async [UserActions.CREATE_INTEGRATION] (
       { commit },
       { command, tenantIntegrationId, data }
     ) {
@@ -200,7 +200,7 @@ export const UserStore = {
         }
       })
     },
-    async [UserActions.REMOVE_INTEGRATION](
+    async [UserActions.REMOVE_INTEGRATION] (
       { commit },
       { command, tenantIntegrationId, data }
     ) {
@@ -263,11 +263,11 @@ export const UserStore = {
     },
     tenantIntegrations: state =>
       (state.principal &&
-      state.principal.member &&
-      state.principal.member.tenantIntegrations) || [],
+        state.principal.member &&
+        state.principal.member.tenantIntegrations) || [],
     integrations: state =>
       (state.principal &&
-      state.principal.tenant &&
-      state.principal.tenant.integrations) || []
+        state.principal.tenant &&
+        state.principal.tenant.integrations) || []
   }
 }
