@@ -20,7 +20,7 @@ const options = {
 // Create apollo client
 export const apolloHexlyClient = createHexlyApolloClient(options)
 
-export const apolloProviderOptions = {
+const apolloProviderOptions = {
   defaultClient: apolloHexlyClient,
   clients: {
     hexly: apolloHexlyClient
