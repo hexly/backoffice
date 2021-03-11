@@ -1,5 +1,5 @@
 import { apolloHexlyClient, apolloProviderOptions } from '@/vue-apollo'
-import { LOGIN } from '@/graphql/iam.gql'
+import { FEDERATED_LOGIN } from '@/graphql/iam.gql'
 import {
   CREATE_MEMBER_INTEGRATION,
   GET_MEMBER_TENANT_INTEGRATIONS
@@ -131,10 +131,11 @@ export const UserStore = {
   actions: {
     async [UserActions.LOGIN] ({ commit }, creds) {
       const response = await apolloProviderOptions.clients.federated.mutate({
-        mutation: LOGIN,
-        variables: { creds },
+        mutation: FEDERATED_LOGIN,
+        variables: { input: creds },
         fetchPolicy: 'no-cache'
       })
+      console.log({ response })
       let { success, token, principal, reason, issued } = _.get(
         response,
         'data.login',

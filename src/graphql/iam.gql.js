@@ -6,6 +6,18 @@ export const USERNAME_UPSERT = gql`
   }
 `
 
+export const FEDERATED_LOGIN = gql`
+  mutation login ($input: Credentials!) {
+    iam {
+      login(input: $input) {
+        success
+        message
+        metadata
+      }
+    }
+  }
+`
+
 export const LOGIN = gql`
   mutation auth($creds: Credentials!) {
     login(input: $creds) {
