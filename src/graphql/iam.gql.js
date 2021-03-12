@@ -18,6 +18,16 @@ export const FEDERATED_LOGIN = gql`
   }
 `
 
+export const FEDERATED_GET_PRINCIPAL = gql`
+  mutation login {
+    iam {
+      principal {
+        type
+      }
+    }
+  }
+`
+
 export const LOGIN = gql`
   mutation auth($creds: Credentials!) {
     login(input: $creds) {
