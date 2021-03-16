@@ -86,6 +86,33 @@ export const GET_MEMBERS = gql`
   }
 `
 
+export const GET_MEMBERS_FEDERATED = gql`
+  query Member($input: MembershipMemberSearchInput!) {
+    membership {
+      search(input: $input) {
+        results {
+          id
+          firstName
+          lastName
+          tenantId
+          name
+          displayName
+          mrn
+          slug
+          contacts {
+            id
+            emails {
+              id
+              email
+            }
+          }
+          slug
+        }
+      }
+    }
+  }
+`
+
 export const UPDATE_PROFILE = gql`
   mutation updateMemberSubset($input: MemberInfoInputSubset!) {
     updateMemberSubset(input: $input) {

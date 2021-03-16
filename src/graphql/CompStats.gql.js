@@ -35,6 +35,29 @@ export const ENGINE_STATS_QUERY = gql`
   }
 `
 
+export const ENGINE_STATS_QUERY_FEDERATED = gql`
+  query engineStats($input: EngineStatsInput!) {
+    comp {
+      engineStatsByMemberIds(input: $input) {
+        memberId
+        periodId
+        refreshedOn
+        uplineIds
+        sponsorId
+        qualified
+        current
+        next
+        levelCounts
+        groupCount
+        downlineCount
+        ranks
+        qualifiedLegCount
+        payouts
+      }
+    }
+  }
+`
+
 export const ENGINE_STATS_PERIODS_QUERY = gql`
   query engineStatsPeriod($input: EngineStatsPeriodsByMemberInput) {
     engineStatsPeriodsByMemberId(input: $input) {
@@ -47,6 +70,24 @@ export const ENGINE_STATS_PERIODS_QUERY = gql`
       hasMaterializedStats
       hasPayroll
       metadata
+    }
+  }
+`
+
+export const ENGINE_STATS_PERIODS_QUERY_FEDERATED = gql`
+  query engineStatsPeriod($input4: EngineStatsPeriodsByMemberInput) {
+    comp {
+      engineStatsPeriodsByMemberId(input: $input4) {
+        id
+        name
+        key
+        open
+        close
+        status
+        hasMaterializedStats
+        hasPayroll
+        metadata
+      }
     }
   }
 `
@@ -199,6 +240,23 @@ query banners($input: EngineStatsMemberBannersInput!){
       key
       tenantIntegrationId
       description
+      metadata
+      startDate
+      endDate
+      results
+    }
+  }
+}
+`
+
+export const ENGINE_DASHBOARD_BANNERS_FEDERATED = gql`
+query banners($input: BannersInput!) {
+  membership {
+    banners(input: $input) {
+      id
+      name
+      key
+      tenantIntegrationId
       metadata
       startDate
       endDate
