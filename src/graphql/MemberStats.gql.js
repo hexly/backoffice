@@ -35,6 +35,11 @@ export const MAX_MRN = gql`
   }
 `
 
+export const MAX_MRN_FEDERATED = gql`
+  query getMaxMrn($input: MrnForTenantInput){
+    memberGetMaxMrnForTenant(input: $input)
+  }
+`
 export const TEAM_RECRUITS_BY_DATE = gql`
   query Stats($input:CommerceStatsRangedTeamStatsSearchInput!) {
   commerceStatsRangedTeamStatsSearch(input:$input){

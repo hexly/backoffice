@@ -26,6 +26,32 @@ export const assetMeta = gql`
   }
 `
 
+export const assetMetaFederated = gql`
+  query AssetMgmt {
+    assetManagementConfig {
+      types {
+        id
+        name
+        mimeType
+        name
+        key
+      }
+      tags {
+        id
+        name
+        key
+        protected
+      }
+      providers {
+        id
+        tenantIntegrationId
+        name
+        key
+      }
+    }
+  }
+`
+
 export const assetCreate = gql`
   mutation AssetMake($input: AssetInput!) {
     assetCreate(input: $input) {

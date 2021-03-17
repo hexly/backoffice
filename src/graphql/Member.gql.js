@@ -60,6 +60,18 @@ export const MEMBER_AWARDS = gql`
   }
 `
 
+export const MEMBER_AWARDS_FEDERATED = gql`
+  query memberAwards($memberId: Int) {
+    member(id: $memberId){
+      joinedOn
+      awards {
+        name
+        metadata
+      }
+    }
+  }
+`
+
 export const GET_MEMBERS = gql`
   query Member($input: MemberSearchCondition!) {
     members(condition: $input) {
