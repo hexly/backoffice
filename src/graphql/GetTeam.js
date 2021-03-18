@@ -22,3 +22,22 @@ export const TEAM_SPONSOR_QUERY = gql`
     }
   }
 `
+
+export const TEAM_SPONSOR_QUERY_FEDERATED = gql`
+  query TeamByMemberId($input7: TeamInput!) {
+    membership {
+      team(input: $input7) {
+        nodes {
+          id
+          tenantId
+          name
+          displayName
+          mrn
+          slug
+          email
+          profileUrl
+        }
+      }
+    }
+  }
+`

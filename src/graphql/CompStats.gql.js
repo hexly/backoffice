@@ -75,9 +75,9 @@ export const ENGINE_STATS_PERIODS_QUERY = gql`
 `
 
 export const ENGINE_STATS_PERIODS_QUERY_FEDERATED = gql`
-  query engineStatsPeriod($input4: EngineStatsPeriodsByMemberInput) {
+  query engineStatsPeriod($input: EngineStatsPeriodsByMemberInput) {
     comp {
-      engineStatsPeriodsByMemberId(input: $input4) {
+      engineStatsPeriodsByMemberId(input: $input) {
         id
         name
         key

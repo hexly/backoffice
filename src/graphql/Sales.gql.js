@@ -47,6 +47,17 @@ export const SEARCH_SALES_QUERY = gql`
   }
 `
 
+export const SEARCH_SALES_QUERY_FEDERATED = gql`
+  query searchSalesBySellerId($input6: PurchaseGetSaleByIdInput!) {
+    purchaseGetSaleById(input: $input6) {
+      id
+      providerId
+      providerOid
+      awardedDate
+    }
+  }
+`
+
 export const SALES_STATS = gql`
   query SalesStats($input: SaleStatsOverDateRangeFilter) {
     saleStatsByDateRange(input: $input) {

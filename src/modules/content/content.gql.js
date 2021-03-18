@@ -27,26 +27,28 @@ export const assetMeta = gql`
 `
 
 export const assetMetaFederated = gql`
-  query AssetMgmt {
-    assetManagementConfig {
-      types {
-        id
-        name
-        mimeType
-        name
-        key
-      }
-      tags {
-        id
-        name
-        key
-        protected
-      }
-      providers {
-        id
-        tenantIntegrationId
-        name
-        key
+  query assetManagementConfig {
+    system {
+      assetManagementConfig {
+        types {
+          id
+          name
+          mimeType
+          name
+          key
+        }
+        tags {
+          id
+          name
+          key
+          protected
+        }
+        providers {
+          id
+          tenantIntegrationId
+          name
+          key
+        }
       }
     }
   }
