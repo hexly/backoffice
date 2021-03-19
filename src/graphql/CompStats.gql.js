@@ -223,6 +223,23 @@ export const ENGINE_TEAM_ACTIVITY = gql`
   }
 `
 
+export const ENGINE_TEAM_ACTIVITY_FEDERATED = gql`
+  query engineStatsTeamActivity($input: EngineStatsGetTeamActivityInput!) {
+    comp {
+      engineStatsGetTeamActivity(input: $input) {
+        page
+        pageSize
+        totalPages
+        totalResults
+        results {
+          id
+          name
+        }
+      }
+    }
+  }
+`
+
 export const ENGINE_DASHBOARD_PROMOS = gql`
 query engineStatsMemberPromotionStatus($input: EngineStatsMemberPromotionStatusInput!){
   engineStatsMemberPromotionStatus(input: $input){

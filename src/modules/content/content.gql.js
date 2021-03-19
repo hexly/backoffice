@@ -127,6 +127,28 @@ export const betterSearchAllAssets = opName => gql`
   }
 `
 
+export const betterSearchAllAssetsFederated = gql`
+query BetterAssetSearch($input: BetterAssetSearch) {
+  system {
+    betterAssetSearch(input: $input) {
+      page
+      pageSize
+      totalPages
+      totalResults
+      results {
+        id
+        url
+        thumbnailUrl
+        name
+        slug
+        description
+        categoryKey
+      }
+    }
+  }
+}
+`
+
 export const processingStatus = gql`
   query ProcessingStatus($input: AssetProcessingStatusRequest!){
     assetProcessingStatus(input:$input){

@@ -41,3 +41,22 @@ export const ADDRESS_BY_CONTACT_ID = gql`
     }
   }
 `
+
+export const ADDRESS_BY_CONTACT_ID_FEDERATED = gql`
+  query addressByContactId($input: ContactOrTenantInput!) {
+    membership {
+      addressByContactOrTenant(input: $input) {
+        id
+        name
+        street
+        street2
+        city
+        province
+        postalCode
+        country
+        type
+        priority
+      }
+    }
+  }
+`

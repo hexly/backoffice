@@ -24,9 +24,9 @@ export const TEAM_SPONSOR_QUERY = gql`
 `
 
 export const TEAM_SPONSOR_QUERY_FEDERATED = gql`
-  query TeamByMemberId($input7: TeamInput!) {
+  query TeamByMemberId($input: TeamInput!) {
     membership {
-      team(input: $input7) {
+      team(input: $input) {
         nodes {
           id
           tenantId
