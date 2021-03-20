@@ -2,7 +2,7 @@
   <div class="pa-4">
     <div>
       <h2>Store Personalization</h2>
-      Want to personalize your store? Please select which homepage you would like for your store. Your customers will be shown the selected home page.
+      Let your store reflect your unique persona! Choose which homepage best represents your brand, and your customers will be shown that selected home page when they visit.
       <v-row>
         <v-col cols="6" sm="3" md="3" v-for="option in options" :key="option.key" class="text-sm-center">
           {{option.name}}
@@ -17,7 +17,7 @@
             :value="option.key"
             hide-details
           ></v-switch>
-          <a :href="`https://everra2021.local/store/brenda?altHomepage=${option.key}`" target="_blank">Preview</a>
+          <a :href="`${baseUrl}/store/${slug}?altHomepage=${option.key}`" target="_blank">Preview</a>
         </v-col>
       </v-row>
     </div>
@@ -78,6 +78,9 @@ export default {
     }
   },
   computed: {
+    baseUrl() {
+      return this.integration.metadata.baseUrl
+    },
     options() {
       return this.integration.metadata.options
     },
@@ -88,7 +91,7 @@ export default {
     default() {
       return this.options.find(i => i.default)
     },
-    ...mapGetters(['contactId', 'tenantIntegrations', 'integrations'])
+    ...mapGetters(['contactId', 'tenantIntegrations', 'integrations', 'slug'])
   }
 }
 </script>
