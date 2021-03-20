@@ -262,6 +262,7 @@ const tenantOptions = {
       },
       sales: true,
       activity: true,
+      profileSettings: true,
       legal: {
         docs: true,
         ssn: false

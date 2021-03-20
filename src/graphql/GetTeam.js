@@ -9,6 +9,7 @@ export const TEAM_SPONSOR_QUERY = gql`
         name
         displayName
         mrn
+        birthdate
         slugs{
           slug
         }

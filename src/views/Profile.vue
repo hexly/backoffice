@@ -30,6 +30,10 @@
           </v-badge>
         </v-tab>
 
+        <v-tab v-if="$tenantInfo.features.profileSettings" to="#settings">Settings
+          <v-icon>settings</v-icon>
+        </v-tab>
+
         <v-tab-item value="profile" class="py-3">
           <h3>Personal Information</h3>
           <v-row wrap justify="space-around">
@@ -78,6 +82,9 @@
         <v-tab-item  v-if="$tenantInfo.features.legal" value="legal" class="px-4">
           <LegalForm @hasLegal="checkAlert" :value="legal" />
         </v-tab-item>
+        <v-tab-item  v-if="$tenantInfo.features.profileSettings" value="settings" class="px-4">
+          <ProfileSettings />
+        </v-tab-item>
       </v-tabs>
     <v-snackbar
       :timeout="6000"
@@ -102,6 +109,7 @@ import Social from '@/components/profile/Social.vue'
 import PersonalForm from '@/components/profile/Personal.vue'
 import LegalForm from '@/components/profile/Legal.vue'
 import Addresses from '@/components/profile/Addresses.vue'
+import ProfileSettings from '@/components/profile/ProfileSettings.vue'
 import AddressForm from '@/components/AddressForm.vue'
 import { GET_MEMBERS, UPDATE_PROFILE } from '@/graphql/Member.gql'
 import FileUpload from '@/components/FileUpload.vue'
@@ -123,7 +131,8 @@ export default {
     AddressForm,
     LegalForm,
     FileUpload,
-    Addresses
+    Addresses,
+    ProfileSettings
   },
   data() {
     return {
