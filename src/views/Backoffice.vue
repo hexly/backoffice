@@ -371,6 +371,7 @@ export default {
   apollo: {
     principal: {
       query: GET_PRINCIPAL,
+      fetchPolicy: 'network-only',
       update ({ getPrincipal }) {
         if (getPrincipal) {
           this.setPrincipal(getPrincipal)
