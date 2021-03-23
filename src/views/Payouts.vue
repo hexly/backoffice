@@ -2,34 +2,92 @@
   <v-flex xs12>
     <div class="payouts">
       <v-card>
-        <PayoutsSelector @reload="loadSelectedIntegration" v-if="payoutIntegrations.length > 1" :integrations="payoutIntegrations"/>
-        <StripeBalanceInfo v-if="selectedIntegration === 'stripe_connect'"/>
-        <PaypalBalanceInfo v-else-if="selectedIntegration === 'paypal_payouts'"/>
-        <iPayoutsBalanceInfo v-else-if="selectedIntegration === 'i_payouts'"/>
+        <PayoutsSelector
+          @reload="loadSelectedIntegration"
+          v-if="payoutIntegrations.length > 1"
+          :integrations="payoutIntegrations"
+        />
+        <StripeBalanceInfo v-if="selectedIntegration === 'stripe_connect'" />
+        <PaypalBalanceInfo v-else-if="selectedIntegration === 'paypal_payouts'" />
+        <iPayoutsBalanceInfo v-else-if="selectedIntegration === 'i_payouts'" />
       </v-card>
       <v-card>
         <v-card-text>
           <v-subheader>Range</v-subheader>
-          <v-container grid-list-md text-center>
-            <v-layout row align-center justify-space-around wrap>
-              <v-dialog ref="dialogStart" v-model="modalStart" width="290px">
+          <v-container
+            grid-list-md
+            text-center
+          >
+            <v-layout
+              row
+              align-center
+              justify-space-around
+              wrap
+            >
+              <v-dialog
+                ref="dialogStart"
+                v-model="modalStart"
+                width="290px"
+              >
                 <template v-slot:activator="{ on }">
-                  <v-text-field v-on="on" v-model="startDate" label="Select Start Date" prepend-icon="event" readonly/>
+                  <v-text-field
+                    v-on="on"
+                    v-model="startDate"
+                    label="Select Start Date"
+                    prepend-icon="event"
+                    readonly
+                  />
                 </template>
-                <v-date-picker ref="pickerStart" color="secondary" v-model="datePickerStartDate" :reactive="true">
+                <v-date-picker
+                  ref="pickerStart"
+                  color="secondary"
+                  v-model="datePickerStartDate"
+                  :reactive="true"
+                >
                   <v-spacer></v-spacer>
-                  <v-btn text color="primary" @click="modalStart = false">Cancel</v-btn>
-                  <v-btn text color="primary" @click="dateSave(datePickerStartDate, 'start'); $refs.dialogStart.save()">OK</v-btn>
+                  <v-btn
+                    text
+                    color="primary"
+                    @click="modalStart = false"
+                  >Cancel</v-btn>
+                  <v-btn
+                    text
+                    color="primary"
+                    @click="dateSave(datePickerStartDate, 'start'); $refs.dialogStart.save()"
+                  >OK</v-btn>
                 </v-date-picker>
               </v-dialog>
-              <v-dialog ref="dialogEnd" v-model="modalEnd" width="290px">
+              <v-dialog
+                ref="dialogEnd"
+                v-model="modalEnd"
+                width="290px"
+              >
                 <template v-slot:activator="{ on }">
-                  <v-text-field v-on="on" v-model="endDate" label="Select End Date" prepend-icon="event" readonly/>
+                  <v-text-field
+                    v-on="on"
+                    v-model="endDate"
+                    label="Select End Date"
+                    prepend-icon="event"
+                    readonly
+                  />
                 </template>
-                <v-date-picker ref="pickerEnd" color="secondary" v-model="datePickerEndDate" :reactive="true">
+                <v-date-picker
+                  ref="pickerEnd"
+                  color="secondary"
+                  v-model="datePickerEndDate"
+                  :reactive="true"
+                >
                   <v-spacer></v-spacer>
-                  <v-btn text color="primary" @click="modalEnd = false">Cancel</v-btn>
-                  <v-btn text color="primary" @click="dateSave(datePickerEndDate, 'end'); $refs.dialogEnd.save()">OK</v-btn>
+                  <v-btn
+                    text
+                    color="primary"
+                    @click="modalEnd = false"
+                  >Cancel</v-btn>
+                  <v-btn
+                    text
+                    color="primary"
+                    @click="dateSave(datePickerEndDate, 'end'); $refs.dialogEnd.save()"
+                  >OK</v-btn>
                 </v-date-picker>
               </v-dialog>
             </v-layout>
@@ -52,13 +110,22 @@
           <template v-slot:item="{ item, isExpanded }">
             <tr>
               <td>
-                <Currency :amount="item.amount / 100" :currency="item.currency" />
+                <Currency
+                  :amount="item.amount / 100"
+                  :currency="item.currency"
+                />
               </td>
               <td class="text-capitalize">
                 {{ item.status.toLowerCase() }}
-                <v-tooltip v-if="statuses[item.status]" bottom>
+                <v-tooltip
+                  v-if="statuses[item.status]"
+                  bottom
+                >
                   <template v-slot:activator="{ on }">
-                    <v-icon v-on="on" small>info</v-icon>
+                    <v-icon
+                      v-on="on"
+                      small
+                    >info</v-icon>
                   </template>
                   <span>{{statuses[item.status].toLowerCase()}}</span>
                 </v-tooltip>
@@ -68,8 +135,14 @@
               <td>{{ item.note ? item.note : '--' }}</td>
               <td>{{ item.integrationName }}</td>
               <td v-if="item.deductions.length">
-                <v-icon @click="expanded = []" v-if="isExpanded">expand_less</v-icon>
-                <v-icon @click="expanded = [item]" v-else>expand_more</v-icon>
+                <v-icon
+                  @click="expanded = []"
+                  v-if="isExpanded"
+                >expand_less</v-icon>
+                <v-icon
+                  @click="expanded = [item]"
+                  v-else
+                >expand_more</v-icon>
               </td>
             </tr>
           </template>
@@ -79,8 +152,17 @@
                 <v-card-text>
                   <h3>Deductions</h3>
                   <ul>
-                    <li v-for="d in item.deductions" :key="d.id" >
-                      <div>{{feeEnumMap[d.type]}}: <Currency class="body-2" :amount="d.amount / 100" :currency="item.currency" /></div>
+                    <li
+                      v-for="d in item.deductions"
+                      :key="d.id"
+                    >
+                      <div>{{feeEnumMap[d.type]}}:
+                        <Currency
+                          class="body-2"
+                          :amount="d.amount / 100"
+                          :currency="item.currency"
+                        />
+                      </div>
                       <small>{{d.note}}</small>
                     </li>
                   </ul>
@@ -89,7 +171,12 @@
             </td>
           </template>
         </v-data-table>
-        <v-pagination  class="pb-12 mb-12" v-model="page" :length="Math.ceil(totalResults/pageSize)" :total-visible="15"></v-pagination>
+        <v-pagination
+          class="pb-12 mb-12"
+          v-model="page"
+          :length="Math.ceil(totalResults/pageSize)"
+          :total-visible="15"
+        ></v-pagination>
       </v-responsive>
     </div>
     <v-dialog
@@ -120,10 +207,10 @@ export default {
     iPayoutsBalanceInfo,
     PayoutsSelector
   },
-  mounted() {
+  mounted () {
     this.loadSelectedIntegration()
   },
-  data() {
+  data () {
     return {
       page: 1,
       pageSize: 25,
@@ -179,7 +266,7 @@ export default {
   apollo: {
     payouts: {
       query: SEARCH_PAYOUTS,
-      variables() {
+      variables () {
         return {
           input: {
             memberId: this.memberId,
@@ -192,32 +279,32 @@ export default {
         }
       },
       client: 'federated',
-      watchLoading(isLoading, countModifier) {
+      watchLoading (isLoading, countModifier) {
         this.setLoading(isLoading)
       },
-      update({ payouts }) {
+      update ({ payouts }) {
         this.totalResults = payouts.search.totalResults
         return payouts.search.results
       }
     }
   },
   methods: {
-    ...mapMutations([ Mutations.SET_LOADING ]),
-    loadSelectedIntegration() {
+    ...mapMutations([Mutations.SET_LOADING]),
+    loadSelectedIntegration () {
       let selectedIntegration = _.minBy(this.payoutMemberIntegrations, 'priority')
       if (!selectedIntegration) {
         selectedIntegration = _.minBy(this.payoutIntegrations, 'priority')
       }
       this.selectedIntegration = selectedIntegration.key
     },
-    dateSave(datePickerDate, startOrEnd) {
+    dateSave (datePickerDate, startOrEnd) {
       const varName = `${startOrEnd}Date`
       this[varName] = this.$moment(datePickerDate).format('MM/DD/YYYY')
     },
-    startDateChanged(date) {
+    startDateChanged (date) {
       this.$refs.dialogStart.save(date)
     },
-    endDateChanged(date) {
+    endDateChanged (date) {
       this.$refs.dialogEnd.save(date)
     }
   },
@@ -226,15 +313,15 @@ export default {
       loading: state => state.loading
     }),
     ...mapGetters(['memberId', 'integrations', 'tenantIntegrations']),
-    payoutIntegrations() {
+    payoutIntegrations () {
       return this.integrations.filter(i => {
         return i.statusId === 200 &&
-                  i.integrationMetadata &&
-                  i.integrationMetadata.capabilities &&
-                  i.integrationMetadata.capabilities.indexOf('payouts') >= 0
+          i.integrationMetadata &&
+          i.integrationMetadata.capabilities &&
+          i.integrationMetadata.capabilities.indexOf('payouts') >= 0
       })
     },
-    payoutMemberIntegrations() {
+    payoutMemberIntegrations () {
       return this.tenantIntegrations.filter(i => {
         return _.find(this.payoutIntegrations, { key: i.key })
       })
