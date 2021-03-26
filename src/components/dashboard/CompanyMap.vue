@@ -31,6 +31,8 @@
 import Mapbox from 'mapbox-gl-vue'
 import { LAT_LONGS } from '@/graphql/Contacts.js'
 
+import tenantInfo from '@/tenant.js'
+
 export default {
   components: {
     Mapbox
@@ -46,19 +48,79 @@ export default {
       mapStyle: process.env.VUE_APP_MAPBOX_MAP_STYLE
     }
   },
+  computed: {
+    geoData() {
+      const data = {
+        type: 'FeatureCollection',
+        features: []
+      }
+      this.coordinates.forEach(c => {
+        data.features.push({
+          type: 'Feature',
+          geometry: {
+            type: 'Point',
+            coordinates: [c.long, c.lat]
+          }
+        })
+      })
+      return data
+    }
+  },
   methods: {
     addMarkers(map) {
-      const mapboxgl = require('mapbox-gl/dist/mapbox-gl')
-      this.coordinates.forEach((marker) => {
-        // create a HTML element for each feature
-        const el = document.createElement('div')
-        el.className = 'Map__marker'
-
-        // make a marker for each feature and add to the map
-        new mapboxgl.Marker(el)
-          .setLngLat([marker.long, marker.lat])
-          .addTo(map)
+      console.log(this.geoData)
+      map.addSource('members', {
+        type: 'geojson',
+        data: this.geoData,
+        cluster: true,
+        clusterRadius: 20
       })
+      map.addLayer({
+        id: 'points',
+        type: 'circle',
+        source: 'members',
+        paint: {
+          'circle-color': [ 'step', ['get', 'point_count'], tenantInfo.primaryColor, 100, tenantInfo.primaryColor, 750, tenantInfo.primaryColor ],
+          'circle-radius': [ 'step', ['get', 'point_count'], 10, 100, 20, 750, 30 ]
+        }
+      })
+      map.addLayer({
+        id: 'cluster-count',
+        type: 'symbol',
+        source: 'members',
+        filter: ['has', 'point_count'],
+        layout: {
+          'text-field': '{point_count_abbreviated}',
+          'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+          'text-size': 12
+        },
+        paint: {
+          'text-color': '#ffffff'
+        }
+      })
+      map.addLayer({
+        id: 'unclustered-point',
+        type: 'circle',
+        source: 'members',
+        filter: ['!', ['has', 'point_count']],
+        paint: {
+          'circle-color': tenantInfo.primaryColor,
+          'circle-radius': 4,
+          'circle-stroke-width': 1,
+          'circle-stroke-color': '#fff'
+        }
+      })
+      // const mapboxgl = require('mapbox-gl/dist/mapbox-gl')
+      // this.coordinates.forEach((marker) => {
+      //   // create a HTML element for each feature
+      //   const el = document.createElement('div')
+      //   el.className = 'Map__marker'
+
+      //   // make a marker for each feature and add to the map
+      //   new mapboxgl.Marker(el)
+      //     .setLngLat([marker.long, marker.lat])
+      //     .addTo(map)
+      // })
     }
   },
   apollo: {
@@ -68,7 +130,7 @@ export default {
         return {
           input: {
             tenantId: this.$tenantId,
-            limit: 1500
+            limit: 20000
           }
         }
       },
