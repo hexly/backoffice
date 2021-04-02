@@ -212,8 +212,8 @@ const tenantOptions = {
     profileCover: '/img/1010/profile-background-product.jpg',
     // profileColor: '#a1213b',
     baseColor: '#292425',
-    primaryColor: '#820014',
-    secondaryColor: '#820014',
+    primaryColor: '#c44a42',
+    secondaryColor: '#c44a42',
     accentColor: '#fcc19f',
     storeUrl: 'https://www.everra.com/store/{slug}',
     corporateUrl: 'https://www.everra.com/',
@@ -262,6 +262,7 @@ const tenantOptions = {
       },
       sales: true,
       activity: true,
+      profileSettings: true,
       legal: {
         docs: true,
         ssn: false
