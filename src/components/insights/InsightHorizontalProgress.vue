@@ -3,7 +3,7 @@
     <v-list-item-content>
       <v-list-item-title>{{data.labels.title}}</v-list-item-title>
       <v-list-item-subtitle>{{data.labels.description}}</v-list-item-subtitle>
-      <v-progress-linear v-if="data.progress" color="green" height="25" :value="data.progress">
+      <v-progress-linear v-if="data.progress || data.progress >= 0" color="green" height="25" :value="data.progress">
         <template v-slot:default="">
             <strong>{{data.labels.bar}}</strong>
           </template>
