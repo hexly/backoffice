@@ -16,6 +16,20 @@
           View Team
         </v-btn>
       </div>
+
+      <v-row wrap justify="center" class="pt-1">
+        <v-col cols="6">
+          <div class="caption text-center">Total {{$tenantInfo.distributorsLabel}}</div>
+        </v-col>
+        <v-col cols="6">
+          <div class="caption  text-center">Active {{$tenantInfo.distributorsLabel}}</div>
+        </v-col>
+        <v-col cols="6" class="text-center">
+          <strong>{{total}}</strong>
+        </v-col>
+        <v-col cols="6"></v-col>
+      </v-row>
+      <hr class="mt-3 mb-5" />
       <v-layout
         justify-center
         row
@@ -535,7 +549,8 @@ export default {
     compStats: Object,
     teamSearchMode: Boolean,
     activeTab: Number,
-    dashboardMode: Boolean
+    dashboardMode: Boolean,
+    total: Number
   },
   methods: {
     filterRanks (ranks) {

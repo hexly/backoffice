@@ -26,6 +26,7 @@
               :compStats="stats"
               noData="No data available"
               :dashboardMode="true"
+              :total="total"
             />
           </div>
           <div key="2" v-else-if="loading">
