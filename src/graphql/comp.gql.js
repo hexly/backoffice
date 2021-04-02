@@ -101,6 +101,7 @@ export const parseData = (res) => {
   const data = _.chain(res)
     .get('comp.previewRun.data.slice')
     .transform((map, obj, key) => {
+      const _obj = Object.assign({}, obj)
       const rl = obj.relativeLevel
       const token = rl || 'root'
       switch (obj.type) {
@@ -109,10 +110,10 @@ export const parseData = (res) => {
         break
 
       case 'descendant':
-        obj._id = idx++
-        obj._level = map.levels[`${token}`]
+        _obj._id = idx++
+        _obj._level = map.levels[`${token}`]
         if (obj.metadata) {
-          map.members.push(obj)
+          map.members.push(_obj)
         }
         break
 

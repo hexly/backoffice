@@ -24,16 +24,22 @@
         </v-breadcrumbs-item>
       </v-breadcrumbs>
       <div v-if="!loading">
-        <v-layout row wrap>
+        <v-layout
+          row
+          wrap
+        >
           <template v-for="(i, index) in mergedTeamArr">
-            <v-flex :key="index" px-1>
+            <v-flex
+              :key="index"
+              px-1
+            >
               <TeamCard
                 :loading="loading"
                 @viewTeam="showTeam"
                 :user="i"
                 :actions="true"
                 :stats="statsMap[i.id]"
-                :compStats="compStats[i.id]"
+                :compStats="compStats && compStats[i.id]"
                 noData="No data available"
                 @tabActivated="tabActivated"
                 :activeTab="activeTab"
@@ -42,8 +48,11 @@
           </template>
         </v-layout>
       </div>
-      <div class="loading-container" v-else>
-        <v-progress-circular indeterminate/>
+      <div
+        class="loading-container"
+        v-else
+      >
+        <v-progress-circular indeterminate />
       </div>
     </div>
   </div>
@@ -60,7 +69,7 @@ import { Mutations } from '@/store'
 
 export default {
   name: 'HierarchyCards',
-  data() {
+  data () {
     return {
       root: {},
       lineage: [],
@@ -77,8 +86,7 @@ export default {
       mergedTeamArr: [],
       hashResTeam: [],
       teamIds: [],
-      activeTab: null,
-      compStats: {}
+      activeTab: null
     }
   },
   computed: {
@@ -95,8 +103,8 @@ export default {
     MonthSelector
   },
   methods: {
-    ...mapMutations([ Mutations.SET_LOADING ]),
-    tabActivated(tab) {
+    ...mapMutations([Mutations.SET_LOADING]),
+    tabActivated (tab) {
       this.activeTab = tab
     },
     showTeam (user) {
@@ -112,7 +120,7 @@ export default {
       this.month = parseInt(dateSplit[1])
       this.year = parseInt(dateSplit[0])
     },
-    hashResultsTeam(results, memberTeamSearch) {
+    hashResultsTeam (results, memberTeamSearch) {
       let matchArr = []
 
       if (!memberTeamSearch || !results) {
@@ -128,7 +136,7 @@ export default {
 
       this.mergeUserTeam()
     },
-    mergeUserTeam() {
+    mergeUserTeam () {
       let mergedArr = []
       const { results: { team: resTeam }, memberTeamSearch: { team: mtsTeam }, hashResTeam } = this
       if (!hashResTeam || !hashResTeam.length || !resTeam) {
@@ -160,7 +168,7 @@ export default {
   apollo: {
     results: {
       query: TEAM_QUERY,
-      variables() {
+      variables () {
         const id = this.currentId || this.memberId
         return {
           byTarget: { ids: [id] }, // get me the target
@@ -180,7 +188,7 @@ export default {
     },
     memberTeamSearch: {
       query: TEAM_SEARCH_QUERY,
-      variables() {
+      variables () {
         return {
           input: {
             MemberId: this.currentId,
@@ -193,7 +201,7 @@ export default {
           }
         }
       },
-      watchLoading(isLoading, countModifier) {
+      watchLoading (isLoading, countModifier) {
         // this.setLoading(isLoading || this.$apollo.loading)
       },
       loadingKey: 'loading',
@@ -229,35 +237,37 @@ export default {
         return result
       },
       fetchPolicy: 'cache-and-network',
-      watchLoading(isLoading, countModifier) {
+      watchLoading (isLoading, countModifier) {
         // this.setLoading(isLoading || this.$apollo.loading)
       }
     },
     compStats: {
       query: COMP_PREVIEW_QUERY,
-      variables() {
+      variables () {
+        const { teamIds } = this
         return {
           payload: {
             input: {
               memberId: this.currentId,
-              periodId: this.openPeriod.id,
-              rowTypeIn: ['descendant'],
+              periodId: this.openPeriod && this.openPeriod.id,
               page: 1,
               pageSize: 500,
-              memberIn: this.teamIds
+              memberIn: teamIds
             }
           }
         }
       },
-      skip() {
-        return !this.openPeriod
+      skip () {
+        const { openPeriod, teamIds } = this
+        return !openPeriod || !teamIds.length
       },
-      update(res) {
+      update (res) {
         const stats = parseData(res)
-        return stats.members.reduce((orig, s) => {
+        const parsedStats = stats.members.reduce((orig, s) => {
           orig[s.awardeeId] = s
           return orig
         }, {})
+        return parsedStats
       },
       client: 'federated'
     }
@@ -267,12 +277,12 @@ export default {
     this.lineage.push({ memberId: this.currentId, displayName: this.member.displayName })
   },
   watch: {
-    results(newVal) {
+    results (newVal) {
       const { memberTeamSearch } = this
 
       this.hashResultsTeam(newVal, memberTeamSearch)
     },
-    memberTeamSearch(newVal) {
+    memberTeamSearch (newVal) {
       const { results } = this
 
       this.hashResultsTeam(results, newVal)
