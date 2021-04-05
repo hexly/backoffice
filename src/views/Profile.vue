@@ -145,6 +145,7 @@ export default {
       snackbarMsg: '',
       snackBarColor: null,
       birthdateRule: Rules.birthdateRule,
+      birthdayFormat: Rules.birthdayFormat,
       uploadFileName: null,
       isUploading: false,
       isSaving: false,
@@ -264,7 +265,7 @@ export default {
                   firstName: this.editMember.firstName,
                   lastName: this.editMember.lastName,
                   displayName: this.editMember.displayName,
-                  birthday: this.editMember.birthdate
+                  birthday: this.$moment(this.editMember.birthdate, this.birthdayFormat).format('YYYY-MM-DD')
                 }
               }
             }),
@@ -321,13 +322,19 @@ export default {
     parseErrors(err) {
       console.error({ err })
       const errors = []
-      err.graphQLErrors.forEach(e => {
-        e.path.forEach(p => {
-          if (p === 'iamUpsertUsername') {
-            errors.push('Could not update username')
-          }
+      if (err.graphQLErrors.length) {
+        err.graphQLErrors.forEach(e => {
+          e.path.forEach(p => {
+            if (p === 'iamUpsertUsername') {
+              errors.push('Could not update username')
+            } else {
+              errors.push('Error Updating Personal Information. Please Try Again or Contact Support')
+            }
+          })
         })
-      })
+      } else {
+        errors.push('Error Updating Personal Information. Please Try Again or Contact Support')
+      }
       this.showErrors(errors)
     },
     showErrors(errors) {
