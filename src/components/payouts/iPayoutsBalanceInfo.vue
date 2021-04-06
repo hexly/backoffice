@@ -43,7 +43,7 @@
       <h2>
         <Currency
           :amount="currentBalance.balance"
-          :currency="currentBalance.currency"
+          :currency="currencyCode"
         />
       </h2>
       <br />

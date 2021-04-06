@@ -78,12 +78,6 @@
             <v-btn text color="primary" @click="dateSave(datePickerDate); $refs.dialog.save()">OK</v-btn>
           </v-date-picker>
         </v-dialog>
-        <!-- <v-text-field
-          v-model="value.birthdate"
-          label="Date of Birth"
-          :placeholder="this.birthdayFormat"
-          :rules="birthdateRule"
-        ></v-text-field> -->
       <v-btn
         :disabled="saving"
         :loading="saving"
