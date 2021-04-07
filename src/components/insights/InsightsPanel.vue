@@ -9,7 +9,7 @@
         </div>
     </v-card-title>
     <v-card-text class="pa-1 insights-card">
-      <div class="subtitle-1 text-center" v-if="teamModalMode">{{displayName}}</div>
+      <h3 class="black--text text-center my-2" v-if="teamModalMode">{{displayName}}</h3>
       <p v-if="data.labels.description">{{data.labels.description}}</p>
       <v-list three-line class="pa-0 insights-list">
         <template v-for="(component, i) in data.components">
