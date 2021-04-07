@@ -738,7 +738,7 @@ export default {
         }
       },
       skip () {
-        return this.displaySuccessStart
+        return !this.displaySuccessStart
       },
       update({ comp: { insightCollection } }) {
         console.log({ insightCollection })
