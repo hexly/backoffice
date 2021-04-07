@@ -66,6 +66,14 @@ s<template>
     <v-divider class="mb-3"></v-divider>
     <div class="text-center pa-2">
       <h3 class="mb-4">Profile Settings</h3>
+      <v-row justify="start" no-gutters class="text-left px-1" v-if="currentTheme">
+          Current Theme:
+          <strong class="text-capitalize"> {{currentTheme}}</strong>
+          <v-btn icon small @click="$router.push('profile#settings')">
+            <v-icon small>edit</v-icon>
+          </v-btn>
+      </v-row>
+      <div v-else><v-progress-circular indeterminate value="true"></v-progress-circular></div>
       <PrivateProfile />
     </div>
     <v-divider class="mb-3"></v-divider>
@@ -102,10 +110,25 @@ export default {
   },
   data() {
     return {
-      showProfilePicDialog: false
+      showProfilePicDialog: false,
+      currentTheme: 'Beauty'
     }
   },
-  async mounted() {},
+  mounted() {
+    const { tenantIntegrations } = this
+    if (!tenantIntegrations) {
+      return
+    }
+
+    const hexlyPersonalizedStore = tenantIntegrations.find(el => el.key === 'hexly_personalized_store')
+    if (!hexlyPersonalizedStore) {
+      return
+    }
+
+    const { theme } = hexlyPersonalizedStore.metadata.home
+
+    this.currentTheme = theme
+  },
   watch: {
     '$apollo.loading'(newVal) {
       this.setLoading(newVal)
@@ -142,7 +165,7 @@ export default {
       stats: state => state.comp.currentPeriod,
       previous: state => state.comp.previousPeriod
     }),
-    ...mapGetters(['contactId', 'memberId', 'slug', 'isMonthInReview']),
+    ...mapGetters(['contactId', 'memberId', 'slug', 'isMonthInReview', 'tenantIntegrations']),
     isFounder() {
       return this.$moment(this.user.principal.member.joinedOn).isBefore('2020-03-01')
     }

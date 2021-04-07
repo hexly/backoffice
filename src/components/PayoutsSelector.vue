@@ -1,5 +1,10 @@
 <template>
-  <v-dialog v-model="dialog" fullscreen hide-overlay transition="dialog-bottom-transition">
+  <v-dialog
+    v-model="dialog"
+    fullscreen
+    hide-overlay
+    transition="dialog-bottom-transition"
+  >
     <template v-slot:activator="{ on, attrs }">
       <v-btn
         style="float: right;"
@@ -14,23 +19,47 @@
       </v-btn>
     </template>
     <v-card>
-      <v-toolbar dark color="primary">
-        <v-btn icon dark @click="dialog = false">
+      <v-toolbar
+        dark
+        color="primary"
+      >
+        <v-btn
+          icon
+          dark
+          @click="dialog = false"
+        >
           <v-icon>mdi-close</v-icon>
         </v-btn>
         <v-toolbar-title>Settings</v-toolbar-title>
         <v-spacer></v-spacer>
         <v-toolbar-items>
-          <v-btn dark text @click="save()" :disabled="loading" :loading="loading">Save</v-btn>
+          <v-btn
+            dark
+            text
+            @click="save()"
+            :disabled="loading"
+            :loading="loading"
+          >Save</v-btn>
         </v-toolbar-items>
       </v-toolbar>
       <div class="pa-2">
-          <v-alert type="error" :value="!!error">{{error}}</v-alert>
-          <h3>Available Payout Systems</h3>
-          <p>Please select the service you'd like to get paid through:</p>
-          <v-radio-group v-model="selected" @change="updateSelection">
-            <v-radio v-for="integration in integrations" :key="integration.id" :label="integration.name" :value="integration.key"></v-radio>
-          </v-radio-group>
+        <v-alert
+          type="error"
+          :value="!!error"
+        >{{error}}</v-alert>
+        <h3>Available Payout Systems</h3>
+        <p>Please select the service you'd like to get paid through:</p>
+        <v-radio-group
+          v-model="selected"
+          @change="updateSelection"
+        >
+          <v-radio
+            v-for="integration in integrations"
+            :key="integration.id"
+            :label="integration.name"
+            :value="integration.key"
+          ></v-radio>
+        </v-radio-group>
       </div>
       <v-container v-if="selected === 'paypal_payouts'">
         <h2>PayPal Setup</h2>
@@ -40,11 +69,26 @@
         </p>
         <v-form>
           <v-row>
-            <v-col cols="12" sm="6" md="3">
-              <v-select v-model="metadata.type" :items="settings[selected].types" label="Paypal Id Type" ></v-select>
+            <v-col
+              cols="12"
+              sm="6"
+              md="3"
+            >
+              <v-select
+                v-model="metadata.type"
+                :items="settings[selected].types"
+                label="Paypal Id Type"
+              ></v-select>
             </v-col>
-            <v-col cols="12" sm="6" md="3">
-              <v-text-field v-model="integrationOid" label="Paypal Email"></v-text-field>
+            <v-col
+              cols="12"
+              sm="6"
+              md="3"
+            >
+              <v-text-field
+                v-model="integrationOid"
+                label="Paypal Email"
+              ></v-text-field>
             </v-col>
           </v-row>
         </v-form>
@@ -76,7 +120,7 @@ export default {
       }
     }
   },
-  mounted() {
+  mounted () {
     const currentIntegration = _.minBy(this.getPayoutCapableIntegrations, 'priority')
     this.supportedIntegrations = _.chain(this.integrations).groupBy('key').mapValues(i => _.get(i, '[0].priority')).value()
     this.selected = currentIntegration.key
@@ -88,7 +132,7 @@ export default {
   },
   methods: {
     ...mapActions({ reloadIntegrations: UserActions.RELOAD_INTEGRATIONS }),
-    updateSelection(key) {
+    updateSelection (key) {
       const integration = this.getMemberIntegration(key)
       if (integration) {
         this.newIntegration = false
@@ -101,7 +145,7 @@ export default {
         this.metadata = {}
       }
     },
-    async save() {
+    async save () {
       this.loading = true
       this.error = null
       const integration = this.getIntegration(this.selected)
@@ -161,16 +205,16 @@ export default {
         this.error = e.message
       }
     },
-    getMemberIntegration(key) {
+    getMemberIntegration (key) {
       return _.find(this.tenantIntegrations, ['key', key])
     },
-    getIntegration(key) {
+    getIntegration (key) {
       return _.find(this.integrations, ['key', key])
     }
   },
   computed: {
     ...mapGetters(['tenantIntegrations']),
-    getPayoutCapableIntegrations() {
+    getPayoutCapableIntegrations () {
       return this.tenantIntegrations.filter(i => {
         return _.find(this.integrations, { key: i.key })
       })

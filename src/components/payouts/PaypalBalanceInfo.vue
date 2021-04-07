@@ -1,49 +1,106 @@
 <template>
-  <v-card-text v-if="hasIntegration" class="pt-3">
-    <v-alert type="success" v-if="transferSuccess">
-      PayPal transfer successfully initiated!
-    </v-alert>
-    <v-alert type="warning" v-if="!!warningMessage">
-      {{warningMessage}}
-    </v-alert>
+  <v-card-text
+    v-if="hasIntegration"
+    class="pt-3"
+  >
+    <v-row>
+      <v-col
+        col="12"
+        sm="12"
+      >
+        <v-alert
+          type="success"
+          v-if="transferSuccess"
+        >
+          PayPal transfer successfully initiated!
+        </v-alert>
+        <v-alert
+          type="warning"
+          v-if="!!warningMessage"
+        >
+          {{warningMessage}}
+        </v-alert>
+      </v-col>
+    </v-row>
     <h4>
-        Available Funds:
-        <v-tooltip slot="append" bottom>
+      Available Funds:
+      <v-tooltip
+        slot="append"
+        bottom
+      >
         <template v-slot:activator="{ on }">
-            <v-icon small v-on="on">help</v-icon>
+          <v-icon
+            small
+            v-on="on"
+          >help</v-icon>
         </template>
         <span><small>Total payouts in released status since last bank transfer</small></span>
-        </v-tooltip>
+      </v-tooltip>
     </h4>
     <h2>
-        <Currency :amount="releasedBalance.amount / 100" :currency="releasedBalance.currency"/>
+      <Currency
+        :amount="releasedBalance.amount / 100"
+        :currency="releasedBalance.currency"
+      />
     </h2>
-    <br/>
-    <v-dialog v-model="transferDialog" width="500" :disabled="releasedBalance.amount < 25 || transferDisabled">
-        <template v-slot:activator="{ on }">
-        <v-btn class="ma-0" color="success" v-on="on" small :disabled="releasedBalance.amount < 25 || transferDisabled">Transfer To PayPal</v-btn>
-        </template>
-        <v-card>
-        <v-card-title class="headline grey lighten-2" primary-title >
-            Funds Transfer Policy
+    <br />
+    <v-dialog
+      v-model="transferDialog"
+      width="500"
+      :disabled="releasedBalance.amount < 25 || transferDisabled"
+    >
+      <template v-slot:activator="{ on }">
+        <v-btn
+          class="ma-0"
+          color="success"
+          v-on="on"
+          small
+          :disabled="releasedBalance.amount < 25 || transferDisabled"
+        >Transfer To PayPal</v-btn>
+      </template>
+      <v-card>
+        <v-card-title
+          class="headline grey lighten-2"
+          primary-title
+        >
+          Funds Transfer Policy
         </v-card-title>
         <v-card-text>
-            <v-alert type="error" :value="transferError">{{transferError}}</v-alert>
-            When transfering funds to PayPal, you will be charged a processing fee of $0.25/£0.17. Would you like to continue to transfer funds?
+          <v-alert
+            type="error"
+            :value="transferError"
+          >{{transferError}}</v-alert>
+          When transfering funds to PayPal, you will be charged a processing fee of $0.25/£0.17. Would you like to continue to transfer funds?
         </v-card-text>
         <v-divider></v-divider>
         <v-card-actions>
-            <v-btn color="warning" text @click="transferDialog = false; transferError = null">no, dont transfer </v-btn>
-            <v-spacer></v-spacer>
-            <v-btn :loading="transferingFunds" :disabled="transferingFunds" color="success" text @click="attemptTransferFunds">Yes, Transfer Funds </v-btn>
+          <v-btn
+            color="warning"
+            text
+            @click="transferDialog = false; transferError = null"
+          >no, dont transfer </v-btn>
+          <v-spacer></v-spacer>
+          <v-btn
+            :loading="transferingFunds"
+            :disabled="transferingFunds"
+            color="success"
+            text
+            @click="attemptTransferFunds"
+          >Yes, Transfer Funds </v-btn>
         </v-card-actions>
-        </v-card>
+      </v-card>
     </v-dialog>
     <div>
       <small v-if="releasedBalance.amount < 25">$0.25/£0.25 minimum to transfer to your PayPal</small>
     </div>
     <div class="mt-2">
-      <v-btn href="https://www.paypal.com/" target="_blank" class="ma-0" color="success" small>Visit PayPal</v-btn>
+      <v-btn
+        href="https://www.paypal.com/"
+        target="_blank"
+        class="ma-0"
+        color="success"
+        small
+      >Visit PayPal</v-btn>
     </div>
   </v-card-text>
 </template>
@@ -59,12 +116,12 @@ export default {
   components: {
     Currency
   },
-  mounted() {
+  mounted () {
     if (this.hasIntegration) {
       this.loadBalance()
     }
   },
-  data() {
+  data () {
     return {
       status: {
         released: 'RELEASED'
@@ -85,7 +142,7 @@ export default {
     }
   },
   methods: {
-    async loadBalance() {
+    async loadBalance () {
       // For now, everyone should be aware of the federated url since that is the future!
       if (_.get(this, '$apolloProvider.clients.federated')) {
         const { data: { payouts } } = await this.$apollo.query({
@@ -105,7 +162,7 @@ export default {
         }
       }
     },
-    async attemptTransferFunds() {
+    async attemptTransferFunds () {
       // For now, everyone should be aware of the federated url since that is the future!
       if (_.get(this, '$apolloProvider.clients.federated')) {
         try {
@@ -145,15 +202,15 @@ export default {
         })
       }
     }),
-    payPalIntegration() {
+    payPalIntegration () {
       return this.integrations.find(i => {
         return i.key === 'paypal_payouts'
       })
     },
-    transferDisabled() {
+    transferDisabled () {
       return this.payPalIntegration && this.payPalIntegration.metadata && this.payPalIntegration.metadata.disableTransfer
     },
-    warningMessage() {
+    warningMessage () {
       if (this.payPalIntegration && this.payPalIntegration.metadata && this.payPalIntegration.metadata.warning) {
         return this.payPalIntegration.metadata.warning
       }
