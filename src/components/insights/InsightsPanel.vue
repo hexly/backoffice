@@ -9,6 +9,7 @@
         </div>
     </v-card-title>
     <v-card-text class="pa-1 insights-card">
+      <div class="subtitle-1 text-center" v-if="teamModalMode">{{displayName}}</div>
       <p v-if="data.labels.description">{{data.labels.description}}</p>
       <v-list three-line class="pa-0 insights-list">
         <template v-for="(component, i) in data.components">
@@ -51,7 +52,8 @@ export default {
   },
   props: {
     data: Object,
-    teamModalMode: Boolean
+    teamModalMode: Boolean,
+    displayName: String
   }
 }
 </script>

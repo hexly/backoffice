@@ -512,7 +512,12 @@
       v-model="showSuccessStartDialog"
       max-width="500px"
     >
-      <InsightsPanel :data="successStartSection" :teamModalMode="true" @closeModal="showSuccessStartDialog = false"/>
+      <InsightsPanel
+        :data="successStartSection"
+        :teamModalMode="true"
+        :displayName="user.displayName"
+        @closeModal="showSuccessStartDialog = false"
+      />
     </v-dialog>
   </v-card>
 </template>
