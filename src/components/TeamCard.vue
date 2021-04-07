@@ -204,7 +204,6 @@
                   </v-list-item-icon>
 
                   <v-list-item-content>
-                    {{birthday}}
                     <v-list-item-title>{{$moment(birthday, 'YYYY-MM-DD').format('MMMM Do')}}</v-list-item-title>
                     <v-list-item-subtitle>Birthday</v-list-item-subtitle>
                   </v-list-item-content>
