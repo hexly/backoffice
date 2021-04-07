@@ -58,6 +58,16 @@
         </v-col>
       </lazy-component>
     </template>
+    <template v-if="openPeriod">
+      <lazy-component wrapper-tag="v-row" wrap @intersected="loadSalesLeaderboards(openPeriod)">
+        <v-col cols="12" sm="6">
+          <MarketLeaderBoard :leaders="companySellersLeaderboard" title="Top Sellers (Company)" message="PSV: "/>
+        </v-col>
+        <v-col cols="12" sm="6">
+          <SellerLeaderBoard :leaders="teamSellersLeaderboard" title="Top Sellers (Your Team)" message="PSV: "/>
+        </v-col>
+      </lazy-component>
+    </template>
     <lazy-component wrapper-tag="div">
       <CompanyMap class="py-2" title="Influencers around the world"/>
     </lazy-component>
@@ -81,10 +91,13 @@ import RankRequirementsCard from '@/components/RankRequirementsCard.vue'
 import CompRanksCard from '@/components/CompRanksCard.vue'
 import TeamOverview from '@/components/dashboard/TeamOverview.vue'
 import LeaderBoard from '@/components/Leaderboard.vue'
+import MarketLeaderBoard from '@/components/MarketLeaderboard.vue'
+import SellerLeaderBoard from '@/components/SellerLeaderboard.vue'
 
 import {
   FRONTLINE_LEADERBOARD_BY_RANGE,
-  COMPANY_FRONTLINE_LEADERBOARD_BY_RANGE
+  COMPANY_FRONTLINE_LEADERBOARD_BY_RANGE,
+  SELLER_LEADERBOARD
 } from '@/graphql/Leaderboard.js'
 import { ENGINE_DASHBOARD_BANNERS } from '@/graphql/CompStats.gql'
 import { MAX_MRN } from '@/graphql/MemberStats.gql'
@@ -107,7 +120,9 @@ export default {
     TeamOverview,
     LeaderBoard,
     CompRanksCard,
-    EarningsCard
+    EarningsCard,
+    MarketLeaderBoard,
+    SellerLeaderBoard
   },
   data() {
     return {
@@ -127,7 +142,9 @@ export default {
       statsDisabled: false,
       isMobile: isMobile(),
       teamLeaderboard: [],
-      companyLeaderboard: []
+      companyLeaderboard: [],
+      teamSellersLeaderboard: [],
+      companySellersLeaderboard: []
     }
   },
   methods: {
@@ -162,6 +179,30 @@ export default {
       })
       this.teamLeaderboard = rangedFrontlineLeaderboardByTeam
       this.companyLeaderboard = rangedFrontlineLeaderboard
+    },
+    async loadSalesLeaderboards(period) {
+      if (!period) {
+        return
+      }
+      const variables = {
+        input: {
+          periodId: period.id,
+          limit: 10
+        }
+      }
+      const { data: { comp: { salesLeaderboard: salesLeaderboardByTeam } } } = await this.$apollo.query({
+        query: SELLER_LEADERBOARD,
+        variables: { input: { ...variables.input, memberId: this.memberId } },
+        client: 'federated'
+      })
+
+      const { data: { comp: { salesLeaderboard } } } = await this.$apollo.query({
+        query: SELLER_LEADERBOARD,
+        variables,
+        client: 'federated'
+      })
+      this.teamSellersLeaderboard = salesLeaderboardByTeam
+      this.companySellersLeaderboard = salesLeaderboard
     },
     ...mapMutations([
       UserMutations.MEMBER_QUERY,

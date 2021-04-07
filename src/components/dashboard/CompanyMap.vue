@@ -68,7 +68,6 @@ export default {
   },
   methods: {
     addMarkers(map) {
-      console.log(this.geoData)
       map.addSource('members', {
         type: 'geojson',
         data: this.geoData,

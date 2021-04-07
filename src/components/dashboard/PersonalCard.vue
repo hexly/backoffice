@@ -66,16 +66,12 @@ s<template>
     <v-divider class="mb-3"></v-divider>
     <div class="text-center pa-2">
       <h3 class="mb-4">Profile Settings</h3>
-      <v-row justify="center" no-gutters class="text-left px-1" v-if="currentTheme">
-        <v-col cols="3">
+      <v-row justify="start" no-gutters class="text-left px-1" v-if="currentTheme">
           Current Theme:
-        </v-col>
-        <v-col>
-          <strong>{{currentTheme}}</strong>
+          <strong class="text-capitalize"> {{currentTheme}}</strong>
           <v-btn icon small @click="$router.push('profile#settings')">
             <v-icon small>edit</v-icon>
           </v-btn>
-        </v-col>
       </v-row>
       <div v-else><v-progress-circular indeterminate value="true"></v-progress-circular></div>
       <PrivateProfile />
@@ -115,7 +111,7 @@ export default {
   data() {
     return {
       showProfilePicDialog: false,
-      currentTheme: null
+      currentTheme: 'Beauty'
     }
   },
   mounted() {
@@ -131,7 +127,7 @@ export default {
 
     const { theme } = hexlyPersonalizedStore.metadata.home
 
-    this.currentTheme = theme.charAt(0).toUpperCase() + theme.slice(1)
+    this.currentTheme = theme
   },
   watch: {
     '$apollo.loading'(newVal) {
