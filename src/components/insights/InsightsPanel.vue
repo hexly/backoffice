@@ -1,6 +1,13 @@
 <template>
   <v-card>
-    <v-card-title class="secondary white--text headline">{{data.labels.heading}}</v-card-title>
+    <v-card-title class="secondary title-class">
+      <div cols="" class="white--text headline">{{data.labels.heading}}</div>
+      <div id="close-btn" v-if="teamModalMode">
+        <v-btn @click="$emit('closeModal')" icon class="white--text">
+          <v-icon>close</v-icon>
+        </v-btn>
+        </div>
+    </v-card-title>
     <v-card-text class="pa-1 insights-card">
       <p v-if="data.labels.description">{{data.labels.description}}</p>
       <v-list three-line class="pa-0 insights-list">
@@ -43,7 +50,8 @@ export default {
     InsightAvatarQuadInfo
   },
   props: {
-    data: Object
+    data: Object,
+    teamModalMode: Boolean
   }
 }
 </script>
@@ -55,5 +63,15 @@ export default {
 }
 .insights-row:nth-child(odd){
   background-color: #cecece;
+}
+
+#close-btn {
+  position: absolute;
+  right: 4px;
+  top: 12px;
+}
+
+.title-class {
+  word-break: normal;
 }
 </style>

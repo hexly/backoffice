@@ -152,7 +152,7 @@
               <v-list-item-title @click="viewTeam()"><v-btn block>View Team</v-btn></v-list-item-title>
             </v-list-item>
             <v-list-item v-if="displaySuccessStart">
-              <v-list-item-title @click="viewTeam()"><v-btn block>View Success Start</v-btn></v-list-item-title>
+              <v-list-item-title @click="showSuccessStartDialog = true"><v-btn block>View Success Start</v-btn></v-list-item-title>
             </v-list-item>
           </v-list>
         </v-menu>
@@ -509,7 +509,12 @@
         </v-tabs>
       </div>
     </div>
-
+    <v-dialog
+      v-model="showSuccessStartDialog"
+      max-width="500px"
+    >
+      <InsightsPanel :data="successStartSection" :teamModalMode="true" @closeModal="showSuccessStartDialog = false"/>
+    </v-dialog>
   </v-card>
 </template>
 
@@ -519,10 +524,12 @@ import { get, omit } from 'lodash'
 import CompRanksCard from '@/components/CompRanksCard.vue'
 import { AWARDS_BY_ID } from '@/graphql/Team.gql'
 import { INSIGHTS_COLLECTION } from '@/graphql/comp.gql'
+import InsightsPanel from '@/components/insights/InsightsPanel.vue'
 export default {
   name: 'TeamCard',
   components: {
-    CompRanksCard
+    CompRanksCard,
+    InsightsPanel
   },
   data () {
     return {
@@ -548,7 +555,9 @@ export default {
         frontLine: null,
         secondLine: null,
         thirdLine: null
-      }
+      },
+      successStartSection: null,
+      showSuccessStartDialog: false
     }
   },
   props: {
@@ -741,7 +750,9 @@ export default {
         return !this.displaySuccessStart
       },
       update({ comp: { insightCollection } }) {
-        console.log({ insightCollection })
+        const { sections } = insightCollection
+        this.successStartSection = sections.find(el => el.type === 'PANEL' && el.display)
+
         return insightCollection
       },
       client: 'federated',
