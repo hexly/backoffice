@@ -187,7 +187,8 @@ export default {
       const variables = {
         input: {
           periodId: period.id,
-          limit: 10
+          limit: 10,
+          omitTags: ['omit_leaderboard']
         }
       }
       const { data: { comp: { salesLeaderboard: salesLeaderboardByTeam } } } = await this.$apollo.query({
