@@ -680,7 +680,7 @@ export default {
         return false
       }
       const cutoffDate = this.$moment(joinedOn).add(100, 'days')
-      const isInRange = this.$moment(joinedOn).isBetween('2021-1-1', cutoffDate)
+      const isInRange = this.$moment(joinedOn).isBetween('2021-01-01', cutoffDate)
       return isInRange
     },
     getAvatar () {
