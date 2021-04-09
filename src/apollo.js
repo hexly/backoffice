@@ -88,6 +88,12 @@ export function createApolloClient ({
   persisting
 }, useAuthLink) {
   const httpLink = new HttpLink({ uri: base + endpoints.graphql })
+  const batchLink = new BatchHttpLink({
+    // You should use an absolute URL here
+    uri: base + endpoints.graphql,
+    // fetch: customFetch
+    batchMax: 5
+  })
   let link = httpLink
 
   if (useAuthLink) {
@@ -109,7 +115,18 @@ export function createApolloClient ({
       }
       return context
     })
-    link = authLink.concat(httpLink)
+    // Concat all the http link parts
+    const dontBatch = [
+      'teamDataByDepth',
+      'teamStatsByLevel',
+      'principal'
+    ]
+    link = authLink.split(
+      (operation) => dontBatch.indexOf(operation.operationName) === -1,
+      batchLink,
+      httpLink
+    )
+    // link = authLink.concat(httpLink)
   }
 
   // Apollo cache
