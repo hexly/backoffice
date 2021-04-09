@@ -71,3 +71,19 @@ export const COMPANY_FRONTLINE_LEADERBOARD_BY_RANGE = gql`
     }
   }
 `
+
+export const SELLER_LEADERBOARD = gql`
+  query sellerLeaderboard($input: LeaderboardInput!) {
+    comp{
+      salesLeaderboard(input: $input) {
+        memberId
+        displayName
+        points
+        rank
+        marketRank
+        profileUrl
+        market
+      }
+    }
+  }
+`

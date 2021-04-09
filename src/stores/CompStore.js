@@ -64,7 +64,6 @@ export const CompStore = {
           }
         ))
         const newComp = parseData(data)
-
         const memberStats = newComp.members.find(s => ~~s.awardeeId === memberId)
         if (!transient) {
           commit(CompMutations.SET_STATS, memberStats)

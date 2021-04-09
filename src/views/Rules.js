@@ -1,5 +1,5 @@
 const moment = require('moment')
-let birthdayFormat = 'MM/DD/YYYY'
+let birthdayFormat = 'MMM Do, YYYY'
 if (Intl.DateTimeFormat().resolvedOptions()) {
   const locale = Intl.DateTimeFormat().resolvedOptions().locale
   if (locale.toLowerCase().indexOf('gb') > -1) {

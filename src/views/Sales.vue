@@ -145,7 +145,7 @@
                 <v-flex xs4>
                   <h4>Details:</h4>
                   <ul>
-                    <li>Originating ID: {{item.providerOid}}</li>
+                    <li>Order ID: {{item.providerOid}}</li>
                     <li>Status: {{statusMap[item.status] || item.status}}</li>
                     <li v-if="item.customerNote">Customer Note: {{item.customerNote}}</li>
                     <li v-if="checkShippingDate(item.metadata.WcShipmentTrackingItems)">

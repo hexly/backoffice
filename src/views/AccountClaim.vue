@@ -32,7 +32,6 @@
                         label="Date of Birth"
                         prepend-icon="event"
                         readonly
-                        :placeholder="birthdayFormat"
                         :rules="birthdateRule"
                       ></v-text-field>
                     </template>
@@ -201,7 +200,6 @@ export default {
       this.loading = false
     } catch (err) {
       console.error('ERROR getting token', err)
-      this.$router.push('/login')
     }
   },
   apollo: {
