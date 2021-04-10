@@ -99,6 +99,8 @@
         :expanded="expanded"
         show-expand
         :loading="loading"
+        sort-by="date"
+        :sort-desc="true"
       >
         <template v-slot:item="{ item, isExpanded }">
           <tr>
@@ -258,10 +260,9 @@ export default {
       expanded: [],
       modalEnd: false,
       startDate: this.$moment()
-        .startOf('month')
+        .subtract(30, 'days')
         .format('MM/DD/YYYY'),
       endDate: this.$moment()
-        .endOf('month')
         .format('MM/DD/YYYY'),
       headers: [
         { text: 'Date', value: 'date' },
