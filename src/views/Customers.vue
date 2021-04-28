@@ -3,7 +3,7 @@
     <v-row wrap class="px-2">
       <v-col cols="12">
         <v-flex>
-          <CustomerTable :orderData="orderData"/>
+          <CustomerTable :orderData="orderData" :loading="loading"/>
         </v-flex>
       </v-col>
       <!-- <v-col cols="12">
@@ -19,6 +19,7 @@ import OrderTable from '@/components/OrderTable.vue'
 import CustomerTable from '@/components/CustomerTable.vue'
 import { mapState } from 'vuex'
 import { ORDERS_QUERY } from '@/graphql/Orders.js'
+import { get } from 'lodash'
 
 export default {
   components: {
@@ -26,29 +27,33 @@ export default {
     RecentOrders,
     CustomerTable
   },
-  data() {
+  data () {
     return {
-      orderData: []
+      loading: false
     }
   },
-  methods: {
-    async loadOrders() {
-      const results = await this.$apollo.query({
-        query: ORDERS_QUERY,
-        variables: {
+  apollo: {
+    orderData: {
+      query: ORDERS_QUERY,
+      variables() {
+        return {
           input: {
             referrerIn: this.user.principal.memberId,
             start: '2007-12-03',
             end: new Date().toISOString().split('T')[0]
           }
-        },
-        client: 'federated'
-      })
-      this.orderData = results.data.purchaseSearchOrders
+        }
+      },
+      client: 'federated',
+      update(data) {
+        const res = get(data, 'purchaseSearchOrders')
+
+        return res
+      },
+      watchLoading(isLoading) {
+        this.loading = isLoading
+      }
     }
-  },
-  async mounted() {
-    this.loadOrders()
   },
   computed: {
     ...mapState({

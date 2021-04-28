@@ -1,7 +1,7 @@
 <template>
   <div class="customers">
     <v-row wrap>
-      <v-col cols="6" xs="12">
+      <v-col xs="12">
         <v-flex>
           <v-card>
             <v-toolbar color="secondary" dark>
@@ -10,9 +10,12 @@
             </v-toolbar>
             <v-card-text class="px-2 customer-list">
               <v-text-field v-model="search" append-icon="mdi-magnify" label="Search"/>
-              <v-data-table single-select :headers="customerHeaders" item-key="customerName" :items="customers" @click:row="onClick" :search="search">
+              <v-data-table :loading="loading" single-select :headers="customerHeaders" item-key="customerName" :items="customers" @click:row="onClick" :search="search">
                 <template v-slot:item.customerName="{ item }">
                   {{item.customerName || 'Guest Customer'}}
+                </template>
+                <template v-slot:item.recentOrder="{ item }">
+                  {{item.recentOrder ? $moment(item.recentOrder, 'YYYY-MM-DD').format('ll') : null}}
                 </template>
                 <template v-slot:item.total="{ item }">
                   <Currency :amount="item.total" :currency="item.currency"/>
@@ -22,35 +25,43 @@
           </v-card>
         </v-flex>
       </v-col>
-      <v-col cols="6" xs="12">
+      <v-dialog
+        v-model="showCustomerDialog"
+        max-width="800px"
+      >
         <v-card>
           <v-toolbar color="secondary" dark>
             <v-toolbar-title>Customer Ordered Products</v-toolbar-title>
             <v-spacer/>
           </v-toolbar>
-          <v-data-table item-key="id" :headers="orderHeaders" no-data-text="Please Select A Customer" :items="orders">
+          <v-data-table item-key="key" :headers="orderHeaders" no-data-text="Please Select A Customer" :items="orders">
+            <template v-slot:item.date="{ item }">
+              {{item.date ? $moment(item.date, 'YYYY-MM-DD').format('ll') : null}}
+            </template>
             <template v-slot:item.itemPrice="{ item }">
               <Currency :amount="item.itemPrice" :currency="item.currency"/>
             </template>
           </v-data-table>
         </v-card>
-      </v-col>
+      </v-dialog>
     </v-row>
   </div>
 </template>
 
 <script>
 import Currency from '@/components/Currency.vue'
-import { groupBy } from 'lodash'
+import { groupBy, cloneDeep, get } from 'lodash'
 export default {
   components: {
     Currency
   },
   props: {
-    orderData: Array
+    orderData: Array,
+    loading: Boolean
   },
   data() {
     return {
+      showCustomerDialog: false,
       customerHeaders: [
         {
           text: 'Name',
@@ -93,9 +104,9 @@ export default {
   },
   methods: {
     onClick(item, row) {
-      console.log(item, row)
       row.select(true)
       this.customerName = item.customerName
+      this.showCustomerDialog = true
     },
     isSelected(item) {
       console.log(item)
@@ -107,6 +118,10 @@ export default {
   },
   computed: {
     customers() {
+      if (!this.orderData) {
+        return
+      }
+
       const uniqueCustomers = new Set(this.orderData.map(item => item.customerName))
       let customerList = []
 
@@ -117,24 +132,33 @@ export default {
         const total = customerOrders.reduce((total, c) => {
           return total + c.itemPrice
         }, 0)
-        const recentOrder = this.$moment(customerOrders[0].checkedOutOn, 'YYYY-MM-DD').format('ll')
+        const unparsedRecentOrder = customerOrders.find(el => el.checkedOutOn)
+        let recentOrder = null
+        if (unparsedRecentOrder) {
+          recentOrder = unparsedRecentOrder.checkedOutOn
+        }
+        const currency = get(customerOrders[0], 'metadata.WcpbcPricingZone.currency')
         customerList.push({
           customerName: customer,
-          orderCount: orderCount,
-          recentOrder: recentOrder,
+          orderCount,
+          recentOrder,
           total,
-          currency: recentOrder.currency
+          currency
         })
       })
       return customerList
     },
     orders() {
+      if (!this.orderData) {
+        return
+      }
       let orderList = []
 
       this.orderData.forEach((order, i) => {
         if (order.customerName === this.customerName) {
-          let orderCopy = order
-          orderCopy.date = this.$moment(order.checkedOutOn, 'YYYY-MM-DD').format('ll')
+          let orderCopy = cloneDeep(order)
+          orderCopy.date = order.checkedOutOn
+          orderCopy.key = i + order.productName
           orderList.push({ id: i, ...orderCopy })
         }
       })

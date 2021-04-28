@@ -101,7 +101,7 @@
           </v-list-item-content>
         </v-list-item>
         <v-list-item
-          v-if="$tenantInfo.features.customers"
+          v-if="true || $tenantInfo.features.customers"
           to="/customers"
         >
           <v-list-item-action>
