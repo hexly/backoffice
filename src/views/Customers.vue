@@ -2,9 +2,7 @@
   <div class="customers">
     <v-row wrap class="px-2">
       <v-col cols="12">
-        <v-flex>
-          <CustomerTable :orderData="orderData" :loading="loading"/>
-        </v-flex>
+        <CustomerTable :orderData="orderData" :loading="loading"/>
       </v-col>
       <!-- <v-col cols="12">
         <RecentOrders :orderData="orderData"/>
