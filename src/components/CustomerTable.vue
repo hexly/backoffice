@@ -88,7 +88,7 @@
           <v-card-text class="px-2 mt-5">
             <v-tabs-items v-model="currentTab">
               <v-tab-item key="orders">
-                <v-data-table single-expand :expanded.sync="expanded" show-expand item-key="integrationOid" :headers="orderHeaders" no-data-text="Please Select A Customer" :items="orders">
+                <v-data-table class="order-table-row" @click:row="(item, slot) => slot.expand(!slot.isExpanded)" single-expand :expanded.sync="expanded" show-expand item-key="integrationOid" :headers="orderHeaders" no-data-text="Please Select A Customer" :items="orders">
                   <template v-slot:item.date="{ item }">
                     {{item.date ? $moment(item.date, 'YYYY-MM-DD').format('ll') : null}}
                   </template>
@@ -337,6 +337,9 @@ export default {
 
 <style>
   .customer-list tr {
+    cursor: pointer !important;
+  }
+  .order-table-row {
     cursor: pointer !important;
   }
 </style>
