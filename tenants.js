@@ -274,7 +274,7 @@ const tenantOptions = {
         search: true,
         graph: true
       },
-      customers: false,
+      customers: true,
       social: true,
       payouts: true,
       generalDashboard: false,
