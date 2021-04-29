@@ -207,7 +207,6 @@ export default {
       this.showCustomerDialog = true
     },
     isSelected(item) {
-      console.log(item)
       if (item.customerName === this.customerName) {
         return 'selected'
       }
