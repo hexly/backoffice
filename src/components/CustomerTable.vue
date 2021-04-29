@@ -68,7 +68,7 @@
         max-width="800px"
       >
         <v-card>
-          <v-toolbar color="secondary" dark>
+          <v-toolbar color="secondary" class="mb-2" dark>
             <v-toolbar-title>{{customerName}}</v-toolbar-title>
             <v-spacer/>
             <v-btn @click="showCustomerDialog = false" icon><v-icon>close</v-icon></v-btn>
