@@ -13,6 +13,9 @@ query orderQuery($input: PurchaseSearchOrderInput!) {
     checkedOutOn
     metadata
     itemPrice
+    customer {
+      email
+    }
   }
 }
 `

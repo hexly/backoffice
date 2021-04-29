@@ -5,10 +5,10 @@
           <v-slide-x-transition>
             <v-card v-if="customers" color="secondary">
               <v-card-title class="white--text" primary-title>
-                Total Customers
+                {{customers.length}}
               </v-card-title>
               <v-card-text class="white--text">
-                {{customers.length}}
+                Total Customers
               </v-card-text>
             </v-card>
           </v-slide-x-transition>
@@ -17,10 +17,10 @@
           <v-slide-x-transition>
             <v-card v-if="mostRecentOrder" color="secondary" @click="handleRecentOrderClick">
               <v-card-title class="white--text" primary-title>
-                Most Recent Order
+                {{$moment(mostRecentOrder.recentOrder, 'YYYY-MM-DD').format('ll')}} ({{mostRecentOrder.customerName}})
               </v-card-title>
               <v-card-text class="white--text">
-                {{$moment(mostRecentOrder.recentOrder, 'YYYY-MM-DD').format('ll')}} ({{mostRecentOrder.customerName}})
+                Most Recent Order
               </v-card-text>
             </v-card>
           </v-slide-x-transition>
@@ -29,10 +29,10 @@
           <v-slide-x-transition>
             <v-card v-if="mostOrderedItem" color="secondary">
               <v-card-title class="white--text" primary-title>
-                Most Ordered Item
+                {{mostOrderedItem.productName}}
               </v-card-title>
               <v-card-text class="white--text">
-                {{mostOrderedItem.productName}} ({{mostOrderedItem.count}})
+                Most Ordered Item
               </v-card-text>
             </v-card>
           </v-slide-x-transition>
@@ -69,7 +69,7 @@
       >
         <v-card>
           <v-toolbar color="secondary" class="mb-2" dark>
-            <v-toolbar-title>{{customerName}}</v-toolbar-title>
+            <v-toolbar-title>{{customerName || 'Guest Customer'}} {{customerEmail ? `- ${customerEmail}` : '' }}</v-toolbar-title>
             <v-spacer/>
             <v-btn @click="showCustomerDialog = false" icon><v-icon>close</v-icon></v-btn>
           </v-toolbar>
@@ -111,6 +111,9 @@
               </v-tab-item>
               <v-tab-item key="items">
                 <v-data-table item-key="productName" :headers="customerItemHeaders" no-data-text="Please Select A Customer" :items="customerItems">
+                  <template v-slot:item.mostRecentOrder="{ item }">
+                    {{item.mostRecentOrder ? $moment(item.mostRecentOrder, 'YYYY-MM-DD').format('ll') : null}}
+                  </template>
                   <template v-slot:item.totalSpent="{ item }">
                     <Currency :amount="item.totalSpent" :currency="item.currency"/>
                   </template>
@@ -146,6 +149,10 @@ export default {
           value: 'customerName'
         },
         {
+          text: 'Email',
+          value: 'email'
+        },
+        {
           text: 'Number of Orders',
           value: 'orderCount'
         },
@@ -178,6 +185,10 @@ export default {
           value: 'productName'
         },
         {
+          text: 'Last Purchase',
+          value: 'mostRecentOrder'
+        },
+        {
           text: 'Total Count',
           value: 'count'
         },
@@ -187,6 +198,7 @@ export default {
         }
       ],
       customerName: '',
+      customerEmail: '',
       search: ''
     }
   },
@@ -194,6 +206,7 @@ export default {
     onClick(item, row) {
       row.select(true)
       this.customerName = item.customerName
+      this.customerEmail = item.email
       this.showCustomerDialog = true
     },
     handleRecentOrderClick() {
@@ -235,8 +248,10 @@ export default {
           recentOrder = unparsedRecentOrder.checkedOutOn
         }
         const currency = get(customerOrders[0], 'metadata.WcpbcPricingZone.currency')
+        const email = get(customerOrders[0], 'customer.email')
         customerList.push({
           customerName: customer,
+          email,
           orderCount,
           recentOrder,
           total,
@@ -275,17 +290,17 @@ export default {
       let orderItems = []
 
       this.orders.forEach(order => {
-        const { lineItems } = order
+        const { lineItems, currency, date } = order
         lineItems.forEach(li => {
           const currentIndex = orderItems.findIndex(el => el.productName === li.productName)
 
           if (currentIndex === -1) {
-            const { currency } = order
-            orderItems.push({ productName: li.productName, currency, lineItems: [li], count: 1, totalSpent: li.itemPrice })
+            orderItems.push({ productName: li.productName, currency, lineItems: [li], count: 1, totalSpent: li.itemPrice, mostRecentOrder: date })
           } else {
             orderItems[currentIndex].lineItems.push(li)
             orderItems[currentIndex].count++
             orderItems[currentIndex].totalSpent += li.itemPrice
+            orderItems[currentIndex].mostRecentOrder = (Date(date) > Date(orderItems[currentIndex].mostRecentOrder) ? date : orderItems[currentIndex].mostRecentOrder)
           }
         })
       })
