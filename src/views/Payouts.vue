@@ -106,6 +106,8 @@
           :loading="loading"
           :expanded="expanded"
           show-expand
+          sort-by="issuedOn"
+          sort-desc="true"
         >
           <template v-slot:item="{ item, isExpanded }">
             <tr>
@@ -220,10 +222,9 @@ export default {
       modalStart: false,
       modalEnd: false,
       startDate: this.$moment()
-        .startOf('month')
+        .subtract(30, 'days')
         .format('MM/DD/YYYY'),
       endDate: this.$moment()
-        .endOf('month')
         .format('MM/DD/YYYY'),
       selectedIntegration: null,
       transferDialog: false,
