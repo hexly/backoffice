@@ -214,9 +214,10 @@ export default {
         console.warn('mostRecentOrder not found!')
         return
       }
-      const { customerName } = this.mostRecentOrder
+      const { customerName, email } = this.mostRecentOrder
 
       this.customerName = customerName
+      this.customerEmail = email
       this.showCustomerDialog = true
     },
     isSelected(item) {
@@ -313,10 +314,11 @@ export default {
       }
 
       const recentOrdersMap = this.customers.map(el => {
-        const { customerName, recentOrder } = el
+        const { customerName, email, recentOrder } = el
         return {
           customerName,
-          recentOrder
+          recentOrder,
+          email
         }
       }).filter(el => el.recentOrder).sort((a, b) => new Date(b.recentOrder) - new Date(a.recentOrder))
 
