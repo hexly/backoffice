@@ -214,9 +214,10 @@ export default {
         console.warn('mostRecentOrder not found!')
         return
       }
-      const { customerName } = this.mostRecentOrder
+      const { customerName, email } = this.mostRecentOrder
 
       this.customerName = customerName
+      this.customerEmail = email
       this.showCustomerDialog = true
     },
     isSelected(item) {
@@ -247,7 +248,7 @@ export default {
         if (unparsedRecentOrder) {
           recentOrder = unparsedRecentOrder.checkedOutOn
         }
-        const currency = get(customerOrders[0], 'metadata.WcpbcPricingZone.currency')
+        const currency = get(customerOrders[0], 'currency')
         const email = get(customerOrders[0], 'customerEmail')
         customerList.push({
           customerName: customer,
@@ -273,7 +274,7 @@ export default {
           orderCopy.key = i + order.productName
           const currentIndex = orderList.findIndex(el => el.integrationOid === order.integrationOid)
           if (currentIndex === -1) {
-            const currency = get(order, 'metadata.WcpbcPricingZone.currency')
+            const currency = get(order, 'currency')
             orderList.push({ integrationOid: order.integrationOid, date: orderCopy.date, lineItems: [orderCopy], currency })
           } else {
             orderList[currentIndex].lineItems.push(orderCopy)
@@ -313,10 +314,11 @@ export default {
       }
 
       const recentOrdersMap = this.customers.map(el => {
-        const { customerName, recentOrder } = el
+        const { customerName, email, recentOrder } = el
         return {
           customerName,
-          recentOrder
+          recentOrder,
+          email
         }
       }).filter(el => el.recentOrder).sort((a, b) => new Date(b.recentOrder) - new Date(a.recentOrder))
 
@@ -334,7 +336,7 @@ export default {
 
         if (currentIndex === -1) {
           const { productName } = order
-          const currency = get(order, 'metadata.WcpbcPricingZone.currency')
+          const currency = get(order, 'currency')
           productList.push({ productName, currency, lineItems: [order], count: 1, totalSpent: order.itemPrice })
         } else {
           productList[currentIndex].lineItems.push(order)

@@ -12,8 +12,8 @@ query orderQuery($input: PurchaseSearchOrderInput!) {
     productName
     productType
     checkedOutOn
-    metadata
     itemPrice
+    currency
   }
 }
 `
