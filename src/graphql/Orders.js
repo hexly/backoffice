@@ -8,14 +8,12 @@ query orderQuery($input: PurchaseSearchOrderInput!) {
     orderType
     integrationOid
     customerName
+    customerEmail
     productName
     productType
     checkedOutOn
     metadata
     itemPrice
-    customer {
-      email
-    }
   }
 }
 `

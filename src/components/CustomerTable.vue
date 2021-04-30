@@ -248,7 +248,7 @@ export default {
           recentOrder = unparsedRecentOrder.checkedOutOn
         }
         const currency = get(customerOrders[0], 'metadata.WcpbcPricingZone.currency')
-        const email = get(customerOrders[0], 'customer.email')
+        const email = get(customerOrders[0], 'customerEmail')
         customerList.push({
           customerName: customer,
           email,
