@@ -17,7 +17,7 @@
           <v-slide-x-transition>
             <v-card v-if="mostRecentOrder" color="secondary" @click="handleRecentOrderClick">
               <v-card-title class="white--text" primary-title>
-                {{$moment(mostRecentOrder.recentOrder, 'YYYY-MM-DD').format('ll')}} ({{mostRecentOrder.customerName}})
+                {{$moment(mostRecentOrder.recentOrder, 'YYYY-MM-DD').format('ll')}} ({{mostRecentOrder.customerName || 'Guest Customer'}})
               </v-card-title>
               <v-card-text class="white--text">
                 Most Recent Order
