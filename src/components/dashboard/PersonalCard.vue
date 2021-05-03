@@ -17,6 +17,7 @@ s<template>
       <div v-if="stats && stats">
         <v-alert class="inner-alert" :value="isMonthInReview" icon="mdi-calendar-check" text dense type="info">
           <p>It's a new month and last month is in review. Your Recognized status will be updated once the review has been finished.</p>
+          <p>Month End comissions will be paid out by the 15th of the month.</p>
           <b v-if="previous && !previous.metadata">
             Last month you reached: Rank&nbsp;{{previous.current.rank}}
           </b>
