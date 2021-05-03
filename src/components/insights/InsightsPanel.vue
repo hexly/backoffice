@@ -14,10 +14,10 @@
       <v-list three-line class="pa-0 insights-list">
         <template v-for="(component, i) in data.components">
           <template v-if="component.display && component.visualizations[0] && component.visualizations[0] === 'HORIZONTAL_PROGRESS'">
-            <InsightHorizontalProgress :data="component.settings" :metadata="component.metadata" :key="`${i}-${component.key}`"/>
+            <InsightHorizontalProgress v-if="component.display" :data="component.settings" :metadata="component.metadata" :key="`${i}-${component.key}`"/>
           </template>
           <template v-if="component.visualizations[0] && component.visualizations[0] === 'AVATAR_QUAD_INFO'">
-            <InsightAvatarQuadInfo :data="component.settings" :metadata="component.metadata" :key="`${i}-${component.key}`"/>
+            <InsightAvatarQuadInfo v-if="component.display" :data="component.settings" :metadata="component.metadata" :key="`${i}-${component.key}`"/>
           </template>
           <template v-if="component.type === 'stat'">
             <v-list-item :key="`${i}-${component.key}`">
