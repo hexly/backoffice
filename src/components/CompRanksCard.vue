@@ -177,7 +177,7 @@ export default {
         this.bannerMessage = `Hey There, you're looking at requirements for a new month. To check previous months select the three dot icon and choose a past month.`
         return true
       } else if (status === 'under_review') {
-        this.bannerMessage = `This period is still under review.`
+        this.bannerMessage = `This period is still under review. Month-end commissions will be paid out by the 15th of the month.`
         return true
       } else if (status === 'closed') {
         this.bannerMessage = `You are currently viewing a past period. This period is closed`
