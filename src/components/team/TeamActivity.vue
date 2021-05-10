@@ -354,7 +354,8 @@ export default {
       LEVEL: 'Level',
       DOWNLINE_SIZE: 'Downline Size',
       GROUP_SIZE: 'Group Size',
-      QUALIFIED_COUNT: 'Active In Download'
+      QUALIFIED_COUNT: 'Active In Download',
+      RECOGNIZED_RANK: 'Recognized Rank'
     }
 
     const sortByOptions = {
