@@ -16,6 +16,13 @@
           solo
           :return-object="true"
         ></v-select>
+        <v-checkbox
+          v-model="onlyPendingRecon"
+          label="Only show Accounts that will soon be reconciled"
+          color="red"
+          value="true"
+          hide-details
+        ></v-checkbox>
       </form>
     </div>
     <div class="search-results" :class="{'loading': !!loading}">
@@ -61,6 +68,7 @@ export default {
   data() {
     return {
       lineage: [],
+      onlyPendingRecon: false,
       currentId: null,
       mergedTeamArr: [],
       hashResTeam: [],
@@ -78,7 +86,7 @@ export default {
         orderDirection: 'asc',
         orderByColumn: 'depth'
       },
-      limit: 14,
+      limit: 25,
       loading: 0,
       sorts: [
         {
@@ -115,7 +123,7 @@ export default {
       this.currentId = currentId
     },
     getMember(user) {
-      return { ...user, addresses: user.member.addresses }
+      return { ...user, addresses: [user.address] }
     }
   },
   computed: {
@@ -139,11 +147,13 @@ export default {
             orderDirection: this.sort.orderDirection,
             orderByColumn: this.sort.orderByColumn,
             limit: this.limit,
-            offset: (this.page - 1) * this.limit
+            offset: (this.page - 1) * this.limit,
+            periodId: this.openPeriod.id,
+            tagsIn: this.onlyPendingRecon ? ['acct_reconcile:release_pending'] : null
           }
         }
       },
-      update({ memberTeamSearch }) {
+      update({ membership: { teamMemberSearch: memberTeamSearch } }) {
         this.teamIds = []
         memberTeamSearch.team.forEach(member => {
           this.teamIds.push(member.id)
@@ -151,7 +161,8 @@ export default {
         return memberTeamSearch
       },
       loadingKey: 'loading',
-      debounce: 500
+      debounce: 500,
+      client: 'federated'
     },
     compStats: {
       query: COMP_PREVIEW_QUERY,
