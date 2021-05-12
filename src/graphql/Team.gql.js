@@ -1,20 +1,20 @@
 import gql from 'graphql-tag'
 
 export const TEAM_SEARCH_QUERY = gql`
-  query teamSearch($input: MemberTeamSearchInput!) {
-    memberTeamSearch(input:$input){
-      totalCount
-      team {
-        id
-        name
-        profileUrl
-        slug
-        email
-        joinedOn
-        relativeDepth
-        member {
+  query teamSearch($input: TeamMemberSearchInput!) {
+    membership {
+      teamMemberSearch(input:$input){
+        totalCount
+        team {
+          id
+          name
+          profileUrl
+          slug
+          email
+          joinedOn
+          relativeDepth
           birthdate
-          addresses {
+          address {
             street
             street2
             city
@@ -22,10 +22,10 @@ export const TEAM_SEARCH_QUERY = gql`
             postalCode
             country
           }
-        }
-        relativePathMembers {
-          profileUrl
-          name
+          ancestors {
+            profileUrl
+            name
+          }
         }
       }
     }

@@ -273,7 +273,7 @@
                           row
                           wrap
                         >
-                          <template v-for="parent in user.relativePathMembers">
+                          <template v-for="parent in user.ancestors">
                             <v-tooltip
                               top
                               slot="append"
@@ -704,7 +704,7 @@ export default {
       return get(this.user, 'contacts[0].emails[0].email', this.user.email)
     },
     address () {
-      return get(this.user, 'addresses[0]', null)
+      return get(this.user, 'addresses[0]', 'address', null)
     },
     slug () {
       return get(this, 'user.slugs[0].slug')

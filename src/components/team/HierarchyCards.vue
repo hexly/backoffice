@@ -197,15 +197,23 @@ export default {
             orderByColumn: 'depth',
             limit: 500,
             offset: 0,
-            depth: [0]
+            depth: [0],
+            periodId: this.openPeriod && this.openPeriod.id
           }
         }
+      },
+      update({ membership: { teamMemberSearch } }) {
+        return teamMemberSearch
+      },
+      skip() {
+        return !this.openPeriod
       },
       watchLoading (isLoading, countModifier) {
         // this.setLoading(isLoading || this.$apollo.loading)
       },
       loadingKey: 'loading',
-      debounce: 500
+      debounce: 500,
+      client: 'federated'
     },
     stats: {
       query: MONTHLY_STATS_QUERY,
