@@ -148,7 +148,7 @@ export default {
             orderByColumn: this.sort.orderByColumn,
             limit: this.limit,
             offset: (this.page - 1) * this.limit,
-            periodId: this.openPeriod.id,
+            periodId: this.openPeriod && this.openPeriod.id,
             tagsIn: this.onlyPendingRecon ? ['acct_reconcile:release_pending'] : null
           }
         }
@@ -159,6 +159,9 @@ export default {
           this.teamIds.push(member.id)
         })
         return memberTeamSearch
+      },
+      skip() {
+        return !this.openPeriod
       },
       loadingKey: 'loading',
       debounce: 500,
