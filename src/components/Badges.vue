@@ -39,6 +39,7 @@ export default {
   },
   computed: {
     birthday() {
+      this.$moment.relativeTimeRounding(Math.floor)
       const time = this.$moment(this.joinedOn).toNow(true)
       return time.replace('a ', '1 ')
     }
