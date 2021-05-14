@@ -15,6 +15,7 @@ export default {
   },
   computed: {
     birthday() {
+      this.$moment.relativeTimeRounding(Math.floor)
       const time = this.$moment(this.joinedOn).toNow(true)
       if (time === 'a year') {
         return '1 year'
