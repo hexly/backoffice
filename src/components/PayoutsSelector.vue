@@ -10,7 +10,7 @@
         style="float: right;"
         text
         large
-        class="text-right"
+        class="text-right settings-btn"
         color="black"
         v-bind="attrs"
         v-on="on"
@@ -123,9 +123,9 @@ export default {
   mounted () {
     const currentIntegration = _.minBy(this.getPayoutCapableIntegrations, 'priority')
     this.supportedIntegrations = _.chain(this.integrations).groupBy('key').mapValues(i => _.get(i, '[0].priority')).value()
-    this.selected = currentIntegration.key
-    this.integrationOid = currentIntegration.integrationOid
-    this.metadata = currentIntegration.metadata
+    this.selected = _.get(currentIntegration, 'key')
+    this.integrationOid = _.get(currentIntegration, 'integrationOid')
+    this.metadata = _.get(currentIntegration, 'metadata')
   },
   props: {
     integrations: Array
@@ -222,3 +222,9 @@ export default {
   }
 }
 </script>
+
+<style>
+  .settings-btn {
+    z-index: 1;
+  }
+</style>
