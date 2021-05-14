@@ -109,17 +109,6 @@ export default {
           'circle-stroke-color': '#fff'
         }
       })
-      // const mapboxgl = require('mapbox-gl/dist/mapbox-gl')
-      // this.coordinates.forEach((marker) => {
-      //   // create a HTML element for each feature
-      //   const el = document.createElement('div')
-      //   el.className = 'Map__marker'
-
-      //   // make a marker for each feature and add to the map
-      //   new mapboxgl.Marker(el)
-      //     .setLngLat([marker.long, marker.lat])
-      //     .addTo(map)
-      // })
     }
   },
   apollo: {

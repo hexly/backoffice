@@ -18,7 +18,7 @@
         ></v-select>
         <v-checkbox
           v-model="onlyPendingRecon"
-          label="Only show Accounts that will soon be reconciled"
+          label="Only show accounts that will be reconciled next month"
           color="red"
           value="true"
           hide-details
