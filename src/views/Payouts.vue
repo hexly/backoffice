@@ -8,7 +8,7 @@
         />
         <StripeBalanceInfo v-if="selectedIntegration === 'stripe_connect'" />
         <PaypalBalanceInfo v-else-if="selectedIntegration === 'paypal_payouts'" />
-        <iPayoutsBalanceInfo v-else-if="selectedIntegration === 'i_payouts'" />
+        <iPayoutsBalanceInfo :hasDefaultPayout="hasSetDefaultPayout" :payoutMemberIntegrations="payoutMemberIntegrations" v-else-if="selectedIntegration === 'i_payouts'" />
       </v-card>
       <v-card>
         <v-card-text>
@@ -328,6 +328,17 @@ export default {
       return this.tenantIntegrations.filter(i => {
         return _.find(this.payoutIntegrations, { key: i.key })
       })
+    },
+    hasSetDefaultPayout() {
+      const { payoutMemberIntegrations } = this
+      if (!payoutMemberIntegrations || !payoutMemberIntegrations.length) {
+        return false
+      }
+
+      const indexOfDefault = payoutMemberIntegrations.findIndex(pmi => {
+        return pmi.priority === 0
+      })
+      return indexOfDefault > -1
     }
   }
 }

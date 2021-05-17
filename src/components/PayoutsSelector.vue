@@ -149,8 +149,10 @@ export default {
       this.loading = true
       this.error = null
       const integration = this.getIntegration(this.selected)
+      console.log({ integration })
       // Update priorities
       const integrationsToSave = this.getPayoutCapableIntegrations.map((i, index) => {
+        console.log({ i })
         const integration = {
           id: i.id,
           tenantIntegrationId: i.tenantIntegrationId,
