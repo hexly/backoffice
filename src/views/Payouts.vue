@@ -4,7 +4,6 @@
       <v-card>
         <PayoutsSelector
           @reload="loadSelectedIntegration"
-          v-if="payoutIntegrations.length > 1"
           :integrations="payoutIntegrations"
         />
         <StripeBalanceInfo v-if="selectedIntegration === 'stripe_connect'" />
@@ -107,7 +106,7 @@
           :expanded="expanded"
           show-expand
           sort-by="issuedOn"
-          sort-desc="true"
+          :sort-desc="true"
         >
           <template v-slot:item="{ item, isExpanded }">
             <tr>
@@ -296,7 +295,7 @@ export default {
       if (!selectedIntegration) {
         selectedIntegration = _.minBy(this.payoutIntegrations, 'priority')
       }
-      this.selectedIntegration = selectedIntegration.key
+      this.selectedIntegration = _.get(selectedIntegration, 'key')
     },
     dateSave (datePickerDate, startOrEnd) {
       const varName = `${startOrEnd}Date`
@@ -315,6 +314,9 @@ export default {
     }),
     ...mapGetters(['memberId', 'integrations', 'tenantIntegrations']),
     payoutIntegrations () {
+      if (typeof this.integrations === 'undefined' || !this.integrations.length) {
+        return []
+      }
       return this.integrations.filter(i => {
         return i.statusId === 200 &&
           i.integrationMetadata &&
