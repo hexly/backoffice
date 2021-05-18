@@ -351,6 +351,7 @@ export default {
       PSV: 'PSV',
       GSV: 'GSV',
       DLSV: 'DLSV',
+      CPSV: 'CPSV',
       LEVEL: 'Level',
       DOWNLINE_SIZE: 'Downline Size',
       GROUP_SIZE: 'Group Size',
@@ -522,7 +523,7 @@ export default {
       return process.env.VUE_APP_STATS_MAINTENANCE === 'true'
     },
     ...mapState({
-      engineStats: state => state.comp.stats,
+      engineStats: state => state.comp.stats || {},
       periods: state => state.comp.periods,
       selectedPeriod: state => state.comp.selectedPeriod
     }),
