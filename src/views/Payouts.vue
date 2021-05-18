@@ -3,12 +3,13 @@
     <div class="payouts">
       <v-card>
         <PayoutsSelector
-          @reload="loadSelectedIntegration"
+          @reload="selectIntegration"
           :integrations="payoutIntegrations"
+          :selected="selectedIntegration"
         />
         <StripeBalanceInfo v-if="selectedIntegration === 'stripe_connect'" />
         <PaypalBalanceInfo v-else-if="selectedIntegration === 'paypal_payouts'" />
-        <iPayoutsBalanceInfo v-else-if="selectedIntegration === 'i_payouts'" />
+        <iPayoutsBalanceInfo :hasDefaultPayout="hasSetDefaultPayout" :payoutMemberIntegrations="payoutMemberIntegrations" v-else-if="selectedIntegration === 'i_payouts'" />
       </v-card>
       <v-card>
         <v-card-text>
@@ -291,11 +292,15 @@ export default {
   methods: {
     ...mapMutations([Mutations.SET_LOADING]),
     loadSelectedIntegration () {
-      let selectedIntegration = _.minBy(this.payoutMemberIntegrations, 'priority')
+      let selectedIntegration = _.find(this.payoutMemberIntegrations, { priority: 0 })
+
       if (!selectedIntegration) {
-        selectedIntegration = _.minBy(this.payoutIntegrations, 'priority')
+        selectedIntegration = this.defaultPayoutIntegration
       }
       this.selectedIntegration = _.get(selectedIntegration, 'key')
+    },
+    selectIntegration(integrationKey) {
+      this.selectedIntegration = integrationKey
     },
     dateSave (datePickerDate, startOrEnd) {
       const varName = `${startOrEnd}Date`
@@ -328,6 +333,29 @@ export default {
       return this.tenantIntegrations.filter(i => {
         return _.find(this.payoutIntegrations, { key: i.key })
       })
+    },
+    defaultPayoutIntegration () {
+      const { payoutIntegrations } = this
+      if (!payoutIntegrations || !payoutIntegrations.length) {
+        return false
+      }
+
+      const defaultPayoutIntegration = payoutIntegrations.find(pmi => {
+        return pmi.priority === 0
+      })
+
+      return defaultPayoutIntegration
+    },
+    hasSetDefaultPayout() {
+      const { payoutMemberIntegrations } = this
+      if (!payoutMemberIntegrations || !payoutMemberIntegrations.length) {
+        return false
+      }
+
+      const indexOfDefault = payoutMemberIntegrations.findIndex(pmi => {
+        return pmi.priority === 0
+      })
+      return indexOfDefault > -1
     }
   }
 }
