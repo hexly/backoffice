@@ -50,7 +50,7 @@
         <h3>Available Payout Systems</h3>
         <p>Please select the service you'd like to get paid through:</p>
         <v-radio-group
-          v-model="selected"
+          v-model="selectedModel"
           @change="updateSelection"
         >
           <v-radio
@@ -61,9 +61,9 @@
           ></v-radio>
         </v-radio-group>
       </div>
-      <v-container v-if="selected === 'paypal_payouts'">
+      <v-container v-if="selectedModel === 'paypal_payouts'">
         <h2>PayPal Setup</h2>
-        <p v-if="!getMemberIntegration(selected)">
+        <p v-if="!getMemberIntegration(selectedModel)">
           Please enter your paypal information.
           If you dont have a paypal account please go to <a href="https://www.paypal.com">https://www.paypal.com</a> and create an account.
         </p>
@@ -76,7 +76,7 @@
             >
               <v-select
                 v-model="metadata.type"
-                :items="settings[selected].types"
+                :items="settings[selectedModel].types"
                 label="Paypal Id Type"
               ></v-select>
             </v-col>
@@ -109,7 +109,7 @@ export default {
       loading: false,
       error: null,
       dialog: false,
-      selected: {},
+      selectedModel: {},
       integrationOid: null,
       metadata: {},
       supportedIntegrations: {},
@@ -120,15 +120,20 @@ export default {
       }
     }
   },
-  mounted () {
-    const currentIntegration = _.minBy(this.getPayoutCapableIntegrations, 'priority')
-    this.supportedIntegrations = _.chain(this.integrations).groupBy('key').mapValues(i => _.get(i, '[0].priority')).value()
-    this.selected = _.get(currentIntegration, 'key')
-    this.integrationOid = _.get(currentIntegration, 'integrationOid')
-    this.metadata = _.get(currentIntegration, 'metadata')
-  },
   props: {
-    integrations: Array
+    integrations: Array,
+    selected: String
+  },
+  watch: {
+    selected(newVal) {
+      const { getPayoutCapableIntegrations, integrations } = this
+      const currentIntegration = _.find(getPayoutCapableIntegrations, { key: newVal }) || _.find(integrations, { key: newVal })
+
+      this.supportedIntegrations = _.chain(integrations).groupBy('key').mapValues(i => _.get(i, '[0].priority')).value()
+      this.selectedModel = _.get(currentIntegration, 'key')
+      this.integrationOid = _.get(currentIntegration, 'integrationOid')
+      this.metadata = _.get(currentIntegration, 'metadata')
+    }
   },
   methods: {
     ...mapActions({ reloadIntegrations: UserActions.RELOAD_INTEGRATIONS }),
@@ -148,11 +153,9 @@ export default {
     async save () {
       this.loading = true
       this.error = null
-      const integration = this.getIntegration(this.selected)
-      console.log({ integration })
+      const integration = this.getIntegration(this.selectedModel)
       // Update priorities
       const integrationsToSave = this.getPayoutCapableIntegrations.map((i, index) => {
-        console.log({ i })
         const integration = {
           id: i.id,
           tenantIntegrationId: i.tenantIntegrationId,
@@ -161,9 +164,9 @@ export default {
           priority: i.priority
         }
         let priority = index + 1
-        if (i.key === this.selected) {
+        if (i.key === this.selectedModel) {
           priority = 0
-          if (this.settings[this.selected]) {
+          if (this.settings[this.selectedModel]) {
             // This integration supports user input
             integration.integrationOid = this.integrationOid
             integration.metadata = this.metadata
@@ -172,9 +175,9 @@ export default {
         integration.priority = priority
         return integration
       })
-      const isDefault = this.supportedIntegrations[this.selected] === 0
+      const isDefault = this.supportedIntegrations[this.selectedModel] === 0
       if (this.newIntegration && !isDefault) {
-        if (!this.integrationOid || (this.settings[this.selected] && _.isEmpty(this.metadata))) {
+        if (!this.integrationOid || (this.settings[this.selectedModel] && _.isEmpty(this.metadata))) {
           this.error = 'Please fill in all required information'
           this.loading = false
           return
@@ -199,7 +202,7 @@ export default {
 
         await this.reloadIntegrations()
 
-        this.$emit('reload')
+        this.$emit('reload', this.selectedModel)
         this.loading = false
         this.dialog = false
       } catch (e) {
