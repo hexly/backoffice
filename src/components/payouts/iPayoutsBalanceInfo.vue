@@ -1,27 +1,16 @@
 <template>
   <v-card-text
-    v-if="hasIntegration"
+    v-if="tenantHasIntegration"
     class="pt-3"
   >
-    <template v-if="!iPayouts">
+    <template v-if="!iPayouts && !hasSetDefaultPayout">
       <div
         class="py-2"
-        v-if="!isNewMember"
-      >
-        <h3>Hey There!</h3>
-        We've recently switch to a new eWallet provider.
-        If you are seeing this your account is not yet set up. Once you get paid your eWallet account will be created for you.
-        You will receive an email with instructions on how to set it up.
-        <br />
-        <b>Note: If you have any unpaid payouts in our system, we will get those paid to the new eWallet over the coming days.</b>
-      </div>
-      <div
-        class="py-2"
-        v-else
       >
         <h3>Welcome to your payouts screen.</h3>
-        If you are seeing this your account is not yet set up. Once you get paid your eWallet account will be created for you.
-        You will receive an email with instructions on how to set it up.
+        <div class="mt-3">
+          eWallet/iPayout  Is a 3rd party. Once you receive your next commissionable sale you should receive an email from them with directions on how to set up your account.<p>They do require identity verification, so if you have updated or changed your information since signing up with a Everra, please do let us know.</p>
+        </div>
       </div>
     </template>
     <template v-else>
@@ -66,11 +55,15 @@ import Currency from '@/components/Currency'
 import { mapGetters, mapState } from 'vuex'
 
 export default {
+  props: {
+    hasSetDefaultPayout: Boolean,
+    payoutMemberIntegrations: Array
+  },
   components: {
     Currency
   },
   mounted () {
-    if (this.iPayouts) {
+    if (this.memberHasIntegration) {
       this.loadBalance()
     }
   },
@@ -130,8 +123,11 @@ export default {
     isNewMember () {
       return this.$moment(this.member.joinedOn).isAfter(this.$moment('2020-05-23', 'YYYY-MM-DD'))
     },
-    hasIntegration () {
+    tenantHasIntegration () {
       return this.integrations.find(i => i.key === 'i_payouts' && i.statusId === 200 && i.priority === 0)
+    },
+    memberHasIntegration () {
+      return this.payoutMemberIntegrations.find(i => i.key === 'i_payouts' && i.statusId === 200 && i.priority === 0)
     },
     ...mapGetters(['memberId', 'currencyCode', 'integrations', 'member'])
   }
