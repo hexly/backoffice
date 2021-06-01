@@ -8,15 +8,6 @@
         <v-icon dark>mdi-format-list-bulleted-square</v-icon>
       </v-btn>
     </v-toolbar>
-    <!-- <v-row justify="space-between">
-      <v-col>
-        <h2>Team Activity</h2>
-      </v-col>
-      <v-spacer/>
-      <v-col class="text-right">
-
-      </v-col>
-    </v-row> -->
     <template v-if="showStatsMaintenance">
       <v-alert
         class="inner-alert"
@@ -296,7 +287,7 @@
 
 <script>
 import _ from 'lodash'
-import { getCompStats, parseData } from '@/graphql/comp.gql'
+import { getCompStats, parseData, ENGINE_TEAM_STATS_QUERY, formatData } from '@/graphql/comp.gql'
 import { mapGetters, mapState, mapActions } from 'vuex'
 import { CompActions } from '@/stores/CompStore'
 import { ENGINE_TEAM_ACTIVITY } from '@/graphql/CompStats.gql'
@@ -429,6 +420,8 @@ export default {
     }
     if (this.selectedPeriod.metadata && this.selectedPeriod.metadata.version === 2) {
       await this.getCompStatsPage()
+    } else if (this.selectedPeriod.metadata && this.selectedPeriod.metadata.version === 3) {
+      await this.getEngineStatsPage()
     }
   },
   methods: {
@@ -437,12 +430,20 @@ export default {
       num = new Intl.NumberFormat('en-US', {}).format(num)
       return num
     },
-    clearSearch() {
+    async clearSearch() {
       this.search = null
-      this.getCompStatsPage()
+      if (this.selectedPeriod.metadata && this.selectedPeriod.metadata.version === 2) {
+        await this.getCompStatsPage()
+      } else if (this.selectedPeriod.metadata && this.selectedPeriod.metadata.version === 3) {
+        await this.getEngineStatsPage()
+      }
     },
-    searchActivity() {
-      this.getCompStatsPage()
+    async searchActivity() {
+      if (this.selectedPeriod.metadata && this.selectedPeriod.metadata.version === 2) {
+        await this.getCompStatsPage()
+      } else if (this.selectedPeriod.metadata && this.selectedPeriod.metadata.version === 3) {
+        await this.getEngineStatsPage()
+      }
     },
     async getCompStatsPage() {
       this.loading = 1
@@ -468,6 +469,43 @@ export default {
       const paging = _.get(data, 'comp.previewRun.data')
       this.totalResults = paging.totalResults
       this.descendants = parseData(data).members
+      this.loading = 0
+    },
+    async getEngineStatsPage() {
+      this.loading = 1
+      const input = {
+        memberIn: [{
+          memberId: this.memberId,
+          periodId: this.selectedPeriod.id
+        }]
+      }
+      const filter = {
+        page: this.page,
+        pageSize: this.pageSize,
+        qualifiationIn: [this.showActive],
+        sort: [ { column: this.sortBy, dir: this.orderBy.toUpperCase() } ]
+      }
+      if (this.filterBy.length > 0) {
+        filter.levelIn = this.filterBy
+      }
+      if (this.filterByRank.length > 0) {
+        filter.rankIn = this.filterByRank
+      }
+      if (this.search) {
+        filter.nameLikeIn = [this.search]
+      }
+      const { engine: { rankings: { rankings } } } = await this.$apollo.query({
+        query: ENGINE_TEAM_STATS_QUERY,
+        variables: {
+          input,
+          filter
+        },
+        client: 'federated'
+      })
+      const teammates = rankings.team.teammates
+      const paging = teammates.map(formatData)
+      this.totalResults = paging.length
+      this.descendants = paging
       this.loading = 0
     },
     ...mapActions([CompActions.GET_PERIODS])

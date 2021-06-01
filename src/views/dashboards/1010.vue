@@ -24,8 +24,23 @@
         </v-layout>
       </v-col>
       <v-col cols="12" md="6">
+        <!-- <v-card id="rank-card" width="100%" :class="tabMode ? 'elevation-0 item-container-card' : null">
+          <v-toolbar color="secondary" dark>
+            <v-toolbar-title>Trip Points</v-toolbar-title>
+          </v-toolbar>
+          <v-card-text>
+            <p>Earn Points Towards Everra's first Influencer Trip!</p>
+            <p>Earned Points: {{engineStats.stats.psv}}</p>
+          </v-card-text>
+        </v-card> -->
+        <EngineRankCard
+          v-if="selectedPeriod.metadata && selectedPeriod.metadata.version === 3"
+          :stats         ="engineStats"
+          :statsDisabled ="statsDisabled"
+          :loading       ="engineStatsLoading"
+        />
         <CompRanksCard
-          v-if="selectedPeriod.metadata && selectedPeriod.metadata.version === 2"
+          v-else-if="selectedPeriod.metadata && selectedPeriod.metadata.version === 2"
           :stats         ="engineStats"
           :statsDisabled ="statsDisabled"
           :loading       ="engineStatsLoading"
@@ -89,6 +104,7 @@ import Banner from '@/components/dashboard/Banner.vue'
 import Badges from '@/components/Badges.vue'
 import RankRequirementsCard from '@/components/RankRequirementsCard.vue'
 import CompRanksCard from '@/components/CompRanksCard.vue'
+import EngineRankCard from '@/components/EngineRankCard.vue'
 import TeamOverview from '@/components/dashboard/TeamOverview.vue'
 import LeaderBoard from '@/components/Leaderboard.vue'
 import MarketLeaderBoard from '@/components/MarketLeaderboard.vue'
@@ -122,7 +138,8 @@ export default {
     CompRanksCard,
     EarningsCard,
     MarketLeaderBoard,
-    SellerLeaderBoard
+    SellerLeaderBoard,
+    EngineRankCard
   },
   data() {
     return {

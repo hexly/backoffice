@@ -5,7 +5,7 @@
       <v-spacer></v-spacer>
       <PeriodSwitcher v-if="!loading"></PeriodSwitcher>
       <template v-if="$tenantInfo.features.dashboard && $tenantInfo.features.dashboard.payoutHistory">
-        <v-btn v-if="!showPayouts" icon small @click="showPayouts = !showPayouts">
+        <v-btn :disabled="stats && !stats.earnings" v-if="!showPayouts" icon small @click="showPayouts = !showPayouts">
           <v-icon>mdi-currency-usd</v-icon>
         </v-btn>
         <v-btn icon small v-else @click="showPayouts = !showPayouts">
@@ -23,6 +23,7 @@
           type="info">
           Our system is currently undergoing maintenance. We will be back up shortly
         </v-alert>
+        <div class="title text-center">Realtime Stats Temporarily Unavailable</div>
       </v-card-text>
     </template>
     <template v-else>
@@ -37,7 +38,7 @@
           {{bannerMessage}}
         </v-alert>
         <template v-if="showPayouts">
-          <PeriodPayouts :payouts="stats.payouts" />
+          <EarningBreakdown :earnings="stats.earnings" />
         </template>
         <template v-else>
           <v-row justify-space-between :class="tabMode ? 'rank-row' : ''" class="pa-1">
@@ -53,63 +54,40 @@
             </v-col>
           </v-row>
 
-          <template class="stats-container pa-2" v-if="current">
-            <v-row :class="tabMode ? 'rank-data-row' : null" justify="space-between" wrap v-for="stat in Object.keys(statMapping)" :key="stat.property">
-              <template v-if="stat === 'anyRankCount' && Object.keys(next[stat].required).length === 0 "></template>
-              <template v-else>
+          <template class="stats-container px-2 py-4" v-if="stats">
+            <v-row :class="{ 'rank-data-row' : tabMode, 'py-3': !tabMode }" justify="space-between" wrap v-for="(stat, i) in stats.metadata.requirements" :key="i">
               <v-col class="pa-1">
-                <div v-if="!tabMode" :class="( next[stat].required  ? '' : 'grey--text') + ' title'">
-                  {{statMapping[stat].title}}
-                  <template v-if="stat !== 'anyRankCount'">
-                    <v-icon color="green" v-if="next[stat].satisfied && next[stat].required">check_circle</v-icon>
-                  </template>
-                  <template v-else>
-                    <v-icon color="green" v-if="next[stat].satisfied && Object.keys(next[stat].required).length">check_circle</v-icon>
-                  </template>
+                <div class="title">
+                  {{ stat.category ? stat.category.toUpperCase() : statsMapping[`${stat.type}_${stat.metric}`]}}
+                  <v-icon color="green" v-if="!stat.notApplicable && stat.achieved">check_circle</v-icon>
                 </div>
-                <div class="caption grey--text darken-1"> {{statMapping[stat].description}} </div>
               </v-col>
               <v-spacer></v-spacer>
-              <v-col class="text-right pa-1" v-if="stat !== 'anyRankCount'">
-                <div class="title">{{Math.floor(next[stat].earned)}}</div>
-                <div v-if="next[stat].required && parseInt(next[stat].earned)" class="caption grey--text darken-1">
-                  {{Math.round(next[stat].earned/next[stat].required*100)}}%
-                  <br>
-                  <span v-if="!tabMode">{{Math.round(next[stat].earned)}} of {{Math.round(next[stat].required)}}</span>
+              <v-col class="pa-1 text-right">
+                <div class="title">{{format(stat.earned)}}</div>
+                <div v-if="stat.earned && parseInt(stat.earned)" class="caption grey--text darken-1">
+                  <span v-if="!tabMode">{{format(stat.earned)}} of {{format(stat.required)}}</span>
                 </div>
-                <div v-else class="caption grey--text darken-1">
-                  N/A
-                  <br>
-                  <span v-if="!tabMode">
-                    {{ Math.round(next[stat].required)}}
-                    <v-tooltip slot="append" left>
-                      <template v-slot:activator="{ on }">
-                        <v-icon v-on="on" small>info</v-icon>
-                      </template>
-                        <span>Not applicable for next rank</span>
-                    </v-tooltip>
-                  </span>
-                </div>
-              </v-col>
-              <v-col class="pa-1 text-right" v-else>
-                <template v-if="next[stat].satisfied">
-                  <div class="title" >Achieved</div>
-                  <div class="caption grey--text darken-1"> 100% </div>
+                <template v-if="!stat.notApplicable">
+                  <template v-if="stat.achieved">
+                    <div class="caption grey--text darken-1"> 100% </div>
+                  </template>
+                  <template v-else>
+                    <div class="caption grey--text darken-1"> {{format((stat.earned / stat.required) * 100)}}% </div>
+                  </template>
                 </template>
                 <template v-else>
-                  <div class="title">Unachieved</div>
-                  <div class="caption grey--text darken-1"> 0% </div>
+                  <div class="caption grey--text darken-1"> N/A </div>
                 </template>
               </v-col>
-              <v-col cols="12" class="pa-1" v-if="stat !== 'anyRankCount'">
-                <v-progress-linear :class="tabMode ? 'progress-bar' : null" :color="next[stat].required ? 'success' : 'grey' " :height="tabMode ? 2 : 5" :value="Math.round(next[stat].earned/next[stat].required*100)"></v-progress-linear>
+              <v-col cols="12" class="pa-1">
+                <v-progress-linear :class="tabMode ? 'progress-bar' : null" :color="stat.notApplicable ? 'grey' : 'success'" :height="tabMode ? 2 : 5" :value="Math.round(stat.earned/stat.required*100)"></v-progress-linear>
               </v-col>
-              </template>
             </v-row>
           </template>
         </template>
       </v-card-text>
-      <v-card-text v-else-if="!statsDisabled && !loading" class="pa-3">
+      <v-card-text v-else-if="(!statsDisabled && !loading) || !stats" class="pa-3">
         <v-layout row justify-space-between :class="tabMode ? null : 'pb-4'">
           <v-flex px-3>
             <div class="title text-center">No Rank Data Found</div>
@@ -138,12 +116,12 @@
 import * as moment from 'moment'
 import { mapState } from 'vuex'
 import PeriodSwitcher from '@/components/PeriodSwitcher.vue'
-import PeriodPayouts from '@/components/PeriodPayouts.vue'
+import EarningBreakdown from '@/components/EarningBreakdown.vue'
 export default {
-  name: 'RankRequirementsCard',
+  name: 'CompRanksCard',
   components: {
     PeriodSwitcher,
-    PeriodPayouts
+    EarningBreakdown
   },
   props: {
     stats: Object,
@@ -166,23 +144,26 @@ export default {
       year: ~~this.$moment().format('Y'),
       month: ~~this.$moment().format('M'),
       lastRefreshed: null,
-      statMapping: this.$tenantInfo.statMapping
+      statsMapping: {
+        personal_stat_downline: 'DSV',
+        personal_stat_group: 'GSV',
+        personal_stat_personal: 'PSV',
+        career_stat_undefined: 'CPSV',
+        adjusted_downline_volume_downline: 'ADSV'
+      }
     }
   },
   methods: {
+    format(num) {
+      num = Math.round(num)
+      num = new Intl.NumberFormat('en-US', {}).format(num)
+      return num
+    },
     parseStats(stats) {
-      const { current, next } = stats
-      this.currentRank = this._.get(current, 'metadata.name', `Rank ${current.rank}`)
-      this.nextRank = this._.get(next, 'metadata.name', `Rank ${next.rank}`)
-      this.current = current.metrics.reduce((carry, stat) => {
-        carry[stat.prop] = stat
-        return carry
-      }, {})
-      this.next = next.metrics.reduce((carry, stat) => {
-        carry[stat.prop] = stat
-        return carry
-      }, {})
-      console.log(this.current, this.next)
+      if (stats && stats.metadata) {
+        this.currentRank = stats.metadata.ranking.name
+        this.nextRank = stats.metadata.nextRanking.name
+      }
     },
     showBanner() {
       const { open, status } = this.selectedPeriod || {}
@@ -206,9 +187,7 @@ export default {
     }
   },
   mounted() {
-    if (this.stats && this.stats.current) {
-      this.parseStats(this.stats)
-    }
+    this.parseStats(this.stats)
   },
   computed: {
     showStatsMaintenance() {
@@ -222,9 +201,7 @@ export default {
   },
   watch: {
     stats(newVal) {
-      if (newVal && newVal.current) {
-        this.parseStats(newVal)
-      }
+      this.parseStats(newVal)
     }
   }
 }

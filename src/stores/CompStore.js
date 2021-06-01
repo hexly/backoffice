@@ -1,7 +1,7 @@
 import _ from 'lodash'
 import moment from 'moment'
 import { apolloHexlyClient, apolloFederatedClient } from '@/vue-apollo'
-import { getCompStats, parseData } from '@/graphql/comp.gql'
+import { getCompStats, parseData, getEngineStats, formatData } from '@/graphql/comp.gql'
 
 import {
   ENGINE_STATS_QUERY,
@@ -53,7 +53,21 @@ export const CompStore = {
   actions: {
     [CompActions.GET_STATS]: async ({ state, commit }, { input, version, transient, periodId }) => {
       commit(CompMutations.STATS_LOADING, true)
-      if (version === 2) {
+      if (version === 3) {
+        const memberId = input.membersIn[0]
+        const { data: { engine: { rankings: { rankings } } } } = await apolloFederatedClient.query(getEngineStats(
+          {
+            memberId,
+            periodId
+          }
+        ))
+        const stats = formatData(rankings[0])
+        if (!transient) {
+          commit(CompMutations.SET_STATS, stats)
+        }
+        commit(CompMutations.STATS_LOADING, false)
+        return stats
+      } else if (version === 2) {
         const memberId = input.membersIn[0]
         const { data } = await apolloFederatedClient.query(getCompStats(
           {

@@ -64,7 +64,7 @@ import MonthSelector from '@/components/MonthSelector.vue'
 import TeamCard from '@/components/TeamCard.vue'
 import { TEAM_QUERY, TEAM_SEARCH_QUERY } from '@/graphql/Team.gql'
 import { MONTHLY_STATS_QUERY } from '@/graphql/MemberStats.gql'
-import { COMP_PREVIEW_QUERY, parseData } from '@/graphql/comp.gql'
+import { ENGINE_STATS_QUERY, formatData } from '@/graphql/comp.gql'
 import { Mutations } from '@/store'
 
 export default {
@@ -197,7 +197,7 @@ export default {
             orderByColumn: 'depth',
             limit: 500,
             offset: 0,
-            depth: [0],
+            depth: [1],
             periodId: this.openPeriod && this.openPeriod.id
           }
         }
@@ -250,17 +250,19 @@ export default {
       }
     },
     compStats: {
-      query: COMP_PREVIEW_QUERY,
+      query: ENGINE_STATS_QUERY,
       variables () {
         const { teamIds } = this
+        const memberIn = teamIds.map(t => {
+          return {
+            memberId: t,
+            periodId: this.openPeriod && this.openPeriod.id
+          }
+        })
         return {
           payload: {
             input: {
-              memberId: this.currentId,
-              periodId: this.openPeriod && this.openPeriod.id,
-              page: 1,
-              pageSize: 500,
-              memberIn: teamIds
+              memberIn
             }
           }
         }
@@ -269,9 +271,9 @@ export default {
         const { openPeriod, teamIds } = this
         return !openPeriod || !teamIds.length
       },
-      update (res) {
-        const stats = parseData(res)
-        const parsedStats = stats.members.reduce((orig, s) => {
+      update ({ engine: { rankings: { rankings } } }) {
+        const team = rankings.map(formatData)
+        const parsedStats = team.reduce((orig, s) => {
           orig[s.awardeeId] = s
           return orig
         }, {})

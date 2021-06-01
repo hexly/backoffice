@@ -57,7 +57,7 @@
 <script>
 import { mapGetters, mapState } from 'vuex'
 import TeamCard from '@/components/TeamCard.vue'
-import { COMP_PREVIEW_QUERY, parseData } from '@/graphql/comp.gql'
+import { ENGINE_STATS_QUERY, formatData } from '@/graphql/comp.gql'
 import { TEAM_SEARCH_QUERY } from '@/graphql/Team.gql'
 
 export default {
@@ -168,17 +168,19 @@ export default {
       client: 'federated'
     },
     compStats: {
-      query: COMP_PREVIEW_QUERY,
+      query: ENGINE_STATS_QUERY,
       variables() {
+        const { teamIds } = this
+        const memberIn = teamIds.map(t => {
+          return {
+            memberId: t,
+            periodId: this.openPeriod && this.openPeriod.id
+          }
+        })
         return {
           payload: {
             input: {
-              memberId: this.currentId,
-              periodId: this.openPeriod.id,
-              rowTypeIn: ['descendant'],
-              page: 1,
-              pageSize: 500,
-              memberIn: this.teamIds
+              memberIn
             }
           }
         }
@@ -186,13 +188,13 @@ export default {
       skip() {
         return !this.openPeriod
       },
-      update(res) {
-        this.compStats = {}
-        const stats = parseData(res)
-        return stats.members.reduce((orig, s) => {
+      update ({ engine: { rankings: { rankings } } }) {
+        const team = rankings.map(formatData)
+        const parsedStats = team.reduce((orig, s) => {
           orig[s.awardeeId] = s
           return orig
         }, {})
+        return parsedStats
       },
       client: 'federated'
     }
