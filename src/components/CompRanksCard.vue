@@ -30,6 +30,14 @@
       <v-card-text v-if="stats && Object.keys(stats).length && !statsDisabled && !loading">
         <v-alert
           class="inner-alert"
+          icon="mdi-calendar-check"
+          text
+          dense
+          type="error">
+          We are in the process of rolling out our new compensation plan. During this process, you may see incomplete / legacy data while our systems transition to the new plan. Thank you for your patience! #WeAreEverra
+        </v-alert>
+        <v-alert
+          class="inner-alert"
           :value="selectedPeriod && showBanner()"
           icon="mdi-calendar-check"
           text
