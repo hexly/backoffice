@@ -188,11 +188,12 @@ export const getCompStats = (params) => {
 
 export const formatData = (member) => {
   const rankNumbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
-  const group = _.get(member, 'team.groupCount', 0)
-  const downline = _.get(member, 'team.downlineCount', 0)
-  const qualified = _.get(member, 'team.downlineCount', 0)
-  const rawLevels = _.get(member, 'team.levels', [])
-  const rankCounts = _.get(member, 'rankCounts', {})
+  const group = _.get(member, 'team.groupCount', 0) || 0
+  const downline = _.get(member, 'team.downlineCount', 0) || 0
+  const qualified = _.get(member, 'team.downlineCount', 0) || 0
+  const rawLevels = _.get(member, 'team.levels', []) || []
+  const rankCounts = _.get(member, 'rankCounts', {}) || {}
+  console.log(rankCounts)
   const ranks = {}
   rankNumbers.forEach(r => {
     ranks[r] = rankCounts[`rank${r}`]
@@ -204,7 +205,7 @@ export const formatData = (member) => {
       qualified: l.qualifiedCount
     }
   })
-  const reqs = _.get(member, 'progression', [])
+  const reqs = _.get(member, 'progression', []) || []
   const progression = reqs.map(r => {
     return {
       category: r.key,
@@ -215,8 +216,8 @@ export const formatData = (member) => {
     }
   })
   const counts = { group, downline, qualified, levels, ranks }
-  const rank = _.get(member, 'rank', [])
-  const recognizedRank = _.get(member, 'recognizedRank', [])
+  const rank = _.get(member, 'rank', 0) || 0
+  const recognizedRank = _.get(member, 'recognizedRank', 0) || 0
   const metadata = {
     requirements: progression,
     counts,
@@ -224,9 +225,17 @@ export const formatData = (member) => {
     ranking: { rank, name: `Rank ${rank}` },
     nextRanking: { rank: Math.min(rank + 1, 12), name: `Rank ${Math.min(rank + 1, 12)}` }
   }
-  const memberStats = _.get(member, 'stats', [])
-  const memberId = _.get(member, 'memberId', [])
-  const periodId = _.get(member, 'periodId', [])
+  const memberStats = _.get(member, 'stats', {}) || {}
+  const memberId = _.get(member, 'memberId')
+  const periodId = _.get(member, 'periodId')
+  console.log({
+    id: periodId,
+    periodId,
+    memberId,
+    counts,
+    metadata,
+    stats: memberStats
+  })
   return {
     id: periodId,
     periodId,
