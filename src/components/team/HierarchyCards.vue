@@ -122,7 +122,7 @@ export default {
     },
     hashResultsTeam (results, memberTeamSearch) {
       let matchArr = []
-
+      console.log({ results, memberTeamSearch })
       if (!memberTeamSearch || !results) {
         return
       }
@@ -139,6 +139,7 @@ export default {
     mergeUserTeam () {
       let mergedArr = []
       const { results: { team: resTeam }, memberTeamSearch: { team: mtsTeam }, hashResTeam } = this
+      console.log({ resTeam, mtsTeam, hashResTeam })
       if (!hashResTeam || !hashResTeam.length || !resTeam) {
         this.mergedTeamArr = resTeam
         return

@@ -61,11 +61,13 @@ export const ENGINE_STATS_QUERY = gql`
 query getEngineStats($payload: EngineRankingsInput!){
   engine {
     rankings(input: $payload){
-      rankings {
+      results {
         periodId
         memberId
-        mrn 
+        mrn
         name
+        email
+        profileUrl
         market
         marketId
         recognizedRank
@@ -93,6 +95,8 @@ query getEngineStats($payload: EngineRankingsInput!){
           delta
           threshold
           ordinal
+          status
+          fulfilled
         }
         team{
           groupCount
@@ -119,26 +123,42 @@ export const ENGINE_TEAM_STATS_QUERY = gql`
 query getEngineStats($payload: EngineRankingsInput!, $filter: EngineRankingTeamFilter){
   engine {
     rankings(input: $payload){
-      rankings {
+      results {
+        memberId
         team{
-          teammates(filter: $filter){
-            progression {
-              label
-              key
-              earned
-              delta
-              threshold
-              ordinal
+          teammates(input: $filter){
+            page
+            totalResults
+            totalPages
+            results {
+              metadata
+              progression {
+                label
+                key
+                earned
+                delta
+                threshold
+                ordinal
+                status
+                fulfilled
+              }
+              periodId
+              memberId
+              mrn 
+              name
+              email
+              profileUrl
+              market
+              marketId
+              recognizedRank
+              rank
+              stats
+              team {
+                groupCount 
+                downlineCount 
+                qualifiedCount
+              }
             }
-            periodId
-            memberId
-            mrn 
-            name
-            market
-            marketId
-            recognizedRank
-            rank
-            stats
           }
         }
       }
@@ -190,13 +210,14 @@ export const formatData = (member) => {
   const rankNumbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
   const group = _.get(member, 'team.groupCount', 0) || 0
   const downline = _.get(member, 'team.downlineCount', 0) || 0
-  const qualified = _.get(member, 'team.downlineCount', 0) || 0
+  const qualified = _.get(member, 'team.qualifiedCount', 0) || 0
   const rawLevels = _.get(member, 'team.levels', []) || []
   const rankCounts = _.get(member, 'rankCounts', {}) || {}
-  console.log(rankCounts)
   const ranks = {}
   rankNumbers.forEach(r => {
-    ranks[r] = rankCounts[`rank${r}`]
+    if (rankCounts[`rank${r}`]) {
+      ranks[r] = rankCounts[`rank${r}`]
+    }
   })
   const levels = rawLevels.map(l => {
     return {
@@ -218,9 +239,19 @@ export const formatData = (member) => {
   const counts = { group, downline, qualified, levels, ranks }
   const rank = _.get(member, 'rank', 0) || 0
   const recognizedRank = _.get(member, 'recognizedRank', 0) || 0
+  const market = _.get(member, 'market', 0) || 0
+  const mrn = _.get(member, 'mrn', 0) || 0
+  const name = _.get(member, 'name', null)
+  const profileUrl = _.get(member, 'profileUrl', null)
+  const email = _.get(member, 'email', null)
   const metadata = {
+    profileAsset: profileUrl,
+    email,
+    name,
     requirements: progression,
     counts,
+    market,
+    mrn,
     recognizedRank,
     ranking: { rank, name: `Rank ${rank}` },
     nextRanking: { rank: Math.min(rank + 1, 12), name: `Rank ${Math.min(rank + 1, 12)}` }
@@ -228,16 +259,10 @@ export const formatData = (member) => {
   const memberStats = _.get(member, 'stats', {}) || {}
   const memberId = _.get(member, 'memberId')
   const periodId = _.get(member, 'periodId')
-  console.log({
-    id: periodId,
-    periodId,
-    memberId,
-    counts,
-    metadata,
-    stats: memberStats
-  })
+  const { relativeDepth: relativeLevel } = _.get(member, 'metadata', {})
   return {
-    id: periodId,
+    id: memberId,
+    relativeLevel,
     periodId,
     memberId,
     counts,
@@ -287,7 +312,7 @@ export const getEngineStats = (params) => {
     query: ENGINE_STATS_QUERY,
     variables: {
       payload: {
-        membersIn: [{
+        memberIn: [{
           memberId,
           periodId
         }]
@@ -300,7 +325,7 @@ export const getEngineStats = (params) => {
 
 export const getTeamEngineStats = (params) => {
   const {
-    membersIn,
+    memberIn,
     memberId,
     periodId,
     levelIn,
@@ -324,7 +349,7 @@ export const getTeamEngineStats = (params) => {
         },
         filter: {
           nameLikeIn,
-          membersIn,
+          memberIn,
           rankIn,
           levelIn,
           qualifiationIn,

@@ -66,7 +66,8 @@ export function createHexlyApolloClient ({
 
   // Apollo cache
   const cache = new InMemoryCache({
-    addTypename: false
+    addTypename: false,
+    resultCaching: false
   })
 
   const apolloClient = new ApolloClient({
@@ -131,7 +132,8 @@ export function createApolloClient ({
 
   // Apollo cache
   const cache = new InMemoryCache({
-    addTypename: false
+    addTypename: false,
+    resultCaching: false
   })
 
   const apolloClient = new ApolloClient({

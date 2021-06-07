@@ -19,7 +19,7 @@
       </v-alert>
     </template>
     <template v-else>
-      <template v-if="selectedPeriod.metadata && selectedPeriod.metadata.version === 2">
+      <template v-if="selectedPeriod.metadata && selectedPeriod.metadata.version >= 2">
         <v-sheet class="pa-3">
           <v-text-field
             v-model="search"
@@ -28,7 +28,7 @@
             label="Search by name..."
             type="text"
             @click:clear="clearSearch"
-            @keydown.enter="getCompStatsPage"
+            @keydown.enter="searchStats"
           >
             <template v-slot:append-outer>
               <v-btn class="button-fix" large color="primary" @click="searchActivity">
@@ -218,7 +218,7 @@
             ></v-checkbox>
           </v-expansion-panel-content>
         </v-expansion-panel>
-        <v-expansion-panel v-if="selectedPeriod.metadata && selectedPeriod.metadata.version === 2 && engineStats.metadata">
+        <v-expansion-panel v-if="selectedPeriod.metadata && selectedPeriod.metadata.version >= 2">
           <v-expansion-panel-header>Sort By: {{newSortByOptions[sortBy]}}</v-expansion-panel-header>
           <v-expansion-panel-content>
             <v-radio-group v-model="sortBy">
@@ -245,7 +245,7 @@
         <v-expansion-panel>
           <v-expansion-panel-header>Filter By Level: {{filterBy}}</v-expansion-panel-header>
           <v-expansion-panel-content>
-            <template v-if="selectedPeriod.metadata && selectedPeriod.metadata.version === 2 && engineStats.metadata">
+            <template v-if="selectedPeriod.metadata && selectedPeriod.metadata.version >= 2 && engineStats.metadata">
               <v-checkbox
                 v-for="(value, key) in engineStats.metadata.counts.levels"
                 :label="`Level ${value.level} (${value.total})`"
@@ -265,7 +265,7 @@
             </template>
           </v-expansion-panel-content>
         </v-expansion-panel>
-        <v-expansion-panel v-if="selectedPeriod.metadata && selectedPeriod.metadata.version === 2 && engineStats.metadata">
+        <v-expansion-panel v-if="selectedPeriod.metadata && selectedPeriod.metadata.version >= 2 && engineStats.metadata">
           <v-expansion-panel-header>Filter By Rank: {{filterByRank}}</v-expansion-panel-header>
           <v-expansion-panel-content>
             <v-checkbox
@@ -425,6 +425,13 @@ export default {
     }
   },
   methods: {
+    async searchStats() {
+      if (this.selectedPeriod.metadata && this.selectedPeriod.metadata.version === 2) {
+        await this.getCompStatsPage()
+      } else if (this.selectedPeriod.metadata && this.selectedPeriod.metadata.version === 3) {
+        await this.getEngineStatsPage()
+      }
+    },
     format(num) {
       num = Math.round(num)
       num = new Intl.NumberFormat('en-US', {}).format(num)
@@ -473,7 +480,7 @@ export default {
     },
     async getEngineStatsPage() {
       this.loading = 1
-      const input = {
+      const payload = {
         memberIn: [{
           memberId: this.memberId,
           periodId: this.selectedPeriod.id
@@ -482,29 +489,30 @@ export default {
       const filter = {
         page: this.page,
         pageSize: this.pageSize,
-        qualifiationIn: [this.showActive],
-        sort: [ { column: this.sortBy, dir: this.orderBy.toUpperCase() } ]
+        qualificationIn: [this.showActive],
+        sorts: [ { column: this.sortBy, asc: this.orderBy.toUpperCase() === 'ASC' } ]
       }
       if (this.filterBy.length > 0) {
         filter.levelIn = this.filterBy
       }
       if (this.filterByRank.length > 0) {
-        filter.rankIn = this.filterByRank
+        filter.rankIn = ~~this.filterByRank
       }
       if (this.search) {
-        filter.nameLikeIn = [this.search]
+        filter.nameLike = this.search
       }
-      const { engine: { rankings: { rankings } } } = await this.$apollo.query({
+      const { data: { engine: { rankings: { results } } } } = await this.$apollo.query({
         query: ENGINE_TEAM_STATS_QUERY,
         variables: {
-          input,
+          payload,
           filter
         },
+        fetchPolicy: 'network-only',
         client: 'federated'
       })
-      const teammates = rankings.team.teammates
+      const teammates = results[0].team.teammates.results
       const paging = teammates.map(formatData)
-      this.totalResults = paging.length
+      this.totalResults = results[0].team.teammates.totalResults
       this.descendants = paging
       this.loading = 0
     },
@@ -529,7 +537,7 @@ export default {
       },
       loadingKey: 'loading',
       skip() {
-        return _.isEmpty(this.periods) || this.drawer || (this.selectedPeriod.metadata && this.selectedPeriod.metadata.version === 2)
+        return _.isEmpty(this.periods) || this.drawer || (this.selectedPeriod.metadata && this.selectedPeriod.metadata.version >= 2)
       },
       update({ engineStatsGetTeamActivity }) {
         const activity = engineStatsGetTeamActivity || {
@@ -547,11 +555,19 @@ export default {
   watch: {
     page(newVal, oldVal) {
       window.scrollTo(0, 0)
-      this.getCompStatsPage()
+      if (this.selectedPeriod.metadata && this.selectedPeriod.metadata.version === 2) {
+        this.getCompStatsPage()
+      } else if (this.selectedPeriod.metadata && this.selectedPeriod.metadata.version === 3) {
+        this.getEngineStatsPage()
+      }
     },
     drawer(newVal, oldVal) {
       if (!newVal) {
-        this.getCompStatsPage()
+        if (this.selectedPeriod.metadata && this.selectedPeriod.metadata.version === 2) {
+          this.getCompStatsPage()
+        } else if (this.selectedPeriod.metadata && this.selectedPeriod.metadata.version === 3) {
+          this.getEngineStatsPage()
+        }
       }
     }
   },

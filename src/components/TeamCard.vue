@@ -422,7 +422,7 @@
           </v-tab-item>
           <v-tab-item>
             <div class="item-container-card">
-              <CompRanksCard
+              <EngineRankCard
                 v-if="!$apolloData.loading && compStats"
                 :stats="compStats"
                 :statsDisabled="statsDisabled"
@@ -530,11 +530,13 @@ import CompRanksCard from '@/components/CompRanksCard.vue'
 import { AWARDS_BY_ID } from '@/graphql/Team.gql'
 import { INSIGHTS_COLLECTION } from '@/graphql/comp.gql'
 import InsightsPanel from '@/components/insights/InsightsPanel.vue'
+import EngineRankCard from '@/components/EngineRankCard.vue'
 export default {
   name: 'TeamCard',
   components: {
     CompRanksCard,
-    InsightsPanel
+    InsightsPanel,
+    EngineRankCard
   },
   data () {
     return {

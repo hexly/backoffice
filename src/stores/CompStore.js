@@ -18,7 +18,8 @@ export const CompMutations = {
   SET_PERIODS: 'compSetPeriods',
   SET_SELECTED_PERIOD: 'compSetSelectedPeriod',
   STATS_LOADING: 'compStatsLoading',
-  SET_PREVIOUS_STATS: 'compSetPreviousStats'
+  SET_PREVIOUS_STATS: 'compSetPreviousStats',
+  SET_HAS_MORE_PERIODS: 'compHasMorePeriods'
 }
 
 export const CompStore = {
@@ -28,7 +29,8 @@ export const CompStore = {
     periods: {},
     selectedPeriod: {},
     currentPeriod: {},
-    previousPeriod: null
+    previousPeriod: null,
+    hasMorePeriods: false
   },
   mutations: {
     [CompMutations.SET_STATS]: (state, stats) => {
@@ -46,6 +48,9 @@ export const CompStore = {
     [CompMutations.SET_PERIODS]: (state, periods) => {
       state.periods = periods
     },
+    [CompMutations.SET_HAS_MORE_PERIODS]: (state, hasMore) => {
+      state.hasMorePeriods = hasMore
+    },
     [CompMutations.SET_SELECTED_PERIOD]: (state, selectedPeriod) => {
       state.selectedPeriod = selectedPeriod
     }
@@ -55,15 +60,15 @@ export const CompStore = {
       commit(CompMutations.STATS_LOADING, true)
       if (version === 3) {
         const memberId = input.membersIn[0]
-        const { data: { engine: { rankings: { rankings } } } } = await apolloFederatedClient.query(getEngineStats(
+        const { data: { engine: { rankings: { results } } } } = await apolloFederatedClient.query(getEngineStats(
           {
             memberId,
             periodId
           }
         ))
-        const stats = formatData(rankings[0])
+        const stats = formatData(results[0])
         if (!transient) {
-          commit(CompMutations.SET_STATS, stats)
+          commit(CompMutations.SET_STATS, { ...stats, id: periodId })
         }
         commit(CompMutations.STATS_LOADING, false)
         return stats
@@ -102,7 +107,9 @@ export const CompStore = {
         query: ENGINE_STATS_PERIODS_QUERY,
         variables: { input }
       })
-      const periods = _.groupBy(engineStatsPeriodsByMemberId, 'status')
+      const filteredPeriods = engineStatsPeriodsByMemberId.slice(0, 6)
+      commit(CompMutations.SET_HAS_MORE_PERIODS, filteredPeriods.length < engineStatsPeriodsByMemberId.length)
+      const periods = _.groupBy(filteredPeriods, 'status')
       const currentPeriod = periods.open[0]
       if (_.isEmpty(state.selectedPeriod)) {
         await dispatch(CompActions.SELECT_PERIOD, currentPeriod)

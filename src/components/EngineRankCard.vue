@@ -174,7 +174,7 @@ export default {
           // this.periods.under_review &&
           // this.periods.under_review.length) {
           days <= 5) {
-        this.bannerMessage = `Hey There, you're looking at requirements for a new month. To check previous months select the three dot icon and choose a past month.`
+        this.bannerMessage = `Hey there, you're looking at requirements for a new month. To check previous months select the three dot icon and choose a past month.`
         return true
       } else if (status === 'under_review') {
         this.bannerMessage = `This period is still under review. Month-end commissions will be paid out by the 15th of the month.`

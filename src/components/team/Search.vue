@@ -157,6 +157,7 @@ export default {
         this.teamIds = []
         memberTeamSearch.team.forEach(member => {
           this.teamIds.push(member.id)
+          member.ancestors = member.ancestors.reverse()
         })
         return memberTeamSearch
       },
@@ -179,23 +180,22 @@ export default {
         })
         return {
           payload: {
-            input: {
-              memberIn
-            }
+            memberIn
           }
         }
       },
       skip() {
-        return !this.openPeriod
+        return !this.openPeriod || this.teamIds.length === 0
       },
-      update ({ engine: { rankings: { rankings } } }) {
-        const team = rankings.map(formatData)
+      update ({ engine: { rankings: { results } } }) {
+        const team = results.map(formatData)
         const parsedStats = team.reduce((orig, s) => {
-          orig[s.awardeeId] = s
+          orig[s.memberId] = s
           return orig
         }, {})
         return parsedStats
       },
+      fetchPolicy: 'network-only',
       client: 'federated'
     }
   },
