@@ -72,6 +72,10 @@ query getEngineStats($payload: EngineRankingsInput!){
         marketId
         recognizedRank
         rank
+        activityCounts{
+          active
+          inactive
+        }
         rankCounts {
           rank0
           rank1
@@ -213,6 +217,8 @@ export const formatData = (member) => {
   const qualified = _.get(member, 'team.qualifiedCount', 0) || 0
   const rawLevels = _.get(member, 'team.levels', []) || []
   const rankCounts = _.get(member, 'rankCounts', {}) || {}
+  const activeCount = _.get(member, 'activityCounts.active', 0) || 0
+  const inactiveCount = _.get(member, 'activityCounts.inactive', 0) || 0
   const ranks = {}
   rankNumbers.forEach(r => {
     if (rankCounts[`rank${r}`]) {
@@ -236,7 +242,7 @@ export const formatData = (member) => {
       required: r.threshold
     }
   })
-  const counts = { group, downline, qualified, levels, ranks }
+  const counts = { group, downline, qualified, levels, ranks, allTime: activeCount + inactiveCount }
   const rank = _.get(member, 'rank', 0) || 0
   const recognizedRank = _.get(member, 'recognizedRank', 0) || 0
   const market = _.get(member, 'market', 0) || 0

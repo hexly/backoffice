@@ -32,25 +32,25 @@
         class="text-center"
         v-if="compStats"
       >
-        <v-flex xs4>
+        <v-flex>
           <v-chip
             label
             small
             color="red lighten-5"
-          >{{compStats.metadata.counts.qualified}}</v-chip>
+          >{{compStats.metadata.counts.allTime}}</v-chip>
           <br />
-          Qualified
+          Total
         </v-flex>
-        <v-flex xs4>
+        <v-flex>
           <v-chip
             label
             small
             color="red lighten-5"
           >{{compStats.metadata.counts.downline}}</v-chip>
           <br />
-          Total
+          Downline
         </v-flex>
-        <v-flex xs4>
+        <v-flex>
           <v-chip
             label
             small
@@ -58,6 +58,15 @@
           >{{compStats.metadata.counts.group}}</v-chip>
           <br />
           Group
+        </v-flex>
+        <v-flex>
+          <v-chip
+            label
+            small
+            color="red lighten-5"
+          >{{compStats.metadata.counts.qualified}}</v-chip>
+          <br />
+          Qualified
         </v-flex>
       </v-layout>
       <v-layout
@@ -316,25 +325,26 @@
                   class="text-center"
                   v-if="compStats"
                 >
-                  <v-flex xs4>
+                  <v-flex v-if="compStats.metadata.counts.allTime">
                     <v-chip
                       label
                       small
                       color="red lighten-5"
-                    >{{compStats.metadata.counts.qualified}}</v-chip>
+                    >{{compStats.metadata.counts.allTime}}</v-chip>
                     <br />
-                    Qualified
+                    Total Team
                   </v-flex>
-                  <v-flex xs4>
+                  <v-flex>
                     <v-chip
                       label
                       small
                       color="red lighten-5"
                     >{{compStats.metadata.counts.downline}}</v-chip>
                     <br />
-                    Total
+                    Active Team
                   </v-flex>
-                  <v-flex xs4>
+
+                  <v-flex>
                     <v-chip
                       label
                       small
@@ -342,6 +352,15 @@
                     >{{compStats.metadata.counts.group}}</v-chip>
                     <br />
                     Group
+                  </v-flex>
+                  <v-flex>
+                    <v-chip
+                      label
+                      small
+                      color="red lighten-5"
+                    >{{compStats.metadata.counts.qualified}}</v-chip>
+                    <br />
+                    Qualified
                   </v-flex>
                 </v-layout>
                 <v-layout
