@@ -244,7 +244,7 @@ const tenantOptions = {
     privacyPolicy: '/docs/1010/Privacy-Policy.pdf',
     externalLinks: [
       {
-        href: 'https://everra.go.customprintcenter.com/',
+        href: 'https://everra.go.customprintcenter.com/LandingPage',
         name: 'ProShop',
         icon: 'business_center'
       },
