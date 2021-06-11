@@ -118,7 +118,7 @@ export default {
     hasSummary() {
       return (this.selectedPeriod &&
               this.selectedPeriod.metadata &&
-              this.selectedPeriod.metadata.version === 2)
+              this.selectedPeriod.metadata.version >= 2)
     },
     total() {
       return this.summary.reduce((t, s) => {
