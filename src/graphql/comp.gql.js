@@ -232,9 +232,11 @@ export const formatData = (member) => {
       qualified: l.qualifiedCount
     }
   })
+  levels.shift()
   const reqs = _.get(member, 'progression', []) || []
   const progression = reqs.map(r => {
     return {
+      delta: r.delta,
       category: r.key,
       notApplicable: r.status === 'NOT_APPLICABLE',
       achieved: r.status === 'MET',
@@ -242,7 +244,7 @@ export const formatData = (member) => {
       required: r.threshold
     }
   })
-  const counts = { group, downline, qualified, levels, ranks, allTime: activeCount + inactiveCount }
+  const counts = { group, downline, qualified, levels, ranks, allTime: activeCount + inactiveCount, activeCount, inactiveCount }
   const rank = _.get(member, 'rank', 0) || 0
   const recognizedRank = _.get(member, 'recognizedRank', 0) || 0
   const market = _.get(member, 'market', 0) || 0

@@ -1,5 +1,5 @@
 <template>
-  <div class="pb-3">
+  <div>
      <v-switch
       v-model="member.tags"
       :value="tagName"

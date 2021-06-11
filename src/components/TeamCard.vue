@@ -1,135 +1,6 @@
 <template>
-  <v-card
-    :max-width="dashboardMode ? null : 320"
-    :min-width="dashboardMode ? null : 320"
-    :elevation="dashboardMode ? 0 : 'auto'"
-    class="my-2 team-card"
-  >
-    <div v-if="dashboardMode">
-      <v-row wrap justify="center" class="pt-1">
-        <v-col cols="6">
-          <div class="caption text-center">Total {{$tenantInfo.distributorsLabel}}</div>
-        </v-col>
-        <v-col cols="6" class="text-center">
-          <strong>{{total}}</strong>
-        </v-col>
-      </v-row>
-      <div class="text-center mb-8">
-        <v-btn
-          small
-          color="secondary white--text"
-          @click="viewTeam()"
-          v-if="!($route.hash === '#search')"
-        >
-          View Team
-        </v-btn>
-      </div>
-
-      <v-layout
-        justify-center
-        row
-        wrap
-        class="text-center"
-        v-if="compStats"
-      >
-        <v-flex>
-          <v-chip
-            label
-            small
-            color="red lighten-5"
-          >{{compStats.metadata.counts.allTime}}</v-chip>
-          <br />
-          Total
-        </v-flex>
-        <v-flex>
-          <v-chip
-            label
-            small
-            color="red lighten-5"
-          >{{compStats.metadata.counts.downline}}</v-chip>
-          <br />
-          Downline
-        </v-flex>
-        <v-flex>
-          <v-chip
-            label
-            small
-            color="red lighten-5"
-          >{{compStats.metadata.counts.group}}</v-chip>
-          <br />
-          Group
-        </v-flex>
-        <v-flex>
-          <v-chip
-            label
-            small
-            color="red lighten-5"
-          >{{compStats.metadata.counts.qualified}}</v-chip>
-          <br />
-          Qualified
-        </v-flex>
-      </v-layout>
-      <v-layout
-        justify-center
-        row
-        wrap
-        class="text-center"
-        v-else
-      >
-        <v-flex xs4>
-          No Data Found
-        </v-flex>
-      </v-layout>
-      <template v-if="compStats && compStats.metadata.counts.levels && compStats.metadata.counts.levels.length">
-        <hr class="my-3" />
-        <div class="text-center">Qualified Per level</div>
-        <v-layout
-          row
-          wrap
-          class="text-center"
-        >
-          <v-flex
-            xs4
-            class="my-1"
-            v-for="level in compStats.metadata.counts.levels"
-            :key="level.level"
-          >
-            <b>Level {{level.level}}</b>
-            <br />
-            <v-chip
-              label
-              x-small
-              color="teal lighten-5"
-            >{{level.qualified}} / {{level.total}}</v-chip>
-          </v-flex>
-        </v-layout>
-      </template>
-      <template v-if="compStats && compStats.metadata.counts.ranks && compStats.metadata.counts.ranks['1']">
-        <hr class="my-3" />
-        <div class="text-center">Per Rank Total</div>
-        <v-layout
-          row
-          wrap
-          class="text-center"
-        >
-          <v-flex
-            xs3
-            class="my-1"
-            v-for="(total, rank) in filterRanks(compStats.metadata.counts.ranks)"
-            :key="`${user.name}-${rank}`"
-          >
-            <b>Rank {{rank}}</b>
-            <br />
-            <v-chip
-              label
-              x-small
-              color="deep-purple lighten-5"
-            >{{total}}</v-chip>
-          </v-flex>
-        </v-layout>
-      </template>
-    </div>
-    <div v-else>
+  <v-card max-width="320" min-width="320" elevation="auto" class="my-2 team-card">
+    <div>
       <v-img
         :src="getAvatar"
         cover
@@ -138,25 +9,12 @@
         class="cardImg white--text"
         gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
       >
-        <v-menu
-          v-if="actions"
-          bottom
-          left
-        >
+        <v-menu v-if="actions" bottom left>
           <template v-slot:activator="{ on, attrs }">
-            <v-btn
-              absolute
-              right
-              top
-              dark
-              icon
-              v-bind="attrs"
-              v-on="on"
-            >
+            <v-btn absolute right top dark icon v-bind="attrs" v-on="on">
               <v-icon>mdi-dots-vertical</v-icon>
             </v-btn>
           </template>
-
           <v-list>
             <v-list-item>
               <v-list-item-title @click="viewTeam()"><v-btn block>View Team</v-btn></v-list-item-title>
@@ -177,56 +35,42 @@
         </v-card-title>
       </v-img>
       <div v-if="actions">
-        <v-tabs
-          @change="handleTabChange"
-          :value="activeTab"
-          :hide-slider="true"
-        >
+        <v-tabs @change="handleTabChange" :value="activeTab" :hide-slider="true">
           <v-tab
             class="dense"
             @click="$emit('tabActivated', index)"
             v-for="(heading, index) in tabHeadings"
             :key="heading"
-          >
-            {{ heading }}
+          >{{ heading }}
           </v-tab>
           <v-tab-item>
-            <v-card
-              class="item-container-card"
-              flat
-            >
+            <v-card class="item-container-card" flat>
               <v-list two-line>
                 <v-list-item>
                   <v-list-item-icon>
                     <v-icon color="indigo"> mdi-calendar-today </v-icon>
                   </v-list-item-icon>
-
                   <v-list-item-content>
                     <v-list-item-title>{{$moment(joinedOn, 'YYYY-MM-DD').format('ll')}}</v-list-item-title>
                     <v-list-item-subtitle>{{$tenantInfo.distributorLabel}} since</v-list-item-subtitle>
                   </v-list-item-content>
-
                 </v-list-item>
                 <v-divider inset></v-divider>
                 <v-list-item>
                   <v-list-item-icon>
                     <v-icon color="indigo"> mdi-cake </v-icon>
                   </v-list-item-icon>
-
                   <v-list-item-content>
                     <v-list-item-title>{{$moment(birthday, 'YYYY-MM-DD').format('MMMM Do')}}</v-list-item-title>
                     <v-list-item-subtitle>Birthday</v-list-item-subtitle>
                   </v-list-item-content>
-
                 </v-list-item>
                 <template v-if="email">
                   <v-divider inset></v-divider>
-
                   <v-list-item>
                     <v-list-item-icon>
                       <v-icon color="indigo"> mdi-email </v-icon>
                     </v-list-item-icon>
-
                     <v-list-item-content>
                       <v-list-item-title>{{(email).toLowerCase()}}</v-list-item-title>
                       <v-list-item-subtitle>Email</v-list-item-subtitle>
@@ -235,12 +79,10 @@
                 </template>
                 <template v-if="address">
                   <v-divider inset></v-divider>
-
                   <v-list-item>
                     <v-list-item-icon>
                       <v-icon color="indigo"> mdi-map-marker </v-icon>
                     </v-list-item-icon>
-
                     <v-list-item-content>
                       <v-list-item-title>{{address.street}}</v-list-item-title>
                       <v-list-item-subtitle v-if="address.street2">{{address.street2}}</v-list-item-subtitle>
@@ -248,56 +90,34 @@
                     </v-list-item-content>
                   </v-list-item>
                 </template>
-
                 <template v-if="slug">
                   <v-divider inset></v-divider>
-
                   <v-list-item>
                     <v-list-item-icon>
                       <v-icon color="indigo"> mdi-store </v-icon>
                     </v-list-item-icon>
-
                     <v-list-item-content>
-                      <v-list-item-title><a
-                          target="_blank"
-                          :href="$tenantInfo.storeUrl.replace('{slug}', slug)"
-                        >{{slug}}</a></v-list-item-title>
+                      <v-list-item-title>
+                        <a target="_blank" :href="$tenantInfo.storeUrl.replace('{slug}', slug)">{{slug}}</a>
+                      </v-list-item-title>
                       <v-list-item-subtitle>Store Link</v-list-item-subtitle>
                     </v-list-item-content>
                   </v-list-item>
-
                 </template>
                 <template v-if="user.relativeDepth">
                   <v-divider inset></v-divider>
-
                   <v-list-item>
                     <v-list-item-icon>
                       <v-icon color="indigo"> account_tree </v-icon>
                     </v-list-item-icon>
-
                     <v-list-item-content>
                       <v-list-item-title>
-                        <v-layout
-                          align-center
-                          row
-                          wrap
-                        >
+                        <v-layout align-center row wrap>
                           <template v-for="parent in user.ancestors">
-                            <v-tooltip
-                              top
-                              slot="append"
-                              :key="parent.profileUrl"
-                            >
+                            <v-tooltip top slot="append" :key="parent.profileUrl">
                               <template v-slot:activator="{ on }">
-                                <v-avatar
-                                  class="generation-avatar ma-1 elevation-3"
-                                  size="60px"
-                                  v-on="on"
-                                >
-                                  <img
-                                    :src="parent.profileUrl || $tenantInfo.placeholder"
-                                    alt="Avatar"
-                                  >
+                                <v-avatar class="generation-avatar ma-1 elevation-3" size="60px" v-on="on">
+                                  <img :src="parent.profileUrl || $tenantInfo.placeholder" alt="Avatar">
                                 </v-avatar>
                               </template>
                               <span>{{parent.name}}</span>
@@ -314,128 +134,11 @@
           </v-tab-item>
           <v-tab-item>
             <div class="item-container-card">
-              <v-card
-                v-if="!$apolloData.loading"
-                flat
-              >
-                <v-layout
-                  justify-center
-                  row
-                  wrap
-                  class="text-center"
-                  v-if="compStats"
-                >
-                  <v-flex v-if="compStats.metadata.counts.allTime">
-                    <v-chip
-                      label
-                      small
-                      color="red lighten-5"
-                    >{{compStats.metadata.counts.allTime}}</v-chip>
-                    <br />
-                    Total Team
-                  </v-flex>
-                  <v-flex>
-                    <v-chip
-                      label
-                      small
-                      color="red lighten-5"
-                    >{{compStats.metadata.counts.downline}}</v-chip>
-                    <br />
-                    Active Team
-                  </v-flex>
-
-                  <v-flex>
-                    <v-chip
-                      label
-                      small
-                      color="red lighten-5"
-                    >{{compStats.metadata.counts.group}}</v-chip>
-                    <br />
-                    Group
-                  </v-flex>
-                  <v-flex>
-                    <v-chip
-                      label
-                      small
-                      color="red lighten-5"
-                    >{{compStats.metadata.counts.qualified}}</v-chip>
-                    <br />
-                    Qualified
-                  </v-flex>
-                </v-layout>
-                <v-layout
-                  justify-center
-                  row
-                  wrap
-                  class="text-center"
-                  v-else
-                >
-                  <v-flex xs4>
-                    No Data Found
-                  </v-flex>
-                </v-layout>
-                <template v-if="compStats && compStats.metadata.counts.levels && compStats.metadata.counts.levels.length">
-                  <hr class="my-3" />
-                  <div class="text-center">Qualified Per level</div>
-                  <v-layout
-                    row
-                    wrap
-                    class="text-center"
-                  >
-                    <v-flex
-                      xs4
-                      class="my-1"
-                      v-for="level in compStats.metadata.counts.levels"
-                      :key="level.level"
-                    >
-                      <b>Level {{level.level}}</b>
-                      <br />
-                      <v-chip
-                        label
-                        x-small
-                        color="teal lighten-5"
-                      >{{level.qualified}} / {{level.total}}</v-chip>
-                    </v-flex>
-                  </v-layout>
-                </template>
-                <template v-if="compStats && compStats.metadata.counts.ranks && compStats.metadata.counts.ranks['1']">
-                  <hr class="my-3" />
-                  <div class="text-center">Per Rank Total</div>
-                  <v-layout
-                    row
-                    wrap
-                    class="text-center"
-                  >
-                    <v-flex
-                      xs3
-                      class="my-1"
-                      v-for="(total, rank) in filterRanks(compStats.metadata.counts.ranks)"
-                      :key="`${user.name}-${rank}`"
-                    >
-                      <b>Rank {{rank}}</b>
-                      <br />
-                      <v-chip
-                        label
-                        x-small
-                        color="deep-purple lighten-5"
-                      >{{total}}</v-chip>
-                    </v-flex>
-                  </v-layout>
-                </template>
+              <v-card v-if="!$apolloData.loading" flat>
+                <TeamDetails :compStats="compStats"/>
               </v-card>
-              <v-flex
-                v-else
-                d-flex
-                justify-center
-                align-center
-                class="text-center"
-              >
-                <v-progress-circular
-                  indeterminate
-                  :size="50"
-                  :width="5"
-                  color="primary"
-                ></v-progress-circular>
+              <v-flex v-else d-flex justify-center align-center class="text-center">
+                <v-progress-circular indeterminate :size="50" :width="5" color="primary"></v-progress-circular>
               </v-flex>
             </div>
           </v-tab-item>
@@ -447,32 +150,14 @@
                 :statsDisabled="statsDisabled"
                 :tabMode="true"
               />
-              <v-flex
-                v-else
-                d-flex
-                justify-center
-                align-center
-                class="text-center"
-              >
-                <v-progress-circular
-                  indeterminate
-                  :size="50"
-                  :width="5"
-                  color="primary"
-                ></v-progress-circular>
+              <v-flex v-else d-flex justify-center align-center class="text-center">
+                <v-progress-circular indeterminate :size="50" :width="5" color="primary"></v-progress-circular>
               </v-flex>
             </div>
           </v-tab-item>
           <v-tab-item>
             <div v-if="!$apolloData.loading">
-              <v-card
-                v-if="awards.length"
-                class="badge-card"
-                d-flex
-                justify-center
-                wrap
-                flat
-              >
+              <v-card v-if="awards.length" class="badge-card" d-flex justify-center wrap flat>
                 <v-chip
                   pill
                   v-for="award in awards"
@@ -484,54 +169,26 @@
                   @mouseleave="handleHover($event, award.name)"
                   @mouseout="handleHover($event, award.name)"
                 >
-                  <v-avatar
-                    left
-                    :color="award.metadata.accent"
-                  >
+                  <v-avatar left :color="award.metadata.accent">
                     <v-icon>{{award.metadata.icon}}</v-icon>
                   </v-avatar>
-                  <transition
-                    css
-                    name="expand"
-                    @after-leave="afterLeaveHandler(award.name)"
-                  >
+                  <transition css name="expand" @after-leave="afterLeaveHandler(award.name)">
                     <span v-show="awardHover[award.name]">{{award.name}}</span>
                   </transition>
                 </v-chip>
               </v-card>
-              <v-card
-                v-else
-                class="badge-card"
-                d-flex
-                justify-center
-                wrap
-                flat
-              >
+              <v-card v-else class="badge-card" d-flex justify-center wrap flat>
                 <div>No Awards Yet!</div>
               </v-card>
             </div>
-            <v-flex
-              v-else
-              d-flex
-              justify-center
-              align-center
-              class="badge-card text-center"
-            >
-              <v-progress-circular
-                indeterminate
-                :size="50"
-                :width="5"
-                color="primary"
-              ></v-progress-circular>
+            <v-flex v-else d-flex justify-center align-center class="badge-card text-center">
+              <v-progress-circular indeterminate :size="50" :width="5" color="primary"></v-progress-circular>
             </v-flex>
           </v-tab-item>
         </v-tabs>
       </div>
     </div>
-    <v-dialog
-      v-model="showSuccessStartDialog"
-      max-width="500px"
-    >
+    <v-dialog v-model="showSuccessStartDialog" max-width="500px">
       <InsightsPanel
         :data="successStartSection"
         :teamModalMode="true"
@@ -545,7 +202,9 @@
 <script>
 import { get, omit } from 'lodash'
 
+import { mapState } from 'vuex'
 import CompRanksCard from '@/components/CompRanksCard.vue'
+import TeamDetails from '@/components/TeamDetails.vue'
 import { AWARDS_BY_ID } from '@/graphql/Team.gql'
 import { INSIGHTS_COLLECTION } from '@/graphql/comp.gql'
 import InsightsPanel from '@/components/insights/InsightsPanel.vue'
@@ -553,6 +212,7 @@ import EngineRankCard from '@/components/EngineRankCard.vue'
 export default {
   name: 'TeamCard',
   components: {
+    TeamDetails,
     CompRanksCard,
     InsightsPanel,
     EngineRankCard
@@ -684,6 +344,13 @@ export default {
     }
   },
   computed: {
+    ...mapState({
+      selectedPeriod: state => state.comp.selectedPeriod
+    }),
+    showStatsMaintenance() {
+      // all env vars come in as strings! yay!
+      return process.env.VUE_APP_STATS_MAINTENANCE === 'true'
+    },
     birthday () {
       let birthday = this.user.birthdate
       if (this.user.member) {
