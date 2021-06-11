@@ -3,7 +3,7 @@
     <v-tabs centered background-color="secondary" dark icons-and-text>
       <v-tabs-slider color="white"></v-tabs-slider>
 
-      <v-tab to="#hierarchy" v-if="GET($tenantInfo, 'features.team.generations', false)">Generations
+      <v-tab to="#team" v-if="GET($tenantInfo, 'features.team.search', false)">Team
         <v-icon>portrait</v-icon>
       </v-tab>
       <template v-if="GET($tenantInfo, 'features.team.activity', false)">
@@ -11,10 +11,6 @@
           <v-icon>whatshot</v-icon>
         </v-tab>
       </template>
-      <v-tab to="#search" v-if="GET($tenantInfo, 'features.team.search', true)">
-        Search
-        <v-icon>search</v-icon>
-      </v-tab>
       <v-tab to="#directory" v-if="GET($tenantInfo, 'features.team.directory', true)">
         Directory
         <v-icon>chrome_reader_mode</v-icon>
@@ -24,9 +20,9 @@
         <v-icon>scatter_plot</v-icon>
       </v-tab>
 
-      <v-tab-item value="hierarchy" class="py-3">
+      <v-tab-item value="team" class="py-3">
         <v-lazy>
-          <HierarchyCards />
+          <TeamSearch />
         </v-lazy>
       </v-tab-item>
       <template v-if="$tenantInfo.features.activity">
@@ -36,11 +32,6 @@
           </v-lazy>
         </v-tab-item>
       </template>
-      <v-tab-item value="search" class="py-3">
-        <v-lazy>
-          <TeamSearch />
-        </v-lazy>
-      </v-tab-item>
       <v-tab-item value="directory" class="py-3">
         <v-lazy>
           <Directory class="py-2" title="Your Circle of Influence" membersTypeName="Influencer"/>

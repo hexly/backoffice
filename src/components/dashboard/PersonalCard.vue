@@ -8,68 +8,81 @@ s<template>
       />
     <div v-else class="profile-color" :style="`background-color: ${$tenantInfo.profileColor}`"></div>
     <v-card-text class="text-center">
-      <v-avatar size="124" class="avatar" color="white" @click="showProfilePicDialog = true">
-        <v-img v-if="user.principal.member.profileUrl || $tenantInfo.placeholder" :src="user.principal.member.profileUrl || $tenantInfo.placeholder" class="mb-4" ></v-img>
-        <v-gravatar v-else default-img="mp" :email="user.principal.member.contacts[0].emails[0].email" class="mb-4"/>
-      </v-avatar>
-      <h3 class="headline"> {{ user.principal.member.name }}</h3>
-      <div v-if="showMrn" class="primary--text subheading font-weight-bold">{{memberName || 'Member'}} #<b>{{user.principal.member.mrn}}</b></div>
-      <div v-if="stats && stats">
-        <v-alert class="inner-alert" :value="isMonthInReview" icon="mdi-calendar-check" text dense type="info">
-          <p>It's a new month and last month is in review. Your Recognized status will be updated once the review has been finished.</p>
-          <p>Month End comissions will be paid out by the 15th of the month.</p>
-          <b v-if="previous && !previous.metadata">
-            Last month you reached: Rank&nbsp;{{previous.current.rank}}
-          </b>
-          <b v-else-if="previous && previous.metadata && previous.metadata.ranking">
-            Last month you reached: Rank&nbsp;{{previous.metadata.ranking.rank}}
-          </b>
-          <b v-else-if="previous && previous.metadata && previous.metadata.rank">
-            Last month you reached: Rank&nbsp;{{previous.metadata.rank}}
-          </b>
-        </v-alert>
-        <p v-if="stats && stats.metadata && stats.metadata.recognizedRank">
-          Recognized Rank:
-          <v-btn x-small dark color="primary" class="body-2">
-            Rank {{stats.metadata.recognizedRank}}
-          </v-btn>
-        </p>
-        <p v-else-if="previous && previous.metadata && previous.metadata.recognizedRank">
-          Recognized Rank:
-          <v-btn x-small dark color="primary" class="body-2">
-            Rank {{previous.metadata.recognizedRank}}
-          </v-btn>
-        </p>
-      </div>
-      <div v-if="user.principal.member.sponsor" class="mt-3">
-        <b>{{sponsorName || 'Your Sponsor'}}:</b>
-        <v-layout row align-center>
-          <v-flex mx-2 class="text-right">
-            <v-avatar>
-              <v-img v-if="user.principal.member.sponsor.profileUrl || $tenantInfo.placeholder" :src="user.principal.member.sponsor.profileUrl || $tenantInfo.placeholder"></v-img>
-            </v-avatar>
-          </v-flex>
-          <v-flex mx-2 class="text-left">
-            <div>
-              <b>{{user.principal.member.sponsor.displayName}} </b>
-              <br/>
-              <small>{{user.principal.member.sponsor.contacts[0].emails[0].email}}</small>
-            </div>
-          </v-flex>
-        </v-layout>
-      </div>
+      <v-layout>
+        <v-flex>
+          <v-avatar size="124" class="avatar" color="white" @click="showProfilePicDialog = true">
+            <v-img v-if="user.principal.member.profileUrl || $tenantInfo.placeholder" :src="user.principal.member.profileUrl || $tenantInfo.placeholder" class="mb-4" ></v-img>
+            <v-gravatar v-else default-img="mp" :email="user.principal.member.contacts[0].emails[0].email" class="mb-4"/>
+          </v-avatar>
+        </v-flex>
+        <v-flex class="text-center">
+          <h3 class="headline" style="margin-top: -10px;"> {{ user.principal.member.name }}</h3>
+          <div v-if="showMrn" class="primary--text subheading font-weight-bold">{{memberName || 'Member'}} #<b>{{user.principal.member.mrn}}</b></div>
+          <div v-if="stats && stats">
+            <p v-if="stats && stats.metadata && stats.metadata.recognizedRank">
+              Recognized Rank:
+              <v-btn x-small dark color="primary" class="body-2">
+                Rank {{stats.metadata.recognizedRank}}
+              </v-btn>
+            </p>
+            <p v-else-if="previous && previous.metadata && previous.metadata.recognizedRank">
+              Recognized Rank:
+              <v-btn x-small dark color="primary" class="body-2">
+                Rank {{previous.metadata.recognizedRank}}
+              </v-btn>
+            </p>
+          </div>
+        </v-flex>
+      </v-layout>
+      <v-alert class="inner-alert" :value="isMonthInReview" icon="mdi-calendar-check" text dense type="info">
+        <span>It's a new month and last month is in review. Your Recognized status will be updated once the review has been finished.</span>
+        <div>Month End comissions will be paid out by the 15th of the month.</div>
+        <b v-if="previous && !previous.metadata">
+          Last month you reached: Rank&nbsp;{{previous.current.rank}}
+        </b>
+        <b v-else-if="previous && previous.metadata && previous.metadata.ranking">
+          Last month you reached: Rank&nbsp;{{previous.metadata.ranking.rank}}
+        </b>
+        <b v-else-if="previous && previous.metadata && previous.metadata.rank">
+          Last month you reached: Rank&nbsp;{{previous.metadata.rank}}
+        </b>
+      </v-alert>
     </v-card-text>
-    <v-divider class="mb-3"></v-divider>
+    <v-divider></v-divider>
+    <div class="text-center pb-2">
+      <h3>{{sponsorName || 'Your Sponsor'}}</h3>
+      <v-layout v-if="user.principal.member.sponsor" align-center>
+        <v-flex>
+          <div  class="mt-3">
+            <v-layout row class="text-right">
+              <v-flex mx-2>
+                <v-avatar>
+                  <v-img v-if="user.principal.member.sponsor.profileUrl || $tenantInfo.placeholder" :src="user.principal.member.sponsor.profileUrl || $tenantInfo.placeholder"></v-img>
+                </v-avatar>
+              </v-flex>
+              <v-flex mx-2 class="text-left">
+                <div>
+                  <b>{{user.principal.member.sponsor.displayName}} </b>
+                  <br/>
+                  <small>{{user.principal.member.sponsor.contacts[0].emails[0].email}}</small>
+                </div>
+              </v-flex>
+            </v-layout>
+          </div>
+        </v-flex>
+      </v-layout>
+    </div>
+    <v-divider></v-divider>
     <div class="text-center pa-2">
-      <h3 class="mb-4">Your Personal Link</h3>
+      <h3>Your Personal Link</h3>
       <MyLink />
     </div>
-    <v-divider class="mb-3"></v-divider>
+    <v-divider></v-divider>
     <div class="text-center pa-2">
       <h3 class="mb-4">Profile Settings</h3>
       <v-row justify="start" no-gutters class="text-left px-1" v-if="currentTheme">
-          Current Theme:
-          <strong class="text-capitalize"> {{currentTheme}}</strong>
+          Current Store Theme:
+          <strong class="text-capitalize">{{currentTheme}}</strong>
           <v-btn icon small @click="$router.push('profile#settings')">
             <v-icon small>edit</v-icon>
           </v-btn>
@@ -184,7 +197,7 @@ export default {
 }
 .personal-card .avatar {
   position: relative;
-  top: -62px;
+  top: -48px;
   margin-bottom: -62px;
   padding-top: 16px;
 }

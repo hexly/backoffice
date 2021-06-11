@@ -57,6 +57,120 @@ query compRunPreview($payload: CompRunDataInput) {
 }
 `
 
+export const ENGINE_STATS_QUERY = gql`
+query getEngineStats($payload: EngineRankingsInput!){
+  engine {
+    rankings(input: $payload){
+      results {
+        periodId
+        memberId
+        mrn
+        name
+        email
+        profileUrl
+        market
+        marketId
+        recognizedRank
+        rank
+        activityCounts{
+          active
+          inactive
+        }
+        rankCounts {
+          rank0
+          rank1
+          rank2
+          rank3
+          rank4
+          rank5
+          rank6
+          rank7
+          rank8
+          rank9
+          rank10
+          rank11
+          rank12
+        }
+        stats
+        progression {
+          label
+          key
+          earned
+          delta
+          threshold
+          ordinal
+          status
+          fulfilled
+        }
+        team{
+          groupCount
+          downlineCount
+          qualifiedCount
+          levels {
+            level
+            count
+            qualifiedCount
+          }
+          generations {
+            level
+            count
+            qualifiedCount
+          }
+        }
+      }
+    }
+  }
+}
+`
+
+export const ENGINE_TEAM_STATS_QUERY = gql`
+query getEngineStats($payload: EngineRankingsInput!, $filter: EngineRankingTeamFilter){
+  engine {
+    rankings(input: $payload){
+      results {
+        memberId
+        team{
+          teammates(input: $filter){
+            page
+            totalResults
+            totalPages
+            results {
+              metadata
+              progression {
+                label
+                key
+                earned
+                delta
+                threshold
+                ordinal
+                status
+                fulfilled
+              }
+              periodId
+              memberId
+              mrn 
+              name
+              email
+              profileUrl
+              market
+              marketId
+              recognizedRank
+              rank
+              stats
+              team {
+                groupCount 
+                downlineCount 
+                qualifiedCount
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+`
+
 export const getCompStats = (params) => {
   const {
     memberId,
@@ -96,6 +210,75 @@ export const getCompStats = (params) => {
   }
 }
 
+export const formatData = (member) => {
+  const rankNumbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+  const group = _.get(member, 'team.groupCount', 0) || 0
+  const downline = _.get(member, 'team.downlineCount', 0) || 0
+  const qualified = _.get(member, 'team.qualifiedCount', 0) || 0
+  const rawLevels = _.get(member, 'team.levels', []) || []
+  const rankCounts = _.get(member, 'rankCounts', {}) || {}
+  const activeCount = _.get(member, 'activityCounts.active', 0) || 0
+  const inactiveCount = _.get(member, 'activityCounts.inactive', 0) || 0
+  const ranks = {}
+  rankNumbers.forEach(r => {
+    if (rankCounts[`rank${r}`]) {
+      ranks[r] = rankCounts[`rank${r}`]
+    }
+  })
+  const levels = rawLevels.map(l => {
+    return {
+      level: l.level,
+      total: l.count,
+      qualified: l.qualifiedCount
+    }
+  })
+  levels.shift()
+  const reqs = _.get(member, 'progression', []) || []
+  const progression = reqs.map(r => {
+    return {
+      delta: r.delta,
+      category: r.key,
+      notApplicable: r.status === 'NOT_APPLICABLE',
+      achieved: r.status === 'MET',
+      earned: r.earned,
+      required: r.threshold
+    }
+  })
+  const counts = { group, downline, qualified, levels, ranks, allTime: activeCount + inactiveCount, activeCount, inactiveCount }
+  const rank = _.get(member, 'rank', 0) || 0
+  const recognizedRank = _.get(member, 'recognizedRank', 0) || 0
+  const market = _.get(member, 'market', 0) || 0
+  const mrn = _.get(member, 'mrn', 0) || 0
+  const name = _.get(member, 'name', null)
+  const profileUrl = _.get(member, 'profileUrl', null)
+  const email = _.get(member, 'email', null)
+  const metadata = {
+    profileAsset: profileUrl,
+    email,
+    name,
+    requirements: progression,
+    counts,
+    market,
+    mrn,
+    recognizedRank,
+    ranking: { rank, name: `Rank ${rank}` },
+    nextRanking: { rank: Math.min(rank + 1, 12), name: `Rank ${Math.min(rank + 1, 12)}` }
+  }
+  const memberStats = _.get(member, 'stats', {}) || {}
+  const memberId = _.get(member, 'memberId')
+  const periodId = _.get(member, 'periodId')
+  const { relativeDepth: relativeLevel } = _.get(member, 'metadata', {})
+  return {
+    id: memberId,
+    relativeLevel,
+    periodId,
+    memberId,
+    counts,
+    metadata,
+    stats: memberStats
+  }
+}
+
 export const parseData = (res) => {
   let idx = 0
   const data = _.chain(res)
@@ -125,4 +308,66 @@ export const parseData = (res) => {
     .value()
 
   return data
+}
+
+export const getEngineStats = (params) => {
+  const {
+    memberId,
+    periodId
+  } = params
+
+  return {
+    query: ENGINE_STATS_QUERY,
+    variables: {
+      payload: {
+        memberIn: [{
+          memberId,
+          periodId
+        }]
+      }
+    },
+    fetchPolicy: 'network-only',
+    client: 'federated'
+  }
+}
+
+export const getTeamEngineStats = (params) => {
+  const {
+    memberIn,
+    memberId,
+    periodId,
+    levelIn,
+    rankIn,
+    qualifiationIn,
+    nameLikeIn,
+    sort,
+    page = 1,
+    pageSize = 25
+  } = params
+
+  return {
+    query: ENGINE_TEAM_STATS_QUERY,
+    variables: {
+      payload: {
+        input: {
+          memberIn: [{
+            memberId,
+            periodId
+          }]
+        },
+        filter: {
+          nameLikeIn,
+          memberIn,
+          rankIn,
+          levelIn,
+          qualifiationIn,
+          sort,
+          page,
+          pageSize
+        }
+      }
+    },
+    fetchPolicy: 'network-only',
+    client: 'federated'
+  }
 }

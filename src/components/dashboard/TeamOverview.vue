@@ -18,16 +18,18 @@
               v-model="showBanner">
               You are currently viewing a past period.
             </v-alert>
-            <TeamCard
-              :loading="loading"
-              @viewTeam="showTeam"
-              :user="member"
-              :actions="true"
-              :compStats="stats"
-              noData="No data available"
-              :dashboardMode="true"
-              :total="total"
-            />
+                <v-row wrap justify="center" class="pt-1">
+              <v-col cols="6">
+                <div class="caption text-center">Total {{$tenantInfo.distributorsLabel}}</div>
+              </v-col>
+              <v-col cols="6" class="text-center">
+                <strong>{{total}}</strong>
+              </v-col>
+            </v-row>
+            <div class="text-center mb-8">
+              <v-btn small color="secondary white--text" @click="showTeam()" v-if="!($route.hash === '#search')">View Team</v-btn>
+            </div>
+            <TeamDetails :compStats="stats"/>
           </div>
           <div key="2" v-else-if="loading">
             <v-layout justify-center row wrap>
@@ -46,13 +48,13 @@
 import Trend from '@/components/dashboard/Trend.vue'
 import { mapGetters, mapState } from 'vuex'
 import PeriodSwitcher from '@/components/PeriodSwitcher.vue'
-import TeamCard from '@/components/TeamCard.vue'
+import TeamDetails from '@/components/TeamDetails.vue'
 export default {
   name: 'TeamOverview',
   components: {
     Trend,
     PeriodSwitcher,
-    TeamCard
+    TeamDetails
   },
   props: {
     stats: Object,

@@ -22,6 +22,11 @@ export const apolloHexlyClient = createHexlyApolloClient(options)
 
 const apolloProviderOptions = {
   defaultClient: apolloHexlyClient,
+  defaultOptions: {
+    $query: {
+      fetchPolicy: 'network-only'
+    }
+  },
   clients: {
     hexly: apolloHexlyClient
   },

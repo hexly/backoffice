@@ -28,7 +28,7 @@
         ref="slugField"
         :loading="checkingSlug"
         placeholder="my-personal-link"
-        class="mb-3 slug-field edit-link"
+        class="slug-field edit-link"
         v-model="generateSlug"
         @keyup="slugChanged"
         :rules="slugRule"

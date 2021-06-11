@@ -57,7 +57,7 @@
 <script>
 import { mapGetters, mapState } from 'vuex'
 import TeamCard from '@/components/TeamCard.vue'
-import { COMP_PREVIEW_QUERY, parseData } from '@/graphql/comp.gql'
+import { ENGINE_STATS_QUERY, formatData } from '@/graphql/comp.gql'
 import { TEAM_SEARCH_QUERY } from '@/graphql/Team.gql'
 
 export default {
@@ -157,6 +157,7 @@ export default {
         this.teamIds = []
         memberTeamSearch.team.forEach(member => {
           this.teamIds.push(member.id)
+          member.ancestors = member.ancestors.reverse()
         })
         return memberTeamSearch
       },
@@ -168,32 +169,33 @@ export default {
       client: 'federated'
     },
     compStats: {
-      query: COMP_PREVIEW_QUERY,
+      query: ENGINE_STATS_QUERY,
       variables() {
+        const { teamIds } = this
+        const memberIn = teamIds.map(t => {
+          return {
+            memberId: t,
+            periodId: this.openPeriod && this.openPeriod.id
+          }
+        })
         return {
           payload: {
-            input: {
-              memberId: this.currentId,
-              periodId: this.openPeriod.id,
-              rowTypeIn: ['descendant'],
-              page: 1,
-              pageSize: 500,
-              memberIn: this.teamIds
-            }
+            memberIn
           }
         }
       },
       skip() {
-        return !this.openPeriod
+        return !this.openPeriod || this.teamIds.length === 0
       },
-      update(res) {
-        this.compStats = {}
-        const stats = parseData(res)
-        return stats.members.reduce((orig, s) => {
-          orig[s.awardeeId] = s
+      update ({ engine: { rankings: { results } } }) {
+        const team = results.map(formatData)
+        const parsedStats = team.reduce((orig, s) => {
+          orig[s.memberId] = s
           return orig
         }, {})
+        return parsedStats
       },
+      fetchPolicy: 'network-only',
       client: 'federated'
     }
   },

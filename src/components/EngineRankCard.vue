@@ -15,27 +15,18 @@
     </v-toolbar>
     <template v-if="showStatsMaintenance">
       <v-card-text>
-        <v-alert
-          class="inner-alert"
-          icon="mdi-calendar-check"
-          text
-          dense
-          type="info">
-          Our system is currently undergoing maintenance. We will be back up shortly
+        <v-alert class="inner-alert" icon="mdi-calendar-check" text dense type="info">
+          {{
+            selectedPeriod.metadata.engineMaintenanceMessage
+            ||
+            'Our system is currently undergoing maintenance. We will be back up shortly'
+          }}
         </v-alert>
         <div class="title text-center">Realtime Stats Temporarily Unavailable</div>
       </v-card-text>
     </template>
     <template v-else>
       <v-card-text v-if="stats && Object.keys(stats).length && !statsDisabled && !loading">
-        <v-alert
-          class="inner-alert"
-          icon="mdi-calendar-check"
-          text
-          dense
-          type="error">
-          We are in the process of rolling out our new compensation plan. During this process, you may see incomplete / legacy data while our systems transition to the new plan. Thank you for your patience! #WeAreEverra
-        </v-alert>
         <v-alert
           class="inner-alert"
           :value="selectedPeriod && showBanner()"
@@ -49,48 +40,69 @@
           <EarningBreakdown :earnings="stats.earnings" />
         </template>
         <template v-else>
-          <v-row justify-space-between :class="tabMode ? 'rank-row' : ''" class="pa-1">
-            <v-col class="pa-0">
-              <div v-if="!currentRank" class="title">Unranked</div>
-              <div v-else class="title">{{currentRank}}</div>
-              <div class="caption grey--text darken-1"> Current Rank </div>
-            </v-col>
-            <v-spacer></v-spacer>
-            <v-col class="text-right pa-1" v-if="nextRank">
-              <div class="title">{{nextRank}}</div>
-              <div class="caption grey--text darken-1"> Next Rank </div>
-            </v-col>
-          </v-row>
-
+          <div class="text-center">
+            <div class="subtitle-1"> {{selectedPeriod.name}} Rank </div>
+            <v-progress-circular
+              :rotate="90"
+              :size="100"
+              :width="15"
+              :value="(rank/12)*100"
+              color="primary"
+            >
+              <strong>{{ currentRank }}</strong>
+            </v-progress-circular>
+            <div class="caption"> Next Rank: <b class="black--text">{{nextRank}}</b></div>
+          </div>
           <template class="stats-container px-2 py-4" v-if="stats">
-            <v-row :class="{ 'rank-data-row' : tabMode, 'py-3': !tabMode }" justify="space-between" wrap v-for="(stat, i) in stats.metadata.requirements" :key="i">
-              <v-col class="pa-1">
-                <div class="title">
-                  {{ stat.category ? stat.category.toUpperCase() : statsMapping[`${stat.type}_${stat.metric}`]}}
-                  <v-icon color="green" v-if="!stat.notApplicable && stat.achieved">check_circle</v-icon>
-                </div>
-              </v-col>
-              <v-spacer></v-spacer>
-              <v-col class="pa-1 text-right">
-                <div class="title">{{format(stat.earned)}}</div>
-                <div v-if="stat.earned && parseInt(stat.earned)" class="caption grey--text darken-1">
-                  <span v-if="!tabMode">{{format(stat.earned)}} of {{format(stat.required)}}</span>
-                </div>
-                <template v-if="!stat.notApplicable">
-                  <template v-if="stat.achieved">
-                    <div class="caption grey--text darken-1"> 100% </div>
-                  </template>
-                  <template v-else>
-                    <div class="caption grey--text darken-1"> {{format((stat.earned / stat.required) * 100)}}% </div>
-                  </template>
-                </template>
-                <template v-else>
-                  <div class="caption grey--text darken-1"> N/A </div>
-                </template>
-              </v-col>
+            <v-row :class="{ 'rank-data-row' : tabMode, 'py-1': !tabMode }" justify="space-between" wrap v-for="(stat, i) in stats.metadata.requirements" :key="i">
+              <v-layout justify-space-between>
+                <v-flex>
+                  <div class="title">
+                    {{ stat.category ? stat.category.toUpperCase() : statsMapping[`${stat.type}_${stat.metric}`]}}
+                  </div>
+                </v-flex>
+                <v-flex class="text-right">
+                  <v-icon color="grey" v-if="stat.notApplicable">do_not_disturb</v-icon>
+                  <v-icon color="grey" v-if="!stat.notApplicable && !stat.achieved">pending</v-icon>
+                  <v-icon color="green lighten-2" v-if="!stat.notApplicable && stat.achieved">check_circle</v-icon>
+                </v-flex>
+              </v-layout>
               <v-col cols="12" class="pa-1">
-                <v-progress-linear :class="tabMode ? 'progress-bar' : null" :color="stat.notApplicable ? 'grey' : 'success'" :height="tabMode ? 2 : 5" :value="Math.round(stat.earned/stat.required*100)"></v-progress-linear>
+                <v-progress-linear
+                  rounded
+                  :class="tabMode ? 'progress-bar' : null"
+                  :color="stat.notApplicable ? 'grey' : 'green lighten-2'"
+                  :height="25"
+                  :value="Math.round(stat.earned/stat.required*100)">
+                  <template v-slot:default>
+                    <template v-if="!stat.notApplicable">
+                      <template v-if="stat.achieved">
+                        <strong> 100% </strong>
+                      </template>
+                      <template v-else>
+                        <strong> {{format((stat.earned / stat.required) * 100)}}% </strong>
+                      </template>
+                    </template>
+                    <template v-else>
+                      <strong> Not Applicable for {{nextRank}} </strong>
+                    </template>
+                  </template>
+                </v-progress-linear>
               </v-col>
+              <v-layout justify-space-between v-if="!stat.notApplicable">
+                <v-flex class="text-left">
+                  <template v-if="stat.required && parseInt(stat.required)">
+                    <strong class="subtitle-1 black--text">{{format(stat.earned)}}</strong> <small>/ {{format(stat.required)}}</small>
+                  </template>
+                  <strong  class="subtitle-1 black--text" v-else-if="stat.earned && parseInt(stat.earned)">{{ format(stat.earned) }}</strong>
+                </v-flex>
+                <v-flex class="text-right">
+                  <template>
+                    <small v-if="stat.delta > 0" >You are over by <span class="black--text">{{format(stat.delta)}}</span> points!</small>
+                    <small v-else-if="stat.delta < 0">You still need <span class="black--text">{{format(stat.delta)}}</span> points!</small>
+                  </template>
+                </v-flex>
+              </v-layout>
             </v-row>
           </template>
         </template>
@@ -121,8 +133,9 @@
 </template>
 
 <script>
+import { intersection } from 'lodash'
 import * as moment from 'moment'
-import { mapState } from 'vuex'
+import { mapState, mapGetters } from 'vuex'
 import PeriodSwitcher from '@/components/PeriodSwitcher.vue'
 import EarningBreakdown from '@/components/EarningBreakdown.vue'
 export default {
@@ -163,12 +176,13 @@ export default {
   },
   methods: {
     format(num) {
-      num = Math.round(num)
+      num = Math.round(Math.abs(num))
       num = new Intl.NumberFormat('en-US', {}).format(num)
       return num
     },
     parseStats(stats) {
       if (stats && stats.metadata) {
+        this.rank = stats.metadata.ranking.rank
         this.currentRank = stats.metadata.ranking.name
         this.nextRank = stats.metadata.nextRanking.name
       }
@@ -199,10 +213,15 @@ export default {
   },
   computed: {
     showStatsMaintenance() {
-      // all env vars come in as strings! yay!
-      return process.env.VUE_APP_STATS_MAINTENANCE === 'true'
+      const maintenanceIsOn = this.selectedPeriod.metadata.engineMaintenance
+      const isImpersonationAllowed = this.selectedPeriod.metadata.allowImpersonation && this.user.isImpersonating
+      const hasAllowedTags = intersection(this.selectedPeriod.metadata.allowTags, this.member.tags)
+      const canSkip = isImpersonationAllowed || hasAllowedTags.length > 0
+      return (maintenanceIsOn && !canSkip)
     },
+    ...mapGetters(['member']),
     ...mapState({
+      user: state => state.user,
       periods: state => state.comp.periods,
       selectedPeriod: state => state.comp.selectedPeriod
     })

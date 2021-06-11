@@ -182,6 +182,7 @@ export default {
         carry[stat.prop] = stat
         return carry
       }, {})
+      console.log(this.current, this.next)
     },
     showBanner() {
       const { open, status } = this.selectedPeriod || {}
