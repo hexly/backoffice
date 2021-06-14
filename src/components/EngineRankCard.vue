@@ -94,13 +94,17 @@
                   <template v-if="stat.required && parseInt(stat.required)">
                     <strong class="subtitle-1 black--text">{{format(stat.earned)}}</strong> <small>/ {{format(stat.required)}}</small>
                   </template>
-                  <strong  class="subtitle-1 black--text" v-else-if="stat.earned && parseInt(stat.earned)">{{ format(stat.earned) }}</strong>
                 </v-flex>
                 <v-flex class="text-right">
                   <template>
                     <small v-if="stat.delta > 0" >You are over by <span class="black--text">{{format(stat.delta)}}</span> points!</small>
                     <small v-else-if="stat.delta < 0">You still need <span class="black--text">{{format(stat.delta)}}</span> points!</small>
                   </template>
+                </v-flex>
+              </v-layout>
+              <v-layout justify-space-between v-else>
+                <v-flex class="text-left">
+                  <strong  class="subtitle-1 black--text">{{ format(stat.earned) }}</strong>
                 </v-flex>
               </v-layout>
             </v-row>

@@ -77,7 +77,7 @@
                     </v-list-item-content>
                   </v-list-item>
                 </template>
-                <template v-if="address">
+                <template v-if="address && address.street">
                   <v-divider inset></v-divider>
                   <v-list-item>
                     <v-list-item-icon>
