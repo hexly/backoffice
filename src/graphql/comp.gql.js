@@ -216,9 +216,9 @@ export const formatData = (member) => {
   const downline = _.get(member, 'team.downlineCount', 0) || 0
   const qualified = _.get(member, 'team.qualifiedCount', 0) || 0
   const rawLevels = _.get(member, 'team.levels', []) || []
-  const rankCounts = _.get(member, 'rankCounts', {}) || {}
-  const activeCount = _.get(member, 'activityCounts.active', 0) || 0
-  const inactiveCount = _.get(member, 'activityCounts.inactive', 0) || 0
+  const rankCounts = _.get(member, 'team.rankCounts', {}) || {}
+  const activeCount = _.get(member, 'team.activityCounts.active', 0) || 0
+  const inactiveCount = _.get(member, 'team.activityCounts.inactive', 0) || 0
   const ranks = {}
   rankNumbers.forEach(r => {
     if (rankCounts[`rank${r}`]) {

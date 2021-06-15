@@ -19,6 +19,16 @@
             <v-list-item>
               <v-list-item-title @click="viewTeam()"><v-btn block>View Team</v-btn></v-list-item-title>
             </v-list-item>
+            <v-list-item>
+              <v-list-item-title @click="viewSales()">
+                <v-dialog content-class="sales-dialog" v-model="salesDialog" fullscreen hide-overlay transition="dialog-bottom-transition">
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn block v-bind="attrs" v-on="on">View Sales</v-btn>
+                </template>
+                  <Sales :mId="user.id" :mName="user.name" @close="salesDialog = false"/>
+                </v-dialog>
+              </v-list-item-title>
+            </v-list-item>
             <v-list-item v-if="displaySuccessStart">
               <v-list-item-title @click="showSuccessStartDialog = true"><v-btn block>View Success Start</v-btn></v-list-item-title>
             </v-list-item>
@@ -209,13 +219,15 @@ import { AWARDS_BY_ID } from '@/graphql/Team.gql'
 import { INSIGHTS_COLLECTION } from '@/graphql/comp.gql'
 import InsightsPanel from '@/components/insights/InsightsPanel.vue'
 import EngineRankCard from '@/components/EngineRankCard.vue'
+import Sales from '@/views/Sales.vue'
 export default {
   name: 'TeamCard',
   components: {
     TeamDetails,
     CompRanksCard,
     InsightsPanel,
-    EngineRankCard
+    EngineRankCard,
+    Sales
   },
   data () {
     return {
@@ -243,7 +255,8 @@ export default {
         thirdLine: null
       },
       successStartSection: null,
-      showSuccessStartDialog: false
+      showSuccessStartDialog: false,
+      salesDialog: false
     }
   },
   props: {
@@ -269,6 +282,9 @@ export default {
     },
     viewTeam (user = this.user) {
       this.$emit('viewTeam', user)
+    },
+    viewSales(user = this.user) {
+      // Load Sales Screen
     },
     getRank (user = this.user) {
       // Query rank here
@@ -528,5 +544,10 @@ export default {
 }
 .get-rank-btn {
   align-self: center;
+}
+</style>
+<style>
+.sales-dialog{
+  background-color: white;
 }
 </style>

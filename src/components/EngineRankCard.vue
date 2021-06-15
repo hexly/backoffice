@@ -259,7 +259,6 @@ export default {
 }
 .progress-bar {
   margin: 0;
-  margin-bottom: 11px;
 }
 .stats-container {
   max-height: unset;
