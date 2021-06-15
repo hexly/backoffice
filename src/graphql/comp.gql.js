@@ -72,25 +72,6 @@ query getEngineStats($payload: EngineRankingsInput!){
         marketId
         recognizedRank
         rank
-        activityCounts{
-          active
-          inactive
-        }
-        rankCounts {
-          rank0
-          rank1
-          rank2
-          rank3
-          rank4
-          rank5
-          rank6
-          rank7
-          rank8
-          rank9
-          rank10
-          rank11
-          rank12
-        }
         stats
         progression {
           label
@@ -103,6 +84,25 @@ query getEngineStats($payload: EngineRankingsInput!){
           fulfilled
         }
         team{
+          activityCounts{
+            active
+            inactive
+          }
+          rankCounts {
+            rank0
+            rank1
+            rank2
+            rank3
+            rank4
+            rank5
+            rank6
+            rank7
+            rank8
+            rank9
+            rank10
+            rank11
+            rank12
+          }
           groupCount
           downlineCount
           qualifiedCount
