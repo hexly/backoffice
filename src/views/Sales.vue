@@ -2,19 +2,15 @@
   <v-flex xs12>
     <div class="about">
       <v-card>
-        <v-card-title class="headline font-weight-regular white--text secondary">Order History</v-card-title>
+        <v-card-title class="headline font-weight-regular white--text secondary">
+          <span>{{mName || ''}} Sales History</span>
+          <v-spacer></v-spacer>
+          <v-btn icon dark @click="$emit('close')"><v-icon>mdi-close</v-icon></v-btn>
+        </v-card-title>
         <v-card-text>
           <v-subheader>Range</v-subheader>
-          <v-container
-            grid-list-md
-            text-center
-          >
-            <v-layout
-              row
-              align-center
-              justify-space-around
-              wrap
-            >
+          <v-container grid-list-md text-center>
+            <v-layout row align-center justify-space-around wrap>
               <v-dialog
                 ref="dialogStart"
                 v-model="modalStart"
@@ -38,11 +34,7 @@
                   :reactive="true"
                 >
                   <v-spacer></v-spacer>
-                  <v-btn
-                    text
-                    color="primary"
-                    @click="modalStart = false"
-                  >Cancel</v-btn>
+                  <v-btn text color="primary" @click="modalStart = false">Cancel</v-btn>
                   <v-btn
                     text
                     color="primary"
@@ -117,14 +109,8 @@
             <td>{{ item.totalPoints }}</td>
             <td>{{statusMap[item.status] || item.status}}</td>
             <td>
-              <v-icon
-                @click="expanded = []"
-                v-if="isExpanded"
-              >expand_less</v-icon>
-              <v-icon
-                @click="expanded = [item]"
-                v-else
-              >expand_more</v-icon>
+              <v-icon @click="expanded = []" v-if="isExpanded">expand_less</v-icon>
+              <v-icon @click="expanded = [item]" v-else>expand_more</v-icon>
             </td>
           </tr>
         </template>
@@ -246,6 +232,10 @@ export default {
     DateSelector,
     Currency
   },
+  props: {
+    mId: Number,
+    mName: String
+  },
   data () {
     return {
       statusMap: {
@@ -289,7 +279,7 @@ export default {
       variables () {
         return {
           saleSearchInput: {
-            sellerId: this.memberId,
+            sellerId: this.mId || this.memberId,
             tenantId: this.$tenantId,
             query: null,
             endDate: this.endDate,
