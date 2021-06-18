@@ -61,7 +61,6 @@ import { initialize, updateHeightDepth, collapse,
   checkParentOfPinned } from './Graph.d3.js'
 import { SALES_STATS, SEARCH_SALES_SELLER_ID } from '@/graphql/Sales.gql'
 import moment from 'moment'
-import { map } from 'ramda'
 import * as d3 from 'd3'
 import { mapGetters } from 'vuex'
 
@@ -506,13 +505,14 @@ export default {
   computed: {
     ...mapGetters(['member']),
     items () {
-      return map(sale => {
-        return {
-          ...sale,
-          id: sale.saleId,
-          date: moment(sale.awardedDate, 'YYYY-MM-DD').format('MM/DD/YYYY')
-        }
-      }, this.sales)
+      return (this.sales || [])
+        .map(sale => {
+          return {
+            ...sale,
+            id: sale.saleId,
+            date: moment(sale.awardedDate, 'YYYY-MM-DD').format('MM/DD/YYYY')
+          }
+        })
     },
     currentId: {
       get: function () {
