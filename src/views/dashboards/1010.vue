@@ -27,9 +27,9 @@
         <v-card>
           <v-img src="/img/1010/everra-trip.png" ></v-img>
           <v-card-text class="text-center">
-            <div><span class="primary--text subheading font-weight-bold">WHERE: </span>Cruise to be announced  ( Set sail out of California)</div>
+            <div><span class="primary--text subheading font-weight-bold">WHERE: </span>Cruise (destination to be announced)</div>
             <div><span class="primary--text subheading font-weight-bold">WHEN: </span>1st Quarter 2022</div>
-            <div><span class="primary--text subheading font-weight-bold">WHO: </span>All Influencers that Qualify from all markets</div>
+            <div><span class="primary--text subheading font-weight-bold">WHO: </span>Influencers from all markets who Qualify</div>
             <div>Qualifying Period: June 1 – October 31, 2022</div>
             <div>Incentive Trip Points (ITPs) required to qualify: <b>25,000</b></div>
             <v-divider class="ma-3"></v-divider>
@@ -45,7 +45,7 @@
             </v-progress-linear>
             <v-progress-linear v-else rounded color="rgb(195,163,194)" :height="25" indeterminate></v-progress-linear>
           </v-card-text>
-          <v-card-title>HOW TO QUALIFY</v-card-title>
+          <v-card-title>HOW TO EARN ITP</v-card-title>
           <v-card-text>
             <div class="trip-points-copy">
               <div><strong>Personal Sales Volume</strong>: 1 PSV = 1 ITP</div>
@@ -90,10 +90,13 @@
             <h4 class="trip-points-header">Personally Sponsored Influencers</h4>
             <div class="trip-points-copy">
               <div>
-                <span class="font-weight-bold">2K ITPs</span> per Personally Sponsored Influencer that advances to ranks 2 or 3
+                <span class="font-weight-bold">1K ITPs</span> per Personally Sponsored New Influencer<sup>*</sup> that advances to rank 2
               </div>
               <div>
-                <span class="font-weight-bold">4K ITPs</span> per Personally Sponsored Influencer that advances to rank 4+
+                <span class="font-weight-bold">4K ITPs</span> per Personally Sponsored New Influencer<sup>*</sup> that advances to rank 4
+              </div>
+              <div>
+                <small> <strong> <sup>*</sup> Personally Sponsored New Influencers</strong> are Influencers who join and qualify between June 1 - October 31, 2021. </small>
               </div>
             </div>
           </v-card-text>
