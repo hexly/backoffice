@@ -30,7 +30,7 @@
             <div><span class="primary--text subheading font-weight-bold">WHERE: </span>Cruise (destination to be announced)</div>
             <div><span class="primary--text subheading font-weight-bold">WHEN: </span>1st Quarter 2022</div>
             <div><span class="primary--text subheading font-weight-bold">WHO: </span>Influencers from all markets who Qualify</div>
-            <div>Qualifying Period: June 1 – October 31, 2022</div>
+            <div>Qualifying Period: June 1 – October 31, 2021</div>
             <div>Incentive Trip Points (ITPs) required to qualify: <b>25,000</b></div>
             <v-divider class="ma-3"></v-divider>
             <v-progress-linear
