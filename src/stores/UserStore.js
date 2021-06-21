@@ -142,8 +142,15 @@ export const UserStore = {
       )
       if (success && issued) {
         principal = parseLegacyPrincipal(principal)
-        commit(UserMutations.SET_JWT, token)
-        commit(UserMutations.SET_PRINCIPAL, principal)
+        const statusId = _.get(principal, 'member.statusId')
+        const tags = _.get(principal, 'member.tags')
+        // Status Id 1 = Active Member
+        if (statusId !== 1 || tags.indexOf('backoffice:locked') >= 0) {
+          success = false
+        } else {
+          commit(UserMutations.SET_JWT, token)
+          commit(UserMutations.SET_PRINCIPAL, principal)
+        }
       }
       return { success, token, principal, reason, issued }
     },

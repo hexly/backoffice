@@ -18,6 +18,7 @@ export const LOGIN = gql`
         identityId
         memberId
         member {
+          statusId
           firstName
           lastName
           id
