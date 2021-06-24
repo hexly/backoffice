@@ -379,7 +379,7 @@ export default {
           const statusId = get(getPrincipal, 'member.statusId')
           const tags = get(getPrincipal, 'member.tags')
           // Status Id 1 = Active Member
-          if (statusId !== 1 || tags.indexOf('backoffice:locked') >= 0) {
+          if (!this.user.isImpersonating && (statusId !== 1 || tags.indexOf('backoffice:locked') >= 0)) {
             this.logoutUser()
             window.location.reload(true)
           }
