@@ -129,7 +129,7 @@ export const UserStore = {
     }
   },
   actions: {
-    async [UserActions.LOGIN]({ commit }, creds) {
+    async [UserActions.LOGIN]({ commit, state }, creds) {
       const response = await apolloHexlyClient.mutate({
         mutation: LOGIN,
         variables: { creds },
