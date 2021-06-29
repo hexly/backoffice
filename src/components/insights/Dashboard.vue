@@ -97,7 +97,7 @@
                   </v-list-item-subtitle>
                   <v-list-item-title class="mt-3">Discount Amount</v-list-item-title>
                   <v-list-item-subtitle v-for="price in getCouponPricingInfo(coupon.config.amounts)" :key="price.key">
-                    <div v-if="!(typeof price.key === 'undefined') && !(typeof price.amount === 'undefined')">
+                    <div v-if="price && !(typeof price.key === 'undefined') && !(typeof price.amount === 'undefined')">
                       <span class="font-weight-bold">{{price.key}}</span>: {{(price.amount / 100).toFixed(2)}}
                     </div>
                   </v-list-item-subtitle>
