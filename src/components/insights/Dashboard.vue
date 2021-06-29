@@ -95,6 +95,12 @@
                       <span>{{tooltipText}}</span>
                     </v-tooltip>
                   </v-list-item-subtitle>
+                  <v-list-item-title class="mt-3">Discount Amount</v-list-item-title>
+                  <v-list-item-subtitle v-for="price in getCouponPricingInfo(coupon.config.amounts)" :key="price.key">
+                    <div v-if="price && !(typeof price.key === 'undefined') && !(typeof price.amount === 'undefined')">
+                      <span class="font-weight-bold">{{price.key}}</span>: {{(price.amount / 100).toFixed(2)}}
+                    </div>
+                  </v-list-item-subtitle>
                 </v-list-item-content>
                 <v-list-item-action>
                   <v-list-item-action-text> <v-chip class="my-1" color="light-blue" small>{{couponMapping[coupon.type]}}</v-chip> </v-list-item-action-text>
@@ -124,6 +130,7 @@ import { MARKET_COUNT } from '@/graphql/Member.gql'
 import PeriodSwitcher from '@/components/PeriodSwitcher.vue'
 import InsightsPanel from '@/components/insights/InsightsPanel.vue'
 import Flag from '@/components/Flag.vue'
+import * as _ from 'lodash'
 
 export default {
   name: 'InsightsDashboard',
@@ -164,7 +171,14 @@ export default {
           icon: 'mdi-cash-usd-outline',
           desc: 'Team member who contributed the most to your immediate payouts'
         }
-      }
+      },
+      currencyMap: [
+        'USD',
+        'CAD',
+        'GBP',
+        'AUD',
+        'NZD'
+      ]
     }
   },
   computed: {
@@ -184,6 +198,13 @@ export default {
       setTimeout(() => {
         this.tooltipText = 'Click To Copy'
       }, 3000)
+    },
+    getCouponPricingInfo(amounts) {
+      const supportedCurrencyIds = _.get(this, 'member.market.supportedCurrencyIds', [])
+      const supportedMarkets = supportedCurrencyIds.map(el => this.currencyMap[el])
+      const mappedPrices = supportedMarkets.map(el => { return { key: el, amount: _.get(amounts, el, 'N/A') } })
+
+      return mappedPrices
     }
   },
   apollo: {
