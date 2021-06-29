@@ -164,7 +164,7 @@ export default {
       const displayName = get(this, 'self.displayName')
       return [
         {
-          displayName: displayName,
+          displayName,
           children: this.users
         }
       ]
