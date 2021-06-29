@@ -95,12 +95,14 @@
                       <span>{{tooltipText}}</span>
                     </v-tooltip>
                   </v-list-item-subtitle>
-                  <v-list-item-title class="mt-3">Discount Amount</v-list-item-title>
-                  <v-list-item-subtitle v-for="price in getCouponPricingInfo(coupon.config.amounts)" :key="price.key">
-                    <div v-if="price && !(typeof price.key === 'undefined') && !(typeof price.amount === 'undefined')">
-                      <span class="font-weight-bold">{{price.key}}</span>: {{(price.amount / 100).toFixed(2)}}
-                    </div>
-                  </v-list-item-subtitle>
+                  <div v-if="coupon && coupon.config && coupon.config.type === 'FIXED_CART_AMOUNT'">
+                    <v-list-item-title class="mt-3">Discount Amount</v-list-item-title>
+                    <v-list-item-subtitle v-for="price in getCouponPricingInfo(coupon.config.amounts)" :key="price.key">
+                      <div v-if="price && !(typeof price.key === 'undefined') && !(typeof price.amount === 'undefined')">
+                        <span class="font-weight-bold">{{price.key}}</span>: {{(price.amount / 100).toFixed(2)}}
+                      </div>
+                    </v-list-item-subtitle>
+                  </div>
                 </v-list-item-content>
                 <v-list-item-action>
                   <v-list-item-action-text> <v-chip class="my-1" color="light-blue" small>{{couponMapping[coupon.type]}}</v-chip> </v-list-item-action-text>
