@@ -118,7 +118,7 @@ import Badges from '@/components/Badges.vue'
 import { MEMBER_STATS_BY_DEPTH } from '@/graphql/MemberStats.gql'
 import { SEARCH_MEMBER_DIRECTORY } from '@/graphql/Member.gql'
 import { mapGetters } from 'vuex'
-import { debounce } from 'lodash'
+import { debounce, get } from 'lodash'
 
 export default {
   components: {
@@ -161,9 +161,10 @@ export default {
   computed: {
     ...mapGetters(['memberId', 'displayName']),
     items () {
+      const displayName = get(this, 'self.displayName')
       return [
         {
-          displayName: this.self.displayName,
+          displayName,
           children: this.users
         }
       ]
