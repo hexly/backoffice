@@ -40,7 +40,8 @@
               :height="25"
               :value="Math.round((engineStats.stats.psv || 0)/25000*100)">
               <template v-slot:default>
-                  <strong> {{engineStats.stats.psv || 0}} / 25000</strong>
+                  <strong v-if="!showStatsMaintenance"> {{engineStats.stats.psv || 0}} / 25000</strong>
+                  <strong v-else> {{ openPeriod.metadata.engineMaintenanceMessage || 'Realtime Stats Temporarily Unavailable'}}</strong>
               </template>
             </v-progress-linear>
             <v-progress-linear v-else rounded color="rgb(195,163,194)" :height="25" indeterminate></v-progress-linear>
@@ -303,6 +304,16 @@ export default {
     ])
   },
   computed: {
+    showStatsMaintenance() {
+      if (this.openPeriod) {
+        const maintenanceIsOn = this.openPeriod.metadata.engineMaintenance
+        const isImpersonationAllowed = this.openPeriod.metadata.allowImpersonation && this.user.isImpersonating
+        const hasAllowedTags = _.intersection(this.openPeriod.metadata.allowTags, this.member.tags)
+        const canSkip = isImpersonationAllowed || hasAllowedTags.length > 0
+        return (maintenanceIsOn && !canSkip)
+      }
+      return false
+    },
     month() {
       let month = ~~this.$moment().format('M')
       if (this.year === 2020) {
