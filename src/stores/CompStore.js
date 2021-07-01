@@ -71,7 +71,7 @@ export const CompStore = {
           commit(CompMutations.SET_STATS, { ...stats, id: periodId })
         }
         commit(CompMutations.STATS_LOADING, false)
-        return stats
+        return [stats]
       } else if (version === 2) {
         const memberId = input.membersIn[0]
         const { data } = await apolloFederatedClient.query(getCompStats(
@@ -118,20 +118,17 @@ export const CompStore = {
       if (_.isEmpty(state.previousPeriod) && (periods.closed || periods.under_review)) {
         const currentPeriodOpen = moment(currentPeriod.open, 'YYYY-MM-DD')
         const pastPeriod = engineStatsPeriodsByMemberId.find(p => p.close === currentPeriodOpen.format('YYYY-MM-DD'))
-        if (pastPeriod) {
-          const stats = await dispatch(CompActions.GET_STATS, {
-            input: {
-              forDate: currentPeriodOpen.subtract(1, 'day').format('YYYY-MM-DD'),
-              membersIn: [rootState.user.principal.memberId]
-            },
-            version: _.get(pastPeriod, 'metadata.version', 1),
-            periodId: pastPeriod.id,
-            transient: true
-          })
-          const [previous] = Array.isArray(stats) ? stats : []
-          if (previous && (previous.memberId || previous.awardeeId)) {
-            commit(CompMutations.SET_PREVIOUS_STATS, previous)
-          }
+        const [previous] = await dispatch(CompActions.GET_STATS, {
+          input: {
+            forDate: currentPeriodOpen.subtract(1, 'day').format('YYYY-MM-DD'),
+            membersIn: [rootState.user.principal.memberId]
+          },
+          version: _.get(pastPeriod, 'metadata.version', 1),
+          periodId: pastPeriod.id,
+          transient: true
+        })
+        if (previous && (previous.memberId || previous.awardeeId)) {
+          commit(CompMutations.SET_PREVIOUS_STATS, previous)
         }
       }
       commit(CompMutations.SET_PERIODS, periods)
