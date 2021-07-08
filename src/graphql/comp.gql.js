@@ -73,6 +73,7 @@ query getEngineStats($payload: EngineRankingsInput!){
         recognizedRank
         rank
         stats
+        awarded
         progression {
           label
           key
@@ -157,6 +158,7 @@ query getEngineStats($payload: EngineRankingsInput!, $filter: EngineRankingTeamF
               recognizedRank
               rank
               stats
+              awarded
               team {
                 groupCount 
                 downlineCount 
@@ -265,12 +267,14 @@ export const formatData = (member) => {
     nextRanking: { rank: Math.min(rank + 1, 12), name: `Rank ${Math.min(rank + 1, 12)}` }
   }
   const memberStats = _.get(member, 'stats', {}) || {}
+  const awarded = _.get(member, 'awarded', {}) || {}
   const memberId = _.get(member, 'memberId')
   const periodId = _.get(member, 'periodId')
   const { relativeDepth: relativeLevel } = _.get(member, 'metadata', {})
   return {
     id: memberId,
     relativeLevel,
+    awarded,
     periodId,
     memberId,
     counts,

@@ -7,6 +7,8 @@ import VueAnalytics from 'vue-analytics'
 import LazyComponent from 'v-lazy-component'
 import 'vuetify/dist/vuetify.min.css'
 import '@mdi/font/css/materialdesignicons.min.css'
+import Chartkick from 'vue-chartkick'
+import Chart from 'chart.js'
 
 import moment from 'moment'
 
@@ -37,6 +39,7 @@ Vue.component('v-gravatar', Gravatar)
 Vue.use(Vuetify)
 Vue.use(Fragment.Plugin)
 Vue.use(LazyComponent)
+Vue.use(Chartkick.use(Chart))
 
 const vuetify = new Vuetify({
   theme: {

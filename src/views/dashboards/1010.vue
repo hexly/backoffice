@@ -21,6 +21,9 @@
               </div>
             </PersonalCard>
           </v-flex>
+          <!-- <v-flex>
+            <TrendCharts :memberId="member.id" />
+          </v-flex> -->
         </v-layout>
       </v-col>
       <v-col cols="12" md="6">
@@ -105,6 +108,7 @@ import TeamOverview from '@/components/dashboard/TeamOverview.vue'
 import LeaderBoard from '@/components/Leaderboard.vue'
 import MarketLeaderBoard from '@/components/MarketLeaderboard.vue'
 import SellerLeaderBoard from '@/components/SellerLeaderboard.vue'
+import TrendCharts from '@/components/TrendCharts.vue'
 import Cruise2022 from '@/components/incentives/Cruise2022.vue'
 
 import {
@@ -137,6 +141,7 @@ export default {
     MarketLeaderBoard,
     SellerLeaderBoard,
     EngineRankCard,
+    TrendCharts,
     Cruise2022
   },
   data() {
@@ -313,8 +318,5 @@ section .stat {
 #recent-sales-card {
   height: 100%;
   min-height: 554px;
-}
-#personal-card-layout {
-  height: 100%;
 }
 </style>
