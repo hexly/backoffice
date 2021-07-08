@@ -4,7 +4,7 @@
       <v-card-text>
         <v-alert class="inner-alert" icon="mdi-calendar-check" text dense type="info">
           {{
-            selectedPeriod.metadata.engineMaintenanceMessage
+            selectedPeriod.metadata && selectedPeriod.metadata.engineMaintenanceMessage
             ||
             'Our system is currently undergoing maintenance. We will be back up shortly'
           }}
@@ -15,23 +15,23 @@
     <template v-else>
       <div>
         <v-layout justify-center row wrap class="text-center" v-if="compStats">
-          <v-flex v-if="compStats.metadata.counts.allTime >= 0">
-            <v-chip label small color="red lighten-5">{{compStats.metadata.counts.allTime + 1}}</v-chip>
+          <v-flex v-if="compMeta.counts.allTime >= 0">
+            <v-chip label small color="red lighten-5">{{compMeta.counts.allTime + 1}}</v-chip>
             <br />
             Total Team
           </v-flex>
           <v-flex>
-            <v-chip label small color="red lighten-5">{{compStats.metadata.counts.downline}}</v-chip>
+            <v-chip label small color="red lighten-5">{{compMeta.counts.downline}}</v-chip>
             <br />
             Active Team
           </v-flex>
           <v-flex>
-            <v-chip label small color="red lighten-5">{{compStats.metadata.counts.group}}</v-chip>
+            <v-chip label small color="red lighten-5">{{compMeta.counts.group}}</v-chip>
             <br />
             Group
           </v-flex>
           <v-flex>
-            <v-chip label small color="red lighten-5">{{compStats.metadata.counts.qualified}}</v-chip>
+            <v-chip label small color="red lighten-5">{{compMeta.counts.qualified}}</v-chip>
             <br />
             Qualified
           </v-flex>
@@ -41,23 +41,23 @@
             No Data Found
           </v-flex>
         </v-layout>
-        <template v-if="compStats && compStats.metadata.counts.levels && compStats.metadata.counts.levels.length">
+        <template v-if="compStats && compMeta.counts.levels && compMeta.counts.levels.length">
           <hr class="my-3" />
           <div class="text-center">Qualified Per level</div>
           <v-layout row wrap class="text-center">
-            <v-flex xs4 class="my-1" v-for="level in compStats.metadata.counts.levels" :key="level.level">
+            <v-flex xs4 class="my-1" v-for="level in compMeta.counts.levels" :key="level.level">
               <b>Level {{level.level}}</b>
               <br />
               <v-chip label x-small color="teal lighten-5">{{level.qualified}} / {{level.total}}</v-chip>
             </v-flex>
           </v-layout>
         </template>
-        <template v-if="compStats && !isEmpty(compStats.metadata.counts.ranks)">
+        <template v-if="compStats && !isEmpty(compMeta.counts.ranks)">
           <hr class="my-3" />
           <div class="text-center">Per Rank Total</div>
           <v-layout row wrap class="text-center">
             <v-flex xs3 class="my-1"
-              v-for="(total, rank) in filterRanks(compStats.metadata.counts.ranks)"
+              v-for="(total, rank) in filterRanks(compMeta.counts.ranks)"
               :key="`${total}-${rank}`">
               <b>Rank {{rank}}</b>
               <br />
@@ -93,15 +93,25 @@ export default {
     }
   },
   computed: {
+    compMeta() {
+      let meta = {
+        counts: {
+          allTime: 0
+        },
+        ...this.compStats
+      }
+      return meta
+    },
     ...mapGetters(['member']),
     ...mapState({
       user: state => state.user,
       selectedPeriod: state => state.comp.selectedPeriod
     }),
     showStatsMaintenance() {
-      const maintenanceIsOn = this.selectedPeriod.metadata.engineMaintenance
-      const isImpersonationAllowed = this.selectedPeriod.metadata.allowImpersonation && this.user.isImpersonating
-      const hasAllowedTags = intersection(this.selectedPeriod.metadata.allowTags, this.member.tags)
+      const meta = (this.selectedPeriod && this.selectedPeriod.metadata) || {}
+      const maintenanceIsOn = meta.engineMaintenance
+      const isImpersonationAllowed = meta.allowImpersonation && this.user.isImpersonating
+      const hasAllowedTags = intersection(meta.allowTags, this.member.tags)
       const canSkip = isImpersonationAllowed || hasAllowedTags.length > 0
       return (maintenanceIsOn && !canSkip)
     }
