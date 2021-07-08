@@ -21,9 +21,9 @@
               </div>
             </PersonalCard>
           </v-flex>
-          <v-flex>
+          <!-- <v-flex>
             <TrendCharts :memberId="member.id" />
-          </v-flex>
+          </v-flex> -->
         </v-layout>
       </v-col>
       <v-col cols="12" md="6">
