@@ -8,17 +8,74 @@
       <div>Qualifying Period: June 1 – October 31, 2021</div>
       <div>Incentive Trip Points (ITPs) required to qualify: <b>25,000</b></div>
       <v-divider class="ma-3"></v-divider>
-      <v-progress-linear
-        v-if="engineStats && engineStats.stats"
-        rounded
-        color="rgb(195,163,194)"
-        :height="25"
-        :value="Math.round((tripPoints)/25000*100)">
-        <template v-slot:default>
-            <strong v-if="!showStatsMaintenance"> {{tripPoints}} / 25000</strong>
-            <strong v-else> {{ openPeriod.metadata.engineMaintenanceMessage || 'Realtime Stats Temporarily Unavailable'}}</strong>
-        </template>
-      </v-progress-linear>
+      <template v-if="engineStats && engineStats.awarded">
+        <v-progress-linear
+          rounded
+          color="rgb(195,163,194)"
+          :height="25"
+          :value="Math.round((tripPoints)/25000*100)">
+          <template v-slot:default>
+              <strong v-if="!showStatsMaintenance"> {{tripPoints}} / 25000</strong>
+              <strong v-else> {{ openPeriod.metadata.engineMaintenanceMessage || 'Realtime Stats Temporarily Unavailable'}}</strong>
+          </template>
+        </v-progress-linear>
+        <div v-if="tripPoints && !showStatsMaintenance">
+          <v-expansion-panels flat>
+            <v-expansion-panel>
+              <v-expansion-panel-header>
+                View Breakdown
+                <template v-slot:actions>
+                  <v-icon color="primary">
+                    $expand
+                  </v-icon>
+                </template>
+              </v-expansion-panel-header>
+              <v-expansion-panel-content>
+                <template v-if="engineStats.awarded.it2022prev">
+                  Previous Month
+                  <v-progress-linear rounded color="blue" :height="25" :value="Math.round((engineStats.awarded.it2022prev)/tripPoints*100)">
+                    <template v-slot:default>
+                        <strong v-if="!showStatsMaintenance"> {{engineStats.awarded.it2022prev}} / {{tripPoints}}</strong>
+                    </template>
+                  </v-progress-linear>
+                </template>
+                <template v-if="engineStats.awarded.it2022psv">
+                  Current PSV
+                  <v-progress-linear rounded color="blue" :height="25" :value="Math.round((engineStats.awarded.it2022psv)/tripPoints*100)">
+                    <template v-slot:default>
+                        <strong v-if="!showStatsMaintenance"> {{engineStats.awarded.it2022psv}} / {{tripPoints}}</strong>
+                    </template>
+                  </v-progress-linear>
+                </template>
+                <template v-if="engineStats.awarded.it2022r">
+                  Current Rank
+                  <v-progress-linear rounded color="blue" :height="25" :value="Math.round((engineStats.awarded.it2022r)/tripPoints*100)">
+                    <template v-slot:default>
+                        <strong v-if="!showStatsMaintenance"> {{engineStats.awarded.it2022r}} / {{tripPoints}}</strong>
+                    </template>
+                  </v-progress-linear>
+                </template>
+                <template v-if="engineStats.awarded.it2022nr">
+                  Current Rank Advancement
+                  <v-progress-linear rounded color="blue" :height="25" :value="Math.round((engineStats.awarded.it2022nr)/tripPoints*100)">
+                    <template v-slot:default>
+                        <strong v-if="!showStatsMaintenance"> {{engineStats.awarded.it2022nr}} / {{tripPoints}}</strong>
+                    </template>
+                  </v-progress-linear>
+                </template>
+                <template v-if="engineStats.awarded.it2022rnr">
+                  Current Frontline Rank Advancement
+                  <v-progress-linear rounded color="blue" :height="25" :value="Math.round((engineStats.awarded.it2022rnr)/tripPoints*100)">
+                    <template v-slot:default>
+                        <strong v-if="!showStatsMaintenance"> {{engineStats.awarded.it2022rnr}} / {{tripPoints}}</strong>
+                    </template>
+                  </v-progress-linear>
+                </template>
+              </v-expansion-panel-content>
+            </v-expansion-panel>
+          </v-expansion-panels>
+        </div>
+      </template>
       <v-progress-linear v-else rounded color="rgb(195,163,194)" :height="25" indeterminate></v-progress-linear>
     </v-card-text>
     <v-card-title>HOW TO EARN ITP</v-card-title>
@@ -87,9 +144,8 @@ export default {
   name: 'Cruise2022',
   computed: {
     tripPoints() {
-      const current = _.get(this, 'engineStats.stats.psv', 0) || 0
-      const past = _.get(this, 'previous.stats.psv', 0) || 0
-      return current + past
+      const current = _.get(this, 'engineStats.awarded.it2022total', 0) || 0
+      return current
     },
     showStatsMaintenance() {
       if (this.openPeriod) {
@@ -103,7 +159,7 @@ export default {
     },
     ...mapState({
       user: state => state.user,
-      engineStats: state => state.comp.stats,
+      engineStats: state => state.comp.currentPeriod,
       openPeriod: state => state.comp.periods.open && state.comp.periods.open[0],
       previous: state => state.comp.previousPeriod
     }),
