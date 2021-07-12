@@ -59,7 +59,7 @@
         <v-card-text>
           <v-alert type="error" :value="transferError" >{{transferError}}</v-alert>
           When transfering funds to PayPal, PayPal will charge you a processing fee of:
-          <b>
+          <b v-if="releasedBalance.currency">
             <Currency :amount="calcFee" :currency="releasedBalance.currency" />
           </b>
           <ul>
