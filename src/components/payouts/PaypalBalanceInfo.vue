@@ -29,19 +29,13 @@
         bottom
       >
         <template v-slot:activator="{ on }">
-          <v-icon
-            small
-            v-on="on"
-          >help</v-icon>
+          <v-icon small v-on="on">help</v-icon>
         </template>
         <span><small>Total payouts in released status since last bank transfer</small></span>
       </v-tooltip>
     </h4>
     <h2>
-      <Currency
-        :amount="releasedBalance.amount / 100"
-        :currency="releasedBalance.currency"
-      />
+      <Currency :amount="releasedBalance.amount / 100" :currency="releasedBalance.currency"/>
     </h2>
     <br />
     <v-dialog
@@ -59,18 +53,27 @@
         >Transfer To PayPal</v-btn>
       </template>
       <v-card>
-        <v-card-title
-          class="headline grey lighten-2"
-          primary-title
-        >
-          Funds Transfer Policy
+        <v-card-title class="headline grey lighten-2" primary-title>
+          PayPal Transfer Policy
         </v-card-title>
         <v-card-text>
-          <v-alert
-            type="error"
-            :value="transferError"
-          >{{transferError}}</v-alert>
-          When transfering funds to PayPal, you will be charged a processing fee of $0.25/£0.17. Would you like to continue to transfer funds?
+          <v-alert type="error" :value="transferError" >{{transferError}}</v-alert>
+          When transfering funds to PayPal, PayPal will charge you a processing fee of:
+          <b>
+            <Currency :amount="calcFee" :currency="releasedBalance.currency" />
+          </b>
+          <ul>
+            <li v-for="(value, key) in fees" :key="key">
+              {{key}}:
+              <template v-if="value.flatRate">
+                <Currency :amount="value.flatRate / 100" :currency="key"/>
+              </template>
+              <template v-else>
+                {{value.percent}}% (up to <Currency :amount="value.cap / 100" :currency="key"/>)
+              </template>
+            </li>
+          </ul>
+          Would you like to continue to transfer funds?
         </v-card-text>
         <v-divider></v-divider>
         <v-card-actions>
@@ -138,7 +141,28 @@ export default {
       transferingFunds: false,
       transferSuccess: false,
       transferError: null,
-      fetchingLoginUrl: false
+      fetchingLoginUrl: false,
+      fees: {
+        USD: {
+          flatRate: 25
+        },
+        GBP: {
+          percent: 2,
+          cap: 1400
+        },
+        CAD: {
+          percent: 2,
+          cap: 2400
+        },
+        AUD: {
+          percent: 2,
+          cap: 2400
+        },
+        NZD: {
+          percent: 2,
+          cap: 3000
+        }
+      }
     }
   },
   methods: {
@@ -202,6 +226,18 @@ export default {
         })
       }
     }),
+    calcFee() {
+      const { amount, currency } = this.releasedBalance
+      const fee = this.fees[currency]
+      let calculatedFee = 0
+      if (fee.flatRate) {
+        calculatedFee += fee.flatRate
+      }
+      if (fee.percent) {
+        calculatedFee += Math.min(amount * (fee.percent / 100), fee.cap)
+      }
+      return calculatedFee / 100
+    },
     payPalIntegration () {
       return this.integrations.find(i => {
         return i.key === 'paypal_payouts'
