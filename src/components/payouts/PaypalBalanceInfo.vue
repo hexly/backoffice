@@ -69,7 +69,7 @@
                 <Currency :amount="value.flatRate / 100" :currency="key"/>
               </template>
               <template v-else>
-                {{value.percent}}% (up to <Currency :amount="value.cap / 100" :currency="key"/>)
+                {{value.percent}}% of transfer amount (up to <Currency :amount="value.cap / 100" :currency="key"/>)
               </template>
             </li>
           </ul>
