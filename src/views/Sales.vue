@@ -208,6 +208,12 @@
         </template>
       </v-data-table>
     </div>
+    <v-snackbar
+      v-model="showSnackbar"
+    >
+      {{snackbarMsg}}
+      <v-btn flat color="primary" @click.native="showSnackbar = false">Close</v-btn>
+    </v-snackbar>
   </v-flex>
 </template>
 
@@ -267,7 +273,9 @@ export default {
         { text: 'Qty.', sortable: false },
         { text: 'subtotal', sortable: false }
       ],
-      sales: []
+      sales: [],
+      showSnackbar: false,
+      snackbarMsg: ''
     }
   },
   apollo: {
@@ -289,13 +297,15 @@ export default {
       },
       error (err) {
         this.setLoading(false)
+        this.snackbarMsg = 'We were unable to find your orders! Please try again or contact support'
+        this.showSnackbar = true
         console.error({ err })
       },
       debounce: 500,
       update (data) {
-        console.log({ data })
         const searchSalesBySellerId = _.get(data, 'purchasing.searchSalesBySellerId', [])
         this.setLoading(false)
+
         return searchSalesBySellerId.filter(sale => this.statuses.indexOf(sale.status) >= 0)
       },
       client: 'federated'
