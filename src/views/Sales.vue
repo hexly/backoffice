@@ -292,10 +292,13 @@ export default {
         console.error({ err })
       },
       debounce: 500,
-      update ({ searchSalesBySellerId }) {
+      update (data) {
+        console.log({ data })
+        const searchSalesBySellerId = _.get(data, 'purchasing.searchSalesBySellerId', [])
         this.setLoading(false)
         return searchSalesBySellerId.filter(sale => this.statuses.indexOf(sale.status) >= 0)
-      }
+      },
+      client: 'federated'
     }
   },
   methods: {
