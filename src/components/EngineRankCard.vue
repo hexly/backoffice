@@ -37,7 +37,7 @@
           {{bannerMessage}}
         </v-alert>
         <template v-if="showPayouts">
-          <EarningBreakdown :earnings="stats.earnings" />
+          <EngineEarningCard :earnings="stats.earnings" />
         </template>
         <template v-else>
           <div class="text-center">
@@ -141,12 +141,12 @@ import { intersection } from 'lodash'
 import * as moment from 'moment'
 import { mapState, mapGetters } from 'vuex'
 import PeriodSwitcher from '@/components/PeriodSwitcher.vue'
-import EarningBreakdown from '@/components/EarningBreakdown.vue'
+import EngineEarningCard from '@/components/EngineEarningCard.vue'
 export default {
   name: 'CompRanksCard',
   components: {
     PeriodSwitcher,
-    EarningBreakdown
+    EngineEarningCard
   },
   props: {
     stats: Object,
@@ -180,7 +180,7 @@ export default {
   },
   methods: {
     format(num) {
-      num = Math.round(Math.abs(num))
+      num = Math.abs(num).toFixed(1)
       num = new Intl.NumberFormat('en-US', {}).format(num)
       return num
     },

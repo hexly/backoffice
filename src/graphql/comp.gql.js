@@ -72,6 +72,7 @@ query getEngineStats($payload: EngineRankingsInput!){
         marketId
         recognizedRank
         rank
+        earnings
         stats
         awarded
         progression {
@@ -267,6 +268,7 @@ export const formatData = (member) => {
     nextRanking: { rank: Math.min(rank + 1, 12), name: `Rank ${Math.min(rank + 1, 12)}` }
   }
   const memberStats = _.get(member, 'stats', {}) || {}
+  const earnings = _.get(member, 'earnings')
   const awarded = _.get(member, 'awarded', {}) || {}
   const memberId = _.get(member, 'memberId')
   const periodId = _.get(member, 'periodId')
@@ -279,7 +281,8 @@ export const formatData = (member) => {
     memberId,
     counts,
     metadata,
-    stats: memberStats
+    stats: { ...memberStats, earnings },
+    earnings
   }
 }
 
