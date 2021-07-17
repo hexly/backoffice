@@ -8,7 +8,7 @@
       <v-row v-for="earning in earnings.lines" :key="earning.key" class="pa-0">
         <v-col cols="6" class="pa-2">
           <h3>{{earning.name}}</h3>
-          <small v-if="earning.type === 'rate'">{{earning.rate * 100}}% of {{Math.floor(earning.stat)}}</small>
+          <small v-if="showEarningDetails && earning.type === 'rate'">{{earning.rate * 100}}% of {{Math.floor(earning.stat)}}</small>
         </v-col>
         <v-col cols="6" class="text-right body-1 pa-2">
           <strong>
@@ -37,6 +37,7 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 import Currency from '@/components/Currency'
 
 export default {
@@ -75,6 +76,15 @@ export default {
         }
       }
     }
+  },
+  computed: {
+    showEarningDetails() {
+      console.log(this.selectedPeriod.metadata)
+      return this.selectedPeriod.metadata.showEarningDetails
+    },
+    ...mapState({
+      selectedPeriod: state => state.comp.selectedPeriod
+    })
   }
 }
 </script>
