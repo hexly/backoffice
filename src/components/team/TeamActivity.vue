@@ -68,11 +68,11 @@
           <template v-if="item.metadata.recognizedRank">
             <br/>
             <small>Recognized:</small>
-            <v-chip small :color="item.metadata.recognizedRank > 5 ? '#a1213b' : 'gray'" :class="{'white--text': item.metadata.recognizedRank > 5}">Rank {{item.metadata.recognizedRank}}</v-chip>
+            <v-chip small :color="isGeneration(item.metadata.recognizedRank) ? '#a1213b' : 'gray'" :class="{'white--text': isGeneration(item.metadata.recognizedRank)}">Rank {{item.metadata.recognizedRank}}</v-chip>
           </template>
         </template>
         <template v-slot:item.rank="{ item }">
-          <v-chip :color="item.metadata.ranking.rank > 5 ? '#a1213b' : 'gray'" :class="{'white--text': item.metadata.ranking.rank > 5}">{{item.metadata.ranking.name}}</v-chip>
+          <v-chip :color="isGeneration(item.metadata.ranking.rank) ? '#a1213b' : 'gray'" :class="{'white--text': isGeneration(item.metadata.ranking.rank)}">{{item.metadata.ranking.name}}</v-chip>
         </template>
         <template v-slot:item.stats="{ item }">
           <div style="display: inline-block;" class="ma-2 text-center" v-for="(stat, i) in item.metadata.requirements" :key="i">
@@ -119,10 +119,10 @@
             <small class="pl-5">{{ GET(item, 'member.contacts[0].emails[0].email', 'N/A') }}</small>
           </template>
           <template v-slot:item.rank="{ item }">
-            <v-chip :color="item.rank > 5 ? '#a1213b' : 'gray'" :class="{'white--text': item.rank > 5}">Rank {{item.rank}}</v-chip>
+            <v-chip :color="isGeneration(item.rank) ? '#a1213b' : 'gray'" :class="{'white--text': isGeneration(item.rank)}">Rank {{item.rank}}</v-chip>
           </template>
           <template v-slot:item.recognizedRank="{ item }">
-            <v-chip :color="item.current.recognizedRank > 5 ? '#a1213b' : 'gray'" :class="{'white--text': item.current.recognizedRank > 5}">Rank {{item.current.recognizedRank}}</v-chip>
+            <v-chip :color="isGeneration(item.current.recognizedRank) ? '#a1213b' : 'gray'" :class="{'white--text': isGeneration(item.current.recognizedRank)}">Rank {{item.current.recognizedRank}}</v-chip>
           </template>
           <template v-slot:item.memberPath="{ item }">
             <v-layout class="generation-badge-container" align-center row wrap>
@@ -425,7 +425,14 @@ export default {
     }
   },
   methods: {
+    isGeneration(rank) {
+      if (this.selectedPeriod.metadata.version === 3) {
+        return rank > 7
+      }
+      return rank > 5
+    },
     async searchStats() {
+      this.page = 1
       if (this.selectedPeriod.metadata && this.selectedPeriod.metadata.version === 2) {
         await this.getCompStatsPage()
       } else if (this.selectedPeriod.metadata && this.selectedPeriod.metadata.version === 3) {
@@ -439,6 +446,7 @@ export default {
     },
     async clearSearch() {
       this.search = null
+      this.page = 1
       if (this.selectedPeriod.metadata && this.selectedPeriod.metadata.version === 2) {
         await this.getCompStatsPage()
       } else if (this.selectedPeriod.metadata && this.selectedPeriod.metadata.version === 3) {
@@ -446,6 +454,7 @@ export default {
       }
     },
     async searchActivity() {
+      this.page = 1
       if (this.selectedPeriod.metadata && this.selectedPeriod.metadata.version === 2) {
         await this.getCompStatsPage()
       } else if (this.selectedPeriod.metadata && this.selectedPeriod.metadata.version === 3) {
