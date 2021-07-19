@@ -90,10 +90,12 @@
 
 /* global VERSION */
 import { mapActions } from 'vuex'
-import { UserActions } from '@/stores/UserStore'
+import { UserActions, UserMutations } from '@/stores/UserStore'
 import { ClaimActions } from '@/stores/ClaimStore'
 import { delay } from '@/utils/timer.js'
 import { pathOr } from 'rambda'
+import AUTH_GQL from '@/graphql/login/auth.gql'
+import * as _ from 'lodash'
 
 export default {
   name: 'Foobar',
@@ -117,44 +119,37 @@ export default {
       reset: ClaimActions.RESET
     }),
     async onLogin () {
-      this.error = null
-      try {
-        this.$refs.login.validate()
-        this.buttonLoading = true
-
-        const loginRes = await this.login({
-          username: this.form.email,
-          password: this.form.password,
-          tenantId: this.$tenantId
-        })
-        const { success, issued, principal } = loginRes
-        if (success && !issued) {
-          try {
-            if (!principal || !principal.memberId) {
-              throw new Error("It looks like your account has not been claimed, but we couldn't determine your Member ID. Please contact support")
-            }
-            await this.claim({
-              memberId: principal.memberId,
-              email: this.form.email,
-              tenantId: this.$tenantId,
-              type: 'claim'
-            })
-            return this.onError('This account has not been claimed yet. Please click on the link that has been sent to your email to verify your account.')
-          } catch (err) {
-            this.onError(err)
-          }
-        }
-
-        const { returnTo } = (this.$route.query || {})
-        return success
-          ? this.$router.push(returnTo || '/dashboard')
-          : this.onError('Invalid Username/Password')
-      } catch (error) {
-        this.buttonLoading = false
-        this.onError(error.message)
-      } finally {
-        this.buttonLoading = false
+      const formValidated = this.$refs.login.validate()
+      if (!formValidated) {
+        return
       }
+      this.buttonLoading = true
+
+      const { email, password } = this.form
+      const { $tenantId: tenantId } = this
+      try {
+        const res = await this.$apollo.mutate({
+          client: 'federated',
+          mutation: AUTH_GQL,
+          variables: {
+            input: {
+              username: email,
+              password,
+              context: {
+                tenantId,
+                version: 2,
+                includeLegacy: true
+              }
+            }
+          }
+        })
+        const auth = _.get(res, 'data.iam.authenticate')
+        this.processAuth(auth)
+      } catch (err) {
+        console.log(err)
+        this.onError(err.message)
+      }
+      this.buttonLoading = false
     },
     changeMode (type) {
       this.error = null
@@ -195,6 +190,38 @@ export default {
           'There seems to be a problem. Please try again later or contact customer support.',
           ['message'],
           errors[0]
+        )
+      }
+    },
+    async processAuth(auth) {
+      const success = _.get(auth, 'success')
+      const token = auth.authentication ? auth.authentication.token : undefined
+      if (token && success) {
+        const md = auth.metadata
+        const { identityId, auditId, tenantId, credentialId } = md.claims
+
+        const principal = {
+          identityId, auditId, tenantId, credentialId
+        }
+
+        if (md.member && md.member.id) {
+          principal.memberId = md.member && md.member.id
+          principal.member = md.member
+          principal.member.displayName = md.member.name
+        }
+
+        if (md.permissions) {
+          principal.permissions = md.permissions
+        }
+
+        this.$store.commit(UserMutations.SET_JWT, md.legacyJwt || token)
+        this.$store.commit(UserMutations.SET_FED_JWT, token)
+        this.$router.push('/dashboard')
+      } else {
+        this.onError(auth.message)
+        this.$store.commit(
+          UserMutations.LOGIN_ERROR,
+          'Login failed: ' + auth.message
         )
       }
     }

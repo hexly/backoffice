@@ -19,6 +19,7 @@ export const UserActions = {
 
 export const UserMutations = {
   SET_JWT: 'setJwt',
+  SET_FED_JWT: 'setFedJwt',
   AUTH_STATUS: 'authStatus',
   LOGIN_ERROR: 'setLoginError',
   SET_PRINCIPAL: 'setPrincipal',
@@ -79,6 +80,7 @@ export const UserStore = {
     [UserMutations.SET_JWT]: (state, jwt) => {
       state.jwt = jwt
     },
+    [UserMutations.SET_FED_JWT]: (state, jwt) => (state.jwtFed = jwt),
     [UserMutations.LOGIN_ERROR]: (state, err) => (state.loginError = err),
     [UserMutations.SET_PRINCIPAL]: (state, principal) => {
       state.principal = {
