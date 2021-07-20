@@ -287,11 +287,10 @@ export default {
       variables () {
         return {
           saleSearchInput: {
-            sellerId: this.mId || this.memberId,
+            referrerIn: this.mId || this.memberId,
             tenantId: this.$tenantId,
-            query: null,
-            endDate: this.endDate,
-            startDate: this.startDate
+            end: this.endDate,
+            start: this.startDate
           }
         }
       },

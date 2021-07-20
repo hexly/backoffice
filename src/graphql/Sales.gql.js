@@ -1,49 +1,15 @@
 import gql from 'graphql-tag'
 
 export const SEARCH_SALES_QUERY = gql`
-  query searchSalesBySellerId($saleSearchInput: SaleSearchInput!) {
+  query searchSalesBySellerId($saleSearchInput: PurchaseSearchOrderInput!) {
     purchasing {
-      searchSalesBySellerId (input: $saleSearchInput) {
-        saleId
-        providerId
-        providerOid
-        totalPoints
-        totalAmount
-        commissionableAmount
-        commissionablePoints
-        firstName
-        displayName
-        awardedDate
-        sellerEmail
-        customer
-        orderId
-        total
-        discountTotal
-        taxTotal
-        shippingTotal
-        currency
-        status
-        customerNote
-        shippingTotal
-        lineItems
-        shippingCity
-        shippingState
-        shippingCountry
-        shippingZip
-        shippingAddress1
-        shippingAddress2
-        shippingFirstName
-        shippingLastName
-        billingCity
-        billingState
-        billingCountry
-        billingZip
-        billingAddress1
-        billingAddress2
-        billingFirstName
-        billingLastName
-        billingEmail
-        metadata
+      orders (input: $saleSearchInput) {
+        results {
+          id
+          compStats
+          currency
+          metadata
+        }
       }
     }
   }
