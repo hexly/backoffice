@@ -136,7 +136,8 @@
                     <li>Order ID: {{item.id}}</li>
                     <li>Status: {{statusMap[item.statusOid] || item.statusOid}}</li>
                     <li v-if="item.customerNote">Customer Note: {{item.customerNote}}</li>
-                    <!-- <li v-if="checkShippingDate(item.metadata.WcShipmentTrackingItems)">
+                    <!-- commenting out till we have a bead on what shipping stuff is gonna look like
+                    <li v-if="checkShippingDate(item.metadata.WcShipmentTrackingItems)">
                       Shipped On: {{$moment(item.metadata.WcShipmentTrackingItems[0][0].dateShipped * 1000).format('ll')}}
                     </li>
                     <li v-if="checkTrackingInfo(item.metadata.WcShipmentTrackingItems)">
