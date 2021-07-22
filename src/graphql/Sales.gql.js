@@ -5,10 +5,45 @@ export const SEARCH_SALES_QUERY = gql`
     purchasing {
       orders (input: $saleSearchInput) {
         results {
+          statusOid
+          customer {
+            id
+            memberId
+            displayName
+            email
+            integrationOid
+          }
           id
+          customerId
           compStats
           currency
           metadata
+          checkedOutOn
+          billing {
+            city
+            province
+            country
+            postalCode
+          }
+          shipping {
+            street
+            street2
+            city
+            province
+            country
+            postalCode
+          }
+          lines {
+            id
+            orderId
+            name
+            tenantIntegrationId
+            integrationOid
+            itemPrice
+            quantity
+            typeId
+            metadata
+          }
         }
       }
     }
