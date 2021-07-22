@@ -197,7 +197,8 @@ export default {
             variables: {
               input: {
                 tenantIntegrationKey: this.hasIntegration.key,
-                statuses: [this.status.released]
+                statuses: [this.status.released],
+                calculatedfee: this.calcFee
               }
             },
             client: 'federated'
@@ -234,7 +235,7 @@ export default {
         calculatedFee += fee.flatRate
       }
       if (fee.percent) {
-        calculatedFee += Math.min(amount * (fee.percent / 100), fee.cap)
+        calculatedFee += Math.min(amount - (amount / (1.00 + (fee.percent / 100))), fee.cap)
       }
       return calculatedFee / 100
     },
