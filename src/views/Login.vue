@@ -90,7 +90,7 @@
 
 /* global VERSION */
 import { mapActions } from 'vuex'
-import { UserActions, UserMutations } from '@/stores/UserStore'
+import { UserMutations } from '@/stores/UserStore'
 import { ClaimActions } from '@/stores/ClaimStore'
 import { delay } from '@/utils/timer.js'
 import { pathOr } from 'rambda'
@@ -114,7 +114,6 @@ export default {
   },
   methods: {
     ...mapActions({
-      login: UserActions.LOGIN,
       claim: ClaimActions.CLAIM,
       reset: ClaimActions.RESET
     }),
@@ -194,6 +193,7 @@ export default {
       }
     },
     async processAuth(auth) {
+      console.log({ auth })
       const success = _.get(auth, 'success')
       const token = auth.authentication ? auth.authentication.token : undefined
       if (token && success) {
@@ -216,6 +216,7 @@ export default {
 
         this.$store.commit(UserMutations.SET_JWT, md.legacyJwt || token)
         this.$store.commit(UserMutations.SET_FED_JWT, token)
+        this.$store.commit(UserMutations.SET_PRINCIPAL, principal)
         this.$router.push('/dashboard')
       } else {
         this.onError(auth.message)
