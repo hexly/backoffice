@@ -29,6 +29,27 @@ export const UPDATE_ADDRESS = gql`
   }
 `
 
+export const CREATE_ADDRESS = gql`
+  mutation ($input: AddressInput!) {
+    membership {
+      createAddress(input: $input) {
+        id
+        name
+        street
+        street2
+        city
+        province
+        postalCode
+        country
+        lat
+        long
+        priority
+        type
+      }
+    }
+  }
+`
+
 export const ADDRESS_BY_CONTACT_ID = gql`
   query addressByContactId($input: MembershipMemberSearchInput!){
     membership {

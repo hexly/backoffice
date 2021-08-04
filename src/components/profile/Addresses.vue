@@ -45,7 +45,7 @@
 import { mapGetters, mapState } from 'vuex'
 import { cloneDeep, get } from 'lodash'
 
-import { ADDRESS_BY_CONTACT_ID, UPDATE_ADDRESS, DELETE_ADDRESS } from '@/graphql/Address.js'
+import { ADDRESS_BY_CONTACT_ID, UPDATE_ADDRESS, DELETE_ADDRESS, CREATE_ADDRESS } from '@/graphql/Address.js'
 import AddressCard from '@/components/profile/AddressCard.vue'
 
 export default {
@@ -78,7 +78,11 @@ export default {
       }
     },
     async save(address) {
-      console.log({ address })
+      const mutation = address.new ? CREATE_ADDRESS : UPDATE_ADDRESS
+      const _address = {...address}
+      delete _address.saving
+      delete _address.new
+
       this.model = this.model.map(a => {
         if (a.id === address.id) {
           return { ...address, saving: true }
@@ -88,10 +92,10 @@ export default {
 
       try {
         const res = await this.$apollo.mutate({
-          mutation: UPDATE_ADDRESS,
+          mutation,
           variables: {
             input: {
-              ...address,
+              ..._address,
               type: address.type.toUpperCase(),
               contactId: this.contactId,
               memberId: this.principal.memberId
@@ -99,14 +103,13 @@ export default {
           },
           client: 'federated'
         })
-        console.log({ res })
-        const { updateAddress } = res
+        const dataPath = address.new ? 'data.membership.createAddress' : 'data.membership.updateAddress'
+        const updateAddress = get(res, dataPath)
 
         this.model = this.model.map(a => {
           if (a.id === updateAddress.id || (address.new && !a.id)) {
             return {
               ...updateAddress,
-              saving: false,
               new: false,
               type: a.type
             }
