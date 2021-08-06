@@ -90,11 +90,10 @@
 
 /* global VERSION */
 import { mapActions } from 'vuex'
-import { UserMutations } from '@/stores/UserStore'
+import { UserMutations, UserActions } from '@/stores/UserStore'
 import { ClaimActions } from '@/stores/ClaimStore'
 import { delay } from '@/utils/timer.js'
 import { pathOr } from 'rambda'
-import AUTH_GQL from '@/graphql/login/auth.gql'
 import * as _ from 'lodash'
 
 export default {
@@ -115,7 +114,8 @@ export default {
   methods: {
     ...mapActions({
       claim: ClaimActions.CLAIM,
-      reset: ClaimActions.RESET
+      reset: ClaimActions.RESET,
+      login: UserActions.LOGIN
     }),
     async onLogin () {
       const formValidated = this.$refs.login.validate()
@@ -126,29 +126,19 @@ export default {
 
       const { email, password } = this.form
       const { $tenantId: tenantId } = this
+
       try {
-        const res = await this.$apollo.mutate({
-          client: 'federated',
-          mutation: AUTH_GQL,
-          variables: {
-            input: {
-              username: email,
-              password,
-              context: {
-                tenantId,
-                version: 2,
-                includeLegacy: true
-              }
-            }
-          }
-        })
-        const auth = _.get(res, 'data.iam.authenticate')
-        this.processAuth(auth)
+        // eslint-disable-next-line no-unused-vars
+        const res = await this.login({email, password, tenantId})
+        // const auth = _.get(res, 'data.iam.authenticate')
+        // this.processAuth(auth)
       } catch (err) {
         console.log(err)
         this.onError(err.message)
       }
+
       this.buttonLoading = false
+      this.$router.push('/dashboard')
     },
     changeMode (type) {
       this.error = null
@@ -193,7 +183,6 @@ export default {
       }
     },
     async processAuth(auth) {
-      console.log({ auth })
       const success = _.get(auth, 'success')
       const token = auth.authentication ? auth.authentication.token : undefined
       if (token && success) {
@@ -208,6 +197,9 @@ export default {
           principal.memberId = md.member && md.member.id
           principal.member = md.member
           principal.member.displayName = md.member.name
+          const tags = await this.$apollo.query({
+          })
+          console.log({ tags })
         }
 
         if (md.permissions) {
