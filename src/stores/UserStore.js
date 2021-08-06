@@ -177,7 +177,8 @@ export const UserStore = {
 
         commit(UserMutations.SET_JWT, md.legacyJwt || token)
         commit(UserMutations.SET_FED_JWT, token)
-        dispatch(UserActions.GET_TAGS, { tenantId, memberId })
+        const tags = await dispatch(UserActions.GET_TAGS, { tenantId, memberId })
+        principal.member = { ...principal.member, tags }
         commit(UserMutations.SET_PRINCIPAL, principal)
       } else {
         commit(
@@ -248,7 +249,7 @@ export const UserStore = {
       })
       const tags = _.get(res, 'data.membership.search.results[0].tags')
 
-      commit(UserMutations.SET_TAGS, tags)
+      // commit(UserMutations.SET_TAGS, tags)
       return tags
     },
     async [UserActions.RELOAD_INTEGRATIONS]({ commit }, input) {
