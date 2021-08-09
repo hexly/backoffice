@@ -6,14 +6,14 @@ import {
   GET_MEMBER_TENANT_INTEGRATIONS
 } from '@/graphql/Integrations'
 import AUTH_GQL from '@/graphql/login/auth.gql'
-import { ADJUST_TAGS, UPDATE_PROFILE, GET_TAGS } from '@/graphql/Member.gql'
+import { ADJUST_TAGS, UPDATE_PROFILE, GET_MEMBER_DETAILS } from '@/graphql/Member.gql'
 import _ from 'lodash'
 
 export const UserActions = {
   LOGIN: 'login',
   LOGIN_SUCCESS: 'loginSuccess',
   SAVE_PROFILE: 'saveProfile',
-  GET_TAGS: 'getTags',
+  GET_MEMBER_DETAILS: 'getTags',
   ADJUST_TAGS: 'adjustTags',
   CREATE_INTEGRATION: 'createIntegration',
   REMOVE_INTEGRATION: 'removeIntegration',
@@ -158,7 +158,6 @@ export const UserStore = {
       const token = auth.authentication ? auth.authentication.token : undefined
       if (token && success) {
         const md = auth.metadata
-        console.log({ md })
         const { identityId, auditId, tenantId, credentialId } = md.claims
 
         const principal = {
@@ -178,8 +177,9 @@ export const UserStore = {
 
         commit(UserMutations.SET_JWT, md.legacyJwt || token)
         commit(UserMutations.SET_FED_JWT, token)
-        const tags = await dispatch(UserActions.GET_TAGS, { tenantId, memberId })
-        principal.member = { ...principal.member, tags }
+        const { tags, customer, profileUrl } = await dispatch(UserActions.GET_MEMBER_DETAILS, { tenantId, memberId })
+        principal.member = { ...principal.member, tags, profileUrl }
+        principal.member.customer = { ...customer }
         commit(UserMutations.SET_PRINCIPAL, principal)
       } else {
         commit(
@@ -237,10 +237,10 @@ export const UserStore = {
       commit(UserMutations.SET_TAGS, data.adjustTags.tags)
       return data.adjustTags.tags
     },
-    async [UserActions.GET_TAGS]({ commit }, input) {
+    async [UserActions.GET_MEMBER_DETAILS]({ commit }, input) {
       const { memberId, tenantId } = input
       const res = await apolloFederatedClient.query({
-        query: GET_TAGS,
+        query: GET_MEMBER_DETAILS,
         variables: {
           input: {
             tenantIn: [tenantId],
@@ -249,10 +249,12 @@ export const UserStore = {
         }
       })
       const tags = _.get(res, 'data.membership.search.results[0].tags', [])
+      const customer = _.get(res, 'data.membership.search.results[0].customer', [])
+      const profileUrl = _.get(res, 'data.membership.search.results[0].avatar.assetUrl', [])
       const parsedTags = tags.map(tag => tag.name)
 
       // commit(UserMutations.SET_TAGS, tags)
-      return parsedTags
+      return { tags: parsedTags, customer, profileUrl }
     },
     async [UserActions.RELOAD_INTEGRATIONS]({ commit }, input) {
       const { data } = await apolloHexlyClient.query({

@@ -116,15 +116,26 @@ mutation welcomeEmail($input: WelcomeEmailInput) {
 }
 `
 
-export const GET_TAGS = gql`
-  query getTags($input: MembershipMemberSearchInput!){
+export const GET_MEMBER_DETAILS = gql`
+  query getMemberDetails($input: MembershipMemberSearchInput!){
     membership {
       search(input: $input) {
         results {
           id
+          avatar {
+            assetUrl
+          }
           tags {
             name
             id
+          }
+          customer {
+            id
+            subscriptions {
+              id
+              status
+              metadata
+            }
           }
         }
       }
