@@ -158,6 +158,7 @@ export const UserStore = {
       const token = auth.authentication ? auth.authentication.token : undefined
       if (token && success) {
         const md = auth.metadata
+        console.log({ md })
         const { identityId, auditId, tenantId, credentialId } = md.claims
 
         const principal = {
@@ -247,10 +248,11 @@ export const UserStore = {
           }
         }
       })
-      const tags = _.get(res, 'data.membership.search.results[0].tags')
+      const tags = _.get(res, 'data.membership.search.results[0].tags', [])
+      const parsedTags = tags.map(tag => tag.name)
 
       // commit(UserMutations.SET_TAGS, tags)
-      return tags
+      return parsedTags
     },
     async [UserActions.RELOAD_INTEGRATIONS]({ commit }, input) {
       const { data } = await apolloHexlyClient.query({
