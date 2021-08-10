@@ -142,3 +142,18 @@ export const GET_MEMBER_DETAILS = gql`
     }
   }
 `
+
+export const GET_MEMBER_TENANT_INTEGRATIONS_FED = gql`
+  query getMemberTenantIntegrations($input: GetMemberTenantIntegrationsInput!) {
+    membership {
+      getMemberTenantIntegrations(input: $input) {
+        id
+        metadata
+        key
+        name
+        priority
+        statusId
+      }
+    }
+  }
+`

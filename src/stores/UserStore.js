@@ -6,7 +6,7 @@ import {
   GET_MEMBER_TENANT_INTEGRATIONS
 } from '@/graphql/Integrations'
 import AUTH_GQL from '@/graphql/login/auth.gql'
-import { ADJUST_TAGS, UPDATE_PROFILE, GET_MEMBER_DETAILS } from '@/graphql/Member.gql'
+import { ADJUST_TAGS, UPDATE_PROFILE, GET_MEMBER_DETAILS, GET_MEMBER_TENANT_INTEGRATIONS_FED } from '@/graphql/Member.gql'
 import _ from 'lodash'
 
 export const UserActions = {
@@ -177,9 +177,10 @@ export const UserStore = {
 
         commit(UserMutations.SET_JWT, md.legacyJwt || token)
         commit(UserMutations.SET_FED_JWT, token)
-        const { tags, customer, profileUrl } = await dispatch(UserActions.GET_MEMBER_DETAILS, { tenantId, memberId })
+        const { tags, customer, profileUrl, tenantIntegrations } = await dispatch(UserActions.GET_MEMBER_DETAILS, { tenantId, memberId })
         principal.member = { ...principal.member, tags, profileUrl }
         principal.member.customer = { ...customer }
+        principal.tenant = { ...principal.tenant, integrations: tenantIntegrations }
         commit(UserMutations.SET_PRINCIPAL, principal)
       } else {
         commit(
@@ -239,22 +240,42 @@ export const UserStore = {
     },
     async [UserActions.GET_MEMBER_DETAILS]({ commit }, input) {
       const { memberId, tenantId } = input
-      const res = await apolloFederatedClient.query({
-        query: GET_MEMBER_DETAILS,
-        variables: {
-          input: {
-            tenantIn: [tenantId],
-            idIn: [memberId]
+
+      let detailsRes
+      let tenantIntegrationRes
+      try {
+        detailsRes = await apolloFederatedClient.query({
+          query: GET_MEMBER_DETAILS,
+          variables: {
+            input: {
+              tenantIn: [tenantId],
+              idIn: [memberId]
+            }
           }
-        }
-      })
-      const tags = _.get(res, 'data.membership.search.results[0].tags', [])
-      const customer = _.get(res, 'data.membership.search.results[0].customer', [])
-      const profileUrl = _.get(res, 'data.membership.search.results[0].avatar.assetUrl', [])
+        })
+      } catch (error) {
+        console.warn(error, { memberId, tenantId })
+      }
+      try {
+        tenantIntegrationRes = await apolloFederatedClient.query({
+          query: GET_MEMBER_TENANT_INTEGRATIONS_FED,
+          variables: {
+            input: {
+              memberId
+            }
+          }
+        })
+      } catch (error) {
+        console.warn(error, { memberId, tenantId })
+      }
+      const tags = _.get(detailsRes, 'data.membership.search.results[0].tags', [])
+      const customer = _.get(detailsRes, 'data.membership.search.results[0].customer', [])
+      const profileUrl = _.get(detailsRes, 'data.membership.search.results[0].avatar.assetUrl', [])
+      const tenantIntegrations = _.get(tenantIntegrationRes, 'data.membership.getMemberTenantIntegrations', [])
       const parsedTags = tags.map(tag => tag.name)
 
       // commit(UserMutations.SET_TAGS, tags)
-      return { tags: parsedTags, customer, profileUrl }
+      return { tags: parsedTags, customer, profileUrl, tenantIntegrations }
     },
     async [UserActions.RELOAD_INTEGRATIONS]({ commit }, input) {
       const { data } = await apolloHexlyClient.query({
