@@ -177,8 +177,8 @@ export const UserStore = {
 
         commit(UserMutations.SET_JWT, md.legacyJwt || token)
         commit(UserMutations.SET_FED_JWT, token)
-        const { tags, customer, profileUrl, tenantIntegrations } = await dispatch(UserActions.GET_MEMBER_DETAILS, { tenantId, memberId })
-        principal.member = { ...principal.member, tags, profileUrl }
+        const { tags, customer, profileUrl, tenantIntegrations, contacts } = await dispatch(UserActions.GET_MEMBER_DETAILS, { tenantId, memberId })
+        principal.member = { ...principal.member, tags, profileUrl, contacts }
         principal.member.customer = { ...customer }
         principal.tenant = { ...principal.tenant, integrations: tenantIntegrations }
         commit(UserMutations.SET_PRINCIPAL, principal)
@@ -271,11 +271,12 @@ export const UserStore = {
       const tags = _.get(detailsRes, 'data.membership.search.results[0].tags', [])
       const customer = _.get(detailsRes, 'data.membership.search.results[0].customer', [])
       const profileUrl = _.get(detailsRes, 'data.membership.search.results[0].avatar.assetUrl', [])
+      const contacts = _.get(detailsRes, 'data.membership.search.results[0].contacts', [])
       const tenantIntegrations = _.get(tenantIntegrationRes, 'data.membership.getMemberTenantIntegrations', [])
       const parsedTags = tags.map(tag => tag.name)
 
       // commit(UserMutations.SET_TAGS, tags)
-      return { tags: parsedTags, customer, profileUrl, tenantIntegrations }
+      return { tags: parsedTags, customer, profileUrl, tenantIntegrations, contacts }
     },
     async [UserActions.RELOAD_INTEGRATIONS]({ commit }, input) {
       const { data } = await apolloHexlyClient.query({

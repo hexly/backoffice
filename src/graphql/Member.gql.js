@@ -137,6 +137,33 @@ export const GET_MEMBER_DETAILS = gql`
               metadata
             }
           }
+          contacts {
+            emails {
+              id
+              email
+              priority
+            }
+            phones {
+              id
+              type
+              number
+              type
+              priority
+            }
+            addresses {
+              id
+              name
+              street
+              street2
+              city
+              province
+              postalCode
+              country
+              lat
+              long
+              priority
+            }
+          }
         }
       }
     }
