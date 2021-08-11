@@ -367,28 +367,6 @@ export default {
       }
     }
   }
-  // apollo: {
-  //   principal: {
-  //     query: GET_PRINCIPAL,
-  //     fetchPolicy: 'network-only',
-  //     update ({ getPrincipal }) {
-  //       if (getPrincipal) {
-  //         this.setPrincipal(getPrincipal)
-  //         const integrations = get(getPrincipal, 'tenant.integrations')
-  //         const statusId = get(getPrincipal, 'member.statusId')
-  //         const tags = get(getPrincipal, 'member.tags')
-  //         // Status Id 1 = Active Member
-  //         if (!this.user.isImpersonating && (statusId !== 1 || tags.indexOf('backoffice:locked') >= 0)) {
-  //           this.logoutUser()
-  //           window.location.reload(true)
-  //         }
-  //         this.activeIntegrations = integrations.filter(i => {
-  //           return this.integrations.indexOf(i.key) > -1 && i.statusId === 200
-  //         })
-  //       }
-  //     }
-  //   }
-  // }
 }
 </script>
 

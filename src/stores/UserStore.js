@@ -1,6 +1,4 @@
 import { apolloHexlyClient, apolloFederatedClient } from '@/vue-apollo'
-// eslint-disable-next-line no-unused-vars
-import { LOGIN } from '@/graphql/iam.gql'
 import {
   CREATE_MEMBER_INTEGRATION,
   GET_MEMBER_TENANT_INTEGRATIONS
@@ -34,15 +32,6 @@ export const UserMutations = {
   SET_SLUG: 'user:setSlug',
   SET_TAGS: 'user:setTags',
   RESET: 'user:reset'
-}
-
-// eslint-disable-next-line no-unused-vars
-const parseLegacyPrincipal = principal => {
-  const updated = {
-    ...principal
-  }
-  updated.displayName = _.get(principal, 'member.displayName', '<Unknown Name>')
-  return updated
 }
 
 const defaultState = () => {
@@ -177,10 +166,15 @@ export const UserStore = {
 
         commit(UserMutations.SET_JWT, md.legacyJwt || token)
         commit(UserMutations.SET_FED_JWT, token)
-        const { tags, customer, profileUrl, tenantIntegrations, contacts } = await dispatch(UserActions.GET_MEMBER_DETAILS, { tenantId, memberId })
+        const { tags, baseUrl, customer, profileUrl, tenantIntegrations, contacts } = await dispatch(UserActions.GET_MEMBER_DETAILS, { tenantId, memberId })
         principal.member = { ...principal.member, tags, profileUrl, contacts }
         principal.member.customer = { ...customer }
-        principal.tenant = { ...principal.tenant, integrations: tenantIntegrations }
+        principal.tenant = {
+          ...principal.tenant,
+          integrations: tenantIntegrations,
+          baseUrl,
+          id: tenantId
+        }
         commit(UserMutations.SET_PRINCIPAL, principal)
       } else {
         commit(
@@ -188,30 +182,6 @@ export const UserStore = {
           'Login failed: ' + auth.message
         )
       }
-
-      // const response = await apolloHexlyClient.mutate({
-      //   mutation: LOGIN,
-      //   variables: { creds },
-      //   fetchPolicy: 'no-cache'
-      // })
-      // let { success, token, principal, reason, issued } = _.get(
-      //   response,
-      //   'data.login',
-      //   {}
-      // )
-      // if (success && issued) {
-      //   principal = parseLegacyPrincipal(principal)
-      //   const statusId = _.get(principal, 'member.statusId')
-      //   const tags = _.get(principal, 'member.tags')
-      //   // Status Id 1 = Active Member
-      //   if (statusId !== 1 || tags.indexOf('backoffice:locked') >= 0) {
-      //     success = false
-      //   } else {
-      //     commit(UserMutations.SET_JWT, token)
-      //     commit(UserMutations.SET_PRINCIPAL, principal)
-      //   }
-      // }
-      // return { success, token, principal, reason, issued }
     },
     async [UserActions.SAVE_PROFILE]({ commit }, { memberId, profileUrl }) {
       await apolloHexlyClient.mutate({
@@ -240,6 +210,7 @@ export const UserStore = {
     },
     async [UserActions.GET_MEMBER_DETAILS]({ commit }, input) {
       const { memberId, tenantId } = input
+      const baseUrl = process.env.VUE_APP_API_ENDPOINT
 
       let detailsRes
       let tenantIntegrationRes
@@ -275,8 +246,7 @@ export const UserStore = {
       const tenantIntegrations = _.get(tenantIntegrationRes, 'data.membership.getMemberTenantIntegrations', [])
       const parsedTags = tags.map(tag => tag.name)
 
-      // commit(UserMutations.SET_TAGS, tags)
-      return { tags: parsedTags, customer, profileUrl, tenantIntegrations, contacts }
+      return { tags: parsedTags, customer, profileUrl, tenantIntegrations, contacts, baseUrl }
     },
     async [UserActions.RELOAD_INTEGRATIONS]({ commit }, input) {
       const { data } = await apolloHexlyClient.query({
