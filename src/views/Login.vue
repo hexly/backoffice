@@ -128,10 +128,7 @@ export default {
       const { $tenantId: tenantId } = this
 
       try {
-        // eslint-disable-next-line no-unused-vars
-        const res = await this.login({email, password, tenantId})
-        // const auth = _.get(res, 'data.iam.authenticate')
-        // this.processAuth(auth)
+        await this.login({email, password, tenantId})
       } catch (err) {
         console.log(err)
         this.onError(err.message)
