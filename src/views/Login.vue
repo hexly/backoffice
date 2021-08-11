@@ -90,11 +90,10 @@
 
 /* global VERSION */
 import { mapActions } from 'vuex'
-import { UserMutations, UserActions } from '@/stores/UserStore'
+import { UserActions } from '@/stores/UserStore'
 import { ClaimActions } from '@/stores/ClaimStore'
 import { delay } from '@/utils/timer.js'
 import { pathOr } from 'rambda'
-import * as _ from 'lodash'
 
 export default {
   name: 'Foobar',
@@ -130,7 +129,7 @@ export default {
       try {
         await this.login({email, password, tenantId})
       } catch (err) {
-        console.log(err)
+        console.error(err)
         this.onError(err.message)
       }
 
@@ -176,42 +175,6 @@ export default {
           'There seems to be a problem. Please try again later or contact customer support.',
           ['message'],
           errors[0]
-        )
-      }
-    },
-    async processAuth(auth) {
-      const success = _.get(auth, 'success')
-      const token = auth.authentication ? auth.authentication.token : undefined
-      if (token && success) {
-        const md = auth.metadata
-        const { identityId, auditId, tenantId, credentialId } = md.claims
-
-        const principal = {
-          identityId, auditId, tenantId, credentialId
-        }
-
-        if (md.member && md.member.id) {
-          principal.memberId = md.member && md.member.id
-          principal.member = md.member
-          principal.member.displayName = md.member.name
-          const tags = await this.$apollo.query({
-          })
-          console.log({ tags })
-        }
-
-        if (md.permissions) {
-          principal.permissions = md.permissions
-        }
-
-        this.$store.commit(UserMutations.SET_JWT, md.legacyJwt || token)
-        this.$store.commit(UserMutations.SET_FED_JWT, token)
-        this.$store.commit(UserMutations.SET_PRINCIPAL, principal)
-        this.$router.push('/dashboard')
-      } else {
-        this.onError(auth.message)
-        this.$store.commit(
-          UserMutations.LOGIN_ERROR,
-          'Login failed: ' + auth.message
         )
       }
     }
