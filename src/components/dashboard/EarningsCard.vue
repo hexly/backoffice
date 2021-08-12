@@ -74,7 +74,7 @@
 </template>
 
 <script>
-// import * as _ from 'lodash'
+import * as _ from 'lodash'
 import { mapState, mapGetters } from 'vuex'
 
 import Currency from '@/components/Currency'
@@ -103,7 +103,8 @@ export default {
           }
         }
       },
-      update({ payouts: { summary } }) {
+      update(data) {
+        const summary = _.get(data, 'payouts.summary')
         return summary
       },
       client: 'federated',
