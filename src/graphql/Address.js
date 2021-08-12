@@ -9,35 +9,69 @@ export const DELETE_ADDRESS = gql`
 `
 
 export const UPDATE_ADDRESS = gql`
-  mutation updateAddress($addressInput: AddressInput!) {
-    updateAddress(input: $addressInput) {
-      id
-      name
-      street
-      street2
-      city
-      province
-      postalCode
-      country
-      type
-      priority
+  mutation ($input: AddressInput!) {
+    membership {
+      updateAddress(input: $input) {
+        id
+        name
+        street
+        street2
+        city
+        province
+        postalCode
+        country
+        lat
+        long
+        priority
+        type
+      }
+    }
+  }
+`
+
+export const CREATE_ADDRESS = gql`
+  mutation ($input: AddressInput!) {
+    membership {
+      createAddress(input: $input) {
+        id
+        name
+        street
+        street2
+        city
+        province
+        postalCode
+        country
+        lat
+        long
+        priority
+        type
+      }
     }
   }
 `
 
 export const ADDRESS_BY_CONTACT_ID = gql`
-  query addressByContactId($addressContactId: ContactOrTenantInput!) {
-    addressByContactOrTenant(input: $addressContactId) {
-      id
-      name
-      street
-      street2
-      city
-      province
-      postalCode
-      country
-      type
-      priority
+  query addressByContactId($input: MembershipMemberSearchInput!){
+    membership {
+      search(input: $input) {
+        results {
+          id
+          contacts {
+            addresses {
+              id
+              name
+              street
+              street2
+              city
+              province
+              postalCode
+              country
+              priority
+              type
+            }
+          }
+        }
+      }
     }
   }
 `

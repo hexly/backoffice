@@ -145,8 +145,8 @@ export default {
         { text: 'United Kingdom', value: 'GB' }
       ],
       types: [
-        { text: 'Shipping', value: 'shipping' },
-        { text: 'Billing', value: 'billing' }
+        { text: 'Shipping', value: 'SHIPPING' },
+        { text: 'Billing', value: 'BILLING' }
       ]
     }
   },

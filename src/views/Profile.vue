@@ -122,7 +122,7 @@ import { CONTACT_UPSERT, CONTACT_EMAIL_UPSERT } from '@/graphql/Contacts.js'
 import { USERNAME_UPSERT } from '@/graphql/iam.gql.js'
 
 const ERROR_COLOR = 'red'
-const SUCCESS_COLOR = 'primary'
+const SUCCESS_COLOR = 'success'
 
 export default {
   components: {
