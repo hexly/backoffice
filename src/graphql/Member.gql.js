@@ -115,3 +115,72 @@ mutation welcomeEmail($input: WelcomeEmailInput) {
   }
 }
 `
+
+export const GET_MEMBER_DETAILS = gql`
+  query getMemberDetails($input: MembershipMemberSearchInput!){
+    membership {
+      search(input: $input) {
+        results {
+          id
+          avatar {
+            assetUrl
+          }
+          tags {
+            name
+            id
+          }
+          customer {
+            id
+            subscriptions {
+              id
+              status
+              metadata
+            }
+          }
+          contacts {
+            emails {
+              id
+              email
+              priority
+            }
+            phones {
+              id
+              type
+              number
+              type
+              priority
+            }
+            addresses {
+              id
+              name
+              street
+              street2
+              city
+              province
+              postalCode
+              country
+              lat
+              long
+              priority
+            }
+          }
+        }
+      }
+    }
+  }
+`
+
+export const GET_MEMBER_TENANT_INTEGRATIONS_FED = gql`
+  query getMemberTenantIntegrations($input: GetMemberTenantIntegrationsInput!) {
+    membership {
+      getMemberTenantIntegrations(input: $input) {
+        id
+        metadata
+        key
+        name
+        priority
+        statusId
+      }
+    }
+  }
+`

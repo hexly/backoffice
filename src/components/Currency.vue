@@ -3,6 +3,7 @@
 </template>
 
 <script>
+
 export default {
   name: 'Currency',
   props: {
@@ -17,10 +18,12 @@ export default {
   },
   computed: {
     formatCurrency() {
-      return this.amount.toLocaleString('us-EN', {
+      const { amount } = this
+      const formattedAmount = typeof amount !== 'undefined' && amount !== null && amount !== '' ? amount.toLocaleString('us-EN', {
         style: 'currency',
         currency: this.currency
-      })
+      }) : ''
+      return formattedAmount
     }
   }
 }
