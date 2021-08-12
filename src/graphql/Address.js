@@ -1,9 +1,22 @@
 import gql from 'graphql-tag'
 
 export const DELETE_ADDRESS = gql`
-  mutation removeAddress($addressInput: AddressInput!) {
-    deleteAddress(input: $addressInput) {
-      id
+  mutation deleteAddress($input: DeleteAddressInput!){
+    membership {
+      deleteAddress (input: $input ) {
+        id
+        name
+        street
+        street2
+        city
+        province
+        postalCode
+        country
+        lat
+        long
+        priority
+        type
+      }
     }
   }
 `

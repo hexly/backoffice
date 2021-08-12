@@ -141,19 +141,18 @@ export default {
         })
 
         try {
-          const { data: { deleteAddress } } = await this.$apollo.mutate({
+          const { id: addressId } = address
+          const res = await this.$apollo.mutate({
             mutation: DELETE_ADDRESS,
             variables: {
-              addressInput: {
-                ...address,
-                saving: undefined, // removing from query
-                new: undefined, // removing from query
-                type: address.type.toUpperCase(),
-                contactId: this.contactId,
-                memberId: this.principal.memberId
+              input: {
+                addressId,
+                contactId: this.contactId
               }
-            }
+            },
+            client: 'federated'
           })
+          const deleteAddress = get(res, 'data.membership.deleteAddress')
           this.model = this.model.filter(a => a.id !== deleteAddress.id)
 
           this.$emit('addressSnackBarEmitSuccess', 'Address successfully updated')
