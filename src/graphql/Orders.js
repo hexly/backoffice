@@ -10,10 +10,34 @@ query orderQuery($input: PurchaseSearchOrderInput!) {
     customerName
     customerEmail
     productName
-    productType
     checkedOutOn
     itemPrice
     currency
   }
 }
+`
+
+export const ORDERS_QUERY_FEDERATED = gql`
+  query ordersQuery($input: PurchaseSearchOrderInput!){
+    purchasing {
+      orders(input: $input) {
+        results {
+          id
+          total
+          orderType
+          checkedOutOn
+          integrationOid
+          customer {
+            displayName
+            email
+          }
+          currency
+          lines {
+            name
+            itemPrice
+          }
+        }
+      }
+    }
+  }
 `
