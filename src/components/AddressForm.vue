@@ -58,6 +58,7 @@
 
 <script>
 import { mapGetters, mapState } from 'vuex'
+import _ from 'lodash'
 import { ADDRESS_BY_CONTACT_ID, UPDATE_ADDRESS } from '@/graphql/Address.js'
 
 export default {
@@ -94,15 +95,16 @@ export default {
       query: ADDRESS_BY_CONTACT_ID,
       variables () {
         return {
-          addressContactId: {
-            contactId: this.contactId,
-            tenantId: this.$tenantId
+          input: {
+            idIn: [this.memberId],
+            tenantIn: [this.$tenantId]
           }
         }
       },
-      update ({ addressByContactOrTenant }) {
-        if (addressByContactOrTenant && addressByContactOrTenant[0]) {
-          return Object.assign({}, addressByContactOrTenant[0])
+      update (data) {
+        const results = _.get(data, 'membership.search.results[0].contacts[0].addresses')
+        if (results && results[0]) {
+          return Object.assign({}, results[0])
         } else {
           this.$emit('hasAddress', { type: 'address', isSet: false })
           console.error('No address info found')
@@ -110,8 +112,9 @@ export default {
         }
       },
       skip() {
-        return !this.contactId
-      }
+        return !this.memberId
+      },
+      client: 'federated'
     }
   },
   methods: {
@@ -122,7 +125,7 @@ export default {
           await this.$apollo.mutate({
             mutation: UPDATE_ADDRESS,
             variables: {
-              addressInput: {
+              input: {
                 id: this.address.id,
                 name: this.principal.member.name,
                 street: this.address.street,
@@ -132,7 +135,7 @@ export default {
                 postalCode: this.address.postalCode,
                 street2: this.address.street2 || '',
                 contactId: this.contactId,
-                memberId: this.principal.memberId
+                memberId: this.memberId
               }
             },
             update: (store, { data: { updateAddress } }) => {
@@ -140,10 +143,11 @@ export default {
               this.address = updateAddress
               this.$emit('addressSnackBarEmitSuccess', 'Address successfully updated')
               this.$emit('hasAddress', { type: 'address', isSet: true })
-            }
+            },
+            client: 'federated'
           })
         } catch (err) {
-          console.error({ err })
+          console.error(err)
           this.saving = false
           this.$emit(
             'addressSnackBarEmitError',
@@ -163,7 +167,7 @@ export default {
     ...mapState({
       principal: state => state.user.principal
     }),
-    ...mapGetters(['contactId'])
+    ...mapGetters(['contactId', 'memberId'])
   }
 }
 </script>

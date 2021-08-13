@@ -112,49 +112,29 @@ export default {
   },
   methods: {
     ...mapActions({
-      login: UserActions.LOGIN,
       claim: ClaimActions.CLAIM,
-      reset: ClaimActions.RESET
+      reset: ClaimActions.RESET,
+      login: UserActions.LOGIN
     }),
     async onLogin () {
-      this.error = null
-      try {
-        this.$refs.login.validate()
-        this.buttonLoading = true
-
-        const loginRes = await this.login({
-          username: this.form.email,
-          password: this.form.password,
-          tenantId: this.$tenantId
-        })
-        const { success, issued, principal } = loginRes
-        if (success && !issued) {
-          try {
-            if (!principal || !principal.memberId) {
-              throw new Error("It looks like your account has not been claimed, but we couldn't determine your Member ID. Please contact support")
-            }
-            await this.claim({
-              memberId: principal.memberId,
-              email: this.form.email,
-              tenantId: this.$tenantId,
-              type: 'claim'
-            })
-            return this.onError('This account has not been claimed yet. Please click on the link that has been sent to your email to verify your account.')
-          } catch (err) {
-            this.onError(err)
-          }
-        }
-
-        const { returnTo } = (this.$route.query || {})
-        return success
-          ? this.$router.push(returnTo || '/dashboard')
-          : this.onError('Invalid Username/Password')
-      } catch (error) {
-        this.buttonLoading = false
-        this.onError(error.message)
-      } finally {
-        this.buttonLoading = false
+      const formValidated = this.$refs.login.validate()
+      if (!formValidated) {
+        return
       }
+      this.buttonLoading = true
+
+      const { email, password } = this.form
+      const { $tenantId: tenantId } = this
+
+      try {
+        await this.login({email, password, tenantId})
+      } catch (err) {
+        console.error(err)
+        this.onError(err.message)
+      }
+
+      this.buttonLoading = false
+      this.$router.push('/dashboard')
     },
     changeMode (type) {
       this.error = null

@@ -1,0 +1,12 @@
+mutation($input: IamAuthenticateInput!){
+  iam {
+    authenticate(input: $input){
+      success
+      message
+      authentication {
+        token
+      }
+      metadata
+    }
+  }
+}
