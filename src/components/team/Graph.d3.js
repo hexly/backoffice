@@ -339,17 +339,8 @@ function updateNodes(source, node, graphType) {
         contextMenu(menuFunc(d))(d, i)
       }
     })
-    .on(`mouseover`, function(d) {
-      const bbox = this.getBBox()
-      const middleX = bbox.x + bbox.width
-      const middleY = bbox.y - bbox.height
-
-      // generate a conversion function
-      var convert = makeAbsoluteContext(this, svgContainer.node())
-
-      // use it to calculate the absolute center of the element
-      var absoluteCenter = convert(middleX, middleY)
-      updateMemberDetails(d, absoluteCenter)
+    .on(`mouseover`, (d) => {
+      updateMemberDetails(d)
     })
     .on(`mouseout`, () => {
       d3.select('g.infoContainer').attr(`display`, `none`)
@@ -637,7 +628,7 @@ function createMemberDetails() {
     .attr('class', `infoRect`)
     .attr(`x`, `-5`)
     .attr(`width`, `180`)
-    .attr(`height`, `100`)
+    .attr(`height`, `80`)
 
   container
     .append(`text`)
@@ -663,33 +654,29 @@ function createMemberDetails() {
     .attr(`text-align`, `start`)
     .attr(`dy`, `${(textSize + textPadding) * 4}px`)
 
-  container
-    .append(`text`)
-    .attr('class', 'totalAmount')
-    .attr(`text-align`, `start`)
-    .attr(`dy`, `${(textSize + textPadding) * 5}px`)
-
   container.attr(`width`, function() {
     return this.parentNode.getBBox().width + textPadding
   })
 }
 
-function updateMemberDetails(d, position) {
+function updateMemberDetails(d) {
   let container = svgContainer
     .select('g.infoContainer')
-    .attr('transform', `translate(${position.x}, ${position.y})`)
     .attr('display', 'show')
   container.select('text.displayName').text(d.data.data.displayName)
-  container.select('text.teamSize').text(`Team Size: ${d.data.data.teamSize}`)
-  container
-    .select('text.frontLineSize')
-    .text(`Front Line: ${d.data.data.frontLineSize}`)
-  container
-    .select('text.totalPoints')
-    .text(`Total Points: ${d.data.data.totalPoints}`)
-  container
-    .select('text.totalAmount')
-    .text(`Total Amount: ${d.data.data.totalAmount}`)
+  if (d.data.data.teamSize || d.data.data.teamSize === 0) {
+    container.select('text.teamSize').text(`Team Size: ${d.data.data.teamSize}`)
+  }
+  if (d.data.data.frontLineSize || d.data.data.frontLineSize === 0) {
+    container
+      .select('text.frontLineSize')
+      .text(`Front Line: ${d.data.data.frontLineSize}`)
+  }
+  if (d.data.data.totalPoints || d.data.data.totalPoints === 0) {
+    container
+      .select('text.totalPoints')
+      .text(`Total Points: ${d.data.data.totalPoints}`)
+  }
 }
 function updatePinned(pinned, firstPin) {
   inTransition = true
@@ -824,17 +811,6 @@ function redrawZoom() {
   if (svgContainer && zoomer) {
     let svgWidth = Number(svgContainer.style(`width`).replace('px', ''))
     zoomer.attr('width', Math.max(svgWidth, width))
-  }
-}
-
-function makeAbsoluteContext(element, svgDocument) {
-  return function(x, y) {
-    var offset = svgDocument.getBoundingClientRect()
-    var matrix = element.getScreenCTM()
-    return {
-      x: matrix.a * x + matrix.c * y + matrix.e - offset.left,
-      y: matrix.b * x + matrix.d * y + matrix.f - offset.top
-    }
   }
 }
 

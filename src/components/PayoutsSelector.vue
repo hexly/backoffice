@@ -93,6 +93,9 @@
           </v-row>
         </v-form>
       </v-container>
+      <!-- <v-container v-if="selectedModel === 'stripe_connect'">
+        <stripeConnect :details="{id: 12}"/>
+      </v-container> -->
     </v-card>
   </v-dialog>
 </template>
@@ -101,9 +104,13 @@
 import _ from 'lodash'
 import { UserActions } from '@/stores/UserStore'
 import { UPSERT_MEMBER_TENANT_INTEGRATION } from '@/graphql/Integrations'
+// import stripeConnect from '@/components/integrations/stripe.vue'
 import { mapGetters, mapActions } from 'vuex'
 
 export default {
+  // components: {
+  //   stripeConnect
+  // },
   data () {
     return {
       loading: false,
