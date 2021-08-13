@@ -378,3 +378,23 @@ export const getTeamEngineStats = (params) => {
     client: 'federated'
   }
 }
+
+export const FRONTLINE_STATS = gql`
+query frontlineStats($input: FrontlineStatsInput!){
+  engine {
+    frontlineStats(input:$input){
+      memberId
+      sponsorId
+      teamSize
+      frontlineSize
+      stats
+      member{
+        avatar {
+          assetUrl
+        }
+        displayName
+      }
+    }
+  }
+}
+`

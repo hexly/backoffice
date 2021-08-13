@@ -56,13 +56,15 @@
 </template>
 
 <script>
+import _ from 'lodash'
 import Currency from '@/components/Currency.vue'
 import { initialize, updateHeightDepth, collapse,
   checkParentOfPinned } from './Graph.d3.js'
-import { SALES_STATS, SEARCH_SALES_SELLER_ID } from '@/graphql/Sales.gql'
+import { SEARCH_SALES_SELLER_ID } from '@/graphql/Sales.gql'
+import { FRONTLINE_STATS } from '@/graphql/comp.gql'
 import moment from 'moment'
 import * as d3 from 'd3'
-import { mapGetters } from 'vuex'
+import { mapGetters, mapState } from 'vuex'
 
 export default {
   name: 'TeamGraph',
@@ -173,19 +175,26 @@ export default {
       firstPin: true,
       memberId: null,
       sellerId: null,
-      loading: false
+      loading: false,
+      cfg: null
     }
   },
   watch: {
     select (newSelection) {
       this.changeGraphType(newSelection)
+    },
+    async period(newVal, oldVal) {
+      this.fetchedData = await this.fetchData({ member: this.member })
+      this.graph = initialize(this.cfg, this.fetchedData)
+      this.pin(this.root)
+      this.loading = false
     }
   },
   components: {
     Currency
   },
   async mounted () {
-    const cfg = {
+    this.cfg = {
       el: this.$refs.graph,
       clickNode: this.clickNode,
       root: this.root,
@@ -204,10 +213,12 @@ export default {
     this.loading = true
     this.memberId = this.member.id
     this.sellerId = this.memberId
-    this.fetchedData = await this.fetchData({ memberId: this.memberId })
-    this.graph = initialize(cfg, this.fetchedData)
-    this.pin(this.root)
-    this.loading = false
+    if (this.period.id) {
+      this.fetchedData = await this.fetchData({ member: this.member })
+      this.graph = initialize(this.cfg, this.fetchedData)
+      this.pin(this.root)
+      this.loading = false
+    }
   },
   methods: {
     expand(row) {
@@ -367,7 +378,7 @@ export default {
     async loadChildrenMenu (d, i) {
       if (d.data.data.frontLineSize > 0 && !d.children && !d._children) {
         this.loading = true
-        let newChild = await this.fetchData({ memberId: d.data.data.memberId })
+        let newChild = await this.fetchData({ member: d.data.data })
         let newNode = d3.hierarchy(newChild, d => d.children)
         if (newNode.children) {
           newNode.children.forEach(child => { child.parent = d })
@@ -392,30 +403,28 @@ export default {
     async refreshGraph () {
       this.loading = true
       let memberIds = Object.keys(this.memberDict).map(Number)
-      const { data: { saleStatsByDateRange } } = await this.$apollo.query({
-        query: SALES_STATS,
+      const { data: { engine: { frontlineStats } } } = await this.$apollo.query({
+        query: FRONTLINE_STATS,
         variables: {
           input: {
-            sponsorIds: [],
-            memberIds: memberIds,
-            startDate: this.startDate,
-            endDate: this.endDate,
-            mode: 'YEAR_AND_MONTH_CUBED',
-            sorts: [{ field: 'JOIN_DATE', direction: 'ASC' }]
+            sponsorIds: memberIds,
+            periodId: this.period.id
           }
-        }
+        },
+        client: 'federated'
       })
-      await saleStatsByDateRange.forEach(member => {
-        this.memberDict[member.memberId] = {
-          memberId: member.memberId,
-          sponsorId: member.sponsorId,
-          displayName: member.displayName,
-          profileUrl: member.profileUrl,
-          teamSize: member.teamSize,
-          frontLineSize: member.frontLineSize,
-          totalPoints: member.stats[member.stats.length - 1].totalPoints,
-          totalAmount: member.stats[member.stats.length - 1].totalAmount
-          // _data: member
+      frontlineStats.forEach(stat => {
+        this.memberDict[stat.memberId] = {
+          id: stat.memberId,
+          memberId: stat.memberId,
+          sponsorId: stat.sponsorId,
+          displayName: stat.member.displayName,
+          profileUrl: _.get(stat, 'member.avatar.assetUrl'),
+          teamSize: stat.teamSize,
+          frontLineSize: stat.frontlineSize,
+          totalPoints: stat.stats.totalPoints || 0,
+          totalAmount: stat.stats.totalAmount || 0
+          // _data: member// As far as I know we don't need this
         }
       })
       this.refreshNode({ node: this.root, dataChild: false })
@@ -444,43 +453,46 @@ export default {
         })
       }
     },
-    async fetchData ({ memberId }) {
-      const { data: { saleStatsByDateRange } } = await this.$apollo.query({
-        query: SALES_STATS,
+    async fetchData ({ member }) {
+      const { data: { engine: { frontlineStats } } } = await this.$apollo.query({
+        query: FRONTLINE_STATS,
         variables: {
           input: {
-            sponsorIds: [memberId],
-            memberIds: [memberId],
-            startDate: this.startDate,
-            endDate: this.endDate,
-            mode: 'YEAR_AND_MONTH_CUBED',
-            sorts: [{ field: 'JOIN_DATE', direction: 'ASC' }]
+            sponsorIds: [member.id],
+            periodId: this.period.id
           }
-        }
+        },
+        client: 'federated'
       })
-      if (saleStatsByDateRange) {
-        const tempArr = []
-        await saleStatsByDateRange.forEach(member => {
-          this.memberDict[member.memberId] = {
-            memberId: member.memberId,
-            sponsorId: member.sponsorId,
-            displayName: member.displayName,
-            profileUrl: member.profileUrl,
-            teamSize: member.teamSize,
-            frontLineSize: member.frontLineSize,
-            totalPoints: member.stats[member.stats.length - 1].totalPoints,
-            totalAmount: member.stats[member.stats.length - 1].totalAmount
+      if (frontlineStats) {
+        const tempArr = [{
+          memberId: member.id,
+          displayName: member.displayName,
+          profileUrl: member.profileUrl
+        }]
+        frontlineStats.forEach(stat => {
+          this.memberDict[stat.memberId] = {
+            id: stat.memberId,
+            memberId: stat.memberId,
+            sponsorId: stat.sponsorId,
+            displayName: stat.member.displayName,
+            profileUrl: _.get(stat, 'member.avatar.assetUrl'),
+            teamSize: stat.teamSize,
+            frontLineSize: stat.frontlineSize,
+            totalPoints: stat.stats.totalPoints || 0,
+            totalAmount: stat.stats.totalAmount || 0
             // _data: member// As far as I know we don't need this
           }
           tempArr.push({
-            memberId: member.memberId,
-            sponsorId: member.memberId === memberId ? null : member.sponsorId,
-            displayName: member.displayName,
-            profileUrl: member.profileUrl,
-            teamSize: member.teamSize,
-            frontLineSize: member.frontLineSize,
-            totalPoints: member.stats[member.stats.length - 1].totalPoints,
-            totalAmount: member.stats[member.stats.length - 1].totalAmount
+            id: stat.memberId,
+            memberId: stat.memberId,
+            sponsorId: stat.memberId === member.id ? null : stat.sponsorId,
+            displayName: stat.member.displayName,
+            profileUrl: _.get(stat, 'member.avatar.assetUrl'),
+            teamSize: stat.teamSize,
+            frontLineSize: stat.frontlineSize,
+            totalPoints: stat.stats.totalPoints || 0,
+            totalAmount: stat.stats.totalAmount || 0
             // _data: member// As far as I know we don't need this
           })
         })
@@ -503,6 +515,9 @@ export default {
     }
   },
   computed: {
+    ...mapState({
+      period: state => state.comp.currentPeriod
+    }),
     ...mapGetters(['member']),
     items () {
       return (this.sales || [])
