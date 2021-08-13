@@ -29,7 +29,7 @@
           <v-slide-x-transition>
             <v-card v-if="mostOrderedItem" color="secondary">
               <v-card-title class="white--text" primary-title>
-                {{mostOrderedItem.productName}}
+                {{mostOrderedItem.name}}
               </v-card-title>
               <v-card-text class="white--text">
                 Most Ordered Item
@@ -99,7 +99,7 @@
                     <td :colspan="headers.length">
                       <v-row justify="space-between" v-for="(li, i) in item.lineItems" :key="item.integrationOid + li.id + i">
                         <v-col>
-                          {{ li.productName }}
+                          {{ li.name }}
                         </v-col>
                         <v-col cols="3">
                           <Currency :amount="li.itemPrice" :currency="item.currency"/>
@@ -129,7 +129,7 @@
 
 <script>
 import Currency from '@/components/Currency.vue'
-import { groupBy, cloneDeep, get } from 'lodash'
+import { groupBy, cloneDeep, get, flattenDeep, sortBy } from 'lodash'
 export default {
   components: {
     Currency
@@ -233,15 +233,19 @@ export default {
         return
       }
 
-      const uniqueCustomers = new Set(this.orderData.map(item => item.customerName))
+      const uniqueCustomers = new Set(this.orderData.map(item => {
+        const displayName = get(item, 'customer.displayName')
+
+        return displayName
+      }))
       let customerList = []
 
       uniqueCustomers.forEach(customer => {
-        const customerOrders = this.orderData.filter((obj) => obj.customerName === customer)
+        const customerOrders = this.orderData.filter((obj) => get(obj, 'customer.displayName') === customer)
         const orders = groupBy(customerOrders, 'integrationOid')
         const orderCount = Object.keys(orders).length
         const total = customerOrders.reduce((total, c) => {
-          return total + c.itemPrice
+          return total + c.total
         }, 0)
         const unparsedRecentOrder = customerOrders.find(el => el.checkedOutOn)
         let recentOrder = null
@@ -249,7 +253,7 @@ export default {
           recentOrder = unparsedRecentOrder.checkedOutOn
         }
         const currency = get(customerOrders[0], 'currency')
-        const email = get(customerOrders[0], 'customerEmail')
+        const email = get(customerOrders[0], 'customer.email')
         customerList.push({
           customerName: customer,
           email,
@@ -268,14 +272,14 @@ export default {
       let orderList = []
 
       this.orderData.forEach((order, i) => {
-        if (order.customerName === this.customerName) {
+        if (get(order, 'customer.displayName') === this.customerName) {
           let orderCopy = cloneDeep(order)
           orderCopy.date = order.checkedOutOn
-          orderCopy.key = i + order.productName
+          orderCopy.key = order.id
           const currentIndex = orderList.findIndex(el => el.integrationOid === order.integrationOid)
           if (currentIndex === -1) {
             const currency = get(order, 'currency')
-            orderList.push({ integrationOid: order.integrationOid, date: orderCopy.date, lineItems: [orderCopy], currency })
+            orderList.push({ integrationOid: order.integrationOid, date: orderCopy.date, lineItems: get(orderCopy, 'lines'), currency })
           } else {
             orderList[currentIndex].lineItems.push(orderCopy)
           }
@@ -293,10 +297,10 @@ export default {
       this.orders.forEach(order => {
         const { lineItems, currency, date } = order
         lineItems.forEach(li => {
-          const currentIndex = orderItems.findIndex(el => el.productName === li.productName)
+          const currentIndex = orderItems.findIndex(el => el.productName === li.name)
 
           if (currentIndex === -1) {
-            orderItems.push({ productName: li.productName, currency, lineItems: [li], count: 1, totalSpent: li.itemPrice, mostRecentOrder: date })
+            orderItems.push({ productName: li.name, currency, lineItems: [li], count: 1, totalSpent: li.itemPrice, mostRecentOrder: date })
           } else {
             orderItems[currentIndex].lineItems.push(li)
             orderItems[currentIndex].count++
@@ -330,23 +334,13 @@ export default {
       }
 
       const { orderData } = this
-      let productList = []
-      orderData.forEach(order => {
-        const currentIndex = productList.findIndex(el => el.productName === order.productName)
+      const mappedLineItems = orderData.map(el => el.lines)
+      const flattenedLineItems = flattenDeep(mappedLineItems)
+      const groupedLineItems = groupBy(flattenedLineItems, 'name')
+      delete groupedLineItems['Everra Influencer Registration - Influencer']
+      const sortedProducts = sortBy(groupedLineItems, el => el.length)
 
-        if (currentIndex === -1) {
-          const { productName } = order
-          const currency = get(order, 'currency')
-          productList.push({ productName, currency, lineItems: [order], count: 1, totalSpent: order.itemPrice })
-        } else {
-          productList[currentIndex].lineItems.push(order)
-          productList[currentIndex].count++
-          productList[currentIndex].totalSpent += order.itemPrice
-        }
-      })
-      const sortedProducts = productList.sort((a, b) => b.count - a.count)
-
-      return sortedProducts[0]
+      return sortedProducts.pop()[0]
     }
   }
 }
