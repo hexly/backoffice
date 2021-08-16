@@ -12,7 +12,7 @@
         </v-col>
         <v-col cols="6" class="text-right body-1 pa-2">
           <strong>
-            <Currency :amount="(~~earning.amount || 0)" :currency="earnings.currency"/>
+            <Currency :amount="(earning.value || 0)" :currency="earnings.currency"/>
           </strong>
         </v-col>
       </v-row>
@@ -24,7 +24,7 @@
           <h3>Total Month End Bonuses</h3>
         </v-col>
         <v-col cols="6" class="text-right body-1">
-          <strong><Currency :amount="(~~earnings.amount || 0)" :currency="earnings.currency"/></strong>
+          <strong><Currency :amount="(earnings.amount || 0)" :currency="earnings.currency"/></strong>
         </v-col>
       </v-row>
     </template>
