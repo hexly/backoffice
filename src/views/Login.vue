@@ -127,10 +127,8 @@ export default {
       const { $tenantId: tenantId } = this
 
       try {
-        const res = await this.login({email, password, tenantId})
-        console.log({ res })
+        await this.login({email, password, tenantId})
       } catch (err) {
-        console.log('here')
         console.error(err)
         this.onError(err.message)
       }

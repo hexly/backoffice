@@ -145,7 +145,6 @@ export const UserStore = {
       const auth = _.get(res, 'data.iam.authenticate')
       const success = _.get(auth, 'success')
       const token = auth.authentication ? auth.authentication.token : undefined
-      console.log({ success })
       if (token && success) {
         const md = auth.metadata
         const { identityId, auditId, tenantId, credentialId } = md.claims
