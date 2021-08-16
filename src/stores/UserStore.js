@@ -145,6 +145,7 @@ export const UserStore = {
       const auth = _.get(res, 'data.iam.authenticate')
       const success = _.get(auth, 'success')
       const token = auth.authentication ? auth.authentication.token : undefined
+      console.log({ success })
       if (token && success) {
         const md = auth.metadata
         const { identityId, auditId, tenantId, credentialId } = md.claims
@@ -166,8 +167,8 @@ export const UserStore = {
 
         commit(UserMutations.SET_JWT, md.legacyJwt || token)
         commit(UserMutations.SET_FED_JWT, token)
-        const { tags, baseUrl, customer, profileUrl, tenantIntegrations, contacts } = await dispatch(UserActions.GET_MEMBER_DETAILS, { tenantId, memberId })
-        principal.member = { ...principal.member, tags, profileUrl, contacts }
+        const { tags, baseUrl, customer, profileUrl, tenantIntegrations, contacts, statusId } = await dispatch(UserActions.GET_MEMBER_DETAILS, { tenantId, memberId })
+        principal.member = { ...principal.member, tags, profileUrl, contacts, statusId }
         principal.member.customer = { ...customer }
         principal.tenant = {
           ...principal.tenant,
@@ -181,6 +182,7 @@ export const UserStore = {
           UserMutations.LOGIN_ERROR,
           'Login failed: ' + auth.message
         )
+        throw new Error('Login failed: ' + auth.message)
       }
     },
     async [UserActions.SAVE_PROFILE]({ commit }, { memberId, profileUrl }) {
@@ -240,13 +242,14 @@ export const UserStore = {
         console.warn(error, { memberId, tenantId })
       }
       const tags = _.get(detailsRes, 'data.membership.search.results[0].tags', [])
+      const statusId = _.get(detailsRes, 'data.membership.search.results[0].statusId', [])
       const customer = _.get(detailsRes, 'data.membership.search.results[0].customer', [])
       const profileUrl = _.get(detailsRes, 'data.membership.search.results[0].avatar.assetUrl', [])
       const contacts = _.get(detailsRes, 'data.membership.search.results[0].contacts', [])
       const tenantIntegrations = _.get(tenantIntegrationRes, 'data.membership.getMemberTenantIntegrations', [])
       const parsedTags = tags.map(tag => tag.name)
 
-      return { tags: parsedTags, customer, profileUrl, tenantIntegrations, contacts, baseUrl }
+      return { tags: parsedTags, customer, profileUrl, tenantIntegrations, contacts, baseUrl, statusId }
     },
     async [UserActions.RELOAD_INTEGRATIONS]({ commit }, input) {
       const { data } = await apolloHexlyClient.query({
