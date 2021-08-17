@@ -357,8 +357,8 @@ export default {
     })
   },
   async mounted () {
-    const { memberId } = this
-    await this.compGetPeriods({ memberId })
+    const { memberId, $tenantId: tenantId } = this
+    await this.compGetPeriods({ memberId, tenantId })
     if (this.$tenantInfo.features.legal === true) {
       const { data } = await this.getAttributes({
         key: ['affiliate-agreement', 'entity-details'],

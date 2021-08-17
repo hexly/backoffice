@@ -103,11 +103,21 @@ export const CompStore = {
       }
     },
     [CompActions.GET_PERIODS]: async ({ dispatch, commit, state, rootState }, input) => {
+      const tenantId = _.get(input, 'tenantId')
+      const dateTo = _.get(input, 'dateTo', null)
+      const dateFrom = _.get(input, 'dateFrom', null)
       const response = await apolloFederatedClient.query({
         query: ENGINE_STATS_PERIODS_QUERY,
-        variables: { input }
+        variables: {
+          input: {
+            dateFrom,
+            dateTo,
+            tenantId
+          }
+        }
       })
-      const engineStatsPeriodsByMemberId = _.get(response, 'data.comp.engineStatsPeriodsByMemberId')
+      console.log({ response })
+      const engineStatsPeriodsByMemberId = _.get(response, 'data.engine.engineStatsPeriodsByMemberId')
       const filteredPeriods = engineStatsPeriodsByMemberId.slice(0, 6)
       commit(CompMutations.SET_HAS_MORE_PERIODS, filteredPeriods.length < engineStatsPeriodsByMemberId.length)
       const periods = _.groupBy(filteredPeriods, 'status')

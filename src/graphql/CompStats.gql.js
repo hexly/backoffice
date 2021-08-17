@@ -36,18 +36,16 @@ export const ENGINE_STATS_QUERY = gql`
 `
 
 export const ENGINE_STATS_PERIODS_QUERY = gql`
-  query engineStatsPeriod($input: EngineStatsPeriodsByMemberInput) {
-    comp {
-      engineStatsPeriodsByMemberId(input: $input) {
-        id
-        name
-        key
-        open
-        close
-        status
-        hasMaterializedStats
-        hasPayroll
-        metadata
+  query engineStatsPeriod($input: EnginePeriodSearchInput!) {
+    engine {
+      periods(input: $input) {
+        results {
+          id
+          name
+          key
+          open
+          close
+        }
       }
     }
   }
