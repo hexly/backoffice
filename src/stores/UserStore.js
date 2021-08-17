@@ -243,6 +243,7 @@ export const UserStore = {
       }
       const tags = _.get(detailsRes, 'data.membership.search.results[0].tags', [])
       const slug = _.get(detailsRes, 'data.membership.search.results[0].slug')
+      const integrations = _.get(detailsRes, 'data.membership.search.results[0].integrations')
       const statusId = _.get(detailsRes, 'data.membership.search.results[0].statusId', [])
       const customer = _.get(detailsRes, 'data.membership.search.results[0].customer', [])
       const profileUrl = _.get(detailsRes, 'data.membership.search.results[0].avatar.assetUrl', [])
@@ -250,7 +251,7 @@ export const UserStore = {
       const tenantIntegrations = _.get(tenantIntegrationRes, 'data.membership.getMemberTenantIntegrations', [])
       const parsedTags = tags.map(tag => tag.name)
 
-      return { tags: parsedTags, customer, profileUrl, tenantIntegrations, contacts, baseUrl, statusId, slug }
+      return { tags: parsedTags, customer, profileUrl, tenantIntegrations, contacts, baseUrl, statusId, slug, integrations }
     },
     async [UserActions.RELOAD_INTEGRATIONS]({ commit }, input) {
       const { data } = await apolloHexlyClient.query({

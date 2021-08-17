@@ -139,6 +139,13 @@ export const GET_MEMBER_DETAILS = gql`
             }
           }
           slug
+          integrations {
+            id
+            metadata
+            key
+            name
+            priority
+          }
           contacts {
             emails {
               id

@@ -286,7 +286,7 @@ import { Actions, Mutations } from '@/store'
 import { UserMutations, UserActions } from '@/stores/UserStore'
 import { CompActions } from '@/stores/CompStore'
 import { Actions as MemberActions } from '@/Members/Store'
-import { GET_MEMBER_DETAILS } from '@/graphql/Member.gql'
+import { GET_MEMBER_DETAILS, GET_MEMBER_TENANT_INTEGRATIONS_FED } from '@/graphql/Member.gql'
 import { mapState, mapActions, mapMutations, mapGetters } from 'vuex'
 import { get } from 'lodash'
 
@@ -381,13 +381,46 @@ export default {
           }
         }
       },
-      update(data) {
+      async update(data) {
+        const { memberId, $tenantId: tenantId } = this
+        let tenantIntegrationRes
+        try {
+          tenantIntegrationRes = await this.$apollo.query({
+            query: GET_MEMBER_TENANT_INTEGRATIONS_FED,
+            variables: {
+              input: {
+                memberId
+              }
+            },
+            client: 'federated'
+          })
+        } catch (error) {
+          console.warn(error, { memberId, tenantId })
+        }
+        const principal = get(this, 'user.principal')
         const tags = get(data, 'membership.search.results[0].tags')
+        const parsedTags = tags.map(tag => tag.name)
         const statusId = get(data, 'membership.search.results[0].statusId')
+        const slug = get(data, 'membership.search.results[0].slug')
+        const integrations = get(data, 'membership.search.results[0].integrations')
+        const customer = get(data, 'membership.search.results[0].customer', [])
+        const profileUrl = get(data, 'membership.search.results[0].avatar.assetUrl', [])
+        const contacts = get(data, 'membership.search.results[0].contacts', [])
+        const tenantIntegrations = get(tenantIntegrationRes, 'membership.getMemberTenantIntegrations', [])
         if (!this.user.isImpersonating && (statusId !== 1 || tags.indexOf('backoffice:locked') >= 0)) {
           this.logoutUser()
           window.location.reload(true)
         }
+
+        const memberDetails = { tags: parsedTags, customer, profileUrl, tenantIntegrations, contacts, statusId, slug, integrations }
+        principal.member = { ...principal.member, ...memberDetails, customer }
+        principal.tenant = {
+          ...principal.tenant,
+          integrations: tenantIntegrations,
+          id: tenantId
+        }
+        this.setPrincipal(principal)
+
         return null
       },
       client: 'federated'
