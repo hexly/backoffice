@@ -103,11 +103,11 @@ export const CompStore = {
       }
     },
     [CompActions.GET_PERIODS]: async ({ dispatch, commit, state, rootState }, input) => {
-      const response = await apolloHexlyClient.query({
+      const response = await apolloFederatedClient.query({
         query: ENGINE_STATS_PERIODS_QUERY,
         variables: { input }
       })
-      const { data: { engineStatsPeriodsByMemberId } } = response
+      const engineStatsPeriodsByMemberId = _.get(response, 'data.comp.engineStatsPeriodsByMemberId')
       const filteredPeriods = engineStatsPeriodsByMemberId.slice(0, 6)
       commit(CompMutations.SET_HAS_MORE_PERIODS, filteredPeriods.length < engineStatsPeriodsByMemberId.length)
       const periods = _.groupBy(filteredPeriods, 'status')

@@ -416,7 +416,8 @@ export default {
   },
   async mounted() {
     if (_.isEmpty(this.periods)) {
-      await this.compGetPeriods()
+      const { memberId } = this
+      await this.compGetPeriods({ memberId })
     }
     if (this.selectedPeriod.metadata && this.selectedPeriod.metadata.version === 2) {
       await this.getCompStatsPage()

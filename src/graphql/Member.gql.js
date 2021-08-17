@@ -122,6 +122,7 @@ export const GET_MEMBER_DETAILS = gql`
       search(input: $input) {
         results {
           id
+          statusId
           avatar {
             assetUrl
           }

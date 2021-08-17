@@ -283,9 +283,10 @@
 <script>
 import moment from 'moment'
 import { Actions, Mutations } from '@/store'
-import { UserMutations } from '@/stores/UserStore'
+import { UserMutations, UserActions } from '@/stores/UserStore'
 import { CompActions } from '@/stores/CompStore'
 import { Actions as MemberActions } from '@/Members/Store'
+import { GET_MEMBER_DETAILS } from '@/graphql/Member.gql'
 import { mapState, mapActions, mapMutations, mapGetters } from 'vuex'
 import { get } from 'lodash'
 
@@ -311,7 +312,7 @@ export default {
       showGate: state => state.showGate,
       integrations: state => state.integrations
     }),
-    ...mapGetters(['slug']),
+    ...mapGetters(['slug', 'memberId']),
     usersStoreUrl () {
       return this.slug ? this.$tenantInfo.storeUrl.replace('{slug}', this.slug) : this.$tenantInfo.corporateUrl
     },
@@ -351,11 +352,13 @@ export default {
     ...mapActions({
       logoutUser: Actions.LOGOUT,
       getAttributes: MemberActions.GET_ATTRIBUTES,
-      compGetPeriods: CompActions.GET_PERIODS
+      compGetPeriods: CompActions.GET_PERIODS,
+      getMemberDetails: UserActions.GET_MEMBER_DETAILS
     })
   },
   async mounted () {
-    await this.compGetPeriods()
+    const { memberId } = this
+    await this.compGetPeriods({ memberId })
     if (this.$tenantInfo.features.legal === true) {
       const { data } = await this.getAttributes({
         key: ['affiliate-agreement', 'entity-details'],
@@ -365,6 +368,29 @@ export default {
       if (data.getMemberAttributes.length < 2) {
         this.setGate(true)
       }
+    }
+  },
+  apollo: {
+    memberDetails: {
+      query: GET_MEMBER_DETAILS,
+      variables() {
+        return {
+          input: {
+            tenantIn: [this.$tenantId],
+            idIn: [this.memberId]
+          }
+        }
+      },
+      update(data) {
+        const tags = get(data, 'membership.search.results[0].tags')
+        const statusId = get(data, 'membership.search.results[0].statusId')
+        if (!this.user.isImpersonating && (statusId !== 1 || tags.indexOf('backoffice:locked') >= 0)) {
+          this.logoutUser()
+          window.location.reload(true)
+        }
+        return null
+      },
+      client: 'federated'
     }
   }
 }
