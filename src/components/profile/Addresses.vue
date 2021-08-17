@@ -79,7 +79,7 @@ export default {
     },
     async save(address) {
       const mutation = address.new ? CREATE_ADDRESS : UPDATE_ADDRESS
-      const _address = {...address}
+      const _address = { ...address }
       delete _address.saving
       delete _address.new
 

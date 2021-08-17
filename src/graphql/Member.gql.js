@@ -138,6 +138,7 @@ export const GET_MEMBER_DETAILS = gql`
               metadata
             }
           }
+          slug
           contacts {
             emails {
               id

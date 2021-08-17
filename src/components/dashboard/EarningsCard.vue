@@ -108,7 +108,10 @@ export default {
         return summary
       },
       client: 'federated',
-      loadingKey: 'loading'
+      loadingKey: 'loading',
+      skip() {
+        return !this.selectedPeriod.id
+      }
     }
   },
   computed: {

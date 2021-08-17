@@ -47,7 +47,7 @@ const defaultState = () => {
         tenantIntegrations: [],
         displayName: null,
         contacts: [],
-        slugs: [],
+        slug: null,
         customer: null,
         tags: []
       }
@@ -166,8 +166,9 @@ export const UserStore = {
 
         commit(UserMutations.SET_JWT, md.legacyJwt || token)
         commit(UserMutations.SET_FED_JWT, token)
-        const { tags, baseUrl, customer, profileUrl, tenantIntegrations, contacts, statusId } = await dispatch(UserActions.GET_MEMBER_DETAILS, { tenantId, memberId })
-        principal.member = { ...principal.member, tags, profileUrl, contacts, statusId }
+        const memberDetails = await dispatch(UserActions.GET_MEMBER_DETAILS, { tenantId, memberId })
+        const { customer, tenantIntegrations, baseUrl } = memberDetails
+        principal.member = { ...principal.member, ...memberDetails }
         principal.member.customer = { ...customer }
         principal.tenant = {
           ...principal.tenant,
@@ -241,6 +242,7 @@ export const UserStore = {
         console.warn(error, { memberId, tenantId })
       }
       const tags = _.get(detailsRes, 'data.membership.search.results[0].tags', [])
+      const slug = _.get(detailsRes, 'data.membership.search.results[0].slug')
       const statusId = _.get(detailsRes, 'data.membership.search.results[0].statusId', [])
       const customer = _.get(detailsRes, 'data.membership.search.results[0].customer', [])
       const profileUrl = _.get(detailsRes, 'data.membership.search.results[0].avatar.assetUrl', [])
@@ -248,7 +250,7 @@ export const UserStore = {
       const tenantIntegrations = _.get(tenantIntegrationRes, 'data.membership.getMemberTenantIntegrations', [])
       const parsedTags = tags.map(tag => tag.name)
 
-      return { tags: parsedTags, customer, profileUrl, tenantIntegrations, contacts, baseUrl, statusId }
+      return { tags: parsedTags, customer, profileUrl, tenantIntegrations, contacts, baseUrl, statusId, slug }
     },
     async [UserActions.RELOAD_INTEGRATIONS]({ commit }, input) {
       const { data } = await apolloHexlyClient.query({
@@ -312,7 +314,7 @@ export const UserStore = {
     },
     currencyCode: state => {
       // I hate this so much
-      const currency = ['USD', 'CAD', 'GBP']
+      const currency = ['USD', 'CAD', 'GBP', 'AUD', 'NZD']
       const currencyIds =
         state.principal &&
         state.principal.member &&
@@ -324,9 +326,7 @@ export const UserStore = {
     slug: state => {
       return (
         state.principal &&
-        state.principal.member.slugs &&
-        state.principal.member.slugs[0] &&
-        state.principal.member.slugs[0].slug
+        state.principal.member.slug
       )
     },
     customer: state => {
@@ -341,8 +341,8 @@ export const UserStore = {
     },
     tenantIntegrations: state =>
       (state.principal &&
-      state.principal.member &&
-      state.principal.member.tenantIntegrations) || [],
+      state.principal.tenant &&
+      state.principal.tenant.integrations) || [],
     integrations: state =>
       (state.principal &&
       state.principal.tenant &&
