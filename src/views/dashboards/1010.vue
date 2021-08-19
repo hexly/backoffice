@@ -256,16 +256,20 @@ export default {
       deep: true,
       variables() {
         const date = this.selectedPeriod ? this.selectedPeriod.open || null : null
+        const { $tenantId: tenantId } = this
         return {
           input: {
             memberId: this.memberId,
+            tenantId,
             date
           }
         }
       },
       update(obj) {
-        return _.get(obj, 'banners.results', [])
-      }
+        console.log({ obj })
+        return _.get(obj, 'engine.engineStatsMemberBanners', [])
+      },
+      client: 'federated'
     },
     memberCount: {
       query: MAX_MRN,

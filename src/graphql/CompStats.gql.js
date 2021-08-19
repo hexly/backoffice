@@ -193,8 +193,8 @@ query engineStatsMemberPromotionStatus($input: EngineStatsMemberPromotionStatusI
 
 export const ENGINE_DASHBOARD_BANNERS = gql`
 query banners($input: EngineStatsMemberBannersInput!){
-  banners: engineStatsMemberBanners(input: $input){
-    results {
+  engine {
+    engineStatsMemberBanners (input: $input) {
       id
       name
       key
