@@ -5,6 +5,7 @@ import {
 } from '@/graphql/Integrations'
 import AUTH_GQL from '@/graphql/login/auth.gql'
 import { ADJUST_TAGS, UPDATE_PROFILE, GET_MEMBER_DETAILS, GET_MEMBER_TENANT_INTEGRATIONS_FED } from '@/graphql/Member.gql'
+import { GET_TENANT_DETAILS } from '@/graphql/Integrations.js'
 import _ from 'lodash'
 
 export const UserActions = {
@@ -167,12 +168,13 @@ export const UserStore = {
         commit(UserMutations.SET_JWT, md.legacyJwt || token)
         commit(UserMutations.SET_FED_JWT, token)
         const memberDetails = await dispatch(UserActions.GET_MEMBER_DETAILS, { tenantId, memberId })
-        const { customer, tenantIntegrations, baseUrl } = memberDetails
+        const tenantDetails = await dispatch(UserActions.GET_TENANT_DETAILS)
+        const { customer, baseUrl } = memberDetails
         principal.member = { ...principal.member, ...memberDetails }
         principal.member.customer = { ...customer }
         principal.tenant = {
           ...principal.tenant,
-          integrations: tenantIntegrations,
+          integrations: tenantDetails.integrations,
           baseUrl,
           id: tenantId
         }
@@ -252,6 +254,14 @@ export const UserStore = {
       const parsedTags = tags.map(tag => tag.name)
 
       return { tags: parsedTags, customer, profileUrl, tenantIntegrations, contacts, baseUrl, statusId, slug, integrations }
+    },
+    async [UserActions.GET_TENANT_DETAILS]({ commit }) {
+      const tenantDetails = await apolloFederatedClient.query({
+        query: GET_TENANT_DETAILS
+      })
+      const integrations = _.get(tenantDetails, 'data.iam.principal.tenant', [])
+
+      return { integrations }
     },
     async [UserActions.RELOAD_INTEGRATIONS]({ commit }, input) {
       const { data } = await apolloHexlyClient.query({
@@ -342,8 +352,8 @@ export const UserStore = {
     },
     tenantIntegrations: state =>
       (state.principal &&
-      state.principal.tenant &&
-      state.principal.tenant.integrations) || [],
+      state.principal.member &&
+      state.principal.member.tenantIntegrations) || [],
     integrations: state =>
       (state.principal &&
       state.principal.tenant &&

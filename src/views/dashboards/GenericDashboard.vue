@@ -252,8 +252,8 @@ export default {
       ]
     }
 
-    const { memberId } = this
-    await this.compGetPeriods({ memberId })
+    const { memberId, $tenantId: tenantId } = this
+    await this.compGetPeriods({ memberId, tenantId })
   },
   methods: {
     formatEarning(earning) {

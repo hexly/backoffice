@@ -104,23 +104,22 @@ export const CompStore = {
     },
     [CompActions.GET_PERIODS]: async ({ dispatch, commit, state, rootState }, input) => {
       const tenantId = _.get(input, 'tenantId')
-      const dateTo = _.get(input, 'dateTo', null)
-      const dateFrom = _.get(input, 'dateFrom', null)
+      const dateTo = moment().format('YYYY-MM-DD')
+      const memberId = _.get(input, 'memberId', null)
       const response = await apolloFederatedClient.query({
         query: ENGINE_STATS_PERIODS_QUERY,
         variables: {
           input: {
-            dateFrom,
+            memberId,
             dateTo,
             tenantId
           }
         }
       })
-      console.log({ response })
-      const engineStatsPeriodsByMemberId = _.get(response, 'data.engine.engineStatsPeriodsByMemberId')
+      const engineStatsPeriodsByMemberId = _.get(response, 'data.engine.periods.results')
       const filteredPeriods = engineStatsPeriodsByMemberId.slice(0, 6)
       commit(CompMutations.SET_HAS_MORE_PERIODS, filteredPeriods.length < engineStatsPeriodsByMemberId.length)
-      const periods = _.groupBy(filteredPeriods, 'status')
+      const periods = _.groupBy(filteredPeriods, (p) => p.status.toLowerCase())
       const currentPeriod = periods.open[0]
       if (_.isEmpty(state.selectedPeriod)) {
         await dispatch(CompActions.SELECT_PERIOD, currentPeriod)

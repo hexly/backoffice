@@ -45,6 +45,7 @@ export const ENGINE_STATS_PERIODS_QUERY = gql`
           key
           open
           close
+          status
         }
       }
     }
