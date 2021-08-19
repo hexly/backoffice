@@ -103,7 +103,8 @@ export default {
           }
         }
       },
-      update({ payouts: { summary } }) {
+      update({ payouts }) {
+        const { summary } = payouts || {}
         return summary
       },
       client: 'federated',

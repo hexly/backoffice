@@ -139,7 +139,7 @@ export default {
       return
     }
 
-    const { theme } = hexlyPersonalizedStore.metadata.home
+    const { theme } = hexlyPersonalizedStore.metadata.home || {}
 
     this.currentTheme = theme
   },
