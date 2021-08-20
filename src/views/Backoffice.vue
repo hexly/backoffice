@@ -381,6 +381,9 @@ export default {
           }
         }
       },
+      skip() {
+        return !this.memberId
+      },
       async update(data) {
         const { memberId, $tenantId: tenantId } = this
         let tenantIntegrationRes
