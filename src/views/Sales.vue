@@ -160,10 +160,9 @@
                     <template v-slot:item="{ item: line }">
                       <tr>
                         <td>{{ line.name }}</td>
-                        <td>{{ line.quantity }}</td>
                         <td>
                           <Currency
-                            :amount="parseFloat(line.itemPrice * line.quantity)"
+                            :amount="parseFloat(line.itemPrice)"
                             :currency="item.currency"
                           />
                         </td>
@@ -269,7 +268,6 @@ export default {
       ],
       productHeads: [
         { text: 'Item', sortable: false },
-        { text: 'Qty.', sortable: false },
         { text: 'subtotal', sortable: false }
       ],
       sales: [],
@@ -284,14 +282,11 @@ export default {
       },
       query: SEARCH_SALES_QUERY,
       variables () {
-        const endDate = this.$moment(_.get(this, 'endDate', '1970-01-01')).format('YYYY-MM-DD')
-        const startDate = this.$moment(_.get(this, 'startDate', '1970-01-01')).format('YYYY-MM-DD')
+        // const endDate = this.$moment(_.get(this, 'endDate', '1970-01-01')).format('YYYY-MM-DD')
+        // const startDate = this.$moment(_.get(this, 'startDate', '1970-01-01')).format('YYYY-MM-DD')
         return {
-          saleSearchInput: {
-            referrerIn: this.mId || this.memberId,
-            tenantId: this.$tenantId,
-            endDate,
-            startDate
+          input: {
+            memberIn: [this.memberId]
           }
         }
       },
@@ -303,7 +298,8 @@ export default {
       },
       debounce: 500,
       update (data) {
-        const orders = _.get(data, 'purchasing.orders.results', [])
+        console.log({ data })
+        const orders = _.get(data, 'purchaseSearchOrders', [])
         this.setLoading(false)
         const filteredOrders = orders.filter(sale => this.statuses.indexOf(sale.statusOid) >= 0)
         return filteredOrders
@@ -351,6 +347,7 @@ export default {
         const HexlyTotalAmount = _.get(sale, 'compStats.HexlyTotalAmount')
         const HexlyCommissionablePoints = _.get(sale, 'compStats.HexlyCommissionablePoints')
         const date = sale.checkedOutOn ? this.$moment(saleDate, 'YYYY-MM-DD').format('MM/DD/YYYY') : ''
+        console.log({ lineItems })
         return {
           ...sale,
           date,

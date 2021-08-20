@@ -1,54 +1,79 @@
 import gql from 'graphql-tag'
 
 export const SEARCH_SALES_QUERY = gql`
-  query searchSalesBySellerId($saleSearchInput: PurchaseSearchOrderInput!) {
-    purchasing {
-      orders (input: $saleSearchInput) {
-        results {
-          statusOid
-          customer {
-            id
-            memberId
-            displayName
-            email
-            integrationOid
-          }
-          id
-          customerId
-          compStats
-          currency
-          metadata
-          checkedOutOn
-          billing {
-            city
-            province
-            country
-            postalCode
-          }
-          shipping {
-            street
-            street2
-            city
-            province
-            country
-            postalCode
-          }
-          lines {
-            id
-            orderId
-            name
-            tenantIntegrationId
-            integrationOid
-            itemPrice
-            quantity
-            typeId
-            metadata
-          }
-        }
+  query ordersQuery($input: PurchaseSearchOrderInput!){
+    purchaseSearchOrders(input: $input) {
+      id
+      compStats
+      total
+      statusOid
+      orderType
+      checkedOutOn
+      integrationOid
+      customer {
+        displayName
+        email
+      }
+      currency
+      lines {
+        name
+        id
+        integrationOid
+        itemPrice
       }
     }
   }
 `
+
+// export const SEARCH_SALES_QUERY = gql`
+//   query searchSalesBySellerId($saleSearchInput: PurchaseSearchOrderInput!) {
+//     purchasing {
+//       orders (input: $saleSearchInput) {
+//         results {
+//           statusOid
+//           customer {
+//             id
+//             memberId
+//             displayName
+//             email
+//             integrationOid
+//           }
+//           id
+//           customerId
+//           compStats
+//           currency
+//           metadata
+//           checkedOutOn
+//           billing {
+//             city
+//             province
+//             country
+//             postalCode
+//           }
+//           shipping {
+//             street
+//             street2
+//             city
+//             province
+//             country
+//             postalCode
+//           }
+//           lines {
+//             id
+//             orderId
+//             name
+//             tenantIntegrationId
+//             integrationOid
+//             itemPrice
+//             quantity
+//             typeId
+//             metadata
+//           }
+//         }
+//       }
+//     }
+//   }
+// `
 
 export const SALES_STATS = gql`
   query SalesStats($input: SaleStatsOverDateRangeFilter) {

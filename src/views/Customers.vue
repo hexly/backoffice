@@ -16,9 +16,8 @@ import RecentOrders from '@/components/RecentOrders.vue'
 import OrderTable from '@/components/OrderTable.vue'
 import CustomerTable from '@/components/CustomerTable.vue'
 import { mapState } from 'vuex'
-import { ORDERS_QUERY } from '@/graphql/Orders.js'
-import { get } from 'lodash'
-
+import { ORDERS_QUERY_FEDERATED } from '@/graphql/Orders.js'
+import { get, uniqBy } from 'lodash'
 export default {
   components: {
     OrderTable,
@@ -32,21 +31,19 @@ export default {
   },
   apollo: {
     orderData: {
-      query: ORDERS_QUERY,
+      query: ORDERS_QUERY_FEDERATED,
       variables() {
         return {
           input: {
-            referrerIn: this.user.principal.memberId,
-            start: '2007-12-03',
-            end: new Date().toISOString().split('T')[0]
+            memberIn: [this.user.principal.memberId]
           }
         }
       },
       client: 'federated',
       update(data) {
         const res = get(data, 'purchaseSearchOrders')
-
-        return res
+        const duplicatesRemoved = uniqBy(res, el => el.id)
+        return duplicatesRemoved
       },
       watchLoading(isLoading) {
         this.loading = isLoading
@@ -57,7 +54,8 @@ export default {
     ...mapState({
       user: state => state.user,
       showGate: state => state.showGate,
-      integrations: state => state.integrations
+      integrations: state => state.integrations,
+      tenantId: state => parseInt(state.tenantId)
     })
   }
 }
