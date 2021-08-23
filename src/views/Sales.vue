@@ -102,7 +102,7 @@
             </td>
             <td>
               <Currency
-                :amount="item.HexlyTotalAmount ? parseFloat(item.HexlyTotalAmount) : null"
+                :amount="item.HexlyTotalAmount ? parseFloat(item.HexlyTotalAmount.toFixed(2)) : null"
                 :currency="item.currency"
               />
             </td>
@@ -163,6 +163,13 @@
                         <td>
                           <Currency
                             :amount="parseFloat(line.itemPrice)"
+                            :currency="item.currency"
+                          />
+                        </td>
+                        <td>{{ line.quantity }}</td>
+                        <td>
+                          <Currency
+                            :amount="parseFloat(line.itemPrice * line.quantity)"
                             :currency="item.currency"
                           />
                         </td>
@@ -268,7 +275,9 @@ export default {
       ],
       productHeads: [
         { text: 'Item', sortable: false },
-        { text: 'subtotal', sortable: false }
+        { text: 'Item Price', sortable: false },
+        { text: 'Qty.', sortable: false },
+        { text: 'Subtotal', sortable: false }
       ],
       sales: [],
       showSnackbar: false,
