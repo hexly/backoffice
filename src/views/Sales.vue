@@ -102,7 +102,7 @@
             </td>
             <td>
               <Currency
-                :amount="item.HexlyTotalAmount ? parseFloat(item.HexlyTotalAmount) : null"
+                :amount="item.HexlyTotalAmount ? parseFloat(item.HexlyTotalAmount.toFixed(2)) : null"
                 :currency="item.currency"
               />
             </td>
@@ -163,6 +163,13 @@
                         <td>
                           <Currency
                             :amount="parseFloat(line.itemPrice)"
+                            :currency="item.currency"
+                          />
+                        </td>
+                        <td>{{ line.quantity }}</td>
+                        <td>
+                          <Currency
+                            :amount="parseFloat(line.itemPrice * line.quantity)"
                             :currency="item.currency"
                           />
                         </td>
@@ -268,7 +275,9 @@ export default {
       ],
       productHeads: [
         { text: 'Item', sortable: false },
-        { text: 'subtotal', sortable: false }
+        { text: 'Item Price', sortable: false },
+        { text: 'Qty.', sortable: false },
+        { text: 'Subtotal', sortable: false }
       ],
       sales: [],
       showSnackbar: false,
@@ -282,11 +291,13 @@ export default {
       },
       query: SEARCH_SALES_QUERY,
       variables () {
-        // const endDate = this.$moment(_.get(this, 'endDate', '1970-01-01')).format('YYYY-MM-DD')
-        // const startDate = this.$moment(_.get(this, 'startDate', '1970-01-01')).format('YYYY-MM-DD')
+        const end = this.$moment(_.get(this, 'endDate', '1970-01-01')).format('YYYY-MM-DD')
+        const start = this.$moment(_.get(this, 'startDate', '1970-01-01')).format('YYYY-MM-DD')
         return {
           input: {
-            memberIn: [this.memberId]
+            memberIn: [this.memberId],
+            start,
+            end
           }
         }
       },
@@ -298,7 +309,6 @@ export default {
       },
       debounce: 500,
       update (data) {
-        console.log({ data })
         const orders = _.get(data, 'purchaseSearchOrders', [])
         this.setLoading(false)
         const filteredOrders = orders.filter(sale => this.statuses.indexOf(sale.statusOid) >= 0)
@@ -347,7 +357,6 @@ export default {
         const HexlyTotalAmount = _.get(sale, 'compStats.HexlyTotalAmount')
         const HexlyCommissionablePoints = _.get(sale, 'compStats.HexlyCommissionablePoints')
         const date = sale.checkedOutOn ? this.$moment(saleDate, 'YYYY-MM-DD').format('MM/DD/YYYY') : ''
-        console.log({ lineItems })
         return {
           ...sale,
           date,
