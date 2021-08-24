@@ -56,7 +56,7 @@
                   {{item.recentOrder ? $moment(item.recentOrder, 'YYYY-MM-DD').format('ll') : null}}
                 </template>
                 <template v-slot:item.total="{ item }">
-                  <Currency :amount="item.total" :currency="item.currency"/>
+                  <Currency :amount="item.total / 100" :currency="item.currency"/>
                 </template>
               </v-data-table>
             </v-card-text>
@@ -262,13 +262,18 @@ export default {
       return customerList
     },
     orders() {
-      const { orderData } = this
-      console.log({ orderData })
+      const { orderData, customerEmail } = this
       if (!orderData) {
+        console.warn(`Expected orderData, but receieved ${orderData}`)
+        return
+      }
+      if (!customerEmail) {
+        console.warn(`Expected customerEmail, but receieved ${customerEmail}`)
         return
       }
 
-      const mappedOrders = orderData.map(el => {
+      const filteredOrders = orderData.filter(el => el.customer.email === customerEmail)
+      const mappedOrders = filteredOrders.map(el => {
         return {
           date: el.checkedOutOn,
           key: el.id,
