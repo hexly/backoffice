@@ -283,11 +283,11 @@
 <script>
 import moment from 'moment'
 import { Actions, Mutations } from '@/store'
-import { UserMutations } from '@/stores/UserStore'
+import { UserMutations, prepPrincipal } from '@/stores/UserStore'
 import { CompActions } from '@/stores/CompStore'
 import { Actions as MemberActions } from '@/Members/Store'
 import { mapState, mapActions, mapMutations, mapGetters } from 'vuex'
-import { GET_PRINCIPAL } from '@/graphql/iam.gql'
+import { PRINCIPAL } from '@/graphql/iam.gql'
 import { get } from 'lodash'
 
 const impersonationPrefix = 'Impersonating '
@@ -320,7 +320,7 @@ export default {
       return this.hasAdmin || this.hasZendeskAdmin
     },
     hasAdmin () {
-      const perms = get(this, 'user.principal.permissions', [])
+      const perms = get(this, 'user.principal.permissions', []) || []
       return perms.findIndex(e => e === 10 || e === '10') >= 0
     },
     hasZendeskAdmin () {
@@ -348,7 +348,7 @@ export default {
       this.logoutUser()
       window.location.reload(true)
     },
-    ...mapMutations([Mutations.SET_GATE, UserMutations.SET_PRINCIPAL]),
+    ...mapMutations([Mutations.SET_GATE, UserMutations.SET_MEMBER, UserMutations.SET_TENANT]),
     ...mapActions({
       logoutUser: Actions.LOGOUT,
       getAttributes: MemberActions.GET_ATTRIBUTES,
@@ -370,14 +370,17 @@ export default {
   },
   apollo: {
     principal: {
-      query: GET_PRINCIPAL,
+      query: PRINCIPAL,
       fetchPolicy: 'network-only',
-      update ({ getPrincipal }) {
-        if (getPrincipal) {
-          this.setPrincipal(getPrincipal)
-          const integrations = get(getPrincipal, 'tenant.integrations')
-          const statusId = get(getPrincipal, 'member.statusId')
-          const tags = get(getPrincipal, 'member.tags')
+      client: 'federated',
+      update ({ iam: { principal } }) {
+        if (principal) {
+          const { member, tenant } = prepPrincipal(principal)
+          this.setMember(member)
+          this.setTenant(tenant)
+          const integrations = get(principal, 'tenant.integrations')
+          const statusId = get(principal, 'member.statusId')
+          const tags = get(principal, 'member.tags')
           // Status Id 1 = Active Member
           if (!this.user.isImpersonating && (statusId !== 1 || tags.indexOf('backoffice:locked') >= 0)) {
             this.logoutUser()

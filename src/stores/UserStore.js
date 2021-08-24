@@ -25,6 +25,8 @@ export const UserMutations = {
   AUTH_STATUS: 'authStatus',
   LOGIN_ERROR: 'setLoginError',
   SET_PRINCIPAL: 'setPrincipal',
+  SET_MEMBER: 'setMember',
+  SET_TENANT: 'setTenant',
   TOGGLE_IMPERSONATION: 'toggleImpersonation',
   SET_PROFILE: 'setProfilePic',
   ADD_INTEGRATION: 'addTenantIntegration',
@@ -58,6 +60,30 @@ const defaultState = () => {
   }
 }
 
+export const prepPrincipal = (principal) => {
+  const baseUrl = process.env.VUE_APP_API_ENDPOINT
+  const m = _.get(principal, 'member')
+  const tenantId = _.get(principal, 'tenantId')
+  const tags = _.get(m, 'tags', []).map(tag => tag.name)
+  const integrations = _.get(m, 'integrations')
+  const profileUrl = _.get(m, 'avatar.assetUrl', [])
+
+  const tenantIntegrations = [] // TODO
+
+  const member = { ...m, tags, profileUrl, tenantIntegrations, baseUrl, integrations }
+  const tenant = {
+    ...principal.tenant,
+    integrations: tenantIntegrations,
+    baseUrl,
+    id: tenantId
+  }
+
+  return {
+    member,
+    tenant
+  }
+}
+
 export const UserStore = {
   state: defaultState(),
   mutations: {
@@ -80,6 +106,18 @@ export const UserStore = {
       state.principal = {
         ...state.principal,
         ...principal
+      }
+    },
+    [UserMutations.SET_MEMBER]: (state, member) => {
+      state.principal.member = {
+        ...state.principal.member,
+        ...member
+      }
+    },
+    [UserMutations.SET_TENANT]: (state, tenant) => {
+      state.principal.tenant = {
+        ...state.principal.tenant,
+        ...tenant
       }
     },
     [UserMutations.TOGGLE_IMPERSONATION]: state => {
@@ -148,10 +186,10 @@ export const UserStore = {
       const token = auth.authentication ? auth.authentication.token : undefined
       if (token && success) {
         const md = auth.metadata
-        const { identityId, auditId, tenantId, credentialId } = md.claims
+        const { identityId, auditId, tenantId } = md.claims
 
         const principal = {
-          identityId, auditId, tenantId, credentialId
+          identityId, auditId, tenantId
         }
 
         if (md.member && md.member.id) {
@@ -167,26 +205,9 @@ export const UserStore = {
         commit(UserMutations.SET_JWT, md.legacyJwt || token)
         commit(UserMutations.SET_FED_JWT, token)
 
-        const baseUrl = process.env.VUE_APP_API_ENDPOINT
-        const m = _.get(auth, 'principal.member')
-        const tags = _.get(m, 'tags', []).map(tag => tag.name)
-        const slug = _.get(m, 'slug')
-        const integrations = _.get(m, 'integrations')
-        const statusId = _.get(m, 'statusId', [])
-        const customer = _.get(m, 'customer', [])
-        const profileUrl = _.get(m, 'avatar.assetUrl', [])
-        const contacts = _.get(m, 'contacts', [])
-        // const tenantIntegrations = _.get(tenantIntegrationRes, 'data.membership.getMemberTenantIntegrations', [])
-        // const memberDetails = await dispatch(UserActions.GET_MEMBER_DETAILS, { tenantId, memberId })
-        const tenantIntegrations = [] // TODO
-
-        principal.member = { tags, customer, profileUrl, tenantIntegrations, contacts, baseUrl, statusId, slug, integrations }
-        principal.tenant = {
-          ...principal.tenant,
-          integrations: tenantIntegrations,
-          baseUrl,
-          id: tenantId
-        }
+        const { member, tenant } = prepPrincipal(auth.principal)
+        principal.member = member
+        principal.tenant = tenant
         commit(UserMutations.SET_PRINCIPAL, principal)
       } else {
         commit(
@@ -221,49 +242,6 @@ export const UserStore = {
       commit(UserMutations.SET_TAGS, data.adjustTags.tags)
       return data.adjustTags.tags
     },
-    // async [UserActions.GET_MEMBER_DETAILS]({ commit }, input) {
-    //   const { memberId, tenantId } = input
-    //   const baseUrl = process.env.VUE_APP_API_ENDPOINT
-
-    //   let detailsRes
-    //   let tenantIntegrationRes
-    //   try {
-    //     detailsRes = await apolloFederatedClient.query({
-    //       query: GET_MEMBER_DETAILS,
-    //       variables: {
-    //         input: {
-    //           tenantIn: [tenantId],
-    //           idIn: [memberId]
-    //         }
-    //       }
-    //     })
-    //   } catch (error) {
-    //     console.warn(error, { memberId, tenantId })
-    //   }
-    //   try {
-    //     tenantIntegrationRes = await apolloFederatedClient.query({
-    //       query: GET_MEMBER_TENANT_INTEGRATIONS_FED,
-    //       variables: {
-    //         input: {
-    //           memberId
-    //         }
-    //       }
-    //     })
-    //   } catch (error) {
-    //     console.warn(error, { memberId, tenantId })
-    //   }
-    //   const tags = _.get(detailsRes, 'data.membership.search.results[0].tags', [])
-    //   const slug = _.get(detailsRes, 'data.membership.search.results[0].slug')
-    //   const integrations = _.get(detailsRes, 'data.membership.search.results[0].integrations')
-    //   const statusId = _.get(detailsRes, 'data.membership.search.results[0].statusId', [])
-    //   const customer = _.get(detailsRes, 'data.membership.search.results[0].customer', [])
-    //   const profileUrl = _.get(detailsRes, 'data.membership.search.results[0].avatar.assetUrl', [])
-    //   const contacts = _.get(detailsRes, 'data.membership.search.results[0].contacts', [])
-    //   const tenantIntegrations = _.get(tenantIntegrationRes, 'data.membership.getMemberTenantIntegrations', [])
-    //   const parsedTags = tags.map(tag => tag.name)
-
-    //   return { tags: parsedTags, customer, profileUrl, tenantIntegrations, contacts, baseUrl, statusId, slug, integrations }
-    // },
     async [UserActions.RELOAD_INTEGRATIONS]({ commit }, input) {
       const { data } = await apolloHexlyClient.query({
         query: GET_MEMBER_TENANT_INTEGRATIONS,
