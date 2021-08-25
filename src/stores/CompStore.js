@@ -103,19 +103,20 @@ export const CompStore = {
       }
     },
     [CompActions.GET_PERIODS]: async ({ dispatch, commit, state, rootState }, input) => {
-      const response = await apolloHexlyClient.query({
+      const response = await apolloFederatedClient.query({
         query: ENGINE_STATS_PERIODS_QUERY,
         variables: { input }
       })
-      const { data: { engineStatsPeriodsByMemberId } } = response
-      const filteredPeriods = engineStatsPeriodsByMemberId.slice(0, 6)
-      commit(CompMutations.SET_HAS_MORE_PERIODS, filteredPeriods.length < engineStatsPeriodsByMemberId.length)
-      const periods = _.groupBy(filteredPeriods, 'status')
-      const currentPeriod = periods.open[0]
+      const engineStatsPeriodsByMemberId = _.get(response, 'data.engine.periods.results')
+      const periods = engineStatsPeriodsByMemberId.slice(0, 6)
+      commit(CompMutations.SET_HAS_MORE_PERIODS, periods.length < engineStatsPeriodsByMemberId.length)
+      const openPeriods = periods.filter(el => moment().isBetween(el.open, el.close))
+      const closedPeriods = periods.filter(el => moment().isAfter(el.close))
+      const currentPeriod = openPeriods[0]
       if (_.isEmpty(state.selectedPeriod)) {
         await dispatch(CompActions.SELECT_PERIOD, currentPeriod)
       }
-      if (_.isEmpty(state.previousPeriod) && (periods.closed || periods.under_review)) {
+      if (_.isEmpty(state.previousPeriod) && closedPeriods) {
         const currentPeriodOpen = moment(currentPeriod.open, 'YYYY-MM-DD')
         const pastPeriod = engineStatsPeriodsByMemberId.find(p => p.close === currentPeriodOpen.format('YYYY-MM-DD'))
         const [previous] = await dispatch(CompActions.GET_STATS, {
