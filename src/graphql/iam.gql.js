@@ -172,19 +172,19 @@ export const PRINCIPAL = gql`
       principal {
         tenantId
         metadata
-        tenant {
-          integrations {
-            id
-            integration {
-              id
-              name
-              key
-              metadata
-            }
-            priority
-            metadata
-          }
-        }
+        # tenant {
+        #   integrations {
+        #     id
+        #     integration {
+        #       id
+        #       name
+        #       key
+        #       metadata
+        #     }
+        #     priority
+        #     metadata
+        #   }
+        # }
         member {
           id
           statusId
