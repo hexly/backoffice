@@ -288,7 +288,7 @@ import { CompActions } from '@/stores/CompStore'
 import { Actions as MemberActions } from '@/Members/Store'
 import { mapState, mapActions, mapMutations, mapGetters } from 'vuex'
 import { PRINCIPAL } from '@/graphql/iam.gql'
-import { get } from 'lodash'
+import { get, isEmpty } from 'lodash'
 
 const impersonationPrefix = 'Impersonating '
 
@@ -332,12 +332,12 @@ export default {
     },
     getAvatar () {
       let image = this.$tenantInfo.placeholder
-      if (this.user.principal.member.profileUrl && this.user.principal.member.profileUrl.indexOf('cloudinary')) {
+      if (!isEmpty(this.user.principal.member.profileUrl) && this.user.principal.member.profileUrl.indexOf('cloudinary') >= 0) {
         image = this.user.principal.member.profileUrl.replace(
           '/image/upload',
           '/image/upload/w_190,h_190'
         )
-      } else if (this.user.principal.member.profileUrl) {
+      } else if (!isEmpty(this.user.principal.member.profileUrl)) {
         return this.user.principal.member.profileUrl
       }
       return image
