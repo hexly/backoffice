@@ -267,10 +267,6 @@ export default {
         console.warn(`Expected orderData, but receieved ${orderData}`)
         return
       }
-      // if (!customerEmail) {
-      //   console.warn(`Expected customerEmail, but receieved ${customerEmail}`)
-      //   return
-      // }
 
       const filteredOrders = orderData.filter(el => {
         const elEmail = get(el, 'customer.email')
