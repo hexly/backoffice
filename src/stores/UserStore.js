@@ -67,10 +67,17 @@ export const prepPrincipal = (principal) => {
   const tags = _.get(m, 'tags', []).map(tag => tag.name)
   const integrations = _.get(m, 'integrations')
   const profileUrl = _.get(m, 'avatar.assetUrl', [])
+  const t = _.get(principal, 'tenant')
+  const tenantIntegrations = t.integrations.map(i => {
+    return {
+      ...i,
+      key: i.integration.key,
+      name: i.integration.name,
+      integrationMetadata: i.integration.metadata
+    }
+  })
 
-  const tenantIntegrations = [] // TODO
-
-  const member = { ...m, tags, profileUrl, tenantIntegrations, baseUrl, integrations }
+  const member = { ...m, tags, profileUrl, baseUrl, integrations }
   const tenant = {
     ...principal.tenant,
     integrations: tenantIntegrations,
@@ -331,8 +338,8 @@ export const UserStore = {
     },
     tenantIntegrations: state =>
       (state.principal &&
-      state.principal.tenant &&
-      state.principal.tenant.integrations) || [],
+      state.principal.member &&
+      state.principal.member.integrations) || [],
     integrations: state =>
       (state.principal &&
       state.principal.tenant &&

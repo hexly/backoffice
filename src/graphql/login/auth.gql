@@ -7,59 +7,74 @@ mutation($input: IamAuthenticateInput!){
         token
       }
 			principal {
-				member {
-				id
-        statusId
-        avatar {
-          assetUrl
-        }
-        tags {
-          name
-          id
-        }
-        customer {
-          id
-          subscriptions {
+        tenantId
+        tenant {
+          integrations {
             id
-            status
+            integration {
+              id
+              name
+              key
+              metadata
+            }
+            statusId
+            priority
             metadata
           }
         }
-        slug
-        # integrations {
-        #   id
-        #   metadata
-        #   key
-        #   name
-        #   priority
-        # }
-        contacts {
-          emails {
-            id
-            email
-            priority
+				member {
+          id
+          statusId
+          avatar {
+            assetUrl
           }
-          phones {
-            id
-            type
-            number
-            type
-            priority
-          }
-          addresses {
-            id
+          tags {
             name
-            street
-            street2
-            city
-            province
-            postalCode
-            country
-            lat
-            long
-            priority
+            id
           }
-        }
+          customer {
+            id
+            subscriptions {
+              id
+              status
+              metadata
+            }
+          }
+          slug
+          integrations {
+            id
+            metadata
+            priority
+            name
+            key
+          }
+          contacts {
+            emails {
+              id
+              email
+              priority
+            }
+            phones {
+              id
+              type
+              number
+              type
+              priority
+            }
+            addresses {
+              id
+              name
+              street
+              street2
+              city
+              province
+              postalCode
+              country
+              lat
+              long
+              priority
+            }
+          }
 				}
 			}
       metadata
