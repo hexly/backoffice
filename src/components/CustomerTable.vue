@@ -267,12 +267,16 @@ export default {
         console.warn(`Expected orderData, but receieved ${orderData}`)
         return
       }
-      if (!customerEmail) {
-        console.warn(`Expected customerEmail, but receieved ${customerEmail}`)
-        return
-      }
+      // if (!customerEmail) {
+      //   console.warn(`Expected customerEmail, but receieved ${customerEmail}`)
+      //   return
+      // }
 
-      const filteredOrders = orderData.filter(el => el.customer.email === customerEmail)
+      const filteredOrders = orderData.filter(el => {
+        const elEmail = get(el, 'customer.email')
+
+        return elEmail === customerEmail
+      })
       const mappedOrders = filteredOrders.map(el => {
         return {
           date: el.checkedOutOn,
