@@ -50,7 +50,7 @@ s<template>
     </v-card-text>
     <v-divider></v-divider>
     <div class="text-center pb-2">
-      <h3>{{sponsorName || 'Your Sponsor'}}</h3>
+      <h3>{{sponsor || 'Your Sponsor'}}</h3>
       <v-layout v-if="user.principal.member.sponsor" align-center>
         <v-flex>
           <div  class="mt-3">
@@ -105,6 +105,8 @@ import { getAsset } from '@/utils/AssetService'
 import { mapMutations, mapState, mapGetters, mapActions } from 'vuex'
 import { UserMutations, UserActions } from '@/stores/UserStore'
 import { Mutations } from '@/store'
+import { ENGINE_STATS_PERIODS_QUERY } from '@/graphql/CompStats.gql'
+import * as _ from 'lodash'
 
 export default {
   name: 'PersonalCard',
@@ -148,7 +150,25 @@ export default {
       this.setLoading(newVal)
     }
   },
-  apollo: {},
+  apollo: {
+    sponsor: {
+      query: ENGINE_STATS_PERIODS_QUERY,
+      client: 'federated',
+      variables() {
+        return {
+          input: {
+            tenantId: this.$tenantId,
+            memberId: this.memberId,
+            dateTo: this.$moment().format('YYYY-MM-DD')
+          }
+        }
+      },
+      update(data) {
+        const sponsorDisplayName = _.get(data, 'engine.periods.results.0.sponsor.displayName')
+        return sponsorDisplayName
+      }
+    }
+  },
   methods: {
     uploadDialogClosed(val) {
       this.showProfilePicDialog = val

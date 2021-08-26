@@ -356,7 +356,11 @@ export default {
     })
   },
   async mounted () {
-    await this.compGetPeriods()
+    await this.compGetPeriods({
+      memberId: this.user.principal.memberId,
+      dateTo: moment().format('YYYY-MM-DD'),
+      tenantId: this.$tenantId
+    })
     if (this.$tenantInfo.features.legal === true) {
       const { data } = await this.getAttributes({
         key: ['affiliate-agreement', 'entity-details'],
