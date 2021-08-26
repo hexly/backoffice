@@ -167,7 +167,7 @@ export default {
         }
       },
       update(data) {
-        const sponsorDisplayName = _.get(data, 'engine.periods.results.0.sponsor.displayName')
+        const sponsorDisplayName = _.get(data, 'engine.periods.results.0.rankings.results.0.sponsor.displayName')
         return sponsorDisplayName
       }
     }
