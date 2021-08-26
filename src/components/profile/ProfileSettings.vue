@@ -86,6 +86,7 @@ export default {
     },
     integration() {
       const storeOptions = this.integrations.find(i => i.key === personalizedStoreKey)
+      console.log(storeOptions)
       return storeOptions
     },
     default() {

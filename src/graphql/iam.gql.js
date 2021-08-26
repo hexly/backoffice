@@ -181,6 +181,7 @@ export const PRINCIPAL = gql`
               key
               metadata
             }
+            statusId
             priority
             metadata
           }
@@ -238,6 +239,13 @@ export const PRINCIPAL = gql`
               long
               priority
             }
+          }
+          integrations {
+            id
+            metadata
+            priority
+            name
+            key
           }
         }
       }
