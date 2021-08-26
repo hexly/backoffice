@@ -160,6 +160,9 @@ export default {
             tenantId: this.$tenantId,
             memberId: this.memberId,
             dateTo: this.$moment().format('YYYY-MM-DD')
+          },
+          inputRankings: {
+            memberIn: this.memberId
           }
         }
       },

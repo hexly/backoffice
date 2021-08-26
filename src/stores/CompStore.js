@@ -105,7 +105,7 @@ export const CompStore = {
     [CompActions.GET_PERIODS]: async ({ dispatch, commit, state, rootState }, input) => {
       const response = await apolloFederatedClient.query({
         query: ENGINE_STATS_PERIODS_QUERY,
-        variables: { input }
+        variables: input
       })
       const engineStatsPeriodsByMemberId = _.get(response, 'data.engine.periods.results')
       const periods = engineStatsPeriodsByMemberId.slice(0, 6)

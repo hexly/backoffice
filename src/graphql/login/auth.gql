@@ -8,20 +8,20 @@ mutation($input: IamAuthenticateInput!){
       }
 			principal {
         tenantId
-        tenant {
-          integrations {
-            id
-            integration {
-              id
-              name
-              key
-              metadata
-            }
-            statusId
-            priority
-            metadata
-          }
-        }
+        # tenant {
+        #   integrations {
+        #     id
+        #     integration {
+        #       id
+        #       name
+        #       key
+        #       metadata
+        #     }
+        #     statusId
+        #     priority
+        #     metadata
+        #   }
+        # }
 				member {
           id
           statusId

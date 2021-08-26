@@ -357,9 +357,14 @@ export default {
   },
   async mounted () {
     await this.compGetPeriods({
-      memberId: this.user.principal.memberId,
-      dateTo: moment().format('YYYY-MM-DD'),
-      tenantId: this.$tenantId
+      input: {
+        memberId: this.user.principal.memberId,
+        dateTo: moment().format('YYYY-MM-DD'),
+        tenantId: this.$tenantId
+      },
+      inputRankings: {
+        memberIn: this.user.principal.memberId
+      }
     })
     if (this.$tenantInfo.features.legal === true) {
       const { data } = await this.getAttributes({
@@ -382,7 +387,7 @@ export default {
           const { member, tenant } = prepPrincipal(principal)
           this.setMember(member)
           this.setTenant(tenant)
-          const integrations = get(principal, 'tenant.integrations')
+          const integrations = get(principal, 'tenant.integrations', [])
           const statusId = get(principal, 'member.statusId')
           const tags = get(principal, 'member.tags')
           // Status Id 1 = Active Member
