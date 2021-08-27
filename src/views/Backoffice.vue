@@ -383,7 +383,6 @@ export default {
       fetchPolicy: 'network-only',
       client: 'federated',
       update (data) {
-        console.log({ data })
         const principal = get(data, 'iam.principal')
         if (principal) {
           const { member, tenant } = prepPrincipal(principal)
