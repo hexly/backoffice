@@ -382,7 +382,9 @@ export default {
       query: PRINCIPAL,
       fetchPolicy: 'network-only',
       client: 'federated',
-      update ({ iam: { principal } }) {
+      update (data) {
+        console.log({ data })
+        const principal = get(data, 'iam.principal')
         if (principal) {
           const { member, tenant } = prepPrincipal(principal)
           this.setMember(member)
@@ -398,6 +400,8 @@ export default {
           this.activeIntegrations = integrations.filter(i => {
             return this.integrations.indexOf(i.key) > -1 && i.statusId === 200
           })
+        } else {
+          console.warn('No principal data received!')
         }
       }
     }
