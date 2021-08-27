@@ -17,7 +17,7 @@
           <v-slide-x-transition>
             <v-card v-if="mostRecentOrder" color="secondary" @click="handleRecentOrderClick">
               <v-card-title class="white--text" primary-title>
-                {{$moment(mostRecentOrder.recentOrder, 'YYYY-MM-DD').format('ll')}} ({{mostRecentOrder.customerName || 'Guest Customer'}})
+                {{$moment(mostRecentOrder.recentOrder, 'YYYY-MM-DD').format('ll')}} ({{mostRecentOrder.customerName && /[^\s]/.test(mostRecentOrder.customerName) ? mostRecentOrder.customerName : 'Guest Customer'}})
               </v-card-title>
               <v-card-text class="white--text">
                 Most Recent Order
@@ -50,7 +50,7 @@
               <v-text-field v-model="search" append-icon="mdi-magnify" label="Search"/>
               <v-data-table :loading="loading" single-select :headers="customerHeaders" item-key="customerName" :items="customers" @click:row="onClick" :search="search">
                 <template v-slot:item.customerName="{ item }">
-                  {{item.customerName || 'Guest Customer'}}
+                  {{item.customerName && /[^\s]/.test(item.customerName) ? item.customerName : 'Guest Customer'}}
                 </template>
                 <template v-slot:item.recentOrder="{ item }">
                   {{item.recentOrder ? $moment(item.recentOrder, 'YYYY-MM-DD').format('ll') : null}}
@@ -69,7 +69,7 @@
       >
         <v-card>
           <v-toolbar color="secondary" class="mb-2" dark>
-            <v-toolbar-title>{{customerName || 'Guest Customer'}} {{customerEmail ? `- ${customerEmail}` : '' }}</v-toolbar-title>
+            <v-toolbar-title>{{customerName && /[^\s]/.test(customerName) ? customerName : 'Guest Customer'}} {{customerEmail ? `- ${customerEmail}` : '' }}</v-toolbar-title>
             <v-spacer/>
             <v-btn @click="showCustomerDialog = false" icon><v-icon>close</v-icon></v-btn>
           </v-toolbar>
