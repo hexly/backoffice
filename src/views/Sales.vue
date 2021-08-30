@@ -98,11 +98,11 @@
           <tr>
             <td>{{ item.date }}</td>
             <td>
-              {{ item.customerName }}
+              {{ item.customerName && /[^\s]/.test(item.customerName) ? item.customerName : 'Guest Customer' }}
             </td>
             <td>
               <Currency
-                :amount="item.HexlyTotalAmount ? parseFloat(item.HexlyTotalAmount.toFixed(2)) : null"
+                :amount="item.HexlyTotalAmount ? parseFloat(item.HexlyTotalAmount.toFixed(2)) : 0"
                 :currency="item.currency"
               />
             </td>
