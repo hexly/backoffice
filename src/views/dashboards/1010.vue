@@ -170,6 +170,18 @@ export default {
   mounted() {
     console.log({ p: this.openPeriod })
   },
+  watch: {
+    selectedPeriod(newVal) {
+      const selectedPeriodId = _.get(newVal, 'id')
+      this.compGetStats({
+        input: {
+          membersIn: [this.memberId]
+        },
+        periodId: selectedPeriodId,
+        version: 3
+      })
+    }
+  },
   methods: {
     formatEarning(earning) {
       let currency = '$'

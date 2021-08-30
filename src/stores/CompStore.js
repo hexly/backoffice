@@ -45,9 +45,8 @@ export const CompStore = {
     [CompMutations.STATS_LOADING]: (state, loading) => {
       state.engineStatsLoading = loading
     },
-    [CompMutations.SET_PERIODS]: (state, { periods, currentPeriod }) => {
+    [CompMutations.SET_PERIODS]: (state, { periods }) => {
       state.periods = periods
-      state.currentPeriod = currentPeriod
     },
     [CompMutations.SET_HAS_MORE_PERIODS]: (state, hasMore) => {
       state.hasMorePeriods = hasMore
@@ -61,12 +60,12 @@ export const CompStore = {
       commit(CompMutations.STATS_LOADING, true)
       if (version === 3) {
         const memberId = input.membersIn[0]
-        const { data: { engine: { rankings: { results } } } } = await apolloFederatedClient.query(getEngineStats(
-          {
-            memberId,
-            periodId
-          }
-        ))
+        const params = {
+          memberId,
+          periodId
+        }
+        const res = await apolloFederatedClient.query(getEngineStats(params))
+        const results = _.get(res, 'data.engine.rankings.results')
         const stats = formatData(results[0])
         if (!transient) {
           commit(CompMutations.SET_STATS, { ...stats, id: periodId })
@@ -137,7 +136,7 @@ export const CompStore = {
           commit(CompMutations.SET_PREVIOUS_STATS, previous)
         }
       }
-      commit(CompMutations.SET_PERIODS, { periods, currentPeriod })
+      commit(CompMutations.SET_PERIODS, { periods })
       return periods
     },
     [CompActions.SELECT_PERIOD]: async ({ dispatch, commit, rootState }, period) => {
