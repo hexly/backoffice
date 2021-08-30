@@ -116,7 +116,7 @@ import {
   COMPANY_FRONTLINE_LEADERBOARD_BY_RANGE,
   SELLER_LEADERBOARD
 } from '@/graphql/Leaderboard.js'
-import { ENGINE_DASHBOARD_BANNERS } from '@/graphql/CompStats.gql'
+// import { ENGINE_DASHBOARD_BANNERS } from '@/graphql/CompStats.gql'
 import { MAX_MRN } from '@/graphql/MemberStats.gql'
 import { mapMutations, mapState, mapGetters, mapActions } from 'vuex'
 import { UserMutations } from '@/stores/UserStore'
@@ -254,22 +254,23 @@ export default {
     ...mapGetters(['contactId', 'memberId', 'member', 'slug', 'tenantIntegrations'])
   },
   apollo: {
-    banners: {
-      query: ENGINE_DASHBOARD_BANNERS,
-      deep: true,
-      variables() {
-        const date = this.selectedPeriod ? this.selectedPeriod.open || null : null
-        return {
-          input: {
-            memberId: this.memberId,
-            date
-          }
-        }
-      },
-      update(obj) {
-        return _.get(obj, 'banners.results', [])
-      }
-    },
+    // COMMENTING OUT SINCE IT ISN'T USED
+    // banners: {
+    //   query: ENGINE_DASHBOARD_BANNERS,
+    //   deep: true,
+    //   variables() {
+    //     const date = this.selectedPeriod ? this.selectedPeriod.open || null : null
+    //     return {
+    //       input: {
+    //         memberId: this.memberId,
+    //         date
+    //       }
+    //     }
+    //   },
+    //   update(obj) {
+    //     return _.get(obj, 'banners.results', [])
+    //   }
+    // },
     memberCount: {
       query: MAX_MRN,
       client: 'federated',
