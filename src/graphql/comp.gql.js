@@ -62,6 +62,18 @@ query getEngineStats($payload: EngineRankingsInput!){
   engine {
     rankings(input: $payload){
       results {
+        sponsor {
+          id
+          displayName
+          avatar {
+            assetUrl
+          }
+          contacts{
+            emails{
+              email
+            }
+          }
+        }
         periodId
         memberId
         mrn
@@ -267,6 +279,7 @@ export const formatData = (member) => {
     ranking: { rank, name: `Rank ${rank}` },
     nextRanking: { rank: Math.min(rank + 1, 12), name: `Rank ${Math.min(rank + 1, 12)}` }
   }
+  const sponsor = _.get(member, 'sponsor', {}) || {}
   const memberStats = _.get(member, 'stats', {}) || {}
   const earnings = _.get(member, 'earnings')
   const awarded = _.get(member, 'awarded', {}) || {}
@@ -282,7 +295,8 @@ export const formatData = (member) => {
     counts,
     metadata,
     stats: { ...memberStats, earnings },
-    earnings
+    earnings,
+    sponsor
   }
 }
 

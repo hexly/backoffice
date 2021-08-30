@@ -25,6 +25,7 @@ mutation($input: IamAuthenticateInput!){
 				member {
           id
           statusId
+          contactId
           avatar {
             assetUrl
           }
@@ -49,6 +50,7 @@ mutation($input: IamAuthenticateInput!){
             key
           }
           contacts {
+            id
             emails {
               id
               email

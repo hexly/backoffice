@@ -214,6 +214,7 @@ export const PRINCIPAL = gql`
           }
           slug
           contacts {
+            id
             emails {
               id
               email

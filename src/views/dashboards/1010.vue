@@ -167,6 +167,9 @@ export default {
       companySellersLeaderboard: []
     }
   },
+  mounted() {
+    console.log({ p: this.openPeriod })
+  },
   methods: {
     formatEarning(earning) {
       let currency = '$'
@@ -177,6 +180,7 @@ export default {
       return `${currency}${earning.amount / 100}`
     },
     async loadLeaderboards(period) {
+      console.log({ period })
       if (!period) {
         return
       }

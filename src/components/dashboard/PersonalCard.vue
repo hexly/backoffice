@@ -50,21 +50,21 @@ s<template>
     </v-card-text>
     <v-divider></v-divider>
     <div class="text-center pb-2">
-      <h3>{{sponsor || 'Your Sponsor'}}</h3>
-      <v-layout v-if="user.principal.member.sponsor" align-center>
+      <h3>{{sponsorName || 'Your Sponsor'}}</h3>
+      <v-layout v-if="stats.sponsor" align-center>
         <v-flex>
           <div  class="mt-3">
             <v-layout row class="text-right">
               <v-flex mx-2>
                 <v-avatar>
-                  <v-img v-if="user.principal.member.sponsor.profileUrl || $tenantInfo.placeholder" :src="user.principal.member.sponsor.profileUrl || $tenantInfo.placeholder"></v-img>
+                  <v-img v-if="stats.sponsor.avatar || $tenantInfo.placeholder" :src="stats.sponsor.avatar.assetUrl || $tenantInfo.placeholder"></v-img>
                 </v-avatar>
               </v-flex>
               <v-flex mx-2 class="text-left">
                 <div>
-                  <b>{{user.principal.member.sponsor.displayName}} </b>
+                  <b>{{stats.sponsor.displayName}} </b>
                   <br/>
-                  <small>{{user.principal.member.sponsor.contacts[0].emails[0].email}}</small>
+                  <small>{{stats.sponsor.contacts[0].emails[0].email}}</small>
                 </div>
               </v-flex>
             </v-layout>
@@ -105,8 +105,6 @@ import { getAsset } from '@/utils/AssetService'
 import { mapMutations, mapState, mapGetters, mapActions } from 'vuex'
 import { UserMutations, UserActions } from '@/stores/UserStore'
 import { Mutations } from '@/store'
-import { ENGINE_STATS_PERIODS_QUERY } from '@/graphql/CompStats.gql'
-import * as _ from 'lodash'
 
 export default {
   name: 'PersonalCard',
@@ -148,28 +146,6 @@ export default {
   watch: {
     '$apollo.loading'(newVal) {
       this.setLoading(newVal)
-    }
-  },
-  apollo: {
-    sponsor: {
-      query: ENGINE_STATS_PERIODS_QUERY,
-      client: 'federated',
-      variables() {
-        return {
-          input: {
-            tenantId: this.$tenantId,
-            memberId: this.memberId,
-            dateTo: this.$moment().format('YYYY-MM-DD')
-          },
-          inputRankings: {
-            memberIn: this.memberId
-          }
-        }
-      },
-      update(data) {
-        const sponsorDisplayName = _.get(data, 'engine.periods.results.0.rankings.results.0.sponsor.displayName')
-        return sponsorDisplayName
-      }
     }
   },
   methods: {
