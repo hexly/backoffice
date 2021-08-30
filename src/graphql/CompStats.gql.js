@@ -36,7 +36,7 @@ export const ENGINE_STATS_QUERY = gql`
 `
 
 export const ENGINE_STATS_PERIODS_QUERY = gql`
-  query engineStatsPeriod($input: EnginePeriodSearchInput!) {
+  query engineStatsPeriod($input: EnginePeriodSearchInput!, $inputRankings: EnginePeriodRankingsInput!) {
     engine {
       periods(input: $input) {
         results {
@@ -48,6 +48,26 @@ export const ENGINE_STATS_PERIODS_QUERY = gql`
           hasPayroll
           metadata
           status
+          rankings(input: $inputRankings) {
+            page
+            pageSize
+            results {
+              sponsor {
+                id
+                displayName
+                avatar {
+                  assetUrl
+                }
+                contacts {
+                  emails {
+                    email
+                  }
+                }
+              }
+            }
+            totalResults
+            totalPages
+          }
         }
       }
     }

@@ -361,6 +361,9 @@ export default {
         memberId: this.user.principal.memberId,
         dateTo: moment().format('YYYY-MM-DD'),
         tenantId: this.$tenantId
+      },
+      inputRankings: {
+        memberIn: this.user.principal.memberId
       }
     })
     if (this.$tenantInfo.features.legal === true) {

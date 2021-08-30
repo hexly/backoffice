@@ -180,7 +180,6 @@ export default {
       return `${currency}${earning.amount / 100}`
     },
     async loadLeaderboards(period) {
-      console.log({ period })
       if (!period) {
         return
       }

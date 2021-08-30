@@ -50,21 +50,21 @@ s<template>
     </v-card-text>
     <v-divider></v-divider>
     <div class="text-center pb-2">
-      <h3>{{sponsorName || 'Your Sponsor'}}</h3>
-      <v-layout v-if="stats.sponsor" align-center>
+      <h3>{{'Your Sponsor'}}</h3>
+      <v-layout v-if="sponsor" align-center>
         <v-flex>
           <div  class="mt-3">
             <v-layout row class="text-right">
               <v-flex mx-2>
                 <v-avatar>
-                  <v-img v-if="stats.sponsor.avatar || $tenantInfo.placeholder" :src="stats.sponsor.avatar.assetUrl || $tenantInfo.placeholder"></v-img>
+                  <v-img v-if="sponsor.avatar || $tenantInfo.placeholder" :src="sponsor.avatar.assetUrl || $tenantInfo.placeholder"></v-img>
                 </v-avatar>
               </v-flex>
               <v-flex mx-2 class="text-left">
                 <div>
-                  <b>{{stats.sponsor.displayName}} </b>
+                  <b>{{sponsor.displayName}} </b>
                   <br/>
-                  <small>{{stats.sponsor.contacts[0].emails[0].email}}</small>
+                  <small>{{sponsor.contacts[0].emails[0].email}}</small>
                 </div>
               </v-flex>
             </v-layout>
@@ -105,6 +105,7 @@ import { getAsset } from '@/utils/AssetService'
 import { mapMutations, mapState, mapGetters, mapActions } from 'vuex'
 import { UserMutations, UserActions } from '@/stores/UserStore'
 import { Mutations } from '@/store'
+import * as _ from 'lodash'
 
 export default {
   name: 'PersonalCard',
@@ -116,7 +117,6 @@ export default {
   },
   props: {
     memberName: String,
-    sponsorName: String,
     showMrn: {
       type: Boolean,
       default: true
@@ -181,6 +181,15 @@ export default {
     ...mapGetters(['contactId', 'memberId', 'slug', 'isMonthInReview', 'tenantIntegrations']),
     isFounder() {
       return this.$moment(this.user.principal.member.joinedOn).isBefore('2020-03-01')
+    },
+    sponsor() {
+      const { stats } = this
+      if (!stats || _.isEmpty(stats)) {
+        return
+      }
+
+      const sponsor = _.get(stats, 'rankings.results.0.sponsor')
+      return sponsor
     }
   }
 }
