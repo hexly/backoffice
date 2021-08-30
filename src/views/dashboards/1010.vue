@@ -272,14 +272,20 @@ export default {
     },
     memberCount: {
       query: MAX_MRN,
-      variables: {
-        input: {
-          typeId: null
+      client: 'federated',
+      variables() {
+        return {
+          input: {
+            tenantId: this.$tenantId,
+            type: null
+          }
         }
       },
       loadingKey: 'loadingCount',
-      update({ memberGetMaxMrnForTenant }) {
-        return memberGetMaxMrnForTenant
+      update(data) {
+        const max = _.get(data, 'membership.maxMrn.max')
+
+        return max
       }
     }
   }
