@@ -195,6 +195,7 @@ export default {
       if (!period) {
         return
       }
+      let rangedFrontlineLeaderboardByTeam = {}
       const variables = {
         input: {
           tenantId: this.$tenantInfo.id,
@@ -203,10 +204,17 @@ export default {
           omitTagIds: [34]
         }
       }
-      const { data: { rangedFrontlineLeaderboardByTeam } } = await this.$apollo.query({
-        query: FRONTLINE_LEADERBOARD_BY_RANGE,
-        variables
-      })
+      try {
+        const res = await this.$apollo.query({
+          query: FRONTLINE_LEADERBOARD_BY_RANGE,
+          client: 'federated',
+          variables
+        })
+        console.log({ res })
+        rangedFrontlineLeaderboardByTeam = _.get(res, 'data.engine.rangedFrontlineLeaderboardByTeam')
+      } catch (error) {
+        console.error(error)
+      }
 
       const { data: { rangedFrontlineLeaderboard } } = await this.$apollo.query({
         query: COMPANY_FRONTLINE_LEADERBOARD_BY_RANGE,
