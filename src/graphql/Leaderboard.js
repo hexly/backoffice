@@ -63,13 +63,15 @@ export const COMPANY_FRONTLINE_LEADERBOARD = gql`
 `
 
 export const COMPANY_FRONTLINE_LEADERBOARD_BY_RANGE = gql`
-  query frontlineLeader($input: RangedLeaderboardInput!) {
-    rangedFrontlineLeaderboard(input: $input) {
-      name
-      contactEmail
-      total
-      profileUrl
-      joinedOn
+  query frontlineLeader ($input: RangedLeaderboardInput!) {
+    engine {
+      rangedFrontlineLeaderboardByTeam(input: $input) {
+        name
+        contactEmail
+        total
+        profileUrl
+        joinedOn
+      }
     }
   }
 `

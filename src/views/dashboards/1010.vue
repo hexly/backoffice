@@ -212,10 +212,18 @@ export default {
         console.error(error)
       }
 
-      const { data: { rangedFrontlineLeaderboard } } = await this.$apollo.query({
-        query: COMPANY_FRONTLINE_LEADERBOARD_BY_RANGE,
-        variables
-      })
+      let rangedFrontlineLeaderboard
+      try {
+        const res = await this.$apollo.query({
+          query: COMPANY_FRONTLINE_LEADERBOARD_BY_RANGE,
+          client: 'federated',
+          variables
+        })
+        rangedFrontlineLeaderboard = _.get(res, 'data.engine.rangedFrontlineLeaderboardByTeam')
+      } catch (error) {
+        console.error(error)
+      }
+
       this.teamLeaderboard = rangedFrontlineLeaderboardByTeam
       this.companyLeaderboard = rangedFrontlineLeaderboard
     },
