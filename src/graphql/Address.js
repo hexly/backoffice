@@ -26,7 +26,7 @@ export const UPDATE_ADDRESS = gql`
 `
 
 export const ADDRESS_BY_MEMBER_SEARCH = gql`
-  query addressByContactId($input: MembershipMemberSearchInput!){
+  query addressByMemberSearch($input: MembershipMemberSearchInput!){
     membership {
       search (input: $input) {
         results {
