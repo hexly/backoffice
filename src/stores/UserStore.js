@@ -136,8 +136,8 @@ export const UserStore = {
     },
     [UserMutations.ADD_INTEGRATION]: (state, integration) => {
       const principal = _.cloneDeep(state.principal)
-      const arr = _.get(principal, 'member.tenantIntegrations', [])
-      principal.member.tenantIntegrations = [...arr, integration]
+      const arr = _.get(principal, 'member.integrations', [])
+      principal.member.integrations = [...arr, integration]
       state.principal = principal
     },
     [UserMutations.SET_INTEGRATIONS]: (state, integrations) => {
@@ -146,10 +146,10 @@ export const UserStore = {
       state.principal = principal
     },
     [UserMutations.REMOVE_INTEGRATION]: (state, integration) => {
-      const index = state.principal.member.tenantIntegrations.findIndex(
+      const index = state.principal.member.integrations.findIndex(
         i => integration.id === i.id
       )
-      state.principal.member.tenantIntegrations.splice(index, 1)
+      state.principal.member.integrations.splice(index, 1)
     },
     [UserMutations.SET_SLUG]: (state, slug) => {
       state.principal = {
@@ -257,7 +257,7 @@ export const UserStore = {
       })
 
       commit(UserMutations.SET_INTEGRATIONS, data.getPrincipal)
-      return data.getPrincipal.member.tenantIntegrations
+      return data.getPrincipal.member.integrations
     },
     async [UserActions.CREATE_INTEGRATION](
       { commit },

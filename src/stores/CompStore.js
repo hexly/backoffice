@@ -46,7 +46,6 @@ export const CompStore = {
       state.engineStatsLoading = loading
     },
     [CompMutations.SET_PERIODS]: (state, periods) => {
-      console.log({ periods })
       state.periods = periods
     },
     [CompMutations.SET_HAS_MORE_PERIODS]: (state, hasMore) => {

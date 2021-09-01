@@ -391,7 +391,7 @@ export default {
       email: state => _.get(state, 'user.principal.member.contacts[0].emails[0].email'),
       phone: state => _.get(state, 'user.principal.member.contacts[0].phoneNumbers[0].number'),
       member: state => state.user.principal.member,
-      integrations: state => state.user.principal.member.tenantIntegrations,
+      integrations: state => state.user.principal.member.integrations,
       tenant: state => state.user.principal.tenant
     }),
     currency() {
