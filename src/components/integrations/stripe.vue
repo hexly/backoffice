@@ -160,7 +160,7 @@
 import _ from 'lodash'
 import Rules from '@/views/Rules.js'
 import { MEMBER_INTEGRATION_COMMAND } from '@/graphql/Integrations'
-import { ADDRESS_BY_CONTACT_ID } from '@/graphql/Address.js'
+import { ADDRESS_BY_MEMBER_SEARCH } from '@/graphql/Address.js'
 import { mapState, mapGetters } from 'vuex'
 
 export default {
@@ -366,7 +366,7 @@ export default {
   },
   apollo: {
     addresses: {
-      query: ADDRESS_BY_CONTACT_ID,
+      query: ADDRESS_BY_MEMBER_SEARCH,
       variables () {
         return {
           addressContactId: {

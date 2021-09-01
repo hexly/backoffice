@@ -58,7 +58,7 @@
 
 <script>
 import { mapGetters, mapState } from 'vuex'
-import { ADDRESS_BY_CONTACT_ID, UPDATE_ADDRESS } from '@/graphql/Address.js'
+import { ADDRESS_BY_MEMBER_SEARCH, UPDATE_ADDRESS } from '@/graphql/Address.js'
 
 export default {
   name: 'AddressForm',
@@ -91,7 +91,7 @@ export default {
   },
   apollo: {
     address: {
-      query: ADDRESS_BY_CONTACT_ID,
+      query: ADDRESS_BY_MEMBER_SEARCH,
       variables () {
         return {
           addressContactId: {

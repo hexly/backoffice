@@ -43,9 +43,9 @@
 
 <script>
 import { mapGetters, mapState } from 'vuex'
-import { cloneDeep } from 'lodash'
+import { cloneDeep, get } from 'lodash'
 
-import { ADDRESS_BY_CONTACT_ID, UPDATE_ADDRESS, DELETE_ADDRESS } from '@/graphql/Address.js'
+import { ADDRESS_BY_MEMBER_SEARCH, UPDATE_ADDRESS, DELETE_ADDRESS } from '@/graphql/Address.js'
 import AddressCard from '@/components/profile/AddressCard.vue'
 
 export default {
@@ -166,21 +166,23 @@ export default {
   },
   apollo: {
     addresses: {
-      query: ADDRESS_BY_CONTACT_ID,
+      query: ADDRESS_BY_MEMBER_SEARCH,
+      client: 'federated',
       variables () {
         return {
-          addressContactId: {
-            contactId: this.contactId,
-            tenantId: this.$tenantId
+          input: {
+            idIn: [this.memberId],
+            tenantIn: [this.$tenantId]
           }
         }
       },
-      update ({ addressByContactOrTenant }) {
-        return addressByContactOrTenant
+      update (data) {
+        const addresses = get(data, 'membership.search.results.0.contacts.0.addresses')
+        return addresses
       },
       loadingKey: 'loadingAddresses',
       skip() {
-        return !this.contactId
+        return !this.memberId
       }
     }
   },
@@ -188,7 +190,7 @@ export default {
     ...mapState({
       principal: state => state.user.principal
     }),
-    ...mapGetters(['contactId'])
+    ...mapGetters(['contactId', 'memberId'])
   },
   watch: {
     addresses(newVal) {
