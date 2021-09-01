@@ -49,12 +49,17 @@ export const SEARCH_MEMBER_DIRECTORY = gql`
 `
 
 export const MEMBER_AWARDS = gql`
-  query memberAwards($memberId: Int) {
-    member(id: $memberId){
-      joinedOn
-      awards {
-        name
-        metadata
+  query memberAwards($input: MembershipMemberSearchInput!){
+    membership {
+      search(input: $input) {
+        results {
+          id
+          joinedOn
+          awards {
+            name
+            metadata
+          }
+        }
       }
     }
   }
