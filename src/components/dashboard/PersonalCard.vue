@@ -15,7 +15,7 @@ s<template>
             <v-gravatar v-else default-img="mp" :email="user.principal.member.contacts[0].emails[0].email" class="mb-4"/>
           </v-avatar>
         </v-flex>
-        <v-flex class="text-center">
+        <v-flex class="text-left">
           <h3 class="headline" style="margin-top: -10px;"> {{ user.principal.member.name }}</h3>
           <div v-if="showMrn" class="primary--text subheading font-weight-bold">{{memberName || 'Member'}} #<b>{{user.principal.member.mrn}}</b></div>
           <div v-if="stats && stats">
