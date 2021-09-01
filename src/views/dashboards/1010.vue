@@ -210,7 +210,6 @@ export default {
           client: 'federated',
           variables
         })
-        console.log({ res })
         rangedFrontlineLeaderboardByTeam = _.get(res, 'data.engine.rangedFrontlineLeaderboardByTeam')
       } catch (error) {
         console.error(error)
