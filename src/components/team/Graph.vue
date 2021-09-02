@@ -12,8 +12,7 @@
       </v-flex>
     </v-layout>
     <div ref="graph"></div>
-    <v-progress-linear v-if="loading" :indeterminate="true" color="grey"></v-progress-linear>
-    <v-data-table :headers="tableColumns" :items="items" item-key="id" class="elevation-1" :expanded="expanded" show-expand>
+    <v-data-table :headers="tableColumns" :items="items" item-key="id" class="elevation-1" :expanded="expanded" show-expand :loading="loading">
       <template v-slot:item="{ item, isExpanded }">
         <tr>
           <td>{{ item.date }}</td>
@@ -475,7 +474,7 @@ export default {
             id: stat.memberId,
             memberId: stat.memberId,
             sponsorId: stat.sponsorId,
-            displayName: stat.member.displayName,
+            displayName: _.get(stat, 'member.displayName', ''),
             profileUrl: _.get(stat, 'member.avatar.assetUrl'),
             teamSize: stat.teamSize,
             frontLineSize: stat.frontlineSize,
@@ -487,7 +486,7 @@ export default {
             id: stat.memberId,
             memberId: stat.memberId,
             sponsorId: stat.memberId === member.id ? null : stat.sponsorId,
-            displayName: stat.member.displayName,
+            displayName: _.get(stat, 'member.displayName', ''),
             profileUrl: _.get(stat, 'member.avatar.assetUrl'),
             teamSize: stat.teamSize,
             frontLineSize: stat.frontlineSize,
