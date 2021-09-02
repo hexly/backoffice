@@ -364,12 +364,12 @@ export default {
       }
     })
     if (this.$tenantInfo.features.legal === true) {
-      const { data } = await this.getAttributes({
-        key: ['affiliate-agreement', 'entity-details'],
-        accessMode: 'ALL',
-        memberId: this.user.principal.memberId
+      const res = await this.getAttributes({
+        idIn: [this.user.principal.memberId],
+        tenantIn: [this.$tenantId]
       })
-      if (data.getMemberAttributes.length < 2) {
+      const getMemberAttributes = get(res, 'data.membership.search.results.0.attributes', [])
+      if (getMemberAttributes.length < 2) {
         this.setGate(true)
       }
     }
