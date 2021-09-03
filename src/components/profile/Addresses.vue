@@ -63,8 +63,9 @@ export default {
   methods: {
     add() {
       const newAddress = this.addresses.find(a => a.new)
+      const _addresses = [ ...this.addresses ]
       if (!newAddress) {
-        this.addresses.push({
+        _addresses.push({
           name: '',
           street: '',
           city: '',
@@ -76,6 +77,7 @@ export default {
           saving: false
         })
       }
+      this.addresses = [ ..._addresses ]
     },
     async save(address) {
       this.addresses = this.addresses.map(a => {
