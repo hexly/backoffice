@@ -1,6 +1,11 @@
 <template>
   <div class="insights-dashboard mx-4">
     <v-row wrap>
+      <v-col cols="12" class="loading-bar-col">
+        <v-slide-x-transition>
+          <v-progress-linear v-if="loading" :indeterminate="true" />
+        </v-slide-x-transition>
+      </v-col>
       <v-col cols="12" md="6">
         <v-card>
           <v-toolbar color="secondary" dark>
@@ -18,7 +23,6 @@
                 </v-list-item-content>
               </v-list-item>
             </v-list>
-            <v-progress-linear v-else-if="loading" :indeterminate="true"></v-progress-linear>
           </v-card-text>
         </v-card>
       </v-col>
@@ -29,16 +33,16 @@
             <v-spacer></v-spacer>
             <PeriodSwitcher v-if="selectedPeriod"></PeriodSwitcher>
           </v-toolbar>
+          <v-alert
+            v-if="selectedPeriod.status === 'closed'"
+            class="mb-0"
+            icon="mdi-calendar-check"
+            text
+            dense
+            type="info">
+            You are currently viewing a past period
+          </v-alert>
           <v-card-text class="pa-1">
-            <v-alert
-              v-if="selectedPeriod.status === 'closed'"
-              class="inner-alert"
-              icon="mdi-calendar-check"
-              text
-              dense
-              type="info">
-              You are currently viewing a past period
-            </v-alert>
             <v-list three-line class="pa-0 insights-list" v-if="betaInsights.length">
               <v-list-item v-for="insight in betaInsights" :key="insight.key" class="pa-1 insights-row">
                 <v-list-item-avatar>
@@ -55,7 +59,7 @@
                 </v-list-item-action>
               </v-list-item>
             </v-list>
-            <v-progress-linear v-else-if="loading" :indeterminate="true"></v-progress-linear>
+            <div v-else-if="!loading" class="text-center my-3">No Data</div>
           </v-card-text>
         </v-card>
       </v-col>
@@ -64,19 +68,18 @@
           <v-toolbar color="secondary" dark>
             <v-toolbar-title>Earned Rewards</v-toolbar-title>
             <v-spacer></v-spacer>
-            <v-menu offset-y>
-              <template v-slot:activator="{ on }">
-                <v-btn v-on="on" color="primary white--text" dark>Filter By {{rewardsFilter != 'NO_FILTER' ? ` ${couponStatuses[rewardsFilter]}` : '...'}}</v-btn>
-              </template>
-              <v-list>
-                <v-list-item v-for="key in Object.keys(couponStatuses)" :key="key" @click="rewardsFilter = key">
-                  <v-list-item-title>{{ couponStatuses[key] }}</v-list-item-title>
-                </v-list-item>
-              </v-list>
-            </v-menu>
+            <v-toolbar-items class="mt-10">
+              <v-select
+                v-model="rewardsFilter"
+                :items="couponStatuses"
+                label="Filter By..."
+                multiple
+                clearable
+              />
+            </v-toolbar-items>
           </v-toolbar>
           <v-card-text class="pa-1 insights-card">
-            <v-list three-line class="pa-0 insights-list" v-if="coupons.length">
+            <v-list three-line class="pa-0 insights-list" v-if="filteredCoupons.length">
               <v-list-item v-for="coupon in filteredCoupons" :key="coupon.code" class="pa-1 insights-row">
                 <v-list-item-content>
                   <v-list-item-title>{{coupon.metadata.note}}</v-list-item-title>
@@ -123,7 +126,7 @@
                 </v-list-item-action>
               </v-list-item>
             </v-list>
-            <v-progress-linear v-else-if="loading" :indeterminate="true"></v-progress-linear>
+            <div v-else-if="!loading" class="text-center my-3">No Data</div>
           </v-card-text>
         </v-card>
       </v-col>
@@ -158,7 +161,7 @@ export default {
   data () {
     return {
       loading: false,
-      rewardsFilter: 'NO_FILTER',
+      rewardsFilter: ['ISSUED'],
       tooltipText: 'Click To Copy',
       couponMapping: {
         FREE_PRODUCT: 'Free Product',
@@ -170,12 +173,10 @@ export default {
         PARTIALLY_REDEEMED: 'Partially Redeemed',
         REVOKED: 'Revoked'
       },
-      couponStatuses: {
-        REDEEMED: 'Redeemed',
-        PARTIALLY_REDEEMED: 'Partially Redeemed',
-        REVOKED: 'Revoked',
-        NO_FILTER: 'No Filter'
-      },
+      couponStatuses: [
+        { value: 'ISSUED', text: 'Available' },
+        { value: 'REDEEMED', text: 'Redeemed' }
+      ],
       collection: {},
       // Temporary approach to coupons
       coupons: [],
@@ -212,12 +213,14 @@ export default {
     }),
     filteredCoupons() {
       const { coupons, rewardsFilter } = this
-      if (!coupons || _.isEmpty(coupons) || rewardsFilter === 'NO_FILTER') {
+      if (!coupons || _.isEmpty(coupons) || _.isEmpty(rewardsFilter)) {
         return coupons
       }
 
-      const filteredCoupons = coupons.filter(el => el.status === rewardsFilter)
-      return filteredCoupons
+      const filteredCoupons = coupons.filter(el => rewardsFilter.indexOf(el.status) > -1)
+      const sortedByDateCoupons = [...filteredCoupons].sort((a, b) => a.awardedDate > b.awardedDate)
+
+      return sortedByDateCoupons
     }
   },
   methods: {
@@ -293,7 +296,8 @@ export default {
           }
         }
       },
-      update({ marketing: { couponSearch } }) {
+      update(data) {
+        const couponSearch = _.get(data, 'marketing.couponSearch', [])
         return couponSearch
       },
       client: 'federated',
@@ -334,5 +338,9 @@ export default {
 }
 .insights-list {
   margin: -4px;
+}
+.loading-bar-col {
+  position: absolute;
+  top: -3px;
 }
 </style>
