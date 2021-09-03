@@ -224,8 +224,8 @@ export default {
         console.error(error)
       }
 
-      this.teamLeaderboard = rangedFrontlineLeaderboardByTeam
-      this.companyLeaderboard = rangedFrontlineLeaderboard
+      this.teamLeaderboard = _.isEmpty(rangedFrontlineLeaderboardByTeam) ? [] : rangedFrontlineLeaderboardByTeam
+      this.companyLeaderboard = _.isEmpty(rangedFrontlineLeaderboard) ? [] : rangedFrontlineLeaderboard
     },
     async loadSalesLeaderboards(period) {
       if (!period) {
