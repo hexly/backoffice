@@ -57,14 +57,14 @@ s<template>
             <v-layout row class="text-right">
               <v-flex mx-2>
                 <v-avatar>
-                  <v-img v-if="stats.sponsor.avatar || $tenantInfo.placeholder" :src="stats.sponsor.avatar.assetUrl || $tenantInfo.placeholder"></v-img>
+                  <v-img v-if="stats.sponsor.avatar || $tenantInfo.placeholder" :src="(stats && stats.sponsor && stats.sponsor.avatar) ? stats.sponsor.avatar.assetUrl : $tenantInfo.placeholder"></v-img>
                 </v-avatar>
               </v-flex>
               <v-flex mx-2 class="text-left">
                 <div>
                   <b>{{stats.sponsor.displayName}} </b>
                   <br/>
-                  <small>{{stats.sponsor.contacts[0].emails[0].email}}</small>
+                  <small>{{(stats && stats.sponsor && stats.sponsor.contacts) ? stats.sponsor.contacts[0].emails[0].email : ''}}</small>
                 </div>
               </v-flex>
             </v-layout>
