@@ -1,13 +1,13 @@
 <template>
   <div class="insights-dashboard mx-4">
     <v-row wrap>
-      <v-col cols="12" md="6" v-if="marketCounts.length > 0">
+      <v-col cols="12" md="6">
         <v-card>
           <v-toolbar color="secondary" dark>
             <v-toolbar-title>Founding Influencer Tracker</v-toolbar-title>
           </v-toolbar>
           <v-card-text class="pa-1">
-            <v-list three-line class="pa-0 insights-list">
+            <v-list three-line class="pa-0 insights-list" v-if="marketCounts.length > 0">
               <v-list-item class="pa-1 insights-row" v-for="market in marketCounts" :key="market.key">
                 <v-list-item-content>
                   <v-list-item-title>{{market.name}} <Flag :name="market.key" /></v-list-item-title>
@@ -18,6 +18,7 @@
                 </v-list-item-content>
               </v-list-item>
             </v-list>
+            <v-progress-linear v-else-if="loading" :indeterminate="true"></v-progress-linear>
           </v-card-text>
         </v-card>
       </v-col>
@@ -38,7 +39,7 @@
               type="info">
               You are currently viewing a past period
             </v-alert>
-            <v-list three-line class="pa-0 insights-list">
+            <v-list three-line class="pa-0 insights-list" v-if="betaInsights.length">
               <v-list-item v-for="insight in betaInsights" :key="insight.key" class="pa-1 insights-row">
                 <v-list-item-avatar>
                   <v-icon large color="light-blue">{{insightInfo[insight.key].icon}}</v-icon>
@@ -54,17 +55,29 @@
                 </v-list-item-action>
               </v-list-item>
             </v-list>
+            <v-progress-linear v-else-if="loading" :indeterminate="true"></v-progress-linear>
           </v-card-text>
         </v-card>
       </v-col>
-      <v-col cols="12" md="6" v-if="coupons.length">
+      <v-col cols="12" md="6">
         <v-card>
           <v-toolbar color="secondary" dark>
             <v-toolbar-title>Earned Rewards</v-toolbar-title>
+            <v-spacer></v-spacer>
+            <v-menu offset-y>
+              <template v-slot:activator="{ on }">
+                <v-btn v-on="on" color="primary white--text" dark>Filter By {{rewardsFilter != 'NO_FILTER' ? ` ${couponStatuses[rewardsFilter]}` : '...'}}</v-btn>
+              </template>
+              <v-list>
+                <v-list-item v-for="key in Object.keys(couponStatuses)" :key="key" @click="rewardsFilter = key">
+                  <v-list-item-title>{{ couponStatuses[key] }}</v-list-item-title>
+                </v-list-item>
+              </v-list>
+            </v-menu>
           </v-toolbar>
           <v-card-text class="pa-1 insights-card">
-            <v-list three-line class="pa-0 insights-list">
-              <v-list-item v-for="coupon in coupons" :key="coupon.code" class="pa-1 insights-row">
+            <v-list three-line class="pa-0 insights-list" v-if="coupons.length">
+              <v-list-item v-for="coupon in filteredCoupons" :key="coupon.code" class="pa-1 insights-row">
                 <v-list-item-content>
                   <v-list-item-title>{{coupon.metadata.note}}</v-list-item-title>
                   <v-list-item-subtitle v-if="['REDEEMED', 'REVOKED'].indexOf(coupon.status) > -1">
@@ -105,11 +118,12 @@
                   </div>
                 </v-list-item-content>
                 <v-list-item-action>
-                  <v-list-item-action-text> <v-chip class="my-1" color="light-blue" small>{{couponMapping[coupon.type]}}</v-chip> </v-list-item-action-text>
-                  <v-list-item-action-text> <v-chip :color="['REDEEMED', 'REVOKED'].indexOf(coupon.status) > -1 ? 'red' : 'green'" small>{{couponMapping[coupon.status]}}</v-chip> </v-list-item-action-text>
+                  <v-list-item-action-text> <v-chip class="my-1" color="light-blue white--text" small>{{couponMapping[coupon.type]}}</v-chip> </v-list-item-action-text>
+                  <v-list-item-action-text> <v-chip :color="['REDEEMED', 'REVOKED'].indexOf(coupon.status) > -1 ? 'red white--text' : 'green white--text'" small>{{couponMapping[coupon.status]}}</v-chip> </v-list-item-action-text>
                 </v-list-item-action>
               </v-list-item>
             </v-list>
+            <v-progress-linear v-else-if="loading" :indeterminate="true"></v-progress-linear>
           </v-card-text>
         </v-card>
       </v-col>
@@ -143,6 +157,8 @@ export default {
   },
   data () {
     return {
+      loading: false,
+      rewardsFilter: 'NO_FILTER',
       tooltipText: 'Click To Copy',
       couponMapping: {
         FREE_PRODUCT: 'Free Product',
@@ -153,6 +169,12 @@ export default {
         REDEEMED: 'Redeemed',
         PARTIALLY_REDEEMED: 'Partially Redeemed',
         REVOKED: 'Revoked'
+      },
+      couponStatuses: {
+        REDEEMED: 'Redeemed',
+        PARTIALLY_REDEEMED: 'Partially Redeemed',
+        REVOKED: 'Revoked',
+        NO_FILTER: 'No Filter'
       },
       collection: {},
       // Temporary approach to coupons
@@ -187,7 +209,16 @@ export default {
     ...mapGetters(['member', 'memberId']),
     ...mapState({
       selectedPeriod: state => state.comp.selectedPeriod
-    })
+    }),
+    filteredCoupons() {
+      const { coupons, rewardsFilter } = this
+      if (!coupons || _.isEmpty(coupons) || rewardsFilter === 'NO_FILTER') {
+        return coupons
+      }
+
+      const filteredCoupons = coupons.filter(el => el.status === rewardsFilter)
+      return filteredCoupons
+    }
   },
   methods: {
     // Just testing something here... should be global if we like it
@@ -225,7 +256,10 @@ export default {
         return insightCollection
       },
       client: 'federated',
-      loadingKey: 'loadingInsightsCollection'
+      loadingKey: 'loadingInsightsCollection',
+      watchLoading(isLoading) {
+        this.loading = isLoading
+      }
     },
     betaInsights: {
       query: INSIGHTS,
@@ -245,7 +279,10 @@ export default {
         return !this.selectedPeriod.id
       },
       client: 'federated',
-      loadingKey: 'loadingInsights'
+      loadingKey: 'loadingInsights',
+      watchLoading(isLoading) {
+        this.loading = isLoading
+      }
     },
     coupons: {
       query: COUPONS,
@@ -260,7 +297,10 @@ export default {
         return couponSearch
       },
       client: 'federated',
-      loadingKey: 'loadingCoupons'
+      loadingKey: 'loadingCoupons',
+      watchLoading(isLoading) {
+        this.loading = isLoading
+      }
     },
     marketCounts: {
       query: MARKET_COUNT,
@@ -271,7 +311,10 @@ export default {
       update({ membership: { marketThresholdCount } }) {
         return marketThresholdCount
       },
-      client: 'federated'
+      client: 'federated',
+      watchLoading(isLoading) {
+        this.loading = isLoading
+      }
     }
   },
   mounted () {}
