@@ -39,7 +39,8 @@ export const searchAssets = async (op, input, jwt) => {
 }
 
 export const searchAssetsByKey = async (op, input, jwt) => {
-  const result = await doQuery(betterSearchAllAssets(op), { input })
+  const result = await apolloFederatedClient.query({ query: betterSearchAllAssets(op), variables: { input } })
+
   return get(result, 'data.betterAssetSearch')
 }
 
