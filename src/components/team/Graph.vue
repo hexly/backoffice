@@ -12,11 +12,11 @@
       </v-flex>
     </v-layout>
     <div ref="graph"></div>
-    <v-data-table :headers="tableColumns" :items="items" item-key="id" class="elevation-1" :expanded="expanded" show-expand :loading="loading">
+    <v-data-table :headers="tableColumns" :items="items" item-key="id" class="elevation-1 mb-10" :expanded="expanded" show-expand :loading="loading">
       <template v-slot:item="{ item, isExpanded }">
         <tr>
-          <td>{{ item.date }}</td>
-          <td><Currency :amount="parseFloat(item.total)" :currency="item.currency"/></td>
+          <td>{{ item.checkedOutOn ? moment(item.date, 'YYYY-MM-DD').format('LL') : null }}</td>
+          <td><Currency :amount="parseFloat(item.total / 100)" :currency="item.currency"/></td>
           <td>{{ item.totalPoints }}</td>
           <td>{{ item.displayName }}</td>
           <td>{{ item.sellerEmail }}</td>
@@ -33,9 +33,9 @@
               <v-flex xs4>
                 <h4>Details:</h4>
                 <ul>
-                  <li>Order ID: {{item.providerOid}}</li>
-                  <li>Status: {{item.status}}</li>
-                  <li>Customer Note: {{item.customerNote}}</li>
+                  <li>Order ID: {{item.id}}</li>
+                  <li>Status: {{item.statusOid}}</li>
+                  <!-- <li>Customer Note: {{item.customerNote}}</li> -->
                 </ul>
               </v-flex>
             </v-layout>
@@ -43,7 +43,7 @@
               <v-flex xs12>
                 <h4>Line Items</h4>
                 <ul>
-                  <li v-for="line in item.lineItems" :key="line.id" >{{line.name}} ({{line.total}})</li>
+                  <li v-for="line in item.lines" :key="line.id" >{{line.name}} (<Currency :amount="line.itemPrice * line.quantity" :currency="item.currency"/>)</li>
                 </ul>
               </v-flex>
             </v-layout>
@@ -69,6 +69,7 @@ export default {
   name: 'TeamGraph',
   data () {
     return {
+      moment,
       expanded: [],
       searchTerm: '',
       graph: null,
@@ -523,8 +524,11 @@ export default {
         .map(sale => {
           return {
             ...sale,
-            id: sale.saleId,
-            date: moment(sale.awardedDate, 'YYYY-MM-DD').format('MM/DD/YYYY')
+            id: sale.id,
+            date: sale.checkedOutOn,
+            totalPoints: _.get(sale, 'compStats.HexlyTotalPoints'),
+            displayName: _.get(sale, 'customer.displayName'),
+            sellerEmail: _.get(sale, 'customerEmail')
           }
         })
     },
@@ -540,25 +544,29 @@ export default {
   apollo: {
     sales: {
       query: SEARCH_SALES_SELLER_ID,
+      client: 'federated',
       variables () {
+        const { memberId } = this
+
         return {
-          saleSearchInput: {
-            tenantId: this.$tenantId,
-            startDate: this.startDate,
-            endDate: this.endDate,
-            query: null,
-            sellerId: this.sellerId
+          input: {
+            memberIn: [memberId]
           }
         }
       },
       error (err) {
         this.loading = false
-        console.error({ err })
+        console.error('SEARCH_SALES_SELLER_ID failed!', { err })
       },
       debounce: 500,
-      update ({ searchSalesBySellerId }) {
+      update (data) {
+        const purchaseSearchOrders = _.get(data, 'purchaseSearchOrders')
+
         this.loading = false
-        return searchSalesBySellerId
+        return purchaseSearchOrders
+      },
+      skip() {
+        return !this.memberId
       }
     }
   }
