@@ -86,7 +86,7 @@
         :items="items"
         hide-default-footer
         disable-pagination
-        class="elevation-1"
+        class="elevation-1 mb-10"
         item-key="id"
         :expanded="expanded"
         show-expand
@@ -126,8 +126,8 @@
                   <ul>
                     <li>{{item.customerName}}</li>
                     <li v-if="item.customer">{{item.customer.email}}</li>
-                    <li v-if="item.shipping">{{item.shipping.street}}</li>
-                    <li v-if="item.shipping">{{item.shipping.city}}, {{item.shipping.province}} {{item.shipping.postalCode}}</li>
+                    <li v-if="item.shippingAddress">{{item.shippingAddress.street}}</li>
+                    <li v-if="item.shippingAddress">{{item.shippingAddress.city}}, {{item.shippingAddress.province}} {{item.shippingAddress.postalCode}}</li>
                   </ul>
                 </v-flex>
                 <v-flex xs4>

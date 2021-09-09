@@ -22,6 +22,17 @@ export const SEARCH_SALES_QUERY = gql`
         itemPrice
         quantity
       }
+      shippingAddress {
+        id
+        street
+        street2
+        city
+        province
+        country
+        postalCode
+        priority
+        type
+      }
     }
   }
 `
@@ -74,12 +85,25 @@ export const SEARCH_SALES_SELLER_ID = gql`
       integrationOid
       billingAddress {
         id
+        street
+        street2
         city
+        province
+        country
+        postalCode
+        priority
         type
       }
       shippingAddress {
         id
+        street
+        street2
         city
+        province
+        country
+        postalCode
+        priority
+        type
       }
       total
       compStats
