@@ -2,4 +2,4 @@
 
 node tenants.js
 ls -al ./node_modules/@vue
-npm run build
+npm run build --force
