@@ -64,7 +64,9 @@
         <template v-slot:item.name="{ item }">
           {{item.metadata.name}}
           <br/>
-          <small>{{ item.metadata.email }}</small>
+          <a :href="`mailto:${item.metadata.email}`">
+            <small>{{ item.metadata.email }}</small>
+          </a>
           <template v-if="item.metadata.recognizedRank">
             <br/>
             <small>Recognized:</small>
