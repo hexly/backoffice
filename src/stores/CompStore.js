@@ -108,7 +108,7 @@ export const CompStore = {
         variables: { input }
       })
       const { data: { engineStatsPeriodsByMemberId } } = response
-      const filteredPeriods = engineStatsPeriodsByMemberId.slice(0, 6)
+      const filteredPeriods = engineStatsPeriodsByMemberId.slice(0, 12)
       commit(CompMutations.SET_HAS_MORE_PERIODS, filteredPeriods.length < engineStatsPeriodsByMemberId.length)
       const periods = _.groupBy(filteredPeriods, 'status')
       const currentPeriod = periods.open[0]

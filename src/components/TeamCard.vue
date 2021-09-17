@@ -82,7 +82,11 @@
                       <v-icon color="indigo"> mdi-email </v-icon>
                     </v-list-item-icon>
                     <v-list-item-content>
-                      <v-list-item-title>{{(email).toLowerCase()}}</v-list-item-title>
+                      <v-list-item-title>
+                        <a :href="`mailto:${(email).toLowerCase()}`">
+                          {{(email).toLowerCase()}}
+                        </a>
+                      </v-list-item-title>
                       <v-list-item-subtitle>Email</v-list-item-subtitle>
                     </v-list-item-content>
                   </v-list-item>

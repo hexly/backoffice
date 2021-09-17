@@ -93,9 +93,9 @@
           </v-row>
         </v-form>
       </v-container>
-      <!-- <v-container v-if="selectedModel === 'stripe_connect'">
-        <stripeConnect :details="{id: 12}"/>
-      </v-container> -->
+      <v-container v-if="selectedModel === 'hexly_payouts'">
+        <hexlyPayouts/>
+      </v-container>
     </v-card>
   </v-dialog>
 </template>
@@ -104,13 +104,13 @@
 import _ from 'lodash'
 import { UserActions } from '@/stores/UserStore'
 import { UPSERT_MEMBER_TENANT_INTEGRATION } from '@/graphql/Integrations'
-// import stripeConnect from '@/components/integrations/stripe.vue'
+import hexlyPayouts from '@/components/integrations/hexly_payouts.vue'
 import { mapGetters, mapActions } from 'vuex'
 
 export default {
-  // components: {
-  //   stripeConnect
-  // },
+  components: {
+    hexlyPayouts
+  },
   data () {
     return {
       loading: false,
