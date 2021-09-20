@@ -1,5 +1,5 @@
 <template>
-  <div style="height: calc(100vh - 128px);">
+  <div>
     <v-toolbar color="secondary" dark>
       <v-toolbar-title>Team Activity</v-toolbar-title>
       <v-spacer></v-spacer>
