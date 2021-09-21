@@ -1,24 +1,38 @@
 <template>
   <div class="stripe-connect-integration">
-    <h2>Everra Pay </h2>
+    <h2>Everra Pay</h2>
     <br />
-    <v-alert type="error" :value="!!error || !!localError">{{error || localError}}</v-alert>
+    <v-alert type="error" :value="!!error || !!localError">{{
+      error || localError
+    }}</v-alert>
     <div v-if="integrationDetails">
       <div v-if="loadingAccountDetails">
         <v-container>
           <v-row class="fill-height" align-content="center" justify="center">
             <v-col class="text-subtitle-1 text-center" cols="12">Loading account information</v-col>
             <v-col cols="6">
-              <v-progress-linear color="deep-purple accent-4" indeterminate rounded height="6"></v-progress-linear>
+              <v-progress-linear
+                color="deep-purple accent-4"
+                indeterminate
+                rounded
+                height="6"
+              ></v-progress-linear>
             </v-col>
           </v-row>
         </v-container>
       </div>
-      <div v-else-if="validations && !loadingAccountDetails" class="accountInfo">
+      <div
+        v-else-if="validations && !loadingAccountDetails"
+        class="accountInfo"
+      >
         <h4>Account Information</h4>
         <div>
           Status:
-          <v-chip v-if="!validations.validation.requiresInformation" color="success" outlined>
+          <v-chip
+            v-if="!validations.validation.requiresInformation"
+            color="success"
+            outlined
+          >
             Complete
             <v-icon right>mdi-check</v-icon>
           </v-chip>
@@ -72,26 +86,26 @@
             </div>
             <div v-else-if="field.key === 'stripe:individual.address.line1'" :key="field.key">
               <small>If Any of the following information is wrong, please contact support</small>
-                <v-select
-                  v-if="addresses.length > 1"
-                  label="Select Address"
-                  v-model="address"
-                  :items="addresses"
-                  item-text="street"
-                  item-value="id"
-                  return-object
-                ></v-select>
+              <v-select
+                v-if="addresses.length > 1"
+                label="Select Address"
+                v-model="address"
+                :items="addresses"
+                item-text="street"
+                item-value="id"
+                return-object
+              ></v-select>
             </div>
             <div v-else-if="field.key === 'stripe:individual.id_number'" :key="field.key">
               <small>If Any of the following information is wrong, please contact support</small>
-                <v-text-field
-                  :label="idNumberNames[country]"
-                  v-model="idNumber"
-                  type="text"
-                  validate-on-blur
-                  :rules="rules.requiredRule"
-                  :disabled="attemptingStripeSetup"
-                />
+              <v-text-field
+                :label="idNumberNames[country]"
+                v-model="idNumber"
+                type="text"
+                validate-on-blur
+                :rules="rules.requiredRule"
+                :disabled="attemptingStripeSetup"
+              />
             </div>
           </template>
           <v-btn @click="updateAccount" class="my-2" color="primary">Update Account</v-btn>
@@ -104,20 +118,24 @@
             </v-flex>
             <v-flex>
               <div>
+                <div>{{validations.validation.context.externalAccounts.data[0].bank_name}}</div>
                 <div>
-                  {{validations.validation.context.externalAccounts.data[0].bank_name}}
-                </div>
-                <div>
-                  <img class="routing" src="/img/icons/routing.svg">
+                  <img class="routing" src="/img/icons/routing.svg" />
                   {{validations.validation.context.externalAccounts.data[0].routing_number}}
-                  <img class="routing" src="/img/icons/routing.svg">
+                  <img class="routing" src="/img/icons/routing.svg" />
                   •••••{{validations.validation.context.externalAccounts.data[0].last4}}
                 </div>
               </div>
             </v-flex>
           </v-layout>
           <div>
-            <v-btn v-if="!displayReplaceForm" @click="displayReplaceForm = true" class="my-2" color="primary">Replace Bank Account</v-btn>
+            <v-btn
+              v-if="!displayReplaceForm"
+              @click="displayReplaceForm = true"
+              class="my-2"
+              color="primary"
+              >Replace Bank Account</v-btn
+            >
             <div v-if="displayReplaceForm">
               <v-text-field
                 label="Bank Account Number"
@@ -135,9 +153,20 @@
                 :disabled="attemptingStripeSetup"
               />
               <v-layout>
-                <v-btn @click="replaceBank" :disabled="saving" class="my-2" color="primary">Replace Bank Account</v-btn>
+                <v-btn
+                  @click="replaceBank"
+                  :disabled="saving"
+                  class="my-2"
+                  color="primary"
+                  >Replace Bank Account</v-btn
+                >
                 <v-spacer />
-                <v-btn @click="displayReplaceForm = false" class="my-2" color="grey">cancel</v-btn>
+                <v-btn
+                  @click="displayReplaceForm = false"
+                  class="my-2"
+                  color="grey"
+                  >cancel</v-btn
+                >
               </v-layout>
             </div>
           </div>
@@ -219,10 +248,14 @@
         />
         <p class="text-left caption phone-hint">
           Please speficy your country code as follows:
-          <br/>
-          {{country}}: <b>{{phones[country]}}</b>555....
+          <br />
+          {{ country }}: <b>{{ phones[country] }}</b
+          >555....
         </p>
-        <small>If Any of the following information is wrong, please contact support</small>
+        <small
+          >If Any of the following information is wrong, please contact
+          support</small
+        >
         <v-select
           v-if="addresses.length > 1"
           label="Select Address"
@@ -245,22 +278,26 @@
           :disabled="attemptingStripeSetup"
         >
           <div slot="label">
-            I agree to the {{$tenantInfo.strings['stripeConnect'] || 'Stripe'}}
-            <a
-              href="https://stripe.com/connect-account/legal"
-              target="_blank"
-            >Terms of Service</a>
+            I agree to the
+            {{ $tenantInfo.strings['stripeConnect'] || 'Stripe' }}
+            <a href="https://stripe.com/connect-account/legal" target="_blank"
+              >Terms of Service</a
+            >
           </div>
         </v-checkbox>
         <p v-if="accountDetails">
-          <small>Looks like you already have an account set up, by creating a new one you will be replacing your old account.</small>
+          <small
+            >Looks like you already have an account set up, by creating a new
+            one you will be replacing your old account.</small
+          >
         </p>
         <v-btn
           :loading="attemptingStripeSetup"
           :disabled="attemptingStripeSetup"
           type="submit"
           color="primary"
-        >Create Account</v-btn>
+          >Create Account</v-btn
+        >
       </v-form>
     </div>
   </div>
@@ -270,7 +307,11 @@
 /* global Stripe */
 import _ from 'lodash'
 import Rules from '@/views/Rules.js'
-import { GET_PAYOUT_ACCOUNT, CREATE_PAYOUT_ACCOUNT, UPDATE_PAYOUT_ACCOUNT } from '@/graphql/PayoutAccounts.gql'
+import {
+  GET_PAYOUT_ACCOUNT,
+  CREATE_PAYOUT_ACCOUNT,
+  UPDATE_PAYOUT_ACCOUNT
+} from '@/graphql/PayoutAccounts.gql'
 import { ADDRESS_BY_CONTACT_ID } from '@/graphql/Address.js'
 import { mapState, mapGetters } from 'vuex'
 
@@ -280,7 +321,7 @@ export default {
     details: Object,
     error: String
   },
-  data () {
+  data() {
     const host = window.location.hostname || ''
     const isHost = host.indexOf('localhost') >= 0
     return {
@@ -356,19 +397,21 @@ export default {
       validations: null
     }
   },
-  mounted () {
+  mounted() {
     this.loading = true
     this.reload()
     this.loadValidations()
     this.loading = false
   },
   methods: {
-    beginSetup () {
+    beginSetup() {
       this.setup = true
     },
     async loadValidations() {
       this.loadingAccountDetails = true
-      const { data: { payouts } } = await this.$apollo.query({
+      const {
+        data: { payouts }
+      } = await this.$apollo.query({
         query: GET_PAYOUT_ACCOUNT,
         variables: {
           input: {
@@ -378,83 +421,94 @@ export default {
         fetchPolicy: 'network-only',
         client: 'federated'
       })
-      const validations = payouts.accounts.results.find(r => r.status === 'ACTIVE')
-      validations.validation.requiermentsNeeded = _.groupBy(validations.validation.notices, 'type')
+      const validations = payouts.accounts.results.find(
+        (r) => r.status === 'ACTIVE'
+      )
+      validations.validation.requiermentsNeeded = _.groupBy(
+        validations.validation.notices,
+        'type'
+      )
       this.validations = validations
       this.loadingAccountDetails = false
     },
-    accountToken ({ stripe, pii }) {
+    async accountToken({ stripe, pii }) {
       const bdate = this.$moment(this.birthdate, Rules.birthdayFormat)
-      try {
-        const params = {
-          business_type: 'individual',
-          individual: {
-            first_name: this.firstName,
-            last_name: this.lastName,
-            phone: this.stripePhone,
-            email: this.stripeEmail,
-            address: {
-              city: this.address.city,
-              country: this.country,
-              line1: 'address_full_match', // this.address.street,
-              line2: this.address.street2,
-              postal_code: this.address.postalCode,
-              state: this.address.province
-            },
-            id_number: pii.token.id,
-            dob: {
-              day: bdate.date(),
-              month: bdate.month() + 1,
-              year: bdate.year()
-            }
-          },
-          tos_shown_and_accepted: true
-        }
-        if (this.country === 'US') {
-          params.individual.ssn_last_4 = this.idNumber.substr(this.idNumber.length - 4, this.idNumber.length)
-        }
-        return stripe.createToken('account', params)
-      } catch (e) {
-        console.warn('account error!', e)
-        throw new Error(e)
-      }
-    },
-    getAccountToken ({ stripe, accountInfo: params }) {
-      try {
-        if (this.country === 'US' && params.individual.id_number) {
-          params.individual.ssn_last_4 = this.idNumber.substr(this.idNumber.length - 4, this.idNumber.length)
-        }
-        return stripe.createToken('account', params)
-      } catch (e) {
-        console.warn('account error!', e)
-        throw new Error(e)
-      }
-    },
-    bankToken ({ stripe }) {
-      try {
-        return stripe.createToken('bank_account', {
-          bank_account: {
+      const params = {
+        business_type: 'individual',
+        individual: {
+          first_name: this.firstName,
+          last_name: this.lastName,
+          phone: this.stripePhone,
+          email: this.stripeEmail,
+          address: {
+            city: this.address.city,
             country: this.country,
-            currency: this.currency,
-            account_holder_type: 'individual',
-            routing_number: this.routingNumber,
-            account_number: this.accountNumber
+            line1: 'address_full_match', // this.address.street,
+            line2: this.address.street2,
+            postal_code: this.address.postalCode,
+            state: this.address.province
+          },
+          id_number: pii.token.id,
+          dob: {
+            day: bdate.date(),
+            month: bdate.month() + 1,
+            year: bdate.year()
           }
-        })
-      } catch (e) {
-        console.warn('bank error!', e)
-        throw new Error(e)
+        },
+        tos_shown_and_accepted: true
       }
+      if (this.country === 'US') {
+        params.individual.ssn_last_4 = this.idNumber.substr(
+          this.idNumber.length - 4,
+          this.idNumber.length
+        )
+      }
+      const account = await stripe.createToken('account', params)
+      if (account.error) {
+        console.warn('account error!', account.error)
+        throw new Error(account.error)
+      }
+      return account
     },
-    piiToken ({ stripe }) {
-      try {
-        return stripe.createToken('pii', {
-          personal_id_number: this.idNumber
-        })
-      } catch (e) {
-        console.warn('pii error!', e)
-        throw new Error(e)
+    async getAccountToken({ stripe, accountInfo: params }) {
+      if (this.country === 'US' && params.individual.id_number) {
+        params.individual.ssn_last_4 = this.idNumber.substr(
+          this.idNumber.length - 4,
+          this.idNumber.length
+        )
       }
+      const account = await stripe.createToken('account', params)
+      if (account.error) {
+        console.warn('account error!', account.error)
+        throw new Error(account.error)
+      }
+      return account
+    },
+    async bankToken({ stripe }) {
+      const bank = await stripe.createToken('bank_account', {
+        bank_account: {
+          country: this.country,
+          currency: this.currency,
+          account_holder_type: 'individual',
+          routing_number: this.routingNumber,
+          account_number: this.accountNumber
+        }
+      })
+      if (bank.error) {
+        console.warn('bank error!', bank.error)
+        throw new Error(bank.error.message)
+      }
+      return bank
+    },
+    async piiToken({ stripe }) {
+      const pii = await stripe.createToken('pii', {
+        personal_id_number: this.idNumber
+      })
+      if (pii.error) {
+        console.warn('pii error!', pii.error)
+        throw new Error(pii.error)
+      }
+      return pii
     },
     getStripeClient() {
       const integrationMetadata = this.tenant.integrations.find((i) => {
@@ -464,7 +518,7 @@ export default {
       const stripe = Stripe(integrationMetadata.publishableKey)
       return stripe
     },
-    async setupStripe () {
+    async setupStripe() {
       if (this.$refs.informationForm.validate()) {
         this.attemptingStripeSetup = true
         this.localError = ''
@@ -479,7 +533,10 @@ export default {
             const pii = await this.piiToken({ stripe })
             accountToken = await this.accountToken({ stripe, pii })
             if (accountToken.error) {
-              if (accountToken.error.param && accountToken.error.param.includes('dob')) {
+              if (
+                accountToken.error.param &&
+                accountToken.error.param.includes('dob')
+              ) {
                 this.dobError = true
                 this.$refs.dobInput.focus()
               }
@@ -497,11 +554,6 @@ export default {
         let bankToken
         try {
           bankToken = await this.bankToken({ stripe })
-          if (bankToken.error) {
-            this.localError = bankToken.error.message
-            this.attemptingStripeSetup = false
-            return
-          }
         } catch (e) {
           this.localError = e.message
           this.attemptingStripeSetup = false
@@ -515,35 +567,48 @@ export default {
         this.stripeParams.external_account = bankToken.token.id
         this.stripeParams.business_profile.url = url
 
-        this.$apollo.mutate({
-          mutation: CREATE_PAYOUT_ACCOUNT,
-          variables: {
-            input: {
-              integrationKey: 'hexly_payouts',
-              memberId: this.member.id,
-              integrationDetails: this.stripeParams
-            }
-          },
-          client: 'federated'
-        }).then(integrationDetails => {
-          // nada
-          this.setup = false
-          this.reload()
-        }).catch(err => {
-          this.localError = err.message || err
-        }).finally(() => {
-          this.attemptingStripeSetup = false
-        })
+        this.$apollo
+          .mutate({
+            mutation: CREATE_PAYOUT_ACCOUNT,
+            variables: {
+              input: {
+                integrationKey: 'hexly_payouts',
+                memberId: this.member.id,
+                integrationDetails: this.stripeParams
+              }
+            },
+            client: 'federated'
+          })
+          .then((integrationDetails) => {
+            // nada
+            this.setup = false
+            this.reload()
+          })
+          .catch((err) => {
+            this.localError = err.message || err
+          })
+          .finally(() => {
+            this.attemptingStripeSetup = false
+          })
       }
     },
     async updateAccount() {
-      const notices = this.validations.validation.requiermentsNeeded.OVERDUE.map(n => n.key)
+      this.localError = ''
+      const notices = this.validations.validation.requiermentsNeeded.OVERDUE.map(
+        (n) => n.key
+      )
       const stripe = this.getStripeClient()
       const updateParams = {}
       let accountInfo = {}
       if (notices.indexOf('stripe:external_account') >= 0) {
-        const bankToken = await this.bankToken({ stripe })
-        updateParams.external_account = bankToken.token.id
+        try {
+          const bankToken = await this.bankToken({ stripe })
+          updateParams.external_account = bankToken.token.id
+        } catch (e) {
+          this.localError = e
+          this.attemptingStripeSetup = false
+          return
+        }
       }
       if (notices.indexOf('stripe:individual.address.line1') >= 0) {
         const address = {
@@ -602,7 +667,7 @@ export default {
         updateParams.account_token = accountToken.token.id
       }
 
-      this.$apollo.mutate({
+      const { data: { payouts: { accountUpdate } } } = await this.$apollo.mutate({
         mutation: UPDATE_PAYOUT_ACCOUNT,
         variables: {
           input: {
@@ -611,37 +676,38 @@ export default {
           }
         },
         client: 'federated'
-      }).then(integrationDetails => {
-        // nada
-        this.setup = false
-        this.reload()
-      }).catch(err => {
-        this.localError = err.message || err
-      }).finally(() => {
-        this.attemptingStripeSetup = false
       })
+      if (accountUpdate.result === 'ERROR') {
+        this.localError = accountUpdate.message
+      } else {
+        this.success = true
+      }
     },
     async replaceBank() {
       const stripe = this.getStripeClient()
       const bankToken = await this.bankToken({ stripe })
-      this.$apollo.mutate({
-        mutation: UPDATE_PAYOUT_ACCOUNT,
-        variables: {
-          input: {
-            id: this.validations.id,
-            integrationDetails: { external_account: bankToken.token.id }
-          }
-        },
-        client: 'federated'
-      }).then(integrationDetails => {
-        // nada
-        this.setup = false
-        this.reload()
-      }).catch(err => {
-        this.localError = err.message || err
-      }).finally(() => {
-        this.attemptingStripeSetup = false
-      })
+      this.$apollo
+        .mutate({
+          mutation: UPDATE_PAYOUT_ACCOUNT,
+          variables: {
+            input: {
+              id: this.validations.id,
+              integrationDetails: { external_account: bankToken.token.id }
+            }
+          },
+          client: 'federated'
+        })
+        .then((integrationDetails) => {
+          // nada
+          this.setup = false
+          this.reload()
+        })
+        .catch((err) => {
+          this.localError = err.message || err
+        })
+        .finally(() => {
+          this.attemptingStripeSetup = false
+        })
     },
     getAccountDetails() {
       // if (this.integrationDetails) {
@@ -663,19 +729,21 @@ export default {
       //   })
       // }
     },
-    reload () {
+    reload() {
       this.firstName = this.member.firstName
       this.lastName = this.member.lastName
       this.stripePhone = this.phone
       this.stripeEmail = this.email
-      this.birthdate = this.$moment(this.member.birthdate, 'YYYY-MM-DD').format(Rules.birthdayFormat)
+      this.birthdate = this.$moment(this.member.birthdate, 'YYYY-MM-DD').format(
+        Rules.birthdayFormat
+      )
       // this.getAccountDetails()
     }
   },
   apollo: {
     addresses: {
       query: ADDRESS_BY_CONTACT_ID,
-      variables () {
+      variables() {
         return {
           addressContactId: {
             contactId: this.contactId,
@@ -683,7 +751,7 @@ export default {
           }
         }
       },
-      update ({ addressByContactOrTenant }) {
+      update({ addressByContactOrTenant }) {
         this.address = addressByContactOrTenant[0]
         return addressByContactOrTenant
       },
@@ -696,11 +764,16 @@ export default {
   computed: {
     ...mapGetters(['slug', 'contactId']),
     ...mapState({
-      email: state => _.get(state, 'user.principal.member.contacts[0].emails[0].email'),
-      phone: state => _.get(state, 'user.principal.member.contacts[0].phoneNumbers[0].number'),
-      member: state => state.user.principal.member,
-      integrations: state => state.user.principal.member.tenantIntegrations,
-      tenant: state => state.user.principal.tenant
+      email: (state) =>
+        _.get(state, 'user.principal.member.contacts[0].emails[0].email'),
+      phone: (state) =>
+        _.get(
+          state,
+          'user.principal.member.contacts[0].phoneNumbers[0].number'
+        ),
+      member: (state) => state.user.principal.member,
+      integrations: (state) => state.user.principal.member.tenantIntegrations,
+      tenant: (state) => state.user.principal.tenant
     }),
     currency() {
       return this.currencies[this.address.country] || 'USD'
@@ -711,9 +784,9 @@ export default {
       }
       return this.address.country || 'US'
     },
-    integrationDetails () {
+    integrationDetails() {
       const options = this.integrations || []
-      return options.find(e => e.key === 'hexly_payouts')
+      return options.find((e) => e.key === 'hexly_payouts')
     }
   }
 }
@@ -730,11 +803,11 @@ export default {
   margin: auto;
 }
 
-.accountInfo{
+.accountInfo {
   margin: auto;
 }
 
-.accountInfo .bankInfo{
+.accountInfo .bankInfo {
   padding: 5px;
   border: 1px solid black;
   border-radius: 2px;

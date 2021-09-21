@@ -210,6 +210,7 @@ export default {
 .search-results{
   position: relative;
   min-height: calc(100vh - 272px);
+  padding: 15px 0;
 }
 
 .loader-overlay {

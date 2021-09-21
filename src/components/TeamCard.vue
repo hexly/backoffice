@@ -37,12 +37,11 @@
         <v-card-title class="fill-height align-end">
           <v-flex row>
             <h3>{{(user.name).toUpperCase()}}</h3>
-            <small
-              v-if="compStats && compStats.metadata && compStats.metadata.recognizedRank > 0"
-              style="position: absolute; bottom: 0; font-size: 12px;"
-            >Recognized Rank: {{compStats.metadata.recognizedRank}}</small>
           </v-flex>
         </v-card-title>
+        <v-card-subtitle v-if="compStats && compStats.metadata && compStats.metadata.recognizedRank > 0" class="subtitle">
+          <small>Recognized Rank: {{compStats.metadata.recognizedRank}}</small>
+        </v-card-subtitle>
       </v-img>
       <div v-if="actions">
         <v-tabs @change="handleTabChange" :value="activeTab" :hide-slider="true">
@@ -148,7 +147,7 @@
           </v-tab-item>
           <v-tab-item>
             <div class="item-container-card">
-              <v-card v-if="!$apolloData.loading" flat>
+              <v-card v-if="!$apolloData.loading" flat style="padding-top: 15px;">
                 <TeamDetails :compStats="compStats"/>
               </v-card>
               <v-flex v-else d-flex justify-center align-center class="text-center">
@@ -479,6 +478,10 @@ export default {
 .team-card {
   margin-left: auto;
   margin-right: auto;
+}
+.team-card .subtitle{
+  margin-top: -19px;
+  margin-left: -12px;
 }
 .cardImg {
   margin: auto;
