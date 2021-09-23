@@ -48,7 +48,6 @@
 
 <script>
 import GET from 'lodash/get'
-import HierarchyCards from '@/components/team/HierarchyCards.vue'
 import TeamActivity from '@/components/team/TeamActivity.vue'
 import Directory from '@/components/dashboard/Directory.vue'
 import TeamSearch from '@/components/team/Search.vue'
@@ -57,7 +56,6 @@ import TeamGraph from '@/components/team/Graph.vue'
 export default {
   name: 'Team',
   components: {
-    HierarchyCards,
     TeamSearch,
     TeamGraph,
     TeamActivity,

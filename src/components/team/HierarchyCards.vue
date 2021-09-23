@@ -192,7 +192,7 @@ export default {
       variables () {
         return {
           input: {
-            MemberId: this.currentId,
+            memberId: this.currentId,
             query: null,
             orderDirection: 'asc',
             orderByColumn: 'depth',
