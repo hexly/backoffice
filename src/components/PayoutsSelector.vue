@@ -19,15 +19,8 @@
       </v-btn>
     </template>
     <v-card>
-      <v-toolbar
-        dark
-        color="primary"
-      >
-        <v-btn
-          icon
-          dark
-          @click="dialog = false"
-        >
+      <v-toolbar dark color="primary">
+        <v-btn icon dark @click="dialog = false">
           <v-icon>mdi-close</v-icon>
         </v-btn>
         <v-toolbar-title>Settings</v-toolbar-title>
@@ -43,22 +36,16 @@
         </v-toolbar-items>
       </v-toolbar>
       <div class="pa-2">
-        <v-alert
-          type="error"
-          :value="!!error"
-        >{{error}}</v-alert>
+        <v-alert type="error" :value="!!error">{{error}}</v-alert>
         <h3>Available Payout Systems</h3>
         <p>Please select the service you'd like to get paid through:</p>
-        <v-radio-group
-          v-model="selectedModel"
-          @change="updateSelection"
-        >
-          <v-radio
-            v-for="integration in integrations"
-            :key="integration.id"
-            :label="integration.name"
-            :value="integration.key"
-          ></v-radio>
+        <v-radio-group v-model="selectedModel" @change="updateSelection">
+            <v-radio
+              v-for="integration in availableIntegrations"
+              :key="integration.id"
+              :label="labelMapping[integration.key]"
+              :value="integration.key"
+            ></v-radio>
         </v-radio-group>
       </div>
       <v-container v-if="selectedModel === 'paypal_payouts'">
@@ -93,9 +80,9 @@
           </v-row>
         </v-form>
       </v-container>
-      <!-- <v-container v-if="selectedModel === 'stripe_connect'">
-        <stripeConnect :details="{id: 12}"/>
-      </v-container> -->
+      <v-container v-if="selectedModel === 'hexly_payouts'">
+        <hexlyPayouts/>
+      </v-container>
     </v-card>
   </v-dialog>
 </template>
@@ -104,13 +91,13 @@
 import _ from 'lodash'
 import { UserActions } from '@/stores/UserStore'
 import { UPSERT_MEMBER_TENANT_INTEGRATION } from '@/graphql/Integrations'
-// import stripeConnect from '@/components/integrations/stripe.vue'
+import hexlyPayouts from '@/components/integrations/hexly_payouts.vue'
 import { mapGetters, mapActions } from 'vuex'
 
 export default {
-  // components: {
-  //   stripeConnect
-  // },
+  components: {
+    hexlyPayouts
+  },
   data () {
     return {
       loading: false,
@@ -124,6 +111,11 @@ export default {
         'paypal_payouts': {
           types: ['email']
         }
+      },
+      labelMapping: {
+        i_payouts: 'iPayouts',
+        paypal_payouts: 'PayPal Payouts',
+        hexly_payouts: 'Everra Pay'
       }
     }
   },
@@ -144,6 +136,13 @@ export default {
   },
   methods: {
     ...mapActions({ reloadIntegrations: UserActions.RELOAD_INTEGRATIONS }),
+    hasTags(tags) {
+      if (!tags) {
+        return true
+      }
+      const hasTag = _.intersection(tags, this.member.tags)
+      return hasTag.length > 0
+    },
     updateSelection (key) {
       const integration = this.getMemberIntegration(key)
       if (integration) {
@@ -225,7 +224,12 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['tenantIntegrations']),
+    ...mapGetters(['tenantIntegrations', 'member']),
+    availableIntegrations() {
+      return this.integrations.filter(i => {
+        return (i.metadata && this.hasTags(i.metadata.tags)) || !i.metadata
+      })
+    },
     getPayoutCapableIntegrations () {
       return this.tenantIntegrations.filter(i => {
         return _.find(this.integrations, { key: i.key })

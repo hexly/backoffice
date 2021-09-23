@@ -1,4 +1,5 @@
 const webpack = require('webpack')
+const Dotenv = require('dotenv-webpack')
 const GenerateJsonFile = require('generate-json-file-webpack-plugin')
 const WebpackPreBuildPlugin = require('pre-build-webpack')
 const fs = require('fs')
@@ -33,9 +34,11 @@ module.exports = {
             })
           )
         }
-      })
+      }),
+      new Dotenv()
     ],
     mode: 'development',
+    target: 'web',
     output: {
       filename: '[name].[hash].js'
     },
