@@ -46,7 +46,7 @@
                   {{ renderGroupHeader(header, props.items, props)}}
                 </td>
               </template>
-              <template v-slot:body.prepend="props" v-if="data && data.levels && data.levels.root">
+              <template v-if="data && data.levels && data.levels.root">
                 <CompPeriodSummaryRow :data="data" :row="memberRow" :headers="headers"/>
               </template>
 

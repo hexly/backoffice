@@ -53,6 +53,28 @@
             </v-progress-circular>
             <div class="caption"> Next Rank: <b class="black--text">{{nextRank}}</b></div>
           </div>
+          <template class="stats-container py-4" v-if="stats">
+            <v-layout justify-space-between>
+              <v-flex>
+                <div class="title">Influencer Bonus Tracker</div>
+                <small>Points reflect current standing and might change by end of month.</small>
+              </v-flex>
+            </v-layout>
+            <v-row no-gutters>
+              <v-col v-for="b in influencerBonus" :key="b.tooltip" class="pa-1" cols="3" md="2" justify="center" align="center">
+                <v-tooltip bottom>
+                  <template v-slot:activator="{ on }">
+                    <v-progress-linear :value="calcProgress(stats.stats.psv, b)" :color="stats.stats.psv > b.top ? 'amber accent-2' : 'amber'" height="45" v-on="on" class="text-center">
+                      <template v-slot:default>
+                        <strong>{{ b.top }}+ psv</strong>
+                      </template>
+                    </v-progress-linear>
+                  </template>
+                  <span>{{b.tooltip}}</span>
+                </v-tooltip>
+              </v-col>
+            </v-row>
+          </template>
           <template class="stats-container px-2 py-4" v-if="stats">
             <v-row :class="{ 'rank-data-row' : tabMode, 'py-1': !tabMode }" justify="space-between" wrap v-for="(stat, i) in stats.metadata.requirements" :key="i">
               <v-layout justify-space-between>
@@ -156,6 +178,18 @@ export default {
   },
   data() {
     return {
+      influencerBonus: [
+        { bottom: 0, top: 250, tooltip: 'Earn Product Credit' },
+        { bottom: 251, top: 500, tooltip: 'Earn an extra 5%' },
+        { bottom: 501, top: 750, tooltip: 'Earn an extra 7.5%' },
+        { bottom: 751, top: 1000, tooltip: 'Earn an extra 10%' },
+        { bottom: 1001, top: 1250, tooltip: 'Earn an extra 12.5%' },
+        { bottom: 1251, top: 1500, tooltip: 'Earn an extra 15%' },
+        { bottom: 1501, top: 1750, tooltip: 'Earn an extra 17.5 %' },
+        { bottom: 1751, top: 2000, tooltip: 'Earn an extra 20%' },
+        { bottom: 2001, top: 2500, tooltip: 'Earn an extra 22.5%' },
+        { bottom: 2501, top: 3000, tooltip: 'Earn an extra 25%' }
+      ],
       showPayouts: false,
       bannerMessage: null,
       rank: null,
@@ -179,6 +213,14 @@ export default {
     }
   },
   methods: {
+    calcProgress(psv, bonus) {
+      if (psv >= bonus.bottom && psv < bonus.top) {
+        return (psv / bonus.top) * 100
+      } else if (psv >= bonus.top) {
+        return 100
+      }
+      return 0
+    },
     format(num) {
       num = Math.abs(num).toFixed(1)
       num = new Intl.NumberFormat('en-US', {}).format(num)

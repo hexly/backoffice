@@ -1,5 +1,5 @@
 <template>
-  <div style="height: calc(100vh - 128px);">
+  <div>
     <v-toolbar color="secondary" dark>
       <v-toolbar-title>Team Activity</v-toolbar-title>
       <v-spacer></v-spacer>
@@ -64,7 +64,9 @@
         <template v-slot:item.name="{ item }">
           {{item.metadata.name}}
           <br/>
-          <small>{{ item.metadata.email }}</small>
+          <a :href="`mailto:${item.metadata.email}`">
+            <small>{{ item.metadata.email }}</small>
+          </a>
           <template v-if="item.metadata.recognizedRank">
             <br/>
             <small>Recognized:</small>

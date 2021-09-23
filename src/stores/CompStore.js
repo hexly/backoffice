@@ -116,8 +116,8 @@ export const CompStore = {
           }
         }
       })
-      console.log({ response })
-      const engineStatsPeriodsByMemberId = _.get(response, 'data.engine.engineStatsPeriodsByMemberId')
+      const engineStatsPeriodsByMemberId = _.get(response, 'data.engine.engineStatsPeriodsByMemberId', [])
+      console.log({ engineStatsPeriodsByMemberId })
       const filteredPeriods = engineStatsPeriodsByMemberId.slice(0, 6)
       commit(CompMutations.SET_HAS_MORE_PERIODS, filteredPeriods.length < engineStatsPeriodsByMemberId.length)
       const periods = _.groupBy(filteredPeriods, 'status')

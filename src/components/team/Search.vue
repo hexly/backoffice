@@ -23,6 +23,11 @@
           value="true"
           hide-details
         ></v-checkbox>
+        <v-alert text dense type="info" v-if="currentUser">
+          You are currently viewing {{currentUser.name}}'s Team
+          <br/>
+          <a @click="currentUser = null">Go Back To My Team</a>
+        </v-alert>
       </form>
     </div>
     <div class="search-results" :class="{'loading': !!loading}">
@@ -67,9 +72,8 @@ export default {
   },
   data() {
     return {
-      lineage: [],
+      currentUser: null,
       onlyPendingRecon: false,
-      currentId: null,
       mergedTeamArr: [],
       hashResTeam: [],
       page: 1,
@@ -118,9 +122,7 @@ export default {
       this.activeTab = tab
     },
     showTeam (user) {
-      const currentId = user.id || user.memberId
-      this.lineage.push(user)
-      this.currentId = currentId
+      this.currentUser = user
     },
     getMember(user) {
       return { ...user, addresses: [user.address] }
@@ -143,6 +145,7 @@ export default {
       variables() {
         return {
           input: {
+            memberId: this.currentUser ? this.currentUser.id : this.memberId,
             query: this.query,
             orderDirection: this.sort.orderDirection,
             orderByColumn: this.sort.orderByColumn,
@@ -198,10 +201,6 @@ export default {
       fetchPolicy: 'network-only',
       client: 'federated'
     }
-  },
-  mounted () {
-    this.currentId = this.member.memberId || this.member.id
-    this.lineage.push({ memberId: this.currentId, displayName: this.member.displayName })
   }
 }
 </script>
@@ -210,6 +209,7 @@ export default {
 .search-results{
   position: relative;
   min-height: calc(100vh - 272px);
+  padding: 15px 0;
 }
 
 .loader-overlay {
