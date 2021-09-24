@@ -204,7 +204,7 @@ export default {
         const res = await this.$apollo.query({
           query: FRONTLINE_LEADERBOARD_BY_RANGE,
           client: 'federated',
-          variables
+          variables: { input: { ...variables.input, rootId: this.memberId } }
         })
         rangedFrontlineLeaderboardByTeam = _.get(res, 'data.engine.rangedFrontlineLeaderboardByTeam')
       } catch (error) {
@@ -218,7 +218,7 @@ export default {
           client: 'federated',
           variables
         })
-        rangedFrontlineLeaderboard = _.get(res, 'data.engine.rangedFrontlineLeaderboardByTeam')
+        rangedFrontlineLeaderboard = _.get(res, 'data.engine.rangedFrontlineLeaderboard')
       } catch (error) {
         console.error(error)
       }
