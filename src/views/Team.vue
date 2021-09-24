@@ -11,10 +11,10 @@
           <v-icon>whatshot</v-icon>
         </v-tab>
       </template>
-      <v-tab to="#directory" v-if="GET($tenantInfo, 'features.team.directory', true)">
+      <!-- <v-tab to="#directory" v-if="GET($tenantInfo, 'features.team.directory', true)">
         Directory
         <v-icon>chrome_reader_mode</v-icon>
-      </v-tab>
+      </v-tab> -->
       <v-tab to="#graph" v-if="GET($tenantInfo, 'features.team.graph', false)">
         Graph
         <v-icon>scatter_plot</v-icon>
@@ -32,11 +32,11 @@
           </v-lazy>
         </v-tab-item>
       </template>
-      <v-tab-item value="directory" class="py-3">
+      <!-- <v-tab-item value="directory" class="py-3">
         <v-lazy>
           <Directory class="py-2" title="Your Circle of Influence" membersTypeName="Influencer"/>
         </v-lazy>
-      </v-tab-item>
+      </v-tab-item> -->
       <v-tab-item value="graph" class="py-3">
         <v-lazy>
           <TeamGraph />
@@ -48,7 +48,6 @@
 
 <script>
 import GET from 'lodash/get'
-import HierarchyCards from '@/components/team/HierarchyCards.vue'
 import TeamActivity from '@/components/team/TeamActivity.vue'
 import Directory from '@/components/dashboard/Directory.vue'
 import TeamSearch from '@/components/team/Search.vue'
@@ -57,7 +56,6 @@ import TeamGraph from '@/components/team/Graph.vue'
 export default {
   name: 'Team',
   components: {
-    HierarchyCards,
     TeamSearch,
     TeamGraph,
     TeamActivity,

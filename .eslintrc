@@ -13,7 +13,11 @@
     "semi": "error",
     "prefer-arrow-callback": "warn",
     "space-before-function-paren": "off",
-    "no-debugger": "off"
+    "no-debugger": "off",
+    "vue/no-unused-components": "off",
+    "vue/no-mutating-props": "off",
+    "vue/valid-v-slot": "off",
+    "vue/no-unused-vars": "off"
   },
   "env": {
     "jest": true,

@@ -49,10 +49,10 @@ export default {
           return message
         } else {
           console.warn('Detected value range messages, but did not match any', { progress, numerator, denominator })
-          // return 'no messages?'
+          return 'no messages?'
         }
       }
-      // return 'Here we go'
+      return 'Here we go'
     }
   }
 }
