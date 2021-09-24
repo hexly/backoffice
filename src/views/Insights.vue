@@ -5,6 +5,7 @@
       background-color="secondary"
       dark
       icons-and-text
+      :loading="true"
     >
       <v-tabs-slider color="white"></v-tabs-slider>
 

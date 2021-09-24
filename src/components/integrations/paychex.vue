@@ -46,7 +46,7 @@ export default {
   },
   computed: {
     ...mapState({
-      integrations: state => state.user.principal.member.tenantIntegrations,
+      integrations: state => state.user.principal.member.integrations,
       tenant: state => state.user.principal.tenant
     })
   }

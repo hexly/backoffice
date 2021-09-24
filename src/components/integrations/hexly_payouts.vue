@@ -312,7 +312,7 @@ import {
   CREATE_PAYOUT_ACCOUNT,
   UPDATE_PAYOUT_ACCOUNT
 } from '@/graphql/PayoutAccounts.gql'
-import { ADDRESS_BY_CONTACT_ID } from '@/graphql/Address.js'
+import { ADDRESS_BY_MEMBER_SEARCH } from '@/graphql/Address.js'
 import { mapState, mapGetters } from 'vuex'
 
 export default {
@@ -742,7 +742,7 @@ export default {
   },
   apollo: {
     addresses: {
-      query: ADDRESS_BY_CONTACT_ID,
+      query: ADDRESS_BY_MEMBER_SEARCH,
       variables() {
         return {
           addressContactId: {

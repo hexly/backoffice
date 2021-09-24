@@ -17,8 +17,7 @@ import OrderTable from '@/components/OrderTable.vue'
 import CustomerTable from '@/components/CustomerTable.vue'
 import { mapState } from 'vuex'
 import { ORDERS_QUERY_FEDERATED } from '@/graphql/Orders.js'
-import { get } from 'lodash'
-
+import { get, uniqBy } from 'lodash'
 export default {
   components: {
     OrderTable,
@@ -36,18 +35,15 @@ export default {
       variables() {
         return {
           input: {
-            referrerIn: [this.user.principal.memberId],
-            tenantId: this.tenantId,
-            startDate: '2007-12-03',
-            endDate: new Date().toISOString().split('T')[0]
+            memberIn: [this.user.principal.memberId]
           }
         }
       },
       client: 'federated',
       update(data) {
-        const res = get(data, 'purchasing.orders.results')
-
-        return res
+        const res = get(data, 'purchaseSearchOrders')
+        const duplicatesRemoved = uniqBy(res, el => el.id)
+        return duplicatesRemoved
       },
       watchLoading(isLoading) {
         this.loading = isLoading

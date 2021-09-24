@@ -86,7 +86,7 @@
         :items="items"
         hide-default-footer
         disable-pagination
-        class="elevation-1"
+        class="elevation-1 mb-10"
         item-key="id"
         :expanded="expanded"
         show-expand
@@ -98,11 +98,11 @@
           <tr>
             <td>{{ item.date }}</td>
             <td>
-              {{ item.customerName }}
+              {{ item.customerName && /[^\s]/.test(item.customerName) ? item.customerName : 'Guest Customer' }}
             </td>
             <td>
               <Currency
-                :amount="item.HexlyTotalAmount ? parseFloat(item.HexlyTotalAmount) : null"
+                :amount="item.HexlyTotalAmount ? parseFloat(item.HexlyTotalAmount.toFixed(2)) : 0"
                 :currency="item.currency"
               />
             </td>
@@ -126,8 +126,8 @@
                   <ul>
                     <li>{{item.customerName}}</li>
                     <li v-if="item.customer">{{item.customer.email}}</li>
-                    <li v-if="item.shipping">{{item.shipping.street}}</li>
-                    <li v-if="item.shipping">{{item.shipping.city}}, {{item.shipping.province}} {{item.shipping.postalCode}}</li>
+                    <li v-if="item.shippingAddress">{{item.shippingAddress.street}}</li>
+                    <li v-if="item.shippingAddress">{{item.shippingAddress.city}}, {{item.shippingAddress.province}} {{item.shippingAddress.postalCode}}</li>
                   </ul>
                 </v-flex>
                 <v-flex xs4>
@@ -160,6 +160,12 @@
                     <template v-slot:item="{ item: line }">
                       <tr>
                         <td>{{ line.name }}</td>
+                        <td>
+                          <Currency
+                            :amount="parseFloat(line.itemPrice)"
+                            :currency="item.currency"
+                          />
+                        </td>
                         <td>{{ line.quantity }}</td>
                         <td>
                           <Currency
@@ -209,11 +215,9 @@
         </template>
       </v-data-table>
     </div>
-    <v-snackbar
-      v-model="showSnackbar"
-    >
+    <v-snackbar v-model="showSnackbar">
       {{snackbarMsg}}
-      <v-btn flat color="primary" @click.native="showSnackbar = false">Close</v-btn>
+      <v-btn text color="primary" @click.native="showSnackbar = false">Close</v-btn>
     </v-snackbar>
   </v-flex>
 </template>
@@ -225,7 +229,6 @@ import DateSelector from '@/components/DateSelector.vue'
 import { SEARCH_SALES_QUERY } from '@/graphql/Sales.gql'
 import { Mutations } from '@/store'
 import { mapMutations, mapState, mapGetters } from 'vuex'
-
 const trackingProviders = {
   usps: 'https://tools.usps.com/go/TrackConfirmAction?qtc_tLabels1=',
   parcelforce: 'https://www.parcelforce.com/portal/pw/track?trackNumber=',
@@ -233,7 +236,6 @@ const trackingProviders = {
   ups: 'https://www.ups.com/track?loc=null&tracknum=',
   'canada-post': 'http://www.canadapost.ca/cpotools/apps/track/personal/findByTrackNumber?trackingNumber='
 }
-
 export default {
   components: {
     DateSelector,
@@ -271,8 +273,9 @@ export default {
       ],
       productHeads: [
         { text: 'Item', sortable: false },
+        { text: 'Item Price', sortable: false },
         { text: 'Qty.', sortable: false },
-        { text: 'subtotal', sortable: false }
+        { text: 'Subtotal', sortable: false }
       ],
       sales: [],
       showSnackbar: false,
@@ -286,14 +289,13 @@ export default {
       },
       query: SEARCH_SALES_QUERY,
       variables () {
-        const endDate = this.$moment(_.get(this, 'endDate', '1970-01-01')).format('YYYY-MM-DD')
-        const startDate = this.$moment(_.get(this, 'startDate', '1970-01-01')).format('YYYY-MM-DD')
+        const end = this.$moment(_.get(this, 'endDate', '1970-01-01')).format('YYYY-MM-DD')
+        const start = this.$moment(_.get(this, 'startDate', '1970-01-01')).format('YYYY-MM-DD')
         return {
-          saleSearchInput: {
-            referrerIn: this.mId || this.memberId,
-            tenantId: this.$tenantId,
-            endDate,
-            startDate
+          input: {
+            memberIn: [this.memberId],
+            start,
+            end
           }
         }
       },
@@ -305,11 +307,9 @@ export default {
       },
       debounce: 500,
       update (data) {
-        const orders = _.get(data, 'purchasing.orders.results', [])
+        const orders = _.get(data, 'purchaseSearchOrders', [])
         this.setLoading(false)
-
         const filteredOrders = orders.filter(sale => this.statuses.indexOf(sale.statusOid) >= 0)
-
         return filteredOrders
       },
       client: 'federated'
@@ -348,7 +348,6 @@ export default {
     ...mapGetters(['memberId']),
     items () {
       const sales = _.get(this, 'sales', [])
-
       return sales.map(sale => {
         const saleDate = _.get(sale, 'checkedOutOn')
         const lineItems = _.get(sale, 'lines')
@@ -356,7 +355,6 @@ export default {
         const HexlyTotalAmount = _.get(sale, 'compStats.HexlyTotalAmount')
         const HexlyCommissionablePoints = _.get(sale, 'compStats.HexlyCommissionablePoints')
         const date = sale.checkedOutOn ? this.$moment(saleDate, 'YYYY-MM-DD').format('MM/DD/YYYY') : ''
-
         return {
           ...sale,
           date,

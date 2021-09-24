@@ -58,9 +58,7 @@
 
 <script>
 import { mapGetters, mapState } from 'vuex'
-import _ from 'lodash'
-import { ADDRESS_BY_CONTACT_ID, UPDATE_ADDRESS } from '@/graphql/Address.js'
-
+import { ADDRESS_BY_MEMBER_SEARCH, UPDATE_ADDRESS, CREATE_ADDRESS } from '@/graphql/Address.js'
 export default {
   name: 'AddressForm',
   data () {
@@ -92,19 +90,18 @@ export default {
   },
   apollo: {
     address: {
-      query: ADDRESS_BY_CONTACT_ID,
+      query: ADDRESS_BY_MEMBER_SEARCH,
       variables () {
         return {
-          input: {
-            idIn: [this.memberId],
-            tenantIn: [this.$tenantId]
+          addressContactId: {
+            contactId: this.contactId,
+            tenantId: this.$tenantId
           }
         }
       },
-      update (data) {
-        const results = _.get(data, 'membership.search.results[0].contacts[0].addresses')
-        if (results && results[0]) {
-          return Object.assign({}, results[0])
+      update ({ addressByContactOrTenant }) {
+        if (addressByContactOrTenant && addressByContactOrTenant[0]) {
+          return Object.assign({}, addressByContactOrTenant[0])
         } else {
           this.$emit('hasAddress', { type: 'address', isSet: false })
           console.error('No address info found')
@@ -112,9 +109,8 @@ export default {
         }
       },
       skip() {
-        return !this.memberId
-      },
-      client: 'federated'
+        return !this.contactId
+      }
     }
   },
   methods: {
@@ -122,32 +118,47 @@ export default {
       if (this.$refs.addressForm.validate()) {
         this.saving = true
         try {
-          await this.$apollo.mutate({
-            mutation: UPDATE_ADDRESS,
-            variables: {
-              input: {
-                id: this.address.id,
-                name: this.principal.member.name,
-                street: this.address.street,
-                city: this.address.city,
-                province: this.address.province,
-                country: this.address.country || 'US',
-                postalCode: this.address.postalCode,
-                street2: this.address.street2 || '',
-                contactId: this.contactId,
-                memberId: this.memberId
+          const input = {
+            id: this.address.id,
+            name: this.principal.member.name,
+            street: this.address.street,
+            city: this.address.city,
+            province: this.address.province,
+            country: this.address.country || 'US',
+            postalCode: this.address.postalCode,
+            street2: this.address.street2 || '',
+            contactId: this.contactId,
+            memberId: this.principal.memberId
+          }
+          if (this.address.id) {
+            console.log('updating')
+            await this.$apollo.mutate({
+              mutation: UPDATE_ADDRESS,
+              client: 'federated',
+              variables: { input },
+              update: (store, { data: { updateAddress } }) => {
+                this.saving = false
+                this.address = updateAddress
+                this.$emit('addressSnackBarEmitSuccess', 'Address successfully updated')
+                this.$emit('hasAddress', { type: 'address', isSet: true })
               }
-            },
-            update: (store, { data: { updateAddress } }) => {
-              this.saving = false
-              this.address = updateAddress
-              this.$emit('addressSnackBarEmitSuccess', 'Address successfully updated')
-              this.$emit('hasAddress', { type: 'address', isSet: true })
-            },
-            client: 'federated'
-          })
+            })
+          } else {
+            console.log('creating')
+            await this.$apollo.mutate({
+              mutation: CREATE_ADDRESS,
+              client: 'federated',
+              variables: { input },
+              update: (store, { data: { createAddress } }) => {
+                this.saving = false
+                this.address = createAddress
+                this.$emit('addressSnackBarEmitSuccess', 'Address successfully created')
+                this.$emit('hasAddress', { type: 'address', isSet: true })
+              }
+            })
+          }
         } catch (err) {
-          console.error(err)
+          console.error({ err })
           this.saving = false
           this.$emit(
             'addressSnackBarEmitError',
@@ -167,7 +178,7 @@ export default {
     ...mapState({
       principal: state => state.user.principal
     }),
-    ...mapGetters(['contactId', 'memberId'])
+    ...mapGetters(['contactId'])
   }
 }
 </script>

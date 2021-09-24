@@ -17,7 +17,7 @@
           <v-slide-x-transition>
             <v-card v-if="mostRecentOrder" color="secondary" @click="handleRecentOrderClick">
               <v-card-title class="white--text" primary-title>
-                {{$moment(mostRecentOrder.recentOrder, 'YYYY-MM-DD').format('ll')}} ({{mostRecentOrder.customerName || 'Guest Customer'}})
+                {{$moment(mostRecentOrder.recentOrder, 'YYYY-MM-DD').format('ll')}} ({{mostRecentOrder.customerName && /[^\s]/.test(mostRecentOrder.customerName) ? mostRecentOrder.customerName : 'Guest Customer'}})
               </v-card-title>
               <v-card-text class="white--text">
                 Most Recent Order
@@ -50,13 +50,13 @@
               <v-text-field v-model="search" append-icon="mdi-magnify" label="Search"/>
               <v-data-table :loading="loading" single-select :headers="customerHeaders" item-key="customerName" :items="customers" @click:row="onClick" :search="search">
                 <template v-slot:item.customerName="{ item }">
-                  {{item.customerName || 'Guest Customer'}}
+                  {{item.customerName && /[^\s]/.test(item.customerName) ? item.customerName : 'Guest Customer'}}
                 </template>
                 <template v-slot:item.recentOrder="{ item }">
                   {{item.recentOrder ? $moment(item.recentOrder, 'YYYY-MM-DD').format('ll') : null}}
                 </template>
                 <template v-slot:item.total="{ item }">
-                  <Currency :amount="item.total" :currency="item.currency"/>
+                  <Currency :amount="item.total / 100" :currency="item.currency"/>
                 </template>
               </v-data-table>
             </v-card-text>
@@ -69,7 +69,7 @@
       >
         <v-card>
           <v-toolbar color="secondary" class="mb-2" dark>
-            <v-toolbar-title>{{customerName || 'Guest Customer'}} {{customerEmail ? `- ${customerEmail}` : '' }}</v-toolbar-title>
+            <v-toolbar-title>{{customerName && /[^\s]/.test(customerName) ? customerName : 'Guest Customer'}} {{customerEmail ? `- ${customerEmail}` : '' }}</v-toolbar-title>
             <v-spacer/>
             <v-btn @click="showCustomerDialog = false" icon><v-icon>close</v-icon></v-btn>
           </v-toolbar>
@@ -88,7 +88,7 @@
           <v-card-text class="px-2 mt-5">
             <v-tabs-items v-model="currentTab">
               <v-tab-item key="orders">
-                <v-data-table class="order-table-row" @click:row="(item, slot) => slot.expand(!slot.isExpanded)" single-expand :expanded.sync="expanded" show-expand item-key="integrationOid" :headers="orderHeaders" no-data-text="Please Select A Customer" :items="orders">
+                <v-data-table class="order-table-row" @click:row="(item, slot) => slot.expand(!slot.isExpanded)" single-expand :expanded.sync="expanded" show-expand item-key="key" :headers="orderHeaders" no-data-text="Please Select A Customer" :items="orders">
                   <template v-slot:item.date="{ item }">
                     {{item.date ? $moment(item.date, 'YYYY-MM-DD').format('ll') : null}}
                   </template>
@@ -129,7 +129,7 @@
 
 <script>
 import Currency from '@/components/Currency.vue'
-import { groupBy, cloneDeep, get, flattenDeep, sortBy } from 'lodash'
+import { groupBy, get, flattenDeep, sortBy } from 'lodash'
 export default {
   components: {
     Currency
@@ -215,7 +215,6 @@ export default {
         return
       }
       const { customerName, email } = this.mostRecentOrder
-
       this.customerName = customerName
       this.customerEmail = email
       this.showCustomerDialog = true
@@ -232,14 +231,11 @@ export default {
       if (!this.orderData) {
         return
       }
-
       const uniqueCustomers = new Set(this.orderData.map(item => {
         const displayName = get(item, 'customer.displayName')
-
         return displayName
       }))
       let customerList = []
-
       uniqueCustomers.forEach(customer => {
         const customerOrders = this.orderData.filter((obj) => get(obj, 'customer.displayName') === customer)
         const orders = groupBy(customerOrders, 'integrationOid')
@@ -266,39 +262,36 @@ export default {
       return customerList
     },
     orders() {
-      if (!this.orderData) {
+      const { orderData, customerEmail } = this
+      if (!orderData) {
+        console.warn(`Expected orderData, but receieved ${orderData}`)
         return
       }
-      let orderList = []
 
-      this.orderData.forEach((order, i) => {
-        if (get(order, 'customer.displayName') === this.customerName) {
-          let orderCopy = cloneDeep(order)
-          orderCopy.date = order.checkedOutOn
-          orderCopy.key = order.id
-          const currentIndex = orderList.findIndex(el => el.integrationOid === order.integrationOid)
-          if (currentIndex === -1) {
-            const currency = get(order, 'currency')
-            orderList.push({ integrationOid: order.integrationOid, date: orderCopy.date, lineItems: get(orderCopy, 'lines'), currency })
-          } else {
-            orderList[currentIndex].lineItems.push(orderCopy)
-          }
+      const filteredOrders = orderData.filter(el => {
+        const elEmail = get(el, 'customer.email')
+
+        return elEmail === customerEmail
+      })
+      const mappedOrders = filteredOrders.map(el => {
+        return {
+          date: el.checkedOutOn,
+          key: el.id,
+          integrationOid: el.integrationOid,
+          lineItems: el.lines
         }
       })
-      return orderList
+      return mappedOrders
     },
     customerItems() {
       if (!this.orders) {
         return
       }
-
       let orderItems = []
-
       this.orders.forEach(order => {
         const { lineItems, currency, date } = order
         lineItems.forEach(li => {
           const currentIndex = orderItems.findIndex(el => el.productName === li.name)
-
           if (currentIndex === -1) {
             orderItems.push({ productName: li.name, currency, lineItems: [li], count: 1, totalSpent: li.itemPrice, mostRecentOrder: date })
           } else {
@@ -309,14 +302,12 @@ export default {
           }
         })
       })
-
       return orderItems
     },
     mostRecentOrder() {
       if (!this.customers) {
         return
       }
-
       const recentOrdersMap = this.customers.map(el => {
         const { customerName, email, recentOrder } = el
         return {
@@ -325,21 +316,18 @@ export default {
           email
         }
       }).filter(el => el.recentOrder).sort((a, b) => new Date(b.recentOrder) - new Date(a.recentOrder))
-
       return recentOrdersMap[0]
     },
     mostOrderedItem() {
       if (!this.orderData) {
         return
       }
-
       const { orderData } = this
       const mappedLineItems = orderData.map(el => el.lines)
       const flattenedLineItems = flattenDeep(mappedLineItems)
       const groupedLineItems = groupBy(flattenedLineItems, 'name')
       delete groupedLineItems['Everra Influencer Registration - Influencer']
       const sortedProducts = sortBy(groupedLineItems, el => el.length)
-
       return sortedProducts.pop()[0]
     }
   }

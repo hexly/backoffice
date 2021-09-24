@@ -45,7 +45,7 @@
 import { mapGetters, mapState } from 'vuex'
 import { cloneDeep, get } from 'lodash'
 
-import { ADDRESS_BY_CONTACT_ID, UPDATE_ADDRESS, DELETE_ADDRESS, CREATE_ADDRESS } from '@/graphql/Address.js'
+import { ADDRESS_BY_MEMBER_SEARCH, UPDATE_ADDRESS, DELETE_ADDRESS, CREATE_ADDRESS } from '@/graphql/Address.js'
 import AddressCard from '@/components/profile/AddressCard.vue'
 
 export default {
@@ -62,9 +62,10 @@ export default {
   },
   methods: {
     add() {
-      const newAddress = this.model.find(a => a.new)
+      const newAddress = this.addresses.find(a => a.new)
+      const _addresses = [ ...this.addresses ]
       if (!newAddress) {
-        this.model.push({
+        _addresses.push({
           name: '',
           street: '',
           city: '',
@@ -76,6 +77,7 @@ export default {
           saving: false
         })
       }
+      this.addresses = [ ..._addresses ]
     },
     async save(address) {
       const mutation = address.new ? CREATE_ADDRESS : UPDATE_ADDRESS
@@ -170,7 +172,8 @@ export default {
   },
   apollo: {
     addresses: {
-      query: ADDRESS_BY_CONTACT_ID,
+      query: ADDRESS_BY_MEMBER_SEARCH,
+      client: 'federated',
       variables () {
         return {
           input: {
@@ -180,14 +183,13 @@ export default {
         }
       },
       update (data) {
-        const results = get(data, 'membership.search.results[0].contacts[0].addresses')
-        return results
+        const addresses = get(data, 'membership.search.results.0.contacts.0.addresses')
+        return addresses
       },
       loadingKey: 'loadingAddresses',
       skip() {
         return !this.memberId
-      },
-      client: 'federated'
+      }
     }
   },
   computed: {

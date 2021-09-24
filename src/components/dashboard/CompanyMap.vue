@@ -29,6 +29,7 @@
 
 <script>
 import Mapbox from 'mapbox-gl-vue'
+import * as _ from 'lodash'
 import { LAT_LONGS } from '@/graphql/Contacts.js'
 
 import tenantInfo from '@/tenant.js'
@@ -114,6 +115,7 @@ export default {
   apollo: {
     coordinates: {
       query: LAT_LONGS,
+      client: 'federated',
       variables() {
         return {
           input: {
@@ -122,7 +124,8 @@ export default {
           }
         }
       },
-      update({ latLongByTenant }) {
+      update(data) {
+        const latLongByTenant = _.get(data, 'membership.latLongByTenant')
         return latLongByTenant
       }
     }

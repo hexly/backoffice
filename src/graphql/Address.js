@@ -63,12 +63,11 @@ export const CREATE_ADDRESS = gql`
   }
 `
 
-export const ADDRESS_BY_CONTACT_ID = gql`
-  query addressByContactId($input: MembershipMemberSearchInput!){
+export const ADDRESS_BY_MEMBER_SEARCH = gql`
+  query addressByMemberSearch($input: MembershipMemberSearchInput!){
     membership {
-      search(input: $input) {
+      search (input: $input) {
         results {
-          id
           contacts {
             addresses {
               id
@@ -79,8 +78,8 @@ export const ADDRESS_BY_CONTACT_ID = gql`
               province
               postalCode
               country
-              priority
               type
+              priority
             }
           }
         }

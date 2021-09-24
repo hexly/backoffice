@@ -283,15 +283,13 @@
 <script>
 import moment from 'moment'
 import { Actions, Mutations } from '@/store'
-import { UserMutations, UserActions } from '@/stores/UserStore'
+import { UserMutations, prepPrincipal } from '@/stores/UserStore'
 import { CompActions } from '@/stores/CompStore'
 import { Actions as MemberActions } from '@/Members/Store'
-import { GET_MEMBER_DETAILS, GET_MEMBER_TENANT_INTEGRATIONS_FED } from '@/graphql/Member.gql'
 import { mapState, mapActions, mapMutations, mapGetters } from 'vuex'
-import { get } from 'lodash'
-
+import { PRINCIPAL } from '@/graphql/iam.gql'
+import { get, isEmpty } from 'lodash'
 const impersonationPrefix = 'Impersonating '
-
 export default {
   data () {
     return {
@@ -312,7 +310,7 @@ export default {
       showGate: state => state.showGate,
       integrations: state => state.integrations
     }),
-    ...mapGetters(['slug', 'memberId']),
+    ...mapGetters(['slug']),
     usersStoreUrl () {
       return this.slug ? this.$tenantInfo.storeUrl.replace('{slug}', this.slug) : this.$tenantInfo.corporateUrl
     },
@@ -320,7 +318,7 @@ export default {
       return this.hasAdmin || this.hasZendeskAdmin
     },
     hasAdmin () {
-      const perms = get(this, 'user.principal.permissions', [])
+      const perms = get(this, 'user.principal.permissions', []) || []
       return perms.findIndex(e => e === 10 || e === '10') >= 0
     },
     hasZendeskAdmin () {
@@ -332,12 +330,12 @@ export default {
     },
     getAvatar () {
       let image = this.$tenantInfo.placeholder
-      if (this.user.principal.member.profileUrl && this.user.principal.member.profileUrl.indexOf('cloudinary')) {
+      if (!isEmpty(this.user.principal.member.profileUrl) && this.user.principal.member.profileUrl.indexOf('cloudinary') >= 0) {
         image = this.user.principal.member.profileUrl.replace(
           '/image/upload',
           '/image/upload/w_190,h_190'
         )
-      } else if (this.user.principal.member.profileUrl) {
+      } else if (!isEmpty(this.user.principal.member.profileUrl)) {
         return this.user.principal.member.profileUrl
       }
       return image
@@ -348,85 +346,58 @@ export default {
       this.logoutUser()
       window.location.reload(true)
     },
-    ...mapMutations([Mutations.SET_GATE, UserMutations.SET_PRINCIPAL]),
+    ...mapMutations([Mutations.SET_GATE, UserMutations.SET_MEMBER, UserMutations.SET_TENANT]),
     ...mapActions({
       logoutUser: Actions.LOGOUT,
       getAttributes: MemberActions.GET_ATTRIBUTES,
-      compGetPeriods: CompActions.GET_PERIODS,
-      getMemberDetails: UserActions.GET_MEMBER_DETAILS
+      compGetPeriods: CompActions.GET_PERIODS
     })
   },
   async mounted () {
-    const { memberId, $tenantId: tenantId } = this
-    await this.compGetPeriods({ memberId, tenantId })
+    await this.compGetPeriods({
+      input: {
+        memberId: this.user.principal.memberId,
+        dateTo: moment().format('YYYY-MM-DD'),
+        tenantId: this.$tenantId
+      }
+    })
     if (this.$tenantInfo.features.legal === true) {
-      const { data } = await this.getAttributes({
-        key: ['affiliate-agreement', 'entity-details'],
-        accessMode: 'ALL',
-        memberId: this.user.principal.memberId
+      const res = await this.getAttributes({
+        idIn: [this.user.principal.memberId],
+        tenantIn: [this.$tenantId]
       })
-      if (data.getMemberAttributes.length < 2) {
+      const getMemberAttributes = get(res, 'data.membership.search.results.0.attributes', [])
+      if (getMemberAttributes.length < 2) {
         this.setGate(true)
       }
     }
   },
   apollo: {
-    memberDetails: {
-      query: GET_MEMBER_DETAILS,
-      variables() {
-        return {
-          input: {
-            tenantIn: [this.$tenantId],
-            idIn: [this.memberId]
+    principal: {
+      query: PRINCIPAL,
+      fetchPolicy: 'network-only',
+      client: 'federated',
+      update (data) {
+        const principal = get(data, 'iam.principal')
+        if (principal) {
+          const { member, tenant } = prepPrincipal(principal)
+          this.setMember(member)
+          this.setTenant(tenant)
+          const integrations = get(principal, 'tenant.integrations', [])
+          const statusId = get(principal, 'member.statusId')
+          const tags = get(principal, 'member.tags')
+          // Status Id 1 = Active Member
+          if (!this.user.isImpersonating && (statusId !== 1 || tags.indexOf('backoffice:locked') >= 0)) {
+            this.logoutUser()
+            window.location.reload(true)
           }
-        }
-      },
-      skip() {
-        return !this.memberId
-      },
-      async update(data) {
-        const { memberId, $tenantId: tenantId } = this
-        let tenantIntegrationRes
-        try {
-          tenantIntegrationRes = await this.$apollo.query({
-            query: GET_MEMBER_TENANT_INTEGRATIONS_FED,
-            variables: {
-              input: {
-                memberId
-              }
-            },
-            client: 'federated'
+          this.activeIntegrations = integrations.filter(i => {
+            return this.integrations.indexOf(i.key) > -1 && i.statusId === 200
           })
-        } catch (error) {
-          console.warn(error, { memberId, tenantId })
+        } else {
+          console.warn('No principal data received!')
         }
-        const principal = get(this, 'user.principal')
-        const tags = get(data, 'membership.search.results[0].tags')
-        const parsedTags = tags.map(tag => tag.name)
-        const statusId = get(data, 'membership.search.results[0].statusId')
-        const slug = get(data, 'membership.search.results[0].slug')
-        const integrations = get(data, 'membership.search.results[0].integrations')
-        const customer = get(data, 'membership.search.results[0].customer', [])
-        const profileUrl = get(data, 'membership.search.results[0].avatar.assetUrl', [])
-        const contacts = get(data, 'membership.search.results[0].contacts', [])
-        const tenantIntegrations = get(tenantIntegrationRes, 'membership.getMemberTenantIntegrations', [])
-        if (!this.user.isImpersonating && (statusId !== 1 || tags.indexOf('backoffice:locked') >= 0)) {
-          this.logoutUser()
-          window.location.reload(true)
-        }
-
-        const memberDetails = { tags: parsedTags, customer, profileUrl, tenantIntegrations, contacts, statusId, slug, integrations }
-        principal.member = { ...principal.member, ...memberDetails, customer }
-        principal.tenant = {
-          ...principal.tenant,
-          integrations: tenantIntegrations,
-          id: tenantId
-        }
-        this.setPrincipal(principal)
-
-        return null
-      },
-      client: 'federated'
+      }
     }
   }
 }
@@ -439,44 +410,37 @@ export default {
   border-radius: 100px;
   margin-left: 12px;
 }
-
 @media only screen and (max-width: 959px) {
   .avatar {
     width: 40px;
     margin-left: 0;
   }
 }
-
 .main {
   background-color: #e5e5e5;
   min-height: 100vh;
 }
-
 .logo {
   width: 100%;
   max-width: 100px;
   margin: 15px auto;
   display: block;
 }
-
 .footer-wrapper {
   flex-grow: 2;
   position: relative;
   min-height: 112px;
 }
-
 .footer {
   position: absolute;
   bottom: 0;
   width: 100%;
   color: rgba(0, 0, 0, 0.54);
 }
-
 .footer img {
   width: 25px;
   height: 25px;
 }
-
 .title {
   text-transform: capitalize;
 }

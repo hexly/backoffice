@@ -4,8 +4,8 @@ import {
   GET_MEMBER_TENANT_INTEGRATIONS
 } from '@/graphql/Integrations'
 import AUTH_GQL from '@/graphql/login/auth.gql'
-import { ADJUST_TAGS, UPDATE_PROFILE, GET_MEMBER_DETAILS, GET_MEMBER_TENANT_INTEGRATIONS_FED } from '@/graphql/Member.gql'
-import { GET_TENANT_DETAILS } from '@/graphql/Integrations.js'
+// import { ADJUST_TAGS, UPDATE_PROFILE, GET_MEMBER_DETAILS, GET_MEMBER_TENANT_INTEGRATIONS_FED } from '@/graphql/Member.gql'
+import { ADJUST_TAGS, UPDATE_PROFILE } from '@/graphql/Member.gql'
 import _ from 'lodash'
 
 export const UserActions = {
@@ -25,6 +25,8 @@ export const UserMutations = {
   AUTH_STATUS: 'authStatus',
   LOGIN_ERROR: 'setLoginError',
   SET_PRINCIPAL: 'setPrincipal',
+  SET_MEMBER: 'setMember',
+  SET_TENANT: 'setTenant',
   TOGGLE_IMPERSONATION: 'toggleImpersonation',
   SET_PROFILE: 'setProfilePic',
   ADD_INTEGRATION: 'addTenantIntegration',
@@ -58,6 +60,37 @@ const defaultState = () => {
   }
 }
 
+export const prepPrincipal = (principal) => {
+  const baseUrl = process.env.VUE_APP_API_ENDPOINT
+  const m = _.get(principal, 'member')
+  const tenantId = _.get(principal, 'tenantId')
+  const tags = _.get(m, 'tags', []).map(tag => tag.name)
+  const integrations = _.get(m, 'integrations')
+  const profileUrl = _.get(m, 'avatar.assetUrl', [])
+  const tenantIntegrations = _.get(principal, 'tenant.integrations', [])
+  const mappedTenantIntegrations = tenantIntegrations.map(i => {
+    return {
+      ...i,
+      key: i.integration.key,
+      name: i.integration.name,
+      integrationMetadata: i.integration.metadata
+    }
+  })
+
+  const member = { ...m, tags, profileUrl, baseUrl, integrations }
+  const tenant = {
+    ...principal.tenant,
+    integrations: mappedTenantIntegrations,
+    baseUrl,
+    id: tenantId
+  }
+
+  return {
+    member,
+    tenant
+  }
+}
+
 export const UserStore = {
   state: defaultState(),
   mutations: {
@@ -82,6 +115,19 @@ export const UserStore = {
         ...principal
       }
     },
+    [UserMutations.SET_MEMBER]: (state, member) => {
+      state.principal.member = {
+        ...state.principal.member,
+        ...member
+      }
+      state.principal.memberId = _.get(member, 'id')
+    },
+    [UserMutations.SET_TENANT]: (state, tenant) => {
+      state.principal.tenant = {
+        ...state.principal.tenant,
+        ...tenant
+      }
+    },
     [UserMutations.TOGGLE_IMPERSONATION]: state => {
       state.isImpersonating = !state.isImpersonating
     },
@@ -90,8 +136,8 @@ export const UserStore = {
     },
     [UserMutations.ADD_INTEGRATION]: (state, integration) => {
       const principal = _.cloneDeep(state.principal)
-      const arr = _.get(principal, 'member.tenantIntegrations', [])
-      principal.member.tenantIntegrations = [...arr, integration]
+      const arr = _.get(principal, 'member.integrations', [])
+      principal.member.integrations = [...arr, integration]
       state.principal = principal
     },
     [UserMutations.SET_INTEGRATIONS]: (state, integrations) => {
@@ -100,10 +146,10 @@ export const UserStore = {
       state.principal = principal
     },
     [UserMutations.REMOVE_INTEGRATION]: (state, integration) => {
-      const index = state.principal.member.tenantIntegrations.findIndex(
+      const index = state.principal.member.integrations.findIndex(
         i => integration.id === i.id
       )
-      state.principal.member.tenantIntegrations.splice(index, 1)
+      state.principal.member.integrations.splice(index, 1)
     },
     [UserMutations.SET_SLUG]: (state, slug) => {
       state.principal = {
@@ -148,12 +194,11 @@ export const UserStore = {
       const token = auth.authentication ? auth.authentication.token : undefined
       if (token && success) {
         const md = auth.metadata
-        const { identityId, auditId, tenantId, credentialId } = md.claims
+        const { identityId, auditId, tenantId } = md.claims
 
         const principal = {
-          identityId, auditId, tenantId, credentialId
+          identityId, auditId, tenantId
         }
-        const memberId = _.get(md, 'member.id')
 
         if (md.member && md.member.id) {
           principal.memberId = md.member && md.member.id
@@ -167,17 +212,10 @@ export const UserStore = {
 
         commit(UserMutations.SET_JWT, md.legacyJwt || token)
         commit(UserMutations.SET_FED_JWT, token)
-        const memberDetails = await dispatch(UserActions.GET_MEMBER_DETAILS, { tenantId, memberId })
-        const tenantDetails = await dispatch(UserActions.GET_TENANT_DETAILS)
-        const { customer, baseUrl } = memberDetails
-        principal.member = { ...principal.member, ...memberDetails }
-        principal.member.customer = { ...customer }
-        principal.tenant = {
-          ...principal.tenant,
-          integrations: tenantDetails.integrations,
-          baseUrl,
-          id: tenantId
-        }
+
+        const { member, tenant } = prepPrincipal(auth.principal)
+        principal.member = member
+        principal.tenant = tenant
         commit(UserMutations.SET_PRINCIPAL, principal)
       } else {
         commit(
@@ -212,57 +250,6 @@ export const UserStore = {
       commit(UserMutations.SET_TAGS, data.adjustTags.tags)
       return data.adjustTags.tags
     },
-    async [UserActions.GET_MEMBER_DETAILS]({ commit }, input) {
-      const { memberId, tenantId } = input
-      const baseUrl = process.env.VUE_APP_API_ENDPOINT
-
-      let detailsRes
-      let tenantIntegrationRes
-      try {
-        detailsRes = await apolloFederatedClient.query({
-          query: GET_MEMBER_DETAILS,
-          variables: {
-            input: {
-              tenantIn: [tenantId],
-              idIn: [memberId]
-            }
-          }
-        })
-      } catch (error) {
-        console.warn(error, { memberId, tenantId })
-      }
-      try {
-        tenantIntegrationRes = await apolloFederatedClient.query({
-          query: GET_MEMBER_TENANT_INTEGRATIONS_FED,
-          variables: {
-            input: {
-              memberId
-            }
-          }
-        })
-      } catch (error) {
-        console.warn(error, { memberId, tenantId })
-      }
-      const tags = _.get(detailsRes, 'data.membership.search.results[0].tags', [])
-      const slug = _.get(detailsRes, 'data.membership.search.results[0].slug')
-      const integrations = _.get(detailsRes, 'data.membership.search.results[0].integrations')
-      const statusId = _.get(detailsRes, 'data.membership.search.results[0].statusId', [])
-      const customer = _.get(detailsRes, 'data.membership.search.results[0].customer', [])
-      const profileUrl = _.get(detailsRes, 'data.membership.search.results[0].avatar.assetUrl', [])
-      const contacts = _.get(detailsRes, 'data.membership.search.results[0].contacts', [])
-      const tenantIntegrations = _.get(tenantIntegrationRes, 'data.membership.getMemberTenantIntegrations', [])
-      const parsedTags = tags.map(tag => tag.name)
-
-      return { tags: parsedTags, customer, profileUrl, tenantIntegrations, contacts, baseUrl, statusId, slug, integrations }
-    },
-    async [UserActions.GET_TENANT_DETAILS]({ commit }) {
-      const tenantDetails = await apolloFederatedClient.query({
-        query: GET_TENANT_DETAILS
-      })
-      const integrations = _.get(tenantDetails, 'data.iam.principal.tenant', [])
-
-      return { integrations }
-    },
     async [UserActions.RELOAD_INTEGRATIONS]({ commit }, input) {
       const { data } = await apolloHexlyClient.query({
         query: GET_MEMBER_TENANT_INTEGRATIONS,
@@ -270,7 +257,7 @@ export const UserStore = {
       })
 
       commit(UserMutations.SET_INTEGRATIONS, data.getPrincipal)
-      return data.getPrincipal.member.tenantIntegrations
+      return data.getPrincipal.member.integrations
     },
     async [UserActions.CREATE_INTEGRATION](
       { commit },
@@ -353,7 +340,7 @@ export const UserStore = {
     tenantIntegrations: state =>
       (state.principal &&
       state.principal.member &&
-      state.principal.member.tenantIntegrations) || [],
+      state.principal.member.integrations) || [],
     integrations: state =>
       (state.principal &&
       state.principal.tenant &&

@@ -49,38 +49,47 @@ export const SEARCH_MEMBER_DIRECTORY = gql`
 `
 
 export const MEMBER_AWARDS = gql`
-  query memberAwards($memberId: Int) {
-    member(id: $memberId){
-      joinedOn
-      awards {
-        name
-        metadata
+  query memberAwards($input: MembershipMemberSearchInput!){
+    membership {
+      search(input: $input) {
+        results {
+          id
+          joinedOn
+          awards {
+            name
+            metadata
+          }
+        }
       }
     }
   }
 `
 
 export const GET_MEMBERS = gql`
-  query Member($input: MemberSearchCondition!) {
-    members(condition: $input) {
-      nodes {
-        firstName
-        lastName
-        id
-        birthdate
-        tenantId
-        name
-        displayName
-        mrn
-        slug
-        contacts {
+  query Member($input: MembershipMemberSearchInput!){
+    membership {
+      search(input: $input) {
+        results {
+          firstName
+          lastName
           id
-          emails {
+          birthdate
+          tenantId
+          name
+          displayName
+          mrn
+          slug
+          contacts {
             id
-            email
+            emails {
+              id
+              email
+            }
+          }
+          avatar {
+            assetUrl
           }
         }
-        profileUrl
       }
     }
   }

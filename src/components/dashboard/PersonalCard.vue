@@ -15,7 +15,7 @@ s<template>
             <v-gravatar v-else default-img="mp" :email="user.principal.member.contacts[0].emails[0].email" class="mb-4"/>
           </v-avatar>
         </v-flex>
-        <v-flex class="text-center">
+        <v-flex class="text-left">
           <h3 class="headline" style="margin-top: -10px;"> {{ user.principal.member.name }}</h3>
           <div v-if="showMrn" class="primary--text subheading font-weight-bold">{{memberName || 'Member'}} #<b>{{user.principal.member.mrn}}</b></div>
           <div v-if="stats && stats">
@@ -51,20 +51,20 @@ s<template>
     <v-divider></v-divider>
     <div class="text-center pb-2">
       <h3>{{sponsorName || 'Your Sponsor'}}</h3>
-      <v-layout v-if="user.principal.member.sponsor" align-center>
+      <v-layout v-if="stats.sponsor" align-center>
         <v-flex>
           <div  class="mt-3">
             <v-layout row class="text-right">
               <v-flex mx-2>
                 <v-avatar>
-                  <v-img v-if="user.principal.member.sponsor.profileUrl || $tenantInfo.placeholder" :src="user.principal.member.sponsor.profileUrl || $tenantInfo.placeholder"></v-img>
+                  <v-img v-if="stats.sponsor.avatar || $tenantInfo.placeholder" :src="(stats && stats.sponsor && stats.sponsor.avatar) ? stats.sponsor.avatar.assetUrl : $tenantInfo.placeholder"></v-img>
                 </v-avatar>
               </v-flex>
               <v-flex mx-2 class="text-left">
                 <div>
-                  <b>{{user.principal.member.sponsor.displayName}} </b>
+                  <b>{{stats.sponsor.displayName}} </b>
                   <br/>
-                  <small>{{user.principal.member.sponsor.contacts[0].emails[0].email}}</small>
+                  <small>{{(stats && stats.sponsor && stats.sponsor.contacts) ? stats.sponsor.contacts[0].emails[0].email : ''}}</small>
                 </div>
               </v-flex>
             </v-layout>
@@ -139,7 +139,7 @@ export default {
       return
     }
 
-    const { theme } = hexlyPersonalizedStore.metadata.home
+    const { theme } = hexlyPersonalizedStore.metadata.home || {}
 
     this.currentTheme = theme
   },
@@ -148,7 +148,6 @@ export default {
       this.setLoading(newVal)
     }
   },
-  apollo: {},
   methods: {
     uploadDialogClosed(val) {
       this.showProfilePicDialog = val

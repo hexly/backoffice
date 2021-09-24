@@ -114,7 +114,7 @@ export default {
   computed: {
     ...mapState({
       stripeConnect: state => {
-        return state.user.principal.member.tenantIntegrations.find(i => {
+        return state.user.principal.member.integrations.find(i => {
           return i.key === 'stripe_connect' && i.priority === 0
         })
       }

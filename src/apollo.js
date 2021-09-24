@@ -9,9 +9,12 @@ import store from '@/store'
 import tenantInfo from '@/tenant.js'
 const mf = require('./build.info.json')
 
-function getAuth () {
+function getAuth (scope) {
   // get the authentication token from local storage if it exists
-  const token = store.state.user.jwt
+  let token = get(store, 'state.user.jwt')
+  if (scope === 'fed') {
+    token = get(store, 'state.user.jwtFed', token)
+  }
   // return the headers to the context so httpLink can read them
   return token ? `Bearer ${token}` : undefined
 }
@@ -87,7 +90,7 @@ export function createApolloClient ({
   base,
   endpoints,
   persisting
-}, useAuthLink) {
+}, useAuthLink, scope) {
   const httpLink = new HttpLink({ uri: base + endpoints.graphql })
   const batchLink = new BatchHttpLink({
     // You should use an absolute URL here
@@ -108,7 +111,7 @@ export function createApolloClient ({
       if (memberId) {
         context.headers['x-hexly-member-id'] = memberId
       }
-      const authToken = getAuth()
+      const authToken = getAuth(scope)
       if (authToken && authToken.trim().length > 0) {
         context.headers.Authorization = authToken
       } else {
