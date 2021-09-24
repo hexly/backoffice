@@ -196,8 +196,7 @@ export default {
       const variables = {
         input: {
           tenantId: this.$tenantInfo.id,
-          start: period.open,
-          end: period.close,
+          periodId: period.id,
           omitTagIds: [34]
         }
       }
