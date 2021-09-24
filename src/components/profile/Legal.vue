@@ -121,6 +121,7 @@
 // DO NOT TOUCH THIS FILE!
 import { mapActions, mapState } from 'vuex'
 import { encrypt } from '@/utils/EncryptionService'
+import * as _ from 'lodash'
 
 import { Actions } from '@/Members/Store'
 
@@ -158,12 +159,12 @@ export default {
       getAttributes: Actions.GET_ATTRIBUTES
     }),
     async load () {
-      const { data } = await this.getAttributes({
-        key: ['affiliate-agreement', 'entity-details'],
-        accessMode: 'ALL',
-        memberId: this.user.principal.memberId
+      const res = await this.getAttributes({
+        idIn: [this.user.principal.memberId],
+        tenantIn: [this.$tenantId]
       })
-      data.getMemberAttributes.forEach(_ => {
+      const getMemberAttributes = _.get(res, 'data.membership.search.results.0.attributes', [])
+      getMemberAttributes.forEach(_ => {
         if (_.key === 'affiliate-agreement') {
           // We only care about the existance of the property, not the value
           this.value.agreement.affiliate = _.value.metadata.hasOwnProperty('affiliate')
@@ -176,7 +177,7 @@ export default {
           this.redacted = true
         }
       })
-      if (this.$tenantInfo.features.legal === true && data.getMemberAttributes.length < 2) {
+      if (this.$tenantInfo.features.legal === true && getMemberAttributes.length < 2) {
         this.$emit('hasLegal', { type: 'legal', isSet: false })
       } else {
         this.$emit('hasLegal', { type: 'legal', isSet: true })

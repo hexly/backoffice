@@ -8,7 +8,7 @@
       <v-spacer></v-spacer>
       <PeriodSwitcher :readOnly="true"></PeriodSwitcher>
     </v-toolbar>
-    <v-list dense v-if="leaders.length > 0">
+    <v-list dense v-if="leaders && leaders.length > 0">
       <div
         v-for="(item, index) in leaders"
         :key="`${item.contactEmail}-${index}`"

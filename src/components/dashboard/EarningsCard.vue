@@ -76,11 +76,9 @@
 <script>
 // import * as _ from 'lodash'
 import { mapState, mapGetters } from 'vuex'
-
 import Currency from '@/components/Currency'
 import PeriodSwitcher from '@/components/PeriodSwitcher.vue'
 import { PAYOUTS_SUMMARY } from '@/graphql/Payouts.gql'
-
 export default {
   name: 'EarningsCard',
   components: {
@@ -103,7 +101,8 @@ export default {
           }
         }
       },
-      update({ payouts: { summary } }) {
+      update({ payouts }) {
+        const { summary } = payouts || {}
         return summary
       },
       client: 'federated',

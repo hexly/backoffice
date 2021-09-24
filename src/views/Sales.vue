@@ -86,7 +86,7 @@
         :items="items"
         hide-default-footer
         disable-pagination
-        class="elevation-1"
+        class="elevation-1 mb-10"
         item-key="id"
         :expanded="expanded"
         show-expand
@@ -98,16 +98,16 @@
           <tr>
             <td>{{ item.date }}</td>
             <td>
-              {{ item.billingFirstName }} {{ item.billingLastName }}
+              {{ item.customerName && /[^\s]/.test(item.customerName) ? item.customerName : 'Guest Customer' }}
             </td>
             <td>
               <Currency
-                :amount="parseFloat(item.total)"
+                :amount="item.HexlyTotalAmount ? parseFloat(item.HexlyTotalAmount.toFixed(2)) : 0"
                 :currency="item.currency"
               />
             </td>
-            <td>{{ item.totalPoints }}</td>
-            <td>{{statusMap[item.status] || item.status}}</td>
+            <td>{{ item.HexlyCommissionablePoints }}</td>
+            <td>{{statusMap[item.statusOid] || item.statusOid}}</td>
             <td>
               <v-icon @click="expanded = []" v-if="isExpanded">expand_less</v-icon>
               <v-icon @click="expanded = [item]" v-else>expand_more</v-icon>
@@ -124,18 +124,19 @@
                 <v-flex xs4>
                   <h4>Customer Info:</h4>
                   <ul>
-                    <li>{{item.shippingFirstName}} {{item.shippingLastName}}</li>
-                    <li>{{item.billingEmail}}</li>
-                    <li>{{item.shippingAddress1}}</li>
-                    <li>{{item.shippingCity}}, {{item.shippingState}} {{item.shippingZip}}</li>
+                    <li>{{item.customerName}}</li>
+                    <li v-if="item.customer">{{item.customer.email}}</li>
+                    <li v-if="item.shippingAddress">{{item.shippingAddress.street}}</li>
+                    <li v-if="item.shippingAddress">{{item.shippingAddress.city}}, {{item.shippingAddress.province}} {{item.shippingAddress.postalCode}}</li>
                   </ul>
                 </v-flex>
                 <v-flex xs4>
                   <h4>Details:</h4>
                   <ul>
-                    <li>Order ID: {{item.providerOid}}</li>
-                    <li>Status: {{statusMap[item.status] || item.status}}</li>
+                    <li>Order ID: {{item.id}}</li>
+                    <li>Status: {{statusMap[item.statusOid] || item.statusOid}}</li>
                     <li v-if="item.customerNote">Customer Note: {{item.customerNote}}</li>
+                    <!-- commenting out till we have a bead on what shipping stuff is gonna look like
                     <li v-if="checkShippingDate(item.metadata.WcShipmentTrackingItems)">
                       Shipped On: {{$moment(item.metadata.WcShipmentTrackingItems[0][0].dateShipped * 1000).format('ll')}}
                     </li>
@@ -144,7 +145,7 @@
                         target="_blank"
                         :href="formatTrackingLink(item.metadata.WcShipmentTrackingItems[0][0])"
                       >{{item.metadata.WcShipmentTrackingItems[0][0].trackingNumber}}</a>
-                    </li>
+                    </li> -->
                   </ul>
                 </v-flex>
               </v-layout>
@@ -159,10 +160,16 @@
                     <template v-slot:item="{ item: line }">
                       <tr>
                         <td>{{ line.name }}</td>
+                        <td>
+                          <Currency
+                            :amount="parseFloat(line.itemPrice)"
+                            :currency="item.currency"
+                          />
+                        </td>
                         <td>{{ line.quantity }}</td>
                         <td>
                           <Currency
-                            :amount="parseFloat(line.subtotal)"
+                            :amount="parseFloat(line.itemPrice * line.quantity)"
                             :currency="item.currency"
                           />
                         </td>
@@ -208,6 +215,10 @@
         </template>
       </v-data-table>
     </div>
+    <v-snackbar v-model="showSnackbar">
+      {{snackbarMsg}}
+      <v-btn text color="primary" @click.native="showSnackbar = false">Close</v-btn>
+    </v-snackbar>
   </v-flex>
 </template>
 
@@ -218,7 +229,6 @@ import DateSelector from '@/components/DateSelector.vue'
 import { SEARCH_SALES_QUERY } from '@/graphql/Sales.gql'
 import { Mutations } from '@/store'
 import { mapMutations, mapState, mapGetters } from 'vuex'
-
 const trackingProviders = {
   usps: 'https://tools.usps.com/go/TrackConfirmAction?qtc_tLabels1=',
   parcelforce: 'https://www.parcelforce.com/portal/pw/track?trackNumber=',
@@ -226,7 +236,6 @@ const trackingProviders = {
   ups: 'https://www.ups.com/track?loc=null&tracknum=',
   'canada-post': 'http://www.canadapost.ca/cpotools/apps/track/personal/findByTrackNumber?trackingNumber='
 }
-
 export default {
   components: {
     DateSelector,
@@ -256,18 +265,21 @@ export default {
         .format('MM/DD/YYYY'),
       headers: [
         { text: 'Date', value: 'date' },
-        { text: 'Customer', value: 'customer' },
+        { text: 'Customer', value: 'customerName' },
         { text: 'Sale Total', value: 'total' },
         { text: 'Total Points', value: 'points' },
-        { text: 'Status', value: 'status' },
+        { text: 'Status', value: 'statusOid' },
         { text: '', value: 'data-table-expand' }
       ],
       productHeads: [
         { text: 'Item', sortable: false },
+        { text: 'Item Price', sortable: false },
         { text: 'Qty.', sortable: false },
-        { text: 'subtotal', sortable: false }
+        { text: 'Subtotal', sortable: false }
       ],
-      sales: []
+      sales: [],
+      showSnackbar: false,
+      snackbarMsg: ''
     }
   },
   apollo: {
@@ -277,25 +289,30 @@ export default {
       },
       query: SEARCH_SALES_QUERY,
       variables () {
+        const end = this.$moment(_.get(this, 'endDate', '1970-01-01')).format('YYYY-MM-DD')
+        const start = this.$moment(_.get(this, 'startDate', '1970-01-01')).format('YYYY-MM-DD')
         return {
-          saleSearchInput: {
-            sellerId: this.mId || this.memberId,
-            tenantId: this.$tenantId,
-            query: null,
-            endDate: this.endDate,
-            startDate: this.startDate
+          input: {
+            memberIn: [this.memberId],
+            start,
+            end
           }
         }
       },
       error (err) {
         this.setLoading(false)
+        this.snackbarMsg = 'We were unable to find your orders! Please try again or contact support'
+        this.showSnackbar = true
         console.error({ err })
       },
       debounce: 500,
-      update ({ searchSalesBySellerId }) {
+      update (data) {
+        const orders = _.get(data, 'purchaseSearchOrders', [])
         this.setLoading(false)
-        return searchSalesBySellerId.filter(sale => this.statuses.indexOf(sale.status) >= 0)
-      }
+        const filteredOrders = orders.filter(sale => this.statuses.indexOf(sale.statusOid) >= 0)
+        return filteredOrders
+      },
+      client: 'federated'
     }
   },
   methods: {
@@ -330,11 +347,23 @@ export default {
     }),
     ...mapGetters(['memberId']),
     items () {
-      return (this.sales || []).map(sale => ({
-        ...sale,
-        id: sale.saleId,
-        date: this.$moment(sale.awardedDate, 'YYYY-MM-DD').format('MM/DD/YYYY')
-      }))
+      const sales = _.get(this, 'sales', [])
+      return sales.map(sale => {
+        const saleDate = _.get(sale, 'checkedOutOn')
+        const lineItems = _.get(sale, 'lines')
+        const customerName = _.get(sale, 'customer.displayName')
+        const HexlyTotalAmount = _.get(sale, 'compStats.HexlyTotalAmount')
+        const HexlyCommissionablePoints = _.get(sale, 'compStats.HexlyCommissionablePoints')
+        const date = sale.checkedOutOn ? this.$moment(saleDate, 'YYYY-MM-DD').format('MM/DD/YYYY') : ''
+        return {
+          ...sale,
+          date,
+          lineItems,
+          customerName,
+          HexlyTotalAmount,
+          HexlyCommissionablePoints
+        }
+      })
     }
   }
 }

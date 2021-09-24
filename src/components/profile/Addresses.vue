@@ -17,13 +17,13 @@
       </v-flex>
     </v-layout>
     <v-layout v-else row wrap justify-left>
-      <v-flex xs12 md4 v-for="(a,i) in addresses" :key="i">
+      <v-flex xs12 md4 v-for="(a,i) in model" :key="i">
         <AddressCard
           :address="a"
           :saving="a.saving"
           @save="save"
           @remove="remove"
-          :canDelete="addresses.length > 1"
+          :canDelete="model.length > 1"
         />
       </v-flex>
     </v-layout>
@@ -43,9 +43,9 @@
 
 <script>
 import { mapGetters, mapState } from 'vuex'
-import { cloneDeep } from 'lodash'
+import { cloneDeep, get } from 'lodash'
 
-import { ADDRESS_BY_CONTACT_ID, UPDATE_ADDRESS, DELETE_ADDRESS } from '@/graphql/Address.js'
+import { ADDRESS_BY_MEMBER_SEARCH, UPDATE_ADDRESS, DELETE_ADDRESS, CREATE_ADDRESS } from '@/graphql/Address.js'
 import AddressCard from '@/components/profile/AddressCard.vue'
 
 export default {
@@ -63,8 +63,9 @@ export default {
   methods: {
     add() {
       const newAddress = this.addresses.find(a => a.new)
+      const _addresses = [ ...this.addresses ]
       if (!newAddress) {
-        this.addresses.push({
+        _addresses.push({
           name: '',
           street: '',
           city: '',
@@ -76,9 +77,15 @@ export default {
           saving: false
         })
       }
+      this.addresses = [ ..._addresses ]
     },
     async save(address) {
-      this.addresses = this.addresses.map(a => {
+      const mutation = address.new ? CREATE_ADDRESS : UPDATE_ADDRESS
+      const _address = { ...address }
+      delete _address.saving
+      delete _address.new
+
+      this.model = this.model.map(a => {
         if (a.id === address.id) {
           return { ...address, saving: true }
         }
@@ -86,25 +93,25 @@ export default {
       })
 
       try {
-        const { data: { updateAddress } } = await this.$apollo.mutate({
-          mutation: UPDATE_ADDRESS,
+        const res = await this.$apollo.mutate({
+          mutation,
           variables: {
-            addressInput: {
-              ...address,
-              saving: undefined, // removing from query
-              new: undefined, // removing from query
+            input: {
+              ..._address,
               type: address.type.toUpperCase(),
               contactId: this.contactId,
               memberId: this.principal.memberId
             }
-          }
+          },
+          client: 'federated'
         })
+        const dataPath = address.new ? 'data.membership.createAddress' : 'data.membership.updateAddress'
+        const updateAddress = get(res, dataPath)
 
-        this.addresses = this.addresses.map(a => {
+        this.model = this.model.map(a => {
           if (a.id === updateAddress.id || (address.new && !a.id)) {
             return {
               ...updateAddress,
-              saving: false,
               new: false,
               type: a.type
             }
@@ -126,9 +133,9 @@ export default {
     },
     async remove(address) {
       if (address.new && !address.id) {
-        this.addresses = this.addresses.filter(a => !a.new)
+        this.model = this.model.filter(a => !a.new)
       } else {
-        this.addresses = this.addresses.map(a => {
+        this.model = this.model.map(a => {
           if (a.id === address.id) {
             return { ...address, saving: true }
           }
@@ -136,20 +143,19 @@ export default {
         })
 
         try {
-          const { data: { deleteAddress } } = await this.$apollo.mutate({
+          const { id: addressId } = address
+          const res = await this.$apollo.mutate({
             mutation: DELETE_ADDRESS,
             variables: {
-              addressInput: {
-                ...address,
-                saving: undefined, // removing from query
-                new: undefined, // removing from query
-                type: address.type.toUpperCase(),
-                contactId: this.contactId,
-                memberId: this.principal.memberId
+              input: {
+                addressId,
+                contactId: this.contactId
               }
-            }
+            },
+            client: 'federated'
           })
-          this.addresses = this.addresses.filter(a => a.id !== deleteAddress.id)
+          const deleteAddress = get(res, 'data.membership.deleteAddress')
+          this.model = this.model.filter(a => a.id !== deleteAddress.id)
 
           this.$emit('addressSnackBarEmitSuccess', 'Address successfully updated')
         } catch (err) {
@@ -166,21 +172,23 @@ export default {
   },
   apollo: {
     addresses: {
-      query: ADDRESS_BY_CONTACT_ID,
+      query: ADDRESS_BY_MEMBER_SEARCH,
+      client: 'federated',
       variables () {
         return {
-          addressContactId: {
-            contactId: this.contactId,
-            tenantId: this.$tenantId
+          input: {
+            idIn: [this.memberId],
+            tenantIn: [this.$tenantId]
           }
         }
       },
-      update ({ addressByContactOrTenant }) {
-        return addressByContactOrTenant
+      update (data) {
+        const addresses = get(data, 'membership.search.results.0.contacts.0.addresses')
+        return addresses
       },
       loadingKey: 'loadingAddresses',
       skip() {
-        return !this.contactId
+        return !this.memberId
       }
     }
   },
@@ -188,7 +196,7 @@ export default {
     ...mapState({
       principal: state => state.user.principal
     }),
-    ...mapGetters(['contactId'])
+    ...mapGetters(['contactId', 'memberId'])
   },
   watch: {
     addresses(newVal) {

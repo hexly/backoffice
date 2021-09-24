@@ -45,7 +45,7 @@ export const CompStore = {
     [CompMutations.STATS_LOADING]: (state, loading) => {
       state.engineStatsLoading = loading
     },
-    [CompMutations.SET_PERIODS]: (state, periods) => {
+    [CompMutations.SET_PERIODS]: (state, { periods }) => {
       state.periods = periods
     },
     [CompMutations.SET_HAS_MORE_PERIODS]: (state, hasMore) => {
@@ -60,12 +60,12 @@ export const CompStore = {
       commit(CompMutations.STATS_LOADING, true)
       if (version === 3) {
         const memberId = input.membersIn[0]
-        const { data: { engine: { rankings: { results } } } } = await apolloFederatedClient.query(getEngineStats(
-          {
-            memberId,
-            periodId
-          }
-        ))
+        const params = {
+          memberId,
+          periodId
+        }
+        const res = await apolloFederatedClient.query(getEngineStats(params))
+        const results = _.get(res, 'data.engine.rankings.results')
         const stats = formatData(results[0])
         if (!transient) {
           commit(CompMutations.SET_STATS, { ...stats, id: periodId })
@@ -103,12 +103,17 @@ export const CompStore = {
       }
     },
     [CompActions.GET_PERIODS]: async ({ dispatch, commit, state, rootState }, input) => {
-      const response = await apolloHexlyClient.query({
+      const response = await apolloFederatedClient.query({
         query: ENGINE_STATS_PERIODS_QUERY,
-        variables: { input }
+        variables: input
       })
-      const { data: { engineStatsPeriodsByMemberId } } = response
-      const filteredPeriods = engineStatsPeriodsByMemberId.slice(0, 12)
+      const engineStatsPeriodsByMemberId = _.get(response, 'data.engine.periods.results')
+      const filteredPeriods = engineStatsPeriodsByMemberId.slice(0, 12).map(p => {
+        return {
+          ...p,
+          status: p.status.toLowerCase()
+        }
+      })
       commit(CompMutations.SET_HAS_MORE_PERIODS, filteredPeriods.length < engineStatsPeriodsByMemberId.length)
       const periods = _.groupBy(filteredPeriods, 'status')
       const currentPeriod = periods.open[0]
@@ -131,7 +136,7 @@ export const CompStore = {
           commit(CompMutations.SET_PREVIOUS_STATS, previous)
         }
       }
-      commit(CompMutations.SET_PERIODS, periods)
+      commit(CompMutations.SET_PERIODS, { periods })
       return periods
     },
     [CompActions.SELECT_PERIOD]: async ({ dispatch, commit, rootState }, period) => {

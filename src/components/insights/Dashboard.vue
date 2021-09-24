@@ -1,13 +1,14 @@
 <template>
-  <div class="insights-dashboard mx-4">
-    <v-row wrap>
-      <v-col cols="12" md="6" v-if="marketCounts.length > 0">
+  <div class="insights-dashboard">
+    <v-progress-linear v-if="loading" :indeterminate="true" style="margin-top: -12px; margin-bottom: 10px;"/>
+    <v-row wrap class="mx-2">
+      <v-col cols="12" md="6">
         <v-card>
           <v-toolbar color="secondary" dark>
             <v-toolbar-title>Founding Influencer Tracker</v-toolbar-title>
           </v-toolbar>
           <v-card-text class="pa-1">
-            <v-list three-line class="pa-0 insights-list">
+            <v-list three-line class="pa-0 insights-list" v-if="marketCounts.length > 0">
               <v-list-item class="pa-1 insights-row" v-for="market in marketCounts" :key="market.key">
                 <v-list-item-content>
                   <v-list-item-title>{{market.name}} <Flag :name="market.key" /></v-list-item-title>
@@ -28,17 +29,17 @@
             <v-spacer></v-spacer>
             <PeriodSwitcher v-if="selectedPeriod"></PeriodSwitcher>
           </v-toolbar>
+          <v-alert
+            v-if="selectedPeriod.status === 'closed'"
+            class="mb-0"
+            icon="mdi-calendar-check"
+            text
+            dense
+            type="info">
+            You are currently viewing a past period
+          </v-alert>
           <v-card-text class="pa-1">
-            <v-alert
-              v-if="selectedPeriod.status === 'closed'"
-              class="inner-alert"
-              icon="mdi-calendar-check"
-              text
-              dense
-              type="info">
-              You are currently viewing a past period
-            </v-alert>
-            <v-list three-line class="pa-0 insights-list">
+            <v-list three-line class="pa-0 insights-list" v-if="betaInsights.length">
               <v-list-item v-for="insight in betaInsights" :key="insight.key" class="pa-1 insights-row">
                 <v-list-item-avatar>
                   <v-icon large color="light-blue">{{insightInfo[insight.key].icon}}</v-icon>
@@ -54,17 +55,28 @@
                 </v-list-item-action>
               </v-list-item>
             </v-list>
+            <div v-else-if="!loading" class="text-center my-3">No Data</div>
           </v-card-text>
         </v-card>
       </v-col>
-      <v-col cols="12" md="6" v-if="coupons.length">
+      <v-col cols="12" md="6">
         <v-card>
           <v-toolbar color="secondary" dark>
             <v-toolbar-title>Earned Rewards</v-toolbar-title>
+            <v-spacer></v-spacer>
+            <v-toolbar-items class="mt-10">
+              <v-select
+                v-model="rewardsFilter"
+                :items="couponStatuses"
+                label="Filter By..."
+                multiple
+                clearable
+              />
+            </v-toolbar-items>
           </v-toolbar>
           <v-card-text class="pa-1 insights-card">
-            <v-list three-line class="pa-0 insights-list">
-              <v-list-item v-for="coupon in coupons" :key="coupon.code" class="pa-1 insights-row">
+            <v-list three-line class="pa-0 insights-list" v-if="filteredCoupons.length">
+              <v-list-item v-for="coupon in filteredCoupons" :key="coupon.code" class="pa-1 insights-row">
                 <v-list-item-content>
                   <v-list-item-title>{{coupon.metadata.note}}</v-list-item-title>
                   <v-list-item-subtitle v-if="['REDEEMED', 'REVOKED'].indexOf(coupon.status) > -1">
@@ -105,11 +117,12 @@
                   </div>
                 </v-list-item-content>
                 <v-list-item-action>
-                  <v-list-item-action-text> <v-chip class="my-1" color="light-blue" small>{{couponMapping[coupon.type]}}</v-chip> </v-list-item-action-text>
-                  <v-list-item-action-text> <v-chip :color="['REDEEMED', 'REVOKED'].indexOf(coupon.status) > -1 ? 'red' : 'green'" small>{{couponMapping[coupon.status]}}</v-chip> </v-list-item-action-text>
+                  <v-list-item-action-text> <v-chip class="my-1" color="light-blue white--text" small>{{couponMapping[coupon.type]}}</v-chip> </v-list-item-action-text>
+                  <v-list-item-action-text> <v-chip :color="['REDEEMED', 'REVOKED'].indexOf(coupon.status) > -1 ? 'red white--text' : 'green white--text'" small>{{couponMapping[coupon.status]}}</v-chip> </v-list-item-action-text>
                 </v-list-item-action>
               </v-list-item>
             </v-list>
+            <div v-else-if="!loading" class="text-center my-3">No Data</div>
           </v-card-text>
         </v-card>
       </v-col>
@@ -143,6 +156,8 @@ export default {
   },
   data () {
     return {
+      loading: false,
+      rewardsFilter: ['ISSUED'],
       tooltipText: 'Click To Copy',
       couponMapping: {
         FREE_PRODUCT: 'Free Product',
@@ -154,6 +169,10 @@ export default {
         PARTIALLY_REDEEMED: 'Partially Redeemed',
         REVOKED: 'Revoked'
       },
+      couponStatuses: [
+        { value: 'ISSUED', text: 'Available' },
+        { value: 'REDEEMED', text: 'Redeemed' }
+      ],
       collection: {},
       // Temporary approach to coupons
       coupons: [],
@@ -187,7 +206,18 @@ export default {
     ...mapGetters(['member', 'memberId']),
     ...mapState({
       selectedPeriod: state => state.comp.selectedPeriod
-    })
+    }),
+    filteredCoupons() {
+      const { coupons, rewardsFilter } = this
+      if (!coupons || _.isEmpty(coupons) || _.isEmpty(rewardsFilter)) {
+        return coupons
+      }
+
+      const filteredCoupons = coupons.filter(el => rewardsFilter.indexOf(el.status) > -1)
+      const sortedByDateCoupons = [...filteredCoupons].sort((a, b) => a.awardedDate > b.awardedDate)
+
+      return sortedByDateCoupons
+    }
   },
   methods: {
     // Just testing something here... should be global if we like it
@@ -225,7 +255,10 @@ export default {
         return insightCollection
       },
       client: 'federated',
-      loadingKey: 'loadingInsightsCollection'
+      loadingKey: 'loadingInsightsCollection',
+      watchLoading(isLoading) {
+        this.loading = isLoading
+      }
     },
     betaInsights: {
       query: INSIGHTS,
@@ -245,7 +278,10 @@ export default {
         return !this.selectedPeriod.id
       },
       client: 'federated',
-      loadingKey: 'loadingInsights'
+      loadingKey: 'loadingInsights',
+      watchLoading(isLoading) {
+        this.loading = isLoading
+      }
     },
     coupons: {
       query: COUPONS,
@@ -256,11 +292,15 @@ export default {
           }
         }
       },
-      update({ marketing: { couponSearch } }) {
+      update(data) {
+        const couponSearch = _.get(data, 'marketing.couponSearch', [])
         return couponSearch
       },
       client: 'federated',
-      loadingKey: 'loadingCoupons'
+      loadingKey: 'loadingCoupons',
+      watchLoading(isLoading) {
+        this.loading = isLoading
+      }
     },
     marketCounts: {
       query: MARKET_COUNT,
@@ -271,7 +311,10 @@ export default {
       update({ membership: { marketThresholdCount } }) {
         return marketThresholdCount
       },
-      client: 'federated'
+      client: 'federated',
+      watchLoading(isLoading) {
+        this.loading = isLoading
+      }
     }
   },
   mounted () {}
@@ -291,5 +334,9 @@ export default {
 }
 .insights-list {
   margin: -4px;
+}
+.loading-bar-col {
+  position: absolute;
+  top: -3px;
 }
 </style>

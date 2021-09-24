@@ -120,9 +120,10 @@ import { mapMutations, mapGetters, mapState, mapActions } from 'vuex'
 import { getAsset } from '@/utils/AssetService'
 import { CONTACT_UPSERT, CONTACT_EMAIL_UPSERT } from '@/graphql/Contacts.js'
 import { USERNAME_UPSERT } from '@/graphql/iam.gql.js'
+import * as _ from 'lodash'
 
 const ERROR_COLOR = 'red'
-const SUCCESS_COLOR = 'primary'
+const SUCCESS_COLOR = 'success'
 
 export default {
   components: {
@@ -220,35 +221,38 @@ export default {
     },
     async getMembers() {
       this.setLoading(true)
-      const membersResult = await this.$apollo.query({
-        fetchPolicy: 'network-only',
-        query: GET_MEMBERS,
-        variables: {
-          input: {
-            ids: [this.memberId]
+      let membersResult
+      try {
+        membersResult = await this.$apollo.query({
+          fetchPolicy: 'network-only',
+          query: GET_MEMBERS,
+          client: 'federated',
+          variables: {
+            input: {
+              idIn: [this.memberId],
+              tenantIn: [this.$tenantId]
+            }
           }
-        }
-      })
-      this.setLoading(false)
-      // If graphql query succeeds
-      if (membersResult) {
-        const { members } = membersResult.data
-        const editMember = members.nodes[0]
+        })
+        const editMember = _.get(membersResult, 'data.membership.search.results.0')
         this.editMember = {
           ...editMember,
           contactEmail: { ...editMember.contacts[0].emails[0] },
-          username: this.principal.username
+          username: this.principal.username,
+          profileUrl: editMember.avatar.assetUrl
         }
         if (this.editMember.birthdate) {
           this.editMember.birthdate = this.$moment(this.editMember.birthdate, 'YYYY-MM-DD').format('MM/DD/YYYY')
         } else {
           this.checkAlert({ type: 'birthday', isSet: false })
         }
-      } else {
+      } catch (error) {
+        console.error(error)
         this.snackbarMsg = ['Could not retrieve profile data']
         this.snackBarColor = ERROR_COLOR
         this.snackbar = true
       }
+      this.setLoading(false)
     },
     async saveData () {
       const formIsValid = this.$refs.personal.$refs.informationForm.validate()

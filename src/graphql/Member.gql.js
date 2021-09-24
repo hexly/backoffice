@@ -49,38 +49,47 @@ export const SEARCH_MEMBER_DIRECTORY = gql`
 `
 
 export const MEMBER_AWARDS = gql`
-  query memberAwards($memberId: Int) {
-    member(id: $memberId){
-      joinedOn
-      awards {
-        name
-        metadata
+  query memberAwards($input: MembershipMemberSearchInput!){
+    membership {
+      search(input: $input) {
+        results {
+          id
+          joinedOn
+          awards {
+            name
+            metadata
+          }
+        }
       }
     }
   }
 `
 
 export const GET_MEMBERS = gql`
-  query Member($input: MemberSearchCondition!) {
-    members(condition: $input) {
-      nodes {
-        firstName
-        lastName
-        id
-        birthdate
-        tenantId
-        name
-        displayName
-        mrn
-        slug
-        contacts {
+  query Member($input: MembershipMemberSearchInput!){
+    membership {
+      search(input: $input) {
+        results {
+          firstName
+          lastName
           id
-          emails {
+          birthdate
+          tenantId
+          name
+          displayName
+          mrn
+          slug
+          contacts {
             id
-            email
+            emails {
+              id
+              email
+            }
+          }
+          avatar {
+            assetUrl
           }
         }
-        profileUrl
       }
     }
   }
@@ -114,4 +123,82 @@ mutation welcomeEmail($input: WelcomeEmailInput) {
     }
   }
 }
+`
+
+export const GET_MEMBER_DETAILS = gql`
+  query getMemberDetails($input: MembershipMemberSearchInput!){
+    membership {
+      search(input: $input) {
+        results {
+          id
+          statusId
+          avatar {
+            assetUrl
+          }
+          tags {
+            name
+            id
+          }
+          customer {
+            id
+            subscriptions {
+              id
+              status
+              metadata
+            }
+          }
+          slug
+          integrations {
+            id
+            metadata
+            key
+            name
+            priority
+          }
+          contacts {
+            emails {
+              id
+              email
+              priority
+            }
+            phones {
+              id
+              type
+              number
+              type
+              priority
+            }
+            addresses {
+              id
+              name
+              street
+              street2
+              city
+              province
+              postalCode
+              country
+              lat
+              long
+              priority
+            }
+          }
+        }
+      }
+    }
+  }
+`
+
+export const GET_MEMBER_TENANT_INTEGRATIONS_FED = gql`
+  query getMemberTenantIntegrations($input: GetMemberTenantIntegrationsInput!) {
+    membership {
+      getMemberTenantIntegrations(input: $input) {
+        id
+        metadata
+        key
+        name
+        priority
+        statusId
+      }
+    }
+  }
 `

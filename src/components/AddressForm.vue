@@ -58,8 +58,7 @@
 
 <script>
 import { mapGetters, mapState } from 'vuex'
-import { ADDRESS_BY_CONTACT_ID, UPDATE_ADDRESS } from '@/graphql/Address.js'
-
+import { ADDRESS_BY_MEMBER_SEARCH, UPDATE_ADDRESS, CREATE_ADDRESS } from '@/graphql/Address.js'
 export default {
   name: 'AddressForm',
   data () {
@@ -91,7 +90,7 @@ export default {
   },
   apollo: {
     address: {
-      query: ADDRESS_BY_CONTACT_ID,
+      query: ADDRESS_BY_MEMBER_SEARCH,
       variables () {
         return {
           addressContactId: {
@@ -119,29 +118,45 @@ export default {
       if (this.$refs.addressForm.validate()) {
         this.saving = true
         try {
-          await this.$apollo.mutate({
-            mutation: UPDATE_ADDRESS,
-            variables: {
-              addressInput: {
-                id: this.address.id,
-                name: this.principal.member.name,
-                street: this.address.street,
-                city: this.address.city,
-                province: this.address.province,
-                country: this.address.country || 'US',
-                postalCode: this.address.postalCode,
-                street2: this.address.street2 || '',
-                contactId: this.contactId,
-                memberId: this.principal.memberId
+          const input = {
+            id: this.address.id,
+            name: this.principal.member.name,
+            street: this.address.street,
+            city: this.address.city,
+            province: this.address.province,
+            country: this.address.country || 'US',
+            postalCode: this.address.postalCode,
+            street2: this.address.street2 || '',
+            contactId: this.contactId,
+            memberId: this.principal.memberId
+          }
+          if (this.address.id) {
+            console.log('updating')
+            await this.$apollo.mutate({
+              mutation: UPDATE_ADDRESS,
+              client: 'federated',
+              variables: { input },
+              update: (store, { data: { updateAddress } }) => {
+                this.saving = false
+                this.address = updateAddress
+                this.$emit('addressSnackBarEmitSuccess', 'Address successfully updated')
+                this.$emit('hasAddress', { type: 'address', isSet: true })
               }
-            },
-            update: (store, { data: { updateAddress } }) => {
-              this.saving = false
-              this.address = updateAddress
-              this.$emit('addressSnackBarEmitSuccess', 'Address successfully updated')
-              this.$emit('hasAddress', { type: 'address', isSet: true })
-            }
-          })
+            })
+          } else {
+            console.log('creating')
+            await this.$apollo.mutate({
+              mutation: CREATE_ADDRESS,
+              client: 'federated',
+              variables: { input },
+              update: (store, { data: { createAddress } }) => {
+                this.saving = false
+                this.address = createAddress
+                this.$emit('addressSnackBarEmitSuccess', 'Address successfully created')
+                this.$emit('hasAddress', { type: 'address', isSet: true })
+              }
+            })
+          }
         } catch (err) {
           console.error({ err })
           this.saving = false

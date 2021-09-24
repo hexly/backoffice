@@ -115,7 +115,7 @@ export default {
     ...mapState({
       loading: state => state.loading,
       iPayouts: state => {
-        return state.user.principal.member.tenantIntegrations.find(i => {
+        return state.user.principal.member.integrations.find(i => {
           return i.key === 'i_payouts' && i.priority === 0
         })
       }

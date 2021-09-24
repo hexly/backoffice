@@ -1,18 +1,8 @@
 <template>
   <div class="main">
-    <v-navigation-drawer
-      fixed
-      v-model="drawer"
-      app
-    >
-      <div
-        v-if="$tenantInfo.logoPath"
-        class="text-center"
-      >
-        <img
-          :src="$tenantInfo.logoPath"
-          class="logo"
-        />
+    <v-navigation-drawer fixed v-model="drawer" app>
+      <div v-if="$tenantInfo.logoPath" class="text-center">
+        <img :src="$tenantInfo.logoPath" class="logo"/>
       </div>
       <v-divider></v-divider>
       <v-list dense>
@@ -24,7 +14,7 @@
             <v-list-item-title>Dashboard</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
-         <v-list-item v-if="$tenantInfo.features.insights" to="/insights">
+        <v-list-item v-if="$tenantInfo.features.insights" to="/insights">
           <v-list-item-action>
             <v-icon>insights</v-icon>
           </v-list-item-action>
@@ -283,15 +273,13 @@
 <script>
 import moment from 'moment'
 import { Actions, Mutations } from '@/store'
-import { UserMutations } from '@/stores/UserStore'
+import { UserMutations, prepPrincipal } from '@/stores/UserStore'
 import { CompActions } from '@/stores/CompStore'
 import { Actions as MemberActions } from '@/Members/Store'
 import { mapState, mapActions, mapMutations, mapGetters } from 'vuex'
-import { GET_PRINCIPAL } from '@/graphql/iam.gql'
-import { get } from 'lodash'
-
+import { PRINCIPAL } from '@/graphql/iam.gql'
+import { get, isEmpty } from 'lodash'
 const impersonationPrefix = 'Impersonating '
-
 export default {
   data () {
     return {
@@ -320,7 +308,7 @@ export default {
       return this.hasAdmin || this.hasZendeskAdmin
     },
     hasAdmin () {
-      const perms = get(this, 'user.principal.permissions', [])
+      const perms = get(this, 'user.principal.permissions', []) || []
       return perms.findIndex(e => e === 10 || e === '10') >= 0
     },
     hasZendeskAdmin () {
@@ -332,12 +320,12 @@ export default {
     },
     getAvatar () {
       let image = this.$tenantInfo.placeholder
-      if (this.user.principal.member.profileUrl && this.user.principal.member.profileUrl.indexOf('cloudinary')) {
+      if (!isEmpty(this.user.principal.member.profileUrl) && this.user.principal.member.profileUrl.indexOf('cloudinary') >= 0) {
         image = this.user.principal.member.profileUrl.replace(
           '/image/upload',
           '/image/upload/w_190,h_190'
         )
-      } else if (this.user.principal.member.profileUrl) {
+      } else if (!isEmpty(this.user.principal.member.profileUrl)) {
         return this.user.principal.member.profileUrl
       }
       return image
@@ -348,36 +336,59 @@ export default {
       this.logoutUser()
       window.location.reload(true)
     },
-    ...mapMutations([Mutations.SET_GATE, UserMutations.SET_PRINCIPAL]),
+    ...mapMutations([Mutations.SET_GATE, UserMutations.SET_MEMBER, UserMutations.SET_TENANT]),
     ...mapActions({
       logoutUser: Actions.LOGOUT,
       getAttributes: MemberActions.GET_ATTRIBUTES,
       compGetPeriods: CompActions.GET_PERIODS
-    })
+    }),
+    checkJWT() {
+      try {
+        const dehydratedState = localStorage.getItem('store')
+        const hydratedState = JSON.parse(dehydratedState)
+        if (!hydratedState.jwtFed) {
+          this.logout()
+          return
+        }
+      } catch (e) {
+        console.warn(e)
+      }
+    }
   },
   async mounted () {
-    await this.compGetPeriods()
+    this.checkJWT()
+    await this.compGetPeriods({
+      input: {
+        memberId: this.user.principal.memberId,
+        dateTo: moment().format('YYYY-MM-DD'),
+        tenantId: this.$tenantId
+      }
+    })
     if (this.$tenantInfo.features.legal === true) {
-      const { data } = await this.getAttributes({
-        key: ['affiliate-agreement', 'entity-details'],
-        accessMode: 'ALL',
-        memberId: this.user.principal.memberId
+      const res = await this.getAttributes({
+        idIn: [this.user.principal.memberId],
+        tenantIn: [this.$tenantId]
       })
-      if (data.getMemberAttributes.length < 2) {
+      const getMemberAttributes = get(res, 'data.membership.search.results.0.attributes', [])
+      if (getMemberAttributes.length < 2) {
         this.setGate(true)
       }
     }
   },
   apollo: {
     principal: {
-      query: GET_PRINCIPAL,
+      query: PRINCIPAL,
       fetchPolicy: 'network-only',
-      update ({ getPrincipal }) {
-        if (getPrincipal) {
-          this.setPrincipal(getPrincipal)
-          const integrations = get(getPrincipal, 'tenant.integrations')
-          const statusId = get(getPrincipal, 'member.statusId')
-          const tags = get(getPrincipal, 'member.tags')
+      client: 'federated',
+      update (data) {
+        const principal = get(data, 'iam.principal')
+        if (principal) {
+          const { member, tenant } = prepPrincipal(principal)
+          this.setMember(member)
+          this.setTenant(tenant)
+          const integrations = get(principal, 'tenant.integrations', [])
+          const statusId = get(principal, 'member.statusId')
+          const tags = get(principal, 'member.tags')
           // Status Id 1 = Active Member
           if (!this.user.isImpersonating && (statusId !== 1 || tags.indexOf('backoffice:locked') >= 0)) {
             this.logoutUser()
@@ -386,6 +397,8 @@ export default {
           this.activeIntegrations = integrations.filter(i => {
             return this.integrations.indexOf(i.key) > -1 && i.statusId === 200
           })
+        } else {
+          console.warn('No principal data received!')
         }
       }
     }
@@ -400,44 +413,37 @@ export default {
   border-radius: 100px;
   margin-left: 12px;
 }
-
 @media only screen and (max-width: 959px) {
   .avatar {
     width: 40px;
     margin-left: 0;
   }
 }
-
 .main {
   background-color: #e5e5e5;
   min-height: 100vh;
 }
-
 .logo {
   width: 100%;
   max-width: 100px;
   margin: 15px auto;
   display: block;
 }
-
 .footer-wrapper {
   flex-grow: 2;
   position: relative;
   min-height: 112px;
 }
-
 .footer {
   position: absolute;
   bottom: 0;
   width: 100%;
   color: rgba(0, 0, 0, 0.54);
 }
-
 .footer img {
   width: 25px;
   height: 25px;
 }
-
 .title {
   text-transform: capitalize;
 }

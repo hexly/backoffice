@@ -91,7 +91,7 @@ export default {
   computed: {
     ...mapState({
       member: state => state.user.principal.member,
-      integrations: state => state.user.principal.member.tenantIntegrations,
+      integrations: state => state.user.principal.member.integrations,
       tenant: state => state.user.principal.tenant
     })
   }

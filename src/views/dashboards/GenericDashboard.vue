@@ -251,7 +251,9 @@ export default {
         { text: 'Payout', value: 'payout', sortable: false }
       ]
     }
-    await this.compGetPeriods()
+
+    const { memberId, $tenantId: tenantId } = this
+    await this.compGetPeriods({ memberId, tenantId })
   },
   methods: {
     formatEarning(earning) {

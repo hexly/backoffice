@@ -1,48 +1,38 @@
 import gql from 'graphql-tag'
 
 export const SEARCH_SALES_QUERY = gql`
-  query searchSalesBySellerId($saleSearchInput: SaleSearchInput!) {
-    searchSalesBySellerId(input: $saleSearchInput) {
-      saleId
-      providerId
-      providerOid
-      totalPoints
-      totalAmount
-      commissionableAmount
-      commissionablePoints
-      firstName
-      displayName
-      awardedDate
-      sellerEmail
-      customer
-      orderId
+  query ordersQuery($input: PurchaseSearchOrderInput!){
+    purchaseSearchOrders(input: $input) {
+      id
+      compStats
       total
-      discountTotal
-      taxTotal
-      shippingTotal
+      statusOid
+      orderType
+      checkedOutOn
+      integrationOid
+      customer {
+        displayName
+        email
+      }
       currency
-      status
-      customerNote
-      shippingTotal
-      lineItems
-      shippingCity
-      shippingState
-      shippingCountry
-      shippingZip
-      shippingAddress1
-      shippingAddress2
-      shippingFirstName
-      shippingLastName
-      billingCity
-      billingState
-      billingCountry
-      billingZip
-      billingAddress1
-      billingAddress2
-      billingFirstName
-      billingLastName
-      billingEmail
-      metadata
+      lines {
+        name
+        id
+        integrationOid
+        itemPrice
+        quantity
+      }
+      shippingAddress {
+        id
+        street
+        street2
+        city
+        province
+        country
+        postalCode
+        priority
+        type
+      }
     }
   }
 `
@@ -75,43 +65,54 @@ export const SALES_STATS = gql`
 `
 
 export const SEARCH_SALES_SELLER_ID = gql`
-  query searchSalesBySellerId($saleSearchInput: SaleSearchInput!) {
-    searchSalesBySellerId(input: $saleSearchInput) {
-      saleId
-      providerId
-      providerOid
-      totalPoints
-      totalAmount
-      commissionableAmount
-      commissionablePoints
-      firstName
-      displayName
-      awardedDate
-      sellerEmail
-      customer
-      orderId
+  query searchSalesBySellerId ($input: PurchaseSearchOrderInput!){
+    purchaseSearchOrders(input: $input) {
+      id
+      checkedOutOn
+      statusOid
+      lines {
+        id
+        orderId
+        tenantIntegrationId
+        integrationOid
+        name
+        itemPrice
+        quantity
+        typeId
+        type
+        metadata
+      }
+      integrationOid
+      billingAddress {
+        id
+        street
+        street2
+        city
+        province
+        country
+        postalCode
+        priority
+        type
+      }
+      shippingAddress {
+        id
+        street
+        street2
+        city
+        province
+        country
+        postalCode
+        priority
+        type
+      }
       total
-      status
-      customerNote
-      shippingTotal
-      lineItems
-      shippingCity
-      shippingState
-      shippingCountry
-      shippingZip
-      shippingAddress1
-      shippingAddress2
-      shippingFirstName
-      shippingLastName
-      billingCity
-      billingState
-      billingCountry
-      billingZip
-      billingAddress1
-      billingAddress2
-      billingFirstName
-      billingLastName
-      __typename
+      compStats
+      customerEmail
+      metadata
+      customer {
+        id
+        displayName
+      }
     }
   }
 `

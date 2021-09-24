@@ -222,7 +222,7 @@ export default {
     ...mapState({
       loading: state => state.loading,
       hasIntegration: state => {
-        return state.user.principal.member.tenantIntegrations.find(i => {
+        return state.user.principal.member.integrations.find(i => {
           return i.key === 'paypal_payouts' && i.priority === 0
         })
       }

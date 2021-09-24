@@ -23,12 +23,18 @@ export const SET_MEMBER_ATTRIBUTE = gql`
 `
 
 export const GET_MEMBER_ATTRIBUTES = gql`
-  query getMemberAttributes($input: GetMemberAttributesInput!) {
-    getMemberAttributes(input: $input) {
-      key
-      value
-      memberId
-      id
+query getMemberAttributes($input: MembershipMemberSearchInput!){
+  membership {
+    search (input: $input) {
+      results {
+        attributes{
+          key
+          value
+          memberId
+          id
+        }
+      }
     }
   }
+}
 `

@@ -1,29 +1,29 @@
 import gql from 'graphql-tag'
 
 export const assetMeta = gql`
-  query AssetMgmt {
-    assetManagementConfig {
-      types {
-        id
-        name
-        mimeType
-        name
-        key
-      }
-      tags {
-        id
-        name
-        key
-        protected
-      }
-      providers {
-        id
-        tenantIntegrationId
-        name
-        key
-      }
+query AssetMgmt {
+  assetManagementConfig {
+    types {
+      id
+      name
+      mimeType
+      name
+      key
+    }
+    tags {
+      id
+      name
+      key
+      protected
+    }
+    providers {
+      id
+      tenantIntegrationId
+      name
+      key
     }
   }
+}
 `
 
 export const assetCreate = gql`

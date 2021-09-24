@@ -1,0 +1,84 @@
+mutation($input: IamAuthenticateInput!){
+  iam {
+    authenticate(input: $input){
+      success
+      message
+      authentication {
+        token
+      }
+			principal {
+        tenantId
+        # tenant {
+        #   integrations {
+        #     id
+        #     integration {
+        #       id
+        #       name
+        #       key
+        #       metadata
+        #     }
+        #     statusId
+        #     priority
+        #     metadata
+        #   }
+        # }
+				member {
+          id
+          statusId
+          avatar {
+            assetUrl
+          }
+          tags {
+            name
+            id
+          }
+          customer {
+            id
+            subscriptions {
+              id
+              status
+              metadata
+            }
+          }
+          slug
+          integrations {
+            id
+            metadata
+            priority
+            name
+            key
+          }
+          contacts {
+            id
+            emails {
+              id
+              email
+              priority
+            }
+            phones {
+              id
+              type
+              number
+              type
+              priority
+            }
+            addresses {
+              id
+              name
+              street
+              street2
+              city
+              province
+              postalCode
+              country
+              lat
+              long
+              priority
+            }
+          }
+				}
+			}
+      metadata
+    }
+  }
+}

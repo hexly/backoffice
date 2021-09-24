@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "start": "node tenants.js && vue-cli-service serve --open --fix",
+    "everra": "npm --tenant-id=1010 start",
     "serve": "node tenants.js && vue-cli-service serve --open --fix",
     "everra": "npm --tenant-id=1010 start",
     "watch:config": "nodemon -w $(pwd)/tenants.js -x node tenants.js",

@@ -25,13 +25,15 @@ export const FRONTLINE_LEADERBOARD = gql`
 `
 
 export const FRONTLINE_LEADERBOARD_BY_RANGE = gql`
-  query frontlineLeaderByTeam($input: RangedLeaderboardInput!) {
-    rangedFrontlineLeaderboardByTeam(input: $input) {
-      name
-      contactEmail
-      total
-      profileUrl
-      joinedOn
+  query frontlineLeaderByTeam ($input: RangedLeaderboardInput!) {
+    engine {
+      rangedFrontlineLeaderboardByTeam(input: $input) {
+        name
+        contactEmail
+        total
+        profileUrl
+        joinedOn
+      }
     }
   }
 `
@@ -61,13 +63,15 @@ export const COMPANY_FRONTLINE_LEADERBOARD = gql`
 `
 
 export const COMPANY_FRONTLINE_LEADERBOARD_BY_RANGE = gql`
-  query frontlineLeader($input: RangedLeaderboardInput!) {
-    rangedFrontlineLeaderboard(input: $input) {
-      name
-      contactEmail
-      total
-      profileUrl
-      joinedOn
+  query frontlineLeader ($input: RangedLeaderboardInput!) {
+    engine {
+      rangedFrontlineLeaderboardByTeam(input: $input) {
+        name
+        contactEmail
+        total
+        profileUrl
+        joinedOn
+      }
     }
   }
 `

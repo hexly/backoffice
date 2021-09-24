@@ -24,6 +24,7 @@
 
 <script>
 import { MEMBER_AWARDS } from '@/graphql/Member.gql.js'
+import * as _ from 'lodash'
 
 export default {
   name: 'Badges',
@@ -47,14 +48,21 @@ export default {
   apollo: {
     awards: {
       query: MEMBER_AWARDS,
+      client: 'federated',
       variables() {
         return {
-          memberId: this.memberId
+          input: {
+            tenantIn: [this.$tenantId],
+            idIn: [this.memberId]
+          }
         }
       },
-      update({ member }) {
-        this.joinedOn = member.joinedOn
-        return member.awards
+      update(data) {
+        const joinedOn = _.get(data, 'membership.search.results.0.joinedOn')
+        const awards = _.get(data, 'membership.search.results.0.awards')
+        this.joinedOn = joinedOn
+
+        return awards
       },
       loadingKey: 'loading'
     }

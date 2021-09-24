@@ -116,7 +116,7 @@ import {
   COMPANY_FRONTLINE_LEADERBOARD_BY_RANGE,
   SELLER_LEADERBOARD
 } from '@/graphql/Leaderboard.js'
-import { ENGINE_DASHBOARD_BANNERS } from '@/graphql/CompStats.gql'
+// import { ENGINE_DASHBOARD_BANNERS } from '@/graphql/CompStats.gql'
 import { MAX_MRN } from '@/graphql/MemberStats.gql'
 import { mapMutations, mapState, mapGetters, mapActions } from 'vuex'
 import { UserMutations } from '@/stores/UserStore'
@@ -167,6 +167,18 @@ export default {
       companySellersLeaderboard: []
     }
   },
+  watch: {
+    selectedPeriod(newVal) {
+      const selectedPeriodId = _.get(newVal, 'id')
+      this.compGetStats({
+        input: {
+          membersIn: [this.memberId]
+        },
+        periodId: selectedPeriodId,
+        version: 3
+      })
+    }
+  },
   methods: {
     formatEarning(earning) {
       let currency = '$'
@@ -180,6 +192,7 @@ export default {
       if (!period) {
         return
       }
+      let rangedFrontlineLeaderboardByTeam = {}
       const variables = {
         input: {
           tenantId: this.$tenantInfo.id,
@@ -188,17 +201,31 @@ export default {
           omitTagIds: [34]
         }
       }
-      const { data: { rangedFrontlineLeaderboardByTeam } } = await this.$apollo.query({
-        query: FRONTLINE_LEADERBOARD_BY_RANGE,
-        variables
-      })
+      try {
+        const res = await this.$apollo.query({
+          query: FRONTLINE_LEADERBOARD_BY_RANGE,
+          client: 'federated',
+          variables
+        })
+        rangedFrontlineLeaderboardByTeam = _.get(res, 'data.engine.rangedFrontlineLeaderboardByTeam')
+      } catch (error) {
+        console.error(error)
+      }
 
-      const { data: { rangedFrontlineLeaderboard } } = await this.$apollo.query({
-        query: COMPANY_FRONTLINE_LEADERBOARD_BY_RANGE,
-        variables
-      })
-      this.teamLeaderboard = rangedFrontlineLeaderboardByTeam
-      this.companyLeaderboard = rangedFrontlineLeaderboard
+      let rangedFrontlineLeaderboard
+      try {
+        const res = await this.$apollo.query({
+          query: COMPANY_FRONTLINE_LEADERBOARD_BY_RANGE,
+          client: 'federated',
+          variables
+        })
+        rangedFrontlineLeaderboard = _.get(res, 'data.engine.rangedFrontlineLeaderboardByTeam')
+      } catch (error) {
+        console.error(error)
+      }
+
+      this.teamLeaderboard = _.isEmpty(rangedFrontlineLeaderboardByTeam) ? [] : rangedFrontlineLeaderboardByTeam
+      this.companyLeaderboard = _.isEmpty(rangedFrontlineLeaderboard) ? [] : rangedFrontlineLeaderboard
     },
     async loadSalesLeaderboards(period) {
       if (!period) {
@@ -251,32 +278,39 @@ export default {
     ...mapGetters(['contactId', 'memberId', 'member', 'slug', 'tenantIntegrations'])
   },
   apollo: {
-    banners: {
-      query: ENGINE_DASHBOARD_BANNERS,
-      deep: true,
+    // COMMENTING OUT SINCE IT ISN'T USED
+    // banners: {
+    //   query: ENGINE_DASHBOARD_BANNERS,
+    //   deep: true,
+    //   variables() {
+    //     const date = this.selectedPeriod ? this.selectedPeriod.open || null : null
+    //     return {
+    //       input: {
+    //         memberId: this.memberId,
+    //         date
+    //       }
+    //     }
+    //   },
+    //   update(obj) {
+    //     return _.get(obj, 'banners.results', [])
+    //   }
+    // },
+    memberCount: {
+      query: MAX_MRN,
+      client: 'federated',
       variables() {
-        const date = this.selectedPeriod ? this.selectedPeriod.open || null : null
         return {
           input: {
-            memberId: this.memberId,
-            date
+            tenantId: this.$tenantId,
+            type: null
           }
         }
       },
-      update(obj) {
-        return _.get(obj, 'banners.results', [])
-      }
-    },
-    memberCount: {
-      query: MAX_MRN,
-      variables: {
-        input: {
-          typeId: null
-        }
-      },
       loadingKey: 'loadingCount',
-      update({ memberGetMaxMrnForTenant }) {
-        return memberGetMaxMrnForTenant
+      update(data) {
+        const max = _.get(data, 'membership.maxMrn.max')
+
+        return max
       }
     }
   }

@@ -165,3 +165,91 @@ export const GET_PRINCIPAL = gql`
     }
   }
 `
+
+export const PRINCIPAL = gql`
+  query principal {
+    iam {
+      principal {
+        tenantId
+        metadata
+        tenant {
+          integrations {
+            id
+            integration {
+              id
+              name
+              key
+              metadata
+            }
+            statusId
+            priority
+            metadata
+          }
+        }
+        member {
+          id
+          statusId
+          firstName
+          lastName
+          id
+          birthdate
+          tenantId
+          name
+          displayName
+          mrn
+          avatar {
+            assetUrl
+          }
+          tags {
+            name
+            id
+          }
+          customer {
+            id
+            subscriptions {
+              id
+              status
+              metadata
+            }
+          }
+          slug
+          contacts {
+            id
+            emails {
+              id
+              email
+              priority
+            }
+            phones {
+              id
+              type
+              number
+              type
+              priority
+            }
+            addresses {
+              id
+              name
+              street
+              street2
+              city
+              province
+              postalCode
+              country
+              lat
+              long
+              priority
+            }
+          }
+          integrations {
+            id
+            metadata
+            priority
+            name
+            key
+          }
+        }
+      }
+    }
+  }
+`

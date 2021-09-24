@@ -36,17 +36,20 @@ export const ENGINE_STATS_QUERY = gql`
 `
 
 export const ENGINE_STATS_PERIODS_QUERY = gql`
-  query engineStatsPeriod($input: EngineStatsPeriodsByMemberInput) {
-    engineStatsPeriodsByMemberId(input: $input) {
-      id
-      name
-      key
-      open
-      close
-      status
-      hasMaterializedStats
-      hasPayroll
-      metadata
+  query engineStatsPeriod($input: EnginePeriodSearchInput!) {
+    engine {
+      periods(input: $input) {
+        results {
+          id
+          name
+          key
+          open
+          close
+          hasPayroll
+          metadata
+          status
+        }
+      }
     }
   }
 `
@@ -192,8 +195,8 @@ query engineStatsMemberPromotionStatus($input: EngineStatsMemberPromotionStatusI
 
 export const ENGINE_DASHBOARD_BANNERS = gql`
 query banners($input: EngineStatsMemberBannersInput!){
-  banners: engineStatsMemberBanners(input: $input){
-    results {
+  engine {
+    engineStatsMemberBanners (input: $input) {
       id
       name
       key
