@@ -1,18 +1,8 @@
 <template>
   <div class="main">
-    <v-navigation-drawer
-      fixed
-      v-model="drawer"
-      app
-    >
-      <div
-        v-if="$tenantInfo.logoPath"
-        class="text-center"
-      >
-        <img
-          :src="$tenantInfo.logoPath"
-          class="logo"
-        />
+    <v-navigation-drawer fixed v-model="drawer" app>
+      <div v-if="$tenantInfo.logoPath" class="text-center">
+        <img :src="$tenantInfo.logoPath" class="logo"/>
       </div>
       <v-divider></v-divider>
       <v-list dense>
@@ -24,7 +14,7 @@
             <v-list-item-title>Dashboard</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
-         <v-list-item v-if="$tenantInfo.features.insights" to="/insights">
+        <v-list-item v-if="$tenantInfo.features.insights" to="/insights">
           <v-list-item-action>
             <v-icon>insights</v-icon>
           </v-list-item-action>
@@ -351,9 +341,22 @@ export default {
       logoutUser: Actions.LOGOUT,
       getAttributes: MemberActions.GET_ATTRIBUTES,
       compGetPeriods: CompActions.GET_PERIODS
-    })
+    }),
+    checkJWT() {
+      try {
+        const dehydratedState = localStorage.getItem('store')
+        const hydratedState = JSON.parse(dehydratedState)
+        if (!hydratedState.jwtFed) {
+          this.logout()
+          return
+        }
+      } catch (e) {
+        console.warn(e)
+      }
+    }
   },
   async mounted () {
+    this.checkJWT()
     await this.compGetPeriods({
       input: {
         memberId: this.user.principal.memberId,
