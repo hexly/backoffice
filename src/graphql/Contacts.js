@@ -17,12 +17,10 @@ export const CONTACT_EMAIL_UPSERT = gql`
 `
 
 export const LAT_LONGS = gql`
-  query latLongs ($input: LatLongByTenantInput) {
-    membership {
-      latLongByTenant(input: $input) {
-        lat
-        long
-      }
+  query latLongs($input: LatLongByTenantInput!){
+    latLongByTenant(input: $input){
+      lat
+      long
     }
   }
 `

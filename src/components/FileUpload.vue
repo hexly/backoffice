@@ -86,9 +86,6 @@ const FilePond = vueFilePond(
 export default {
   name: 'UploadDialog',
   components: { FilePond },
-  mounted() {
-    this.refreshMeta()
-  },
   props: {
     canUpload: Boolean,
     shouldShow: {
@@ -130,6 +127,18 @@ export default {
           this.$emit('dialogClosed')
         }
         this.canShow = newVal
+      }
+    }
+  },
+  watch: {
+    canShow(newVal, oldVal) {
+      if (newVal) {
+        this.refreshMeta()
+      }
+    },
+    shouldShow(newVal, oldVal) {
+      if (newVal) {
+        this.refreshMeta()
       }
     }
   },
