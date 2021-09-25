@@ -82,7 +82,7 @@
         </v-col>
       </lazy-component>
     </template>
-    <lazy-component wrapper-tag="div">
+    <lazy-component wrapper-tag="div" wrap v-if="openPeriod">
       <CompanyMap class="py-2" title="Influencers around the world"/>
     </lazy-component>
   </div>

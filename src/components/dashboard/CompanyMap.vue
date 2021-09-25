@@ -115,7 +115,6 @@ export default {
   apollo: {
     coordinates: {
       query: LAT_LONGS,
-      client: 'federated',
       variables() {
         return {
           input: {
@@ -125,7 +124,7 @@ export default {
         }
       },
       update(data) {
-        const latLongByTenant = _.get(data, 'membership.latLongByTenant')
+        const latLongByTenant = _.get(data, 'latLongByTenant')
         return latLongByTenant
       }
     }

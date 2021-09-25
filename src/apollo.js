@@ -30,7 +30,7 @@ export function createHexlyApolloClient ({
     // You should use an absolute URL here
     uri: base + endpoints.graphql,
     // fetch: customFetch
-    batchMax: 5
+    batchMax: 1
   })
 
   const httpLink = new HttpLink({ uri: base + endpoints.graphql })
@@ -96,7 +96,7 @@ export function createApolloClient ({
     // You should use an absolute URL here
     uri: base + endpoints.graphql,
     // fetch: customFetch
-    batchMax: 5
+    batchMax: 1
   })
   let link = httpLink
 
