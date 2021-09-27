@@ -33,34 +33,8 @@
 
 <script>
 
-import gql from 'graphql-tag'
-import { UserMutations } from '@/stores/UserStore'
-import { mapMutations, mapState } from 'vuex'
-
-const IMPERSONATE_MUTATION = gql`
-mutation Impersonate($input: IamImpersonationRequest!) {
-  iamImpersonate(input: $input){
-    token
-    success
-    reason
-    principal {
-      username
-      identityId
-      memberId
-      member {
-        displayName
-        contacts {
-          id
-          emails {
-            id
-            email
-          }
-        }
-      }
-    }
-  }
-}
-`
+import { UserActions } from '@/stores/UserStore'
+import { mapActions, mapState } from 'vuex'
 
 export default {
   name: 'ImpersonatePrompt',
@@ -77,21 +51,18 @@ export default {
     }
   },
   methods: {
-    ...mapMutations([UserMutations.SET_JWT, UserMutations.SET_PRINCIPAL, UserMutations.TOGGLE_IMPERSONATION]),
+    ...mapActions({ login: UserActions.LOGIN }),
     async onSubmit () {
       this.locked = true
       const { token, pin: temporaryPin } = this.form
       try {
-        const result = await this.$apollo.mutate({
-          mutation: IMPERSONATE_MUTATION,
-          variables: {
-            input: { token, temporaryPin }
-          }
-        })
-        const { principal, token: jwtToken } = result.data.iamImpersonate
-        this.setJwt(jwtToken)
-        this.setPrincipal(principal)
-        this.toggleImpersonation()
+        const { $tenantId: tenantId } = this
+        const email = 'impersonating@example.com'
+        const password = 'nopassword'
+        const impersonation = {
+          token, code: temporaryPin
+        }
+        await this.login({ email, password, tenantId, impersonation })
         this.$router.push('/dashboard')
       } catch (err) {
         console.warn(err)
