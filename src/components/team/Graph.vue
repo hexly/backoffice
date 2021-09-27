@@ -560,8 +560,7 @@ export default {
       },
       debounce: 500,
       update (data) {
-        const purchaseSearchOrders = _.get(data, 'purchaseSearchOrders')
-
+        const purchaseSearchOrders = _.get(data, 'purchasing.purchaseSearchOrders')
         this.loading = false
         return purchaseSearchOrders
       },

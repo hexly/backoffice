@@ -2,36 +2,46 @@ import gql from 'graphql-tag'
 
 export const SEARCH_SALES_QUERY = gql`
   query ordersQuery($input: PurchaseSearchOrderInput!){
-    purchaseSearchOrders(input: $input) {
-      id
-      compStats
-      total
-      statusOid
-      orderType
-      checkedOutOn
-      integrationOid
-      customer {
-        displayName
-        email
-      }
-      currency
-      lines {
-        name
+    purchasing{
+      purchaseSearchOrders(input: $input) {
         id
+        compStats
+        total
+        statusOid
+        orderType
+        checkedOutOn
         integrationOid
-        itemPrice
-        quantity
-      }
-      shippingAddress {
-        id
-        street
-        street2
-        city
-        province
-        country
-        postalCode
-        priority
-        type
+        customer {
+          displayName
+          email
+        }
+        currency
+        lines {
+          name
+          id
+          integrationOid
+          itemPrice
+          quantity
+        }
+        shippingAddress {
+          id
+          street
+          street2
+          city
+          province
+          country
+          postalCode
+          priority
+          type
+        }
+        tracking {
+          trackingId
+          dateShipped
+          trackingNumber
+          tracking_provider
+          customTrackingLink
+          customTrackingProvider
+        }
       }
     }
   }
