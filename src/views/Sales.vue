@@ -82,7 +82,7 @@
         </v-card-text>
       </v-card>
       <v-data-table
-        :headers="headers"
+        :headers="dynamicHeaders"
         :items="items"
         hide-default-footer
         disable-pagination
@@ -96,7 +96,7 @@
       >
         <template v-slot:item="{ item, isExpanded }">
           <tr>
-            <td>{{ item.date }}</td>
+            <td>{{ $vuetify.breakpoint.xs ? $moment(item.date).format('l') : $moment(item.date).format('LL') }}</td>
             <td>
               {{ item.customerName && /[^\s]/.test(item.customerName) ? item.customerName : 'Guest Customer' }}
             </td>
@@ -107,7 +107,7 @@
               />
             </td>
             <td>{{ item.HexlyCommissionablePoints }}</td>
-            <td>{{statusMap[item.statusOid] || item.statusOid}}</td>
+            <td v-if="!$vuetify.breakpoint.xs">{{statusMap[item.statusOid] || item.statusOid}}</td>
             <td>
               <v-icon @click="expanded = []" v-if="isExpanded">expand_less</v-icon>
               <v-icon @click="expanded = [item]" v-else>expand_more</v-icon>
@@ -133,19 +133,18 @@
                 <v-flex xs4>
                   <h4>Details:</h4>
                   <ul>
-                    <li>Order ID: {{item.id}}</li>
+                    <li>Order ID: {{item.integrationOid}}</li>
                     <li>Status: {{statusMap[item.statusOid] || item.statusOid}}</li>
                     <li v-if="item.customerNote">Customer Note: {{item.customerNote}}</li>
-                    <!-- commenting out till we have a bead on what shipping stuff is gonna look like
-                    <li v-if="checkShippingDate(item.metadata.WcShipmentTrackingItems)">
-                      Shipped On: {{$moment(item.metadata.WcShipmentTrackingItems[0][0].dateShipped * 1000).format('ll')}}
+                    <li v-if="checkShippingDate(item.tracking)">
+                      Shipped On: {{$moment(item.tracking[0].dateShipped * 1000).format('ll')}}
                     </li>
-                    <li v-if="checkTrackingInfo(item.metadata.WcShipmentTrackingItems)">
+                    <li v-if="checkTrackingInfo(item.tracking)">
                       Tracking Info: <a
                         target="_blank"
-                        :href="formatTrackingLink(item.metadata.WcShipmentTrackingItems[0][0])"
-                      >{{item.metadata.WcShipmentTrackingItems[0][0].trackingNumber}}</a>
-                    </li> -->
+                        :href="formatTrackingLink(item.tracking[0])"
+                      >{{item.tracking[0].trackingNumber}}</a>
+                    </li>
                   </ul>
                 </v-flex>
               </v-layout>
@@ -271,6 +270,13 @@ export default {
         { text: 'Status', value: 'statusOid' },
         { text: '', value: 'data-table-expand' }
       ],
+      mobileHeaders: [
+        { text: 'Date', value: 'date' },
+        { text: 'Customer', value: 'customerName' },
+        { text: 'Sale Total', value: 'total' },
+        { text: 'Total Points', value: 'points' },
+        { text: '', value: 'data-table-expand' }
+      ],
       productHeads: [
         { text: 'Item', sortable: false },
         { text: 'Item Price', sortable: false },
@@ -307,7 +313,7 @@ export default {
       },
       debounce: 500,
       update (data) {
-        const orders = _.get(data, 'purchaseSearchOrders', [])
+        const orders = _.get(data, 'purchasing.purchaseSearchOrders', [])
         this.setLoading(false)
         const filteredOrders = orders.filter(sale => this.statuses.indexOf(sale.statusOid) >= 0)
         return filteredOrders
@@ -318,10 +324,10 @@ export default {
   methods: {
     ...mapMutations([Mutations.SET_LOADING]),
     checkShippingDate (trackingInfo) {
-      return _.get(trackingInfo, '0.0.dateShipped', false)
+      return _.get(trackingInfo, '0.dateShipped', false)
     },
     checkTrackingInfo (trackingInfo) {
-      return _.get(trackingInfo, '0.0.trackingNumber', false)
+      return _.get(trackingInfo, '0.trackingNumber', false)
     },
     formatTrackingLink (trackingInfo) {
       if (trackingInfo.customTrackingLink) {
@@ -364,6 +370,12 @@ export default {
           HexlyCommissionablePoints
         }
       })
+    },
+    dynamicHeaders() {
+      const isMobile = _.get(this, '$vuetify.breakpoint.xs')
+      const { mobileHeaders, headers } = this
+
+      return isMobile ? mobileHeaders : headers
     }
   }
 }
