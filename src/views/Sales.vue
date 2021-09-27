@@ -82,7 +82,7 @@
         </v-card-text>
       </v-card>
       <v-data-table
-        :headers="headers"
+        :headers="dynamicHeaders"
         :items="items"
         hide-default-footer
         disable-pagination
@@ -96,7 +96,7 @@
       >
         <template v-slot:item="{ item, isExpanded }">
           <tr>
-            <td>{{ item.date }}</td>
+            <td>{{ $vuetify.breakpoint.xs ? $moment(item.date).format('l') : $moment(item.date).format('LL') }}</td>
             <td>
               {{ item.customerName && /[^\s]/.test(item.customerName) ? item.customerName : 'Guest Customer' }}
             </td>
@@ -107,7 +107,7 @@
               />
             </td>
             <td>{{ item.HexlyCommissionablePoints }}</td>
-            <td>{{statusMap[item.statusOid] || item.statusOid}}</td>
+            <td v-if="!$vuetify.breakpoint.xs">{{statusMap[item.statusOid] || item.statusOid}}</td>
             <td>
               <v-icon @click="expanded = []" v-if="isExpanded">expand_less</v-icon>
               <v-icon @click="expanded = [item]" v-else>expand_more</v-icon>
@@ -271,6 +271,13 @@ export default {
         { text: 'Status', value: 'statusOid' },
         { text: '', value: 'data-table-expand' }
       ],
+      mobileHeaders: [
+        { text: 'Date', value: 'date' },
+        { text: 'Customer', value: 'customerName' },
+        { text: 'Sale Total', value: 'total' },
+        { text: 'Total Points', value: 'points' },
+        { text: '', value: 'data-table-expand' }
+      ],
       productHeads: [
         { text: 'Item', sortable: false },
         { text: 'Item Price', sortable: false },
@@ -364,6 +371,12 @@ export default {
           HexlyCommissionablePoints
         }
       })
+    },
+    dynamicHeaders() {
+      const isMobile = _.get(this, '$vuetify.breakpoint.xs')
+      const { mobileHeaders, headers } = this
+
+      return isMobile ? mobileHeaders : headers
     }
   }
 }

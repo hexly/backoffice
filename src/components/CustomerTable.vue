@@ -4,7 +4,7 @@
         <v-col cols="12" sm="4">
           <v-slide-x-transition>
             <v-card v-if="customers" color="secondary">
-              <v-card-title class="white--text" primary-title>
+              <v-card-title class="white--text title-bar-card" primary-title>
                 {{customers.length}}
               </v-card-title>
               <v-card-text class="white--text">
@@ -16,7 +16,7 @@
         <v-col cols="12" sm="4">
           <v-slide-x-transition>
             <v-card v-if="mostRecentOrder" color="secondary" @click="handleRecentOrderClick">
-              <v-card-title class="white--text" primary-title>
+              <v-card-title class="white--text title-bar-card" primary-title>
                 {{$moment(mostRecentOrder.recentOrder, 'YYYY-MM-DD').format('ll')}} ({{mostRecentOrder.customerName && /[^\s]/.test(mostRecentOrder.customerName) ? mostRecentOrder.customerName : 'Guest Customer'}})
               </v-card-title>
               <v-card-text class="white--text">
@@ -28,7 +28,7 @@
         <v-col cols="12" sm="4">
           <v-slide-x-transition>
             <v-card v-if="mostOrderedItem" color="secondary">
-              <v-card-title class="white--text" primary-title>
+              <v-card-title class="white--text title-bar-card" primary-title>
                 {{mostOrderedItem.name}}
               </v-card-title>
               <v-card-text class="white--text">
@@ -340,5 +340,8 @@ export default {
   }
   .order-table-row {
     cursor: pointer !important;
+  }
+  .title-bar-card {
+    word-break: break-word;
   }
 </style>
