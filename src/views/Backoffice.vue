@@ -384,11 +384,13 @@ export default {
         const principal = get(data, 'iam.principal')
         if (principal) {
           const { member, tenant } = prepPrincipal(principal)
+          const rawTags = get(principal, 'member.tags')
+          const tags = rawTags.map(t => t.name)
+          member.tags = tags
           this.setMember(member)
           this.setTenant(tenant)
           const integrations = get(principal, 'tenant.integrations', [])
           const statusId = get(principal, 'member.statusId')
-          const tags = get(principal, 'member.tags')
           // Status Id 1 = Active Member
           if (!this.user.isImpersonating && (statusId !== 1 || tags.indexOf('backoffice:locked') >= 0)) {
             this.logoutUser()
