@@ -49,8 +49,8 @@ s<template>
       </v-alert>
     </v-card-text>
     <v-divider></v-divider>
-    <div class="text-center pb-2">
-      <h3>{{sponsorName || 'Your Sponsor'}}</h3>
+    <div class="text-center pt-2 pb-2">
+      <h3 class="mb-2">{{sponsorName || 'Your Sponsor'}}</h3>
       <v-layout v-if="stats.sponsor" align-center>
         <v-flex>
           <div  class="mt-3">
@@ -60,7 +60,7 @@ s<template>
                   <v-img v-if="stats.sponsor.avatar || $tenantInfo.placeholder" :src="(stats && stats.sponsor && stats.sponsor.avatar) ? stats.sponsor.avatar.assetUrl : $tenantInfo.placeholder"></v-img>
                 </v-avatar>
               </v-flex>
-              <v-flex mx-2 class="text-left">
+              <v-flex mx-2 class="text-left mb-5">
                 <div>
                   <b>{{stats.sponsor.displayName}} </b>
                   <br/>

@@ -27,7 +27,6 @@ export const UserMutations = {
   SET_PRINCIPAL: 'setPrincipal',
   SET_MEMBER: 'setMember',
   SET_TENANT: 'setTenant',
-  TOGGLE_IMPERSONATION: 'toggleImpersonation',
   SET_PROFILE: 'setProfilePic',
   ADD_INTEGRATION: 'addTenantIntegration',
   SET_INTEGRATIONS: 'setTenantIntegration',
@@ -107,7 +106,20 @@ export const UserStore = {
     [UserMutations.SET_JWT]: (state, jwt) => {
       state.jwt = jwt
     },
-    [UserMutations.SET_FED_JWT]: (state, jwt) => (state.jwtFed = jwt),
+    [UserMutations.SET_FED_JWT]: (state, jwt) => {
+      state.jwtFed = jwt
+      state.isImpersonating = false
+      if (jwt) {
+        try {
+          const claims = JSON.parse(atob(jwt.split('.')[1]))
+          if (claims.auditId !== claims.identityId) {
+            state.isImpersonating = true
+          }
+        } catch (err) {
+          console.warn('Failed to detect impersonation: ', err)
+        }
+      }
+    },
     [UserMutations.LOGIN_ERROR]: (state, err) => (state.loginError = err),
     [UserMutations.SET_PRINCIPAL]: (state, principal) => {
       state.principal = {
@@ -127,9 +139,6 @@ export const UserStore = {
         ...state.principal.tenant,
         ...tenant
       }
-    },
-    [UserMutations.TOGGLE_IMPERSONATION]: state => {
-      state.isImpersonating = !state.isImpersonating
     },
     [UserMutations.SET_PROFILE]: (state, profileUrl) => {
       state.principal.member.profileUrl = profileUrl
@@ -171,22 +180,26 @@ export const UserStore = {
     }
   },
   actions: {
-    async [UserActions.LOGIN]({ commit, dispatch, state }, creds) {
-      const { email, password, tenantId } = creds
+    async [UserActions.LOGIN] ({ commit, dispatch, state }, creds) {
+      const { email, password, tenantId, impersonation } = creds
+
+      const payload = {
+        username: email,
+        password,
+        context: {
+          tenantId,
+          version: 2,
+          includeLegacy: true
+        }
+      }
+
+      if (impersonation) {
+        payload.context.impersonation = impersonation
+      }
 
       const res = await apolloFederatedClient.mutate({
         mutation: AUTH_GQL,
-        variables: {
-          input: {
-            username: email,
-            password,
-            context: {
-              tenantId,
-              version: 2,
-              includeLegacy: true
-            }
-          }
-        }
+        variables: { input: payload }
       })
 
       const auth = _.get(res, 'data.iam.authenticate')
@@ -225,7 +238,7 @@ export const UserStore = {
         throw new Error('Login failed: ' + auth.message)
       }
     },
-    async [UserActions.SAVE_PROFILE]({ commit }, { memberId, profileUrl }) {
+    async [UserActions.SAVE_PROFILE] ({ commit }, { memberId, profileUrl }) {
       await apolloHexlyClient.mutate({
         mutation: UPDATE_PROFILE,
         variables: {
@@ -239,7 +252,7 @@ export const UserStore = {
       commit(UserMutations.SET_PROFILE, profileUrl)
       return profileUrl
     },
-    async [UserActions.ADJUST_TAGS]({ commit }, input) {
+    async [UserActions.ADJUST_TAGS] ({ commit }, input) {
       const { data } = await apolloHexlyClient.mutate({
         mutation: ADJUST_TAGS,
         variables: {
@@ -250,7 +263,7 @@ export const UserStore = {
       commit(UserMutations.SET_TAGS, data.adjustTags.tags)
       return data.adjustTags.tags
     },
-    async [UserActions.RELOAD_INTEGRATIONS]({ commit }, input) {
+    async [UserActions.RELOAD_INTEGRATIONS] ({ commit }, input) {
       const { data } = await apolloHexlyClient.query({
         query: GET_MEMBER_TENANT_INTEGRATIONS,
         fetchPolicy: 'network-only'
@@ -259,7 +272,7 @@ export const UserStore = {
       commit(UserMutations.SET_INTEGRATIONS, data.getPrincipal)
       return data.getPrincipal.member.integrations
     },
-    async [UserActions.CREATE_INTEGRATION](
+    async [UserActions.CREATE_INTEGRATION] (
       { commit },
       { command, tenantIntegrationId, data }
     ) {
@@ -278,7 +291,7 @@ export const UserStore = {
         }
       })
     },
-    async [UserActions.REMOVE_INTEGRATION](
+    async [UserActions.REMOVE_INTEGRATION] (
       { commit },
       { command, tenantIntegrationId, data }
     ) {
@@ -339,11 +352,11 @@ export const UserStore = {
     },
     tenantIntegrations: state =>
       (state.principal &&
-      state.principal.member &&
-      state.principal.member.integrations) || [],
+        state.principal.member &&
+        state.principal.member.integrations) || [],
     integrations: state =>
       (state.principal &&
-      state.principal.tenant &&
-      state.principal.tenant.integrations) || []
+        state.principal.tenant &&
+        state.principal.tenant.integrations) || []
   }
 }
