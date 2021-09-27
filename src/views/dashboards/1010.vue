@@ -4,7 +4,7 @@
     <!-- <template v-if="banners">
       <Banner v-for="banner in banners" :key="banner.key" :banner="banner"/>
     </template> -->
-    <v-row wrap>
+    <v-row class="mt-0" wrap>
       <v-col cols="12" md="6">
         <v-layout id="personal-card-layout" column>
           <v-flex>
