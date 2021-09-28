@@ -45,8 +45,12 @@ mutation($input: IamAuthenticateInput!){
             id
             metadata
             priority
+            integrationOid
             name
             key
+          }
+          market {
+            supportedCurrencyIds
           }
           contacts {
             id
