@@ -5,7 +5,7 @@
         <v-card-title class="headline font-weight-regular white--text secondary">
           <span>{{mName || ''}} Sales History</span>
           <v-spacer></v-spacer>
-          <v-btn icon dark @click="$emit('close')"><v-icon>mdi-close</v-icon></v-btn>
+          <v-btn v-if="!!mName" icon dark @click="$emit('close')"><v-icon>mdi-close</v-icon></v-btn>
         </v-card-title>
         <v-card-text>
           <!-- <v-subheader>Range</v-subheader> -->
