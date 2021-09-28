@@ -228,6 +228,7 @@ export default {
           query: GET_MEMBERS,
           client: 'federated',
           variables: {
+            memberId: this.memberId,
             input: {
               idIn: [this.memberId],
               tenantIn: [this.$tenantId]
@@ -238,8 +239,8 @@ export default {
         this.editMember = {
           ...editMember,
           contactEmail: { ...editMember.contacts[0].emails[0] },
-          username: this.principal.username,
-          profileUrl: editMember.avatar.assetUrl
+          username: _.get(membersResult, 'data.iam.credentials.results.0.username'),
+          profileUrl: editMember.avatar ? editMember.avatar.assetUrl : undefined
         }
         if (this.editMember.birthdate) {
           this.editMember.birthdate = this.$moment(this.editMember.birthdate, 'YYYY-MM-DD').format('MM/DD/YYYY')
@@ -255,7 +256,7 @@ export default {
       this.setLoading(false)
     },
     async saveData () {
-      const formIsValid = this.$refs.personal.$refs.informationForm.validate()
+      let formIsValid = this.$refs.personal.$refs.informationForm.validate()
       if (formIsValid) {
         this.saving = true
         try {
