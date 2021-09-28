@@ -8,76 +8,93 @@
           <v-btn icon dark @click="$emit('close')"><v-icon>mdi-close</v-icon></v-btn>
         </v-card-title>
         <v-card-text>
-          <v-subheader>Range</v-subheader>
+          <!-- <v-subheader>Range</v-subheader> -->
           <v-container grid-list-md text-center>
-            <v-layout row align-center justify-space-around wrap>
-              <v-dialog
-                ref="dialogStart"
-                v-model="modalStart"
-                lazy
-                full-width
-                width="290px"
-              >
-                <template v-slot:activator="{ on }">
-                  <v-text-field
-                    v-on="on"
-                    v-model="startDate"
-                    label="Select Start Date"
-                    prepend-icon="event"
-                    readonly
-                  />
-                </template>
-                <v-date-picker
-                  ref="pickerStart"
-                  color="secondary"
-                  v-model="datePickerStartDate"
-                  :reactive="true"
+            <v-row>
+              <v-col align-center>
+                <v-dialog
+                  ref="dialogStart"
+                  v-model="modalStart"
+                  lazy
+                  full-width
+                  width="290px"
                 >
-                  <v-spacer></v-spacer>
-                  <v-btn text color="primary" @click="modalStart = false">Cancel</v-btn>
-                  <v-btn
-                    text
-                    color="primary"
-                    @click="dateSave(datePickerStartDate, 'start'); $refs.dialogStart.save()"
-                  >OK</v-btn>
-                </v-date-picker>
-              </v-dialog>
-              <v-dialog
-                ref="dialogEnd"
-                v-model="modalEnd"
-                lazy
-                full-width
-                width="290px"
-              >
-                <template v-slot:activator="{ on }">
-                  <v-text-field
-                    v-on="on"
-                    v-model="endDate"
-                    label="Select End Date"
-                    prepend-icon="event"
-                    readonly
-                  />
-                </template>
-                <v-date-picker
-                  ref="pickerEnd"
-                  color="secondary"
-                  v-model="datePickerEndDate"
-                  :reactive="true"
+                  <template v-slot:activator="{ on }">
+                    <v-text-field
+                      v-on="on"
+                      v-model="startDate"
+                      label="Select Start Date"
+                      prepend-icon="event"
+                      readonly
+                    />
+                  </template>
+                  <v-date-picker
+                    ref="pickerStart"
+                    color="secondary"
+                    v-model="datePickerStartDate"
+                    :reactive="true"
+                  >
+                    <v-spacer></v-spacer>
+                    <v-btn text color="primary" @click="modalStart = false">Cancel</v-btn>
+                    <v-btn
+                      text
+                      color="primary"
+                      @click="dateSave(datePickerStartDate, 'start'); $refs.dialogStart.save()"
+                    >OK</v-btn>
+                  </v-date-picker>
+                </v-dialog>
+              </v-col>
+              <v-col align-center>
+                <v-dialog
+                  ref="dialogEnd"
+                  v-model="modalEnd"
+                  lazy
+                  full-width
+                  width="290px"
                 >
-                  <v-spacer></v-spacer>
-                  <v-btn
-                    text
-                    color="primary"
-                    @click="modalEnd = false"
-                  >Cancel</v-btn>
-                  <v-btn
-                    text
-                    color="primary"
-                    @click="dateSave(datePickerEndDate, 'end'); $refs.dialogEnd.save()"
-                  >OK</v-btn>
-                </v-date-picker>
-              </v-dialog>
-            </v-layout>
+                  <template v-slot:activator="{ on }">
+                    <v-text-field
+                      v-on="on"
+                      v-model="endDate"
+                      label="Select End Date"
+                      prepend-icon="event"
+                      readonly
+                    />
+                  </template>
+                  <v-date-picker
+                    ref="pickerEnd"
+                    color="secondary"
+                    v-model="datePickerEndDate"
+                    :reactive="true"
+                  >
+                    <v-spacer></v-spacer>
+                    <v-btn
+                      text
+                      color="primary"
+                      @click="modalEnd = false"
+                    >Cancel</v-btn>
+                    <v-btn
+                      text
+                      color="primary"
+                      @click="dateSave(datePickerEndDate, 'end'); $refs.dialogEnd.save()"
+                    >OK</v-btn>
+                  </v-date-picker>
+                </v-dialog>
+              </v-col>
+            </v-row>
+            <v-row align-center justify-center wrap v-if="sales && sales.stats">
+              <v-col v-for=" (metric, idx) in saleMetrics" :key="idx" lg="2" md="4" sm="6" cols="12">
+                <div class="metric-card">
+                  <v-chips color="white">
+                    <v-avatar class="metric-avatar">
+                      <v-icon large> {{ metric.icon }}</v-icon>
+                    </v-avatar>
+                  </v-chips>
+                  <div class="stat"> {{ sales.stats[metric.prop] || 0 }} </div>
+                  <div class="label"> {{ metric.label }} </div>
+                </div>
+              </v-col>
+            </v-row>
           </v-container>
         </v-card-text>
       </v-card>
@@ -98,6 +115,14 @@
           <tr>
             <td>{{ $vuetify.breakpoint.xs ? $moment(item.date).format('l') : $moment(item.date).format('LL') }}</td>
             <td>
+              <v-tooltip slot="append" bottom>
+                <template v-slot:activator="{ on }">
+                  <v-icon v-if="item.guestCheckout" v-on="on">mdi-account-outline</v-icon>
+                  <v-icon v-else v-on="on" >mdi-account</v-icon>
+                </template>
+                <span v-if="item.guestCheckout">  This order was processed as a guest checkout. </span>
+                <span v-else>This order was placed by a registered customer. </span>
+              </v-tooltip>
               {{ item.customerName && /[^\s]/.test(item.customerName) ? item.customerName : 'Guest Customer' }}
             </td>
             <td>
@@ -117,39 +142,43 @@
         <template v-slot:expanded-item="{ item, headers }">
           <td
             :colspan="headers.length"
-            class="pa-3 sale-details"
+            class="sale-details"
           >
-            <v-container fluid>
-              <v-layout>
-                <v-flex xs4>
-                  <h4>Customer Info:</h4>
-                  <ul>
-                    <li>{{item.customerName}}</li>
-                    <li v-if="item.customer">{{item.customer.email}}</li>
-                    <li v-if="item.shippingAddress">{{item.shippingAddress.street}}</li>
-                    <li v-if="item.shippingAddress">{{item.shippingAddress.city}}, {{item.shippingAddress.province}} {{item.shippingAddress.postalCode}}</li>
-                  </ul>
-                </v-flex>
-                <v-flex xs4>
-                  <h4>Details:</h4>
-                  <ul>
-                    <li>Order ID: {{item.integrationOid}}</li>
-                    <li>Status: {{statusMap[item.statusOid] || item.statusOid}}</li>
-                    <li v-if="item.customerNote">Customer Note: {{item.customerNote}}</li>
-                    <li v-if="checkShippingDate(item.tracking)">
-                      Shipped On: {{$moment(item.tracking[0].dateShipped * 1000).format('ll')}}
-                    </li>
-                    <li v-if="checkTrackingInfo(item.tracking)">
-                      Tracking Info: <a
-                        target="_blank"
-                        :href="formatTrackingLink(item.tracking[0])"
-                      >{{item.tracking[0].trackingNumber}}</a>
-                    </li>
-                  </ul>
-                </v-flex>
-              </v-layout>
-              <v-layout my-4>
-                <v-flex xs12>
+            <v-container fluid pl-3 pt-3>
+              <v-row>
+                <v-col cols="12" sm="9" md="4" lg="3">
+                  <v-container pa-0>
+                    <v-row>
+                      <v-col md="12">
+                        <h4>Customer Info:</h4>
+                        <ul>
+                          <li> {{item.customerName}} </li>
+                          <li v-if="item.customer">{{item.customer.email}}</li>
+                          <li v-if="item.shippingAddress">{{item.shippingAddress.street}}</li>
+                          <li v-if="item.shippingAddress">{{item.shippingAddress.city}}, {{item.shippingAddress.province}} {{item.shippingAddress.postalCode}}</li>
+                        </ul>
+                      </v-col>
+                      <v-col md="12">
+                        <h4>Details:</h4>
+                        <ul>
+                          <li>Order ID: {{item.integrationOid}}</li>
+                          <li>Status: {{statusMap[item.statusOid] || item.statusOid}}</li>
+                          <li v-if="item.customerNote">Customer Note: {{item.customerNote}}</li>
+                          <li v-if="checkShippingDate(item.tracking)">
+                            Shipped On: {{$moment(item.tracking[0].dateShipped * 1000).format('ll')}}
+                          </li>
+                          <li v-if="checkTrackingInfo(item.tracking)">
+                            Tracking Info: <a
+                              target="_blank"
+                              :href="formatTrackingLink(item.tracking[0])"
+                            >{{item.tracking[0].trackingNumber}}</a>
+                          </li>
+                        </ul>
+                      </v-col>
+                    </v-row>
+                  </v-container>
+                </v-col>
+                <v-col auto>
                   <h4>Products & Services</h4>
                   <v-data-table
                     :headers="productHeads"
@@ -207,8 +236,8 @@
                       </tr>
                     </template>
                   </v-data-table>
-                </v-flex>
-              </v-layout>
+                </v-col>
+              </v-row>
             </v-container>
           </td>
         </template>
@@ -251,6 +280,13 @@ export default {
         'processing': 'Processing',
         'hxro-paid-await': 'Subscription Paid - Awaiting Shipping'
       },
+      saleMetrics: [
+        { label: 'Customer Purchases', prop: 'registeredPurchases', icon: 'mdi-cart' },
+        { label: 'Guest Purchases', prop: 'guestPurchases', icon: 'mdi-cart-outline' },
+        { label: 'New Customers', prop: 'newCustomers', icon: 'mdi-account-plus' },
+        { label: 'Returning Customers', prop: 'returningCustomers', icon: 'mdi-account-convert' },
+        { label: 'Total Customers', prop: 'totalCustomers', icon: 'mdi-account-group' }
+      ],
       statuses: ['completed', 'processing', 'refunded', 'awaiting-shipment', 'export_for_shipping', 'POSTED', 'Awaiting Approval', 'SHIPPED', 'AWAITING FUNDS', 'ENTERED', 'hxro-paid-await'],
       datePickerStartDate: null,
       datePickerEndDate: null,
@@ -258,7 +294,7 @@ export default {
       expanded: [],
       modalEnd: false,
       startDate: this.$moment()
-        .subtract(30, 'days')
+        .subtract(4 * 30, 'days')
         .format('MM/DD/YYYY'),
       endDate: this.$moment()
         .format('MM/DD/YYYY'),
@@ -283,7 +319,7 @@ export default {
         { text: 'Qty.', sortable: false },
         { text: 'Subtotal', sortable: false }
       ],
-      sales: [],
+      sales: {},
       showSnackbar: false,
       snackbarMsg: ''
     }
@@ -313,10 +349,14 @@ export default {
       },
       debounce: 500,
       update (data) {
-        const orders = _.get(data, 'purchasing.purchaseSearchOrders', [])
+        const stats = _.get(data, 'purchasing.orders.stats', {})
+        const orders = _.get(data, 'purchasing.orders.results', [])
         this.setLoading(false)
         const filteredOrders = orders.filter(sale => this.statuses.indexOf(sale.statusOid) >= 0)
-        return filteredOrders
+        return {
+          results: filteredOrders,
+          stats
+        }
       },
       client: 'federated'
     }
@@ -353,16 +393,20 @@ export default {
     }),
     ...mapGetters(['memberId']),
     items () {
-      const sales = _.get(this, 'sales', [])
+      const sales = _.get(this, 'sales.results', [])
       return sales.map(sale => {
         const saleDate = _.get(sale, 'checkedOutOn')
         const lineItems = _.get(sale, 'lines')
-        const customerName = _.get(sale, 'customer.displayName')
+        let customerName = _.get(sale, 'customer.displayName')
+        if (sale.pii) {
+          customerName = `${[sale.pii.firstName, sale.pii.lastName].join(' ')}`
+        }
         const HexlyTotalAmount = _.get(sale, 'compStats.HexlyTotalAmount')
         const HexlyCommissionablePoints = _.get(sale, 'compStats.HexlyCommissionablePoints')
         const date = sale.checkedOutOn ? this.$moment(saleDate, 'YYYY-MM-DD').format('MM/DD/YYYY') : ''
         return {
           ...sale,
+          guestCheckout: !sale.customer,
           date,
           lineItems,
           customerName,
@@ -382,6 +426,24 @@ export default {
 </script>
 
 <style scoped>
+
+.metric-card {
+  border: 1px solid #efefef;
+  text-align: left;
+  padding: 8px 5px;
+  background: 'purple'
+}
+.metric-avatar {
+  float: left;
+  border: 1px solid 333;
+  margin-right: 5px;
+  background: #fff;
+}
+.metric-card .stat {
+  font-size: 15px;
+  font-weight: bold;
+}
+
 .sale-details {
   word-wrap: break-word;
 }
