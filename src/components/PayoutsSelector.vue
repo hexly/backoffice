@@ -127,7 +127,6 @@ export default {
     selected(newVal) {
       const { getPayoutCapableIntegrations, integrations } = this
       const currentIntegration = _.find(getPayoutCapableIntegrations, { key: newVal }) || _.find(integrations, { key: newVal })
-
       this.supportedIntegrations = _.chain(integrations).groupBy('key').mapValues(i => _.get(i, '[0].priority')).value()
       this.selectedModel = _.get(currentIntegration, 'key')
       this.integrationOid = _.get(currentIntegration, 'integrationOid')
@@ -161,10 +160,14 @@ export default {
       this.error = null
       const integration = this.getIntegration(this.selectedModel)
       // Update priorities
+      const iMap = {}
+      this.integrations.forEach(i => {
+        iMap[i.key] = i.id
+      })
       const integrationsToSave = this.getPayoutCapableIntegrations.map((i, index) => {
         const integration = {
           id: i.id,
-          tenantIntegrationId: i.tenantIntegrationId,
+          tenantIntegrationId: iMap[i.key],
           integrationOid: i.integrationOid,
           metadata: i.metadata,
           priority: i.priority

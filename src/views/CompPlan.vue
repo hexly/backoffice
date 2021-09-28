@@ -98,6 +98,7 @@ export default {
       query: GET_MEMBERS,
       variables () {
         return {
+          memberId: this.memberId,
           input: {
             ids: [this.memberId]
           }

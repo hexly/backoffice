@@ -1,12 +1,7 @@
 <template>
-  <v-card-text
-    v-if="tenantHasIntegration"
-    class="pt-3"
-  >
+  <v-card-text v-if="tenantHasIntegration" class="pt-3">
     <template v-if="!iPayouts && !hasSetDefaultPayout">
-      <div
-        class="py-2"
-      >
+      <div class="py-2">
         <h3>Welcome to your payouts screen.</h3>
         <div class="mt-3">
           eWallet/iPayout  Is a 3rd party. Once you receive your next commissionable sale you should receive an email from them with directions on how to set up your account.<p>They do require identity verification, so if you have updated or changed your information since signing up with a Everra, please do let us know.</p>
@@ -16,24 +11,15 @@
     <template v-else>
       <h4>
         Available Funds:
-        <v-tooltip
-          slot="append"
-          bottom
-        >
+        <v-tooltip slot="append" bottom>
           <template v-slot:activator="{ on }">
-            <v-icon
-              small
-              v-on="on"
-            >help</v-icon>
+            <v-icon small v-on="on">help</v-icon>
           </template>
           <span><small>Total payouts in paid status since last bank transfer</small></span>
         </v-tooltip>
       </h4>
       <h2>
-        <Currency
-          :amount="currentBalance.balance"
-          :currency="currencyCode"
-        />
+        <Currency :amount="currentBalance.balance" :currency="currencyCode"/>
       </h2>
       <br />
       <v-btn
@@ -64,6 +50,8 @@ export default {
   },
   mounted () {
     if (this.memberHasIntegration) {
+      const t = this.integrations.find(i => i.key === 'i_payouts' && i.statusId === 200)
+      this.integrationId = t.id
       this.loadBalance()
     }
   },
@@ -73,7 +61,8 @@ export default {
         balance: 0,
         currencyCode: this.currencyCode
       },
-      fetchingLoginUrl: false
+      fetchingLoginUrl: false,
+      integrationId: null
     }
   },
   methods: {
@@ -85,7 +74,7 @@ export default {
           variables: {
             input: {
               username: this.iPayouts.integrationOid,
-              tenantIntegrationId: this.iPayouts.tenantIntegrationId,
+              tenantIntegrationId: this.integrationId,
               currencyCode: this.currencyCode
             }
           },
@@ -101,7 +90,7 @@ export default {
         variables: {
           input: {
             username: this.iPayouts.integrationOid,
-            tenantIntegrationId: this.iPayouts.tenantIntegrationId,
+            tenantIntegrationId: this.integrationId,
             currencyCode: this.currencyCode
           }
         },
@@ -124,10 +113,13 @@ export default {
       return this.$moment(this.member.joinedOn).isAfter(this.$moment('2020-05-23', 'YYYY-MM-DD'))
     },
     tenantHasIntegration () {
-      return this.integrations.find(i => i.key === 'i_payouts' && i.statusId === 200 && i.priority === 0)
+      const t = this.integrations.find(i => i.key === 'i_payouts' && i.statusId === 200)
+      return t
     },
     memberHasIntegration () {
-      return this.payoutMemberIntegrations.find(i => i.key === 'i_payouts' && i.statusId === 200 && i.priority === 0)
+      const tenantHas = this.integrations.find(i => i.key === 'i_payouts' && i.statusId === 200)
+      const memberHas = this.payoutMemberIntegrations.find(i => i.key === 'i_payouts' && i.priority === 0)
+      return !!tenantHas && !!memberHas
     },
     ...mapGetters(['memberId', 'currencyCode', 'integrations', 'member'])
   }

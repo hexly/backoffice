@@ -200,6 +200,9 @@ export const PRINCIPAL = gql`
           avatar {
             assetUrl
           }
+          market {
+            supportedCurrencyIds
+          }
           tags {
             name
             id
@@ -245,6 +248,7 @@ export const PRINCIPAL = gql`
             id
             metadata
             priority
+            integrationOid
             name
             key
           }
