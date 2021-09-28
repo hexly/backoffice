@@ -66,7 +66,16 @@ export const MEMBER_AWARDS = gql`
 `
 
 export const GET_MEMBERS = gql`
-  query Member($input: MembershipMemberSearchInput!){
+  query Member($input: MembershipMemberSearchInput!, $memberId: Int!){
+    iam {
+      credentials(input: { memberIn: [ $memberId ] } ){
+        results {
+          id
+          identityId
+          username
+        }
+      }
+    }
     membership {
       search(input: $input) {
         results {
