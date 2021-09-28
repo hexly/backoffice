@@ -125,14 +125,13 @@
                   <v-icon v-else v-on="on" >mdi-account</v-icon>
                   <div class="first-time-customer" v-if="item.firstTimeCustomer">
                     <v-icon class="first-time-tooltip" small v-on="on">mdi-party-popper</v-icon>
-                  </div> 
+                  </div>
                 </template>
                 <span v-if="item.guestCheckout">  This order was processed as a guest checkout. </span>
                 <span v-else-if="item.firstTimeCustomer">This was the first order by this registered customer. </span>
                 <span v-else>This order was placed by a registered customer. </span>
               </v-tooltip>
               <span> {{ item.customerName && /[^\s]/.test(item.customerName) ? item.customerName : 'Guest Customer' }} </span>
-              
               </p>
             </td>
             <td>
