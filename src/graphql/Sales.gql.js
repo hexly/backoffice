@@ -21,6 +21,7 @@ export const SEARCH_SALES_QUERY = gql`
           integrationOid
           pii
           firstTimeCustomer
+          guestCheckout
           customer {
             displayName
             email

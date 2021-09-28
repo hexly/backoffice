@@ -9,7 +9,7 @@
         </v-card-title>
         <v-card-text>
           <!-- <v-subheader>Range</v-subheader> -->
-          <v-container grid-list-md text-center>
+          <v-container grid-list-md class="fill-height text-center">
             <v-row>
               <v-col align-center>
                 <v-dialog
@@ -82,17 +82,20 @@
                 </v-dialog>
               </v-col>
             </v-row>
-            <v-row align-center justify-center wrap v-if="sales && sales.stats">
+            <v-row align="stretch" v-if="sales && sales.stats" justify="center">
               <v-col v-for=" (metric, idx) in saleMetrics" :key="idx" lg="2" md="4" sm="6" cols="12">
                 <div class="metric-card">
-                  <v-chips color="white">
-                    <v-avatar class="metric-avatar">
-                      <v-icon large> {{ metric.icon }}</v-icon>
-                    </v-avatar>
-                  </v-chips>
+                  <v-avatar class="metric-avatar">
+                    <v-icon large> {{ metric.icon }}</v-icon>
+                  </v-avatar>
                   <div class="stat"> {{ sales.stats[metric.prop] || 0 }} </div>
                   <div class="label"> {{ metric.label }} </div>
                 </div>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col cols="12" class="text-center pa-0 pl-3 ma-0" text-justify>
+                <small> <strong>Note:</strong> These statistics apply only to the searched date range. </small>
               </v-col>
             </v-row>
           </v-container>
@@ -115,15 +118,22 @@
           <tr>
             <td>{{ $vuetify.breakpoint.xs ? $moment(item.date).format('l') : $moment(item.date).format('LL') }}</td>
             <td>
+              <p>
               <v-tooltip slot="append" bottom>
                 <template v-slot:activator="{ on }">
                   <v-icon v-if="item.guestCheckout" v-on="on">mdi-account-outline</v-icon>
                   <v-icon v-else v-on="on" >mdi-account</v-icon>
+                  <div class="first-time-customer" v-if="item.firstTimeCustomer">
+                    <v-icon class="first-time-tooltip" small v-on="on">mdi-party-popper</v-icon>
+                  </div> 
                 </template>
                 <span v-if="item.guestCheckout">  This order was processed as a guest checkout. </span>
+                <span v-else-if="item.firstTimeCustomer">This was the first order by this registered customer. </span>
                 <span v-else>This order was placed by a registered customer. </span>
               </v-tooltip>
-              {{ item.customerName && /[^\s]/.test(item.customerName) ? item.customerName : 'Guest Customer' }}
+              <span> {{ item.customerName && /[^\s]/.test(item.customerName) ? item.customerName : 'Guest Customer' }} </span>
+              
+              </p>
             </td>
             <td>
               <Currency
@@ -431,7 +441,7 @@ export default {
   border: 1px solid #efefef;
   text-align: left;
   padding: 8px 5px;
-  background: 'purple'
+  height: 100%;
 }
 .metric-avatar {
   float: left;
@@ -439,11 +449,20 @@ export default {
   margin-right: 5px;
   background: #fff;
 }
+
+.first-time-customer {
+  position: absolute;
+}
+.first-time-tooltip {
+  position: relative;
+  top: -32px;
+  left: 16px;
+}
+
 .metric-card .stat {
   font-size: 15px;
   font-weight: bold;
 }
-
 .sale-details {
   word-wrap: break-word;
 }
