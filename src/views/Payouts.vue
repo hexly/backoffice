@@ -100,7 +100,7 @@
           disable-pagination
           hide-default-footer
           :headers="headers"
-          :items="payouts"
+          :items="loading ? [] : payouts"
           class="elevation-1"
           item-key="id"
           :loading="loading"
