@@ -326,7 +326,7 @@ export default {
     },
     selectIntegration(integrationKey, label) {
       this.selectedIntegration = integrationKey
-      this.snackbarMsg = `Successfully Changed to ${label}!`
+      this.snackbarMsg = `Successfully changed to ${label}!`
       this.showSnackbar = true
     },
     dateSave (datePickerDate, startOrEnd) {
