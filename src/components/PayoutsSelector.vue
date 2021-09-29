@@ -115,7 +115,8 @@ export default {
       labelMapping: {
         i_payouts: 'iPayouts',
         paypal_payouts: 'PayPal Payouts',
-        hexly_payouts: 'Everra Pay'
+        hexly_payouts: 'Everra Pay',
+        stripe_connect: 'Stripe Connect'
       }
     }
   },
@@ -211,12 +212,13 @@ export default {
 
         await this.reloadIntegrations()
 
-        this.$emit('reload', this.selectedModel)
+        this.$emit('reload', this.selectedModel, this.labelMapping[this.selectedModel])
         this.loading = false
         this.dialog = false
       } catch (e) {
+        console.error(e)
         this.loading = false
-        this.error = e.message
+        this.error = 'We were unable to process that change. Please contact support'
       }
     },
     getMemberIntegration (key) {
