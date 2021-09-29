@@ -342,9 +342,10 @@ export default {
       variables () {
         const end = this.$moment(_.get(this, 'endDate', '1970-01-01')).format('YYYY-MM-DD')
         const start = this.$moment(_.get(this, 'startDate', '1970-01-01')).format('YYYY-MM-DD')
+        const memberId = this.mId || this.memberId
         return {
           input: {
-            memberIn: [this.memberId],
+            memberIn: [memberId],
             start,
             end
           }
