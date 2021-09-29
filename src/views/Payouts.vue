@@ -132,7 +132,7 @@
                   <span>{{statuses[item.status].toLowerCase()}}</span>
                 </v-tooltip>
               </td>
-              <td>{{ $moment(item.issuedOn).format('lll') }}</td>
+              <td>{{ $vuetify.breakpoint.xs ? $moment(item.issuedOn).format('l') : $moment(item.issuedOn).format('lll') }}</td>
               <!-- <td>{{ item.releasedOn ? $moment(item.releasedOn).format('lll') : '--' }}</td> -->
               <td>{{ item.note ? item.note : '--' }}</td>
               <td>{{ item.integrationName }}</td>
