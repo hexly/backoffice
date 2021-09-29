@@ -187,6 +187,24 @@
     >
       <v-card></v-card>
     </v-dialog>
+    <v-snackbar
+      top
+      v-model="showSnackbar"
+      color="success"
+      timeout="3000"
+    >
+      {{snackbarMsg}}
+      <template v-slot:action="{ attrs }">
+        <v-btn
+          icon
+          small
+          v-bind="attrs"
+          @click="showSnackbar = false"
+        >
+          <v-icon>close</v-icon>
+        </v-btn>
+      </template>
+    </v-snackbar>
   </v-flex>
 </template>
 
@@ -214,6 +232,8 @@ export default {
   },
   data () {
     return {
+      showSnackbar: false,
+      snackbarMsg: '',
       page: 1,
       pageSize: 25,
       totalResults: 0,
@@ -304,8 +324,10 @@ export default {
       }
       this.selectedIntegration = _.get(selectedIntegration, 'key')
     },
-    selectIntegration(integrationKey) {
+    selectIntegration(integrationKey, label) {
       this.selectedIntegration = integrationKey
+      this.snackbarMsg = `Successfully Changed to ${label}!`
+      this.showSnackbar = true
     },
     dateSave (datePickerDate, startOrEnd) {
       const varName = `${startOrEnd}Date`
