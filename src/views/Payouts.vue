@@ -289,6 +289,11 @@ export default {
       }
     }
   },
+  watch: {
+    integrations(newVal) {
+      this.loadSelectedIntegration()
+    }
+  },
   methods: {
     ...mapMutations([Mutations.SET_LOADING]),
     loadSelectedIntegration () {
