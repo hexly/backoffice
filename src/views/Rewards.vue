@@ -1,57 +1,67 @@
 <template>
-  <div class="insights-dashboard">
+  <div class="rewards my-4">
     <v-progress-linear v-if="loading" :indeterminate="true" style="margin-top: -12px; margin-bottom: 10px;"/>
     <v-row wrap class="mx-2">
       <v-col cols="12" md="6">
         <v-card>
           <v-toolbar color="secondary" dark>
-            <v-toolbar-title>Founding Influencer Tracker</v-toolbar-title>
-          </v-toolbar>
-          <v-card-text class="pa-1">
-            <v-list three-line class="pa-0 insights-list" v-if="marketCounts.length > 0">
-              <v-list-item class="pa-1 insights-row" v-for="market in marketCounts" :key="market.key">
-                <v-list-item-content>
-                  <v-list-item-title>{{market.name}} <Flag :name="market.key" /></v-list-item-title>
-                  <v-progress-linear :value="(market.count/1000)*100" height="25" color="green">
-                    <strong>{{market.count}} out of 1000</strong>
-                  </v-progress-linear>
-                  <v-list-item-action-text>First 1000 Influencers in {{market.name}} get a limited time "Founding Influencer" badge</v-list-item-action-text>
-                </v-list-item-content>
-              </v-list-item>
-            </v-list>
-          </v-card-text>
-        </v-card>
-      </v-col>
-      <v-col cols="12" md="6">
-        <v-card>
-          <v-toolbar color="secondary" dark>
-            <v-toolbar-title>Team Insights</v-toolbar-title>
+            <v-toolbar-title>Earned Rewards</v-toolbar-title>
             <v-spacer></v-spacer>
-            <PeriodSwitcher v-if="selectedPeriod"></PeriodSwitcher>
+            <v-toolbar-items class="mt-10">
+              <v-select
+                v-model="rewardsFilter"
+                :items="couponStatuses"
+                label="Filter By..."
+                multiple
+                clearable
+              />
+            </v-toolbar-items>
           </v-toolbar>
-          <v-alert
-            v-if="selectedPeriod.status === 'closed'"
-            class="mb-0"
-            icon="mdi-calendar-check"
-            text
-            dense
-            type="info">
-            You are currently viewing a past period
-          </v-alert>
-          <v-card-text class="pa-1">
-            <v-list three-line class="pa-0 insights-list" v-if="betaInsights.length">
-              <v-list-item v-for="insight in betaInsights" :key="insight.key" class="pa-1 insights-row">
-                <v-list-item-avatar>
-                  <v-icon large color="light-blue">{{insightInfo[insight.key].icon}}</v-icon>
-                </v-list-item-avatar>
+          <v-card-text class="pa-1 rewards-card">
+            <v-list three-line class="pa-0 rewardslist" v-if="filteredCoupons.length">
+              <v-list-item v-for="coupon in filteredCoupons" :key="coupon.code" class="pa-1 rewards-row">
                 <v-list-item-content>
-                  <v-list-item-title>{{insight.labels.header}}</v-list-item-title>
-                  <v-list-item-subtitle>{{insight.labels.tagline}}</v-list-item-subtitle>
-                  <small v-if="insightInfo[insight.key].desc">{{insightInfo[insight.key].desc}}</small>
+                  <v-list-item-title>{{coupon.metadata.note}}</v-list-item-title>
+                  <v-list-item-subtitle v-if="['REDEEMED', 'REVOKED'].indexOf(coupon.status) > -1">
+                    <v-chip color="gray" label>
+                        {{coupon.code.toUpperCase()}}
+                      </v-chip>
+                  </v-list-item-subtitle>
+                  <v-list-item-subtitle v-else>
+                    <template v-if="isTouchEnabled()">
+                      <v-chip color="orange" label @click="copyToClipboard(coupon.code.toUpperCase())" >
+                        {{coupon.code.toUpperCase()}}
+                      </v-chip>
+                      <br/>
+                      <small>{{tooltipText.replace('Click', 'Tap Code')}}</small>
+                    </template>
+                    <v-tooltip v-else bottom>
+                      <template v-slot:activator="{ on, attrs }">
+                        <v-chip
+                          v-bind="attrs"
+                          v-on="on"
+                          color="orange"
+                          label
+                          @click="copyToClipboard(coupon.code.toUpperCase())"
+                        >
+                          {{coupon.code.toUpperCase()}}
+                        </v-chip>
+                      </template>
+                      <span>{{tooltipText}}</span>
+                    </v-tooltip>
+                  </v-list-item-subtitle>
+                  <div v-if="coupon && coupon.config && coupon.config.type === 'FIXED_CART_AMOUNT'">
+                    <v-list-item-title class="mt-3">Discount Amount</v-list-item-title>
+                    <v-list-item-subtitle v-for="price in getCouponPricingInfo(coupon.config.amounts)" :key="price.key">
+                      <div v-if="price && !(typeof price.key === 'undefined') && !(typeof price.amount === 'undefined')">
+                        <span class="font-weight-bold">{{price.key}}</span>: {{(price.amount / 100).toFixed(2)}}
+                      </div>
+                    </v-list-item-subtitle>
+                  </div>
                 </v-list-item-content>
                 <v-list-item-action>
-                  <v-list-item-action-text>{{insight.values.formatted}}</v-list-item-action-text>
-                  <v-list-item-action-text>{{insight.values.tagline}}</v-list-item-action-text>
+                  <v-list-item-action-text> <v-chip class="my-1" color="light-blue white--text" small>{{couponMapping[coupon.type]}}</v-chip> </v-list-item-action-text>
+                  <v-list-item-action-text> <v-chip :color="['REDEEMED', 'REVOKED'].indexOf(coupon.status) > -1 ? 'red white--text' : 'green white--text'" small>{{couponMapping[coupon.status]}}</v-chip> </v-list-item-action-text>
                 </v-list-item-action>
               </v-list-item>
             </v-list>
@@ -59,15 +69,23 @@
           </v-card-text>
         </v-card>
       </v-col>
+      <template v-if="collection.sections && collection.sections.length > 0">
+        <template v-for="(section, i) in collection.sections">
+          <v-col cols="12" md="6" :key="`${section.type}-${i}`" v-if="section.type === 'PANEL' && section.display">
+            <template >
+              <InsightsPanel :data="section"/>
+            </template>
+          </v-col>
+        </template>
+      </template>
     </v-row>
   </div>
 </template>
 
 <script>
 import { mapState, mapGetters } from 'vuex'
-import { INSIGHTS, INSIGHTS_COLLECTION } from '@/graphql/comp.gql'
+import { INSIGHTS_COLLECTION } from '@/graphql/comp.gql'
 import { COUPONS } from '@/graphql/Marketing.gql'
-import { MARKET_COUNT } from '@/graphql/Member.gql'
 import PeriodSwitcher from '@/components/PeriodSwitcher.vue'
 import InsightsPanel from '@/components/insights/InsightsPanel.vue'
 import Flag from '@/components/Flag.vue'
@@ -186,29 +204,6 @@ export default {
         this.loading = isLoading
       }
     },
-    betaInsights: {
-      query: INSIGHTS,
-      variables() {
-        return {
-          input: {
-            memberId: this.member.id,
-            tenantId: this.$tenantInfo.id,
-            periodId: this.selectedPeriod.id
-          }
-        }
-      },
-      update({ comp: { insights } }) {
-        return insights.insights.filter(i => !!i.values.formatted)
-      },
-      skip() {
-        return !this.selectedPeriod.id
-      },
-      client: 'federated',
-      loadingKey: 'loadingInsights',
-      watchLoading(isLoading) {
-        this.loading = isLoading
-      }
-    },
     coupons: {
       query: COUPONS,
       variables() {
@@ -227,42 +222,17 @@ export default {
       watchLoading(isLoading) {
         this.loading = isLoading
       }
-    },
-    marketCounts: {
-      query: MARKET_COUNT,
-      variables: {
-        minThreshold: 0,
-        maxThreshold: 1000
-      },
-      update({ membership: { marketThresholdCount } }) {
-        return marketThresholdCount
-      },
-      client: 'federated',
-      watchLoading(isLoading) {
-        this.loading = isLoading
-      }
     }
-  },
-  mounted () {}
+  }
 }
 </script>
 
 <style scoped>
-.insights-card {
+.rewards-card {
   max-height: 400px;
   overflow: auto;
 }
-.insights-row:nth-child(odd){
+.rewards-row:nth-child(odd){
   background-color: #cecece;
-}
-.inner-alert {
-  margin: -15px -16px 6px -16px;
-}
-.insights-list {
-  margin: -4px;
-}
-.loading-bar-col {
-  position: absolute;
-  top: -3px;
 }
 </style>
