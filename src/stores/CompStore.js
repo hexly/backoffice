@@ -66,14 +66,14 @@ export const CompStore = {
         }
         const res = await apolloFederatedClient.query(getEngineStats(params))
         const results = _.get(res, 'data.engine.rankings.results')
-        const stats = formatData(results[0])
+        const stats = formatData(_.get(results, '0'))
         if (!transient) {
           commit(CompMutations.SET_STATS, { ...stats, id: periodId })
         }
         commit(CompMutations.STATS_LOADING, false)
         return [stats]
       } else if (version === 2) {
-        const memberId = input.membersIn[0]
+        const memberId = _.get(input, 'membersIn[0]')
         const { data } = await apolloFederatedClient.query(getCompStats(
           {
             memberId,
