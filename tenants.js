@@ -260,6 +260,7 @@ const tenantOptions = {
         dashboard: true,
         reports: false
       },
+      rewards: true,
       sales: true,
       activity: true,
       profileSettings: true,

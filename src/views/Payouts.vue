@@ -100,7 +100,7 @@
           disable-pagination
           hide-default-footer
           :headers="headers"
-          :items="payouts"
+          :items="loading ? [] : payouts"
           class="elevation-1"
           item-key="id"
           :loading="loading"
@@ -132,7 +132,7 @@
                   <span>{{statuses[item.status].toLowerCase()}}</span>
                 </v-tooltip>
               </td>
-              <td>{{ $moment(item.issuedOn).format('lll') }}</td>
+              <td>{{ $vuetify.breakpoint.xs ? $moment(item.issuedOn).format('l') : $moment(item.issuedOn).format('lll') }}</td>
               <!-- <td>{{ item.releasedOn ? $moment(item.releasedOn).format('lll') : '--' }}</td> -->
               <td>{{ item.note ? item.note : '--' }}</td>
               <td>{{ item.integrationName }}</td>
@@ -187,6 +187,24 @@
     >
       <v-card></v-card>
     </v-dialog>
+    <v-snackbar
+      top
+      v-model="showSnackbar"
+      color="success"
+      timeout="3000"
+    >
+      {{snackbarMsg}}
+      <template v-slot:action="{ attrs }">
+        <v-btn
+          icon
+          small
+          v-bind="attrs"
+          @click="showSnackbar = false"
+        >
+          <v-icon>close</v-icon>
+        </v-btn>
+      </template>
+    </v-snackbar>
   </v-flex>
 </template>
 
@@ -214,6 +232,8 @@ export default {
   },
   data () {
     return {
+      showSnackbar: false,
+      snackbarMsg: '',
       page: 1,
       pageSize: 25,
       totalResults: 0,
@@ -289,6 +309,11 @@ export default {
       }
     }
   },
+  watch: {
+    integrations(newVal) {
+      this.loadSelectedIntegration()
+    }
+  },
   methods: {
     ...mapMutations([Mutations.SET_LOADING]),
     loadSelectedIntegration () {
@@ -299,8 +324,10 @@ export default {
       }
       this.selectedIntegration = _.get(selectedIntegration, 'key')
     },
-    selectIntegration(integrationKey) {
+    selectIntegration(integrationKey, label) {
       this.selectedIntegration = integrationKey
+      this.snackbarMsg = `Successfully changed to ${label}!`
+      this.showSnackbar = true
     },
     dateSave (datePickerDate, startOrEnd) {
       const varName = `${startOrEnd}Date`

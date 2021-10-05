@@ -1,8 +1,8 @@
 <template>
-  <div class="customers">
+  <div class="customers py-2">
     <v-row wrap class="px-2">
       <v-col cols="12">
-        <CustomerTable :orderData="orderData" :loading="loading"/>
+        <CustomerTable class="mt-4" :orderData="orderData" :loading="loading"/>
       </v-col>
       <!-- <v-col cols="12">
         <RecentOrders :orderData="orderData"/>
