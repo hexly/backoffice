@@ -12,6 +12,7 @@ import Profile from './views/Profile.vue'
 import Assets from './views/Assets.vue'
 import Team from './views/Team.vue'
 import Payouts from './views/Payouts.vue'
+import Rewards from './views/Rewards.vue'
 import Sales from './views/Sales.vue'
 import Impersonate from './views/Impersonate.vue'
 import Redirect from './views/Redirect.vue'
@@ -142,6 +143,11 @@ export default new Router({
           path: 'payouts',
           name: 'payouts',
           component: Payouts
+        },
+        {
+          path: 'rewards',
+          name: 'rewards',
+          component: Rewards
         },
         {
           path: 'team',

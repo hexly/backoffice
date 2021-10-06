@@ -80,6 +80,17 @@
           </v-list-item-content>
         </v-list-item>
         <v-list-item
+          v-if="$tenantInfo.features.rewards"
+          to="/rewards"
+        >
+          <v-list-item-action>
+            <v-icon>mdi-gift</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>Rewards</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+        <v-list-item
           v-if="activeIntegrations.length"
           to="/integrations"
         >

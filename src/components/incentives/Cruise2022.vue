@@ -1,17 +1,24 @@
 <template>
   <v-card>
-    <v-img src="/img/1010/everra-trip.png" ></v-img>
-    <v-card-text class="text-center">
-      <div><span class="primary--text subheading font-weight-bold">WHERE: </span>Cruise (destination to be announced)</div>
-      <div><span class="primary--text subheading font-weight-bold">WHEN: </span>1st Quarter 2022</div>
-      <div><span class="primary--text subheading font-weight-bold">WHO: </span>Influencers from all markets who Qualify</div>
-      <div>Qualifying Period: June 1 – October 31, 2021</div>
-      <div>Incentive Trip Points (ITPs) required to qualify: <b>25,000</b></div>
+    <v-img src="/img/1010/Everra_Ready_BeautyBox.jpg" ></v-img>
+    <v-card-text class="text-center pb-0">
+      <div><span class="subheading font-weight-bold" style="color: rgb(153,203,213)">WHO: </span>Influencers from all markets who Qualify</div>
+      <div><span class="subheading font-weight-bold" style="color: rgb(153,203,213)">Qualifying Period:</span> June 1 – October 31, 2021</div>
+      <div>Incentive Trip Points (ITPs) required to qualify:</div>
+      <div>
+        Level 1: <b>15,000</b>
+        <span style="color: rgb(153,203,213); font-size: 18px;"> /</span>
+        Level 2: <b>20,000</b>
+        <span style="color: rgb(153,203,213); font-size: 18px;"> /</span>
+        Level 3: <b>25,000</b>
+      </div>
+      <a href="/docs/1010/Everra-I-am-ready-trip.pdf" target="_blank">View Details</a>
       <v-divider class="ma-3"></v-divider>
       <template v-if="engineStats && engineStats.awarded && !engineStatsLoading">
         <v-progress-linear
           rounded
-          color="rgb(195,163,194)"
+          background-color="rgba(255,222,232,0.4)"
+          color="rgb(153,203,213)"
           :height="25"
           :value="Math.round((tripPoints)/25000*100)">
           <template v-slot:default>
@@ -44,13 +51,13 @@
           </v-expansion-panels>
         </div>
       </template>
-      <v-progress-linear v-else rounded color="rgb(195,163,194)" :height="25" indeterminate>
+      <v-progress-linear v-else rounded background-color="rgb(255,222,232,0.4)" :height="25" indeterminate color="rgb(153,203,213)">
         <template v-slot:default>
-              <strong>Loading</strong>
-          </template>
+          <strong>Loading</strong>
+        </template>
       </v-progress-linear>
     </v-card-text>
-    <v-card-title>HOW TO EARN ITP</v-card-title>
+    <v-card-title style="color: rgb(153,203,213)" class="pt-0 font-weight-bold">HOW TO EARN ITP</v-card-title>
     <v-card-text>
       <div class="trip-points-copy">
         <div><strong>Personal Sales Volume</strong>: 1 PSV = 1 ITP</div>
@@ -116,8 +123,14 @@ export default {
   name: 'Cruise2022',
   computed: {
     tripPoints() {
-      const current = _.get(this, 'engineStats.awarded.it2022total', 0) || 0
-      return current
+      return _.get(this, 'engineStats.awarded.it2022total', 0) || 0
+    },
+    engineStats() {
+      let s = this.stats
+      if (_.isEmpty(this.stats.awarded)) {
+        s = this.previous
+      }
+      return s
     },
     showStatsMaintenance() {
       if (this.openPeriod) {
@@ -131,7 +144,7 @@ export default {
     },
     ...mapState({
       user: state => state.user,
-      engineStats: state => state.comp.stats,
+      stats: state => state.comp.stats,
       engineStatsLoading: state => state.comp.engineStatsLoading,
       openPeriod: state => state.comp.periods.open && state.comp.periods.open[0],
       previous: state => state.comp.previousPeriod
