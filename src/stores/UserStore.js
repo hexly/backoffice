@@ -108,17 +108,6 @@ export const UserStore = {
     },
     [UserMutations.SET_FED_JWT]: (state, jwt) => {
       state.jwtFed = jwt
-      state.isImpersonating = false
-      if (jwt) {
-        try {
-          const claims = JSON.parse(atob(jwt.split('.')[1]))
-          if (claims.auditId !== claims.identityId) {
-            state.isImpersonating = true
-          }
-        } catch (err) {
-          console.warn('Failed to detect impersonation: ', err)
-        }
-      }
     },
     [UserMutations.LOGIN_ERROR]: (state, err) => (state.loginError = err),
     [UserMutations.SET_PRINCIPAL]: (state, principal) => {
@@ -197,6 +186,8 @@ export const UserStore = {
         payload.context.impersonation = impersonation
       }
 
+      state.isImpersonating = false
+
       const res = await apolloFederatedClient.mutate({
         mutation: AUTH_GQL,
         variables: { input: payload }
@@ -206,6 +197,9 @@ export const UserStore = {
       const success = _.get(auth, 'success')
       const token = auth.authentication ? auth.authentication.token : undefined
       if (token && success) {
+        if (impersonation) {
+          state.isImpersonating = true
+        }
         const md = auth.metadata
         const { identityId, auditId, tenantId } = md.claims
 
