@@ -49,7 +49,7 @@ export const SEARCH_SALES_QUERY = gql`
             trackingId
             dateShipped
             trackingNumber
-            tracking_provider
+            trackingProvider
             customTrackingLink
             customTrackingProvider
           }
