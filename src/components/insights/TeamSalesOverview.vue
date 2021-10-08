@@ -55,7 +55,7 @@ export default {
         return {
           input: {
             memberId: this.memberId,
-            periodId: 19, // this.selectedPeriod.id,
+            periodId: this.selectedPeriod.id,
             page: this.page,
             pageSize: this.pageSize
           }
