@@ -14,6 +14,22 @@
             <v-list-item-title>Dashboard</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
+        <v-list-item v-if="$tenantInfo.features.sales" to="/sales">
+          <v-list-item-action>
+            <v-icon>shopping_basket</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>Sales</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+        <v-list-item v-if="$tenantInfo.features.payouts" to="/payouts">
+          <v-list-item-action>
+            <v-icon>attach_money</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>Payouts</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
         <v-list-item v-if="$tenantInfo.features.insights" to="/insights">
           <v-list-item-action>
             <v-icon>insights</v-icon>
@@ -22,20 +38,12 @@
             <v-list-item-title>Insights</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
-        <v-list-item v-if="$tenantInfo.features.announcements" to="/announcements">
+        <v-list-item v-if="$tenantInfo.features.rewards" to="/rewards">
           <v-list-item-action>
-            <v-icon>announcement</v-icon>
+            <v-icon>mdi-gift</v-icon>
           </v-list-item-action>
           <v-list-item-content>
-            <v-list-item-title>Announcements</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-        <v-list-item to="/profile">
-          <v-list-item-action>
-            <v-icon>contact_mail</v-icon>
-          </v-list-item-action>
-          <v-list-item-content>
-            <v-list-item-title>Profile</v-list-item-title>
+            <v-list-item-title>Rewards</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
         <!-- <v-list-item to="/assets">
@@ -46,21 +54,7 @@
             <v-list-item-title>Assets</v-list-item-title>
           </v-list-item-content>
         </v-list-item>-->
-        <v-list-item
-          v-if="$tenantInfo.features.sales"
-          to="/sales"
-        >
-          <v-list-item-action>
-            <v-icon>shopping_basket</v-icon>
-          </v-list-item-action>
-          <v-list-item-content>
-            <v-list-item-title>Order History</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-        <v-list-item
-          v-if="GET($tenantInfo, 'features.team.base', true)"
-          to="/team"
-        >
+        <v-list-item v-if="GET($tenantInfo, 'features.team.base', true)" to="/team">
           <v-list-item-action>
             <v-icon>people</v-icon>
           </v-list-item-action>
@@ -68,43 +62,7 @@
             <v-list-item-title>Team</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
-        <v-list-item
-          v-if="$tenantInfo.features.payouts"
-          to="/payouts"
-        >
-          <v-list-item-action>
-            <v-icon>attach_money</v-icon>
-          </v-list-item-action>
-          <v-list-item-content>
-            <v-list-item-title>Payouts</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-        <v-list-item
-          v-if="$tenantInfo.features.rewards"
-          to="/rewards"
-        >
-          <v-list-item-action>
-            <v-icon>mdi-gift</v-icon>
-          </v-list-item-action>
-          <v-list-item-content>
-            <v-list-item-title>Rewards</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-        <v-list-item
-          v-if="activeIntegrations.length"
-          to="/integrations"
-        >
-          <v-list-item-action>
-            <v-icon>compare_arrows</v-icon>
-          </v-list-item-action>
-          <v-list-item-content>
-            <v-list-item-title>Integrations</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-        <v-list-item
-          v-if="$tenantInfo.features.customers"
-          to="/customers"
-        >
+        <v-list-item v-if="$tenantInfo.features.customers" to="/customers">
           <v-list-item-action>
             <v-icon>people_outline</v-icon>
           </v-list-item-action>
@@ -112,10 +70,31 @@
             <v-list-item-title>Customers <sup>beta</sup></v-list-item-title>
           </v-list-item-content>
         </v-list-item>
-        <v-list-item
-          v-if="$tenantInfo.features.files"
-          to="/files"
-        >
+        <v-list-item v-if="$tenantInfo.features.announcements" to="/announcements">
+          <v-list-item-action>
+            <v-icon>announcement</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>Inventory</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+        <v-list-item v-if="activeIntegrations.length" to="/integrations">
+          <v-list-item-action>
+            <v-icon>compare_arrows</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>Integrations</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+        <v-list-item to="/profile">
+          <v-list-item-action>
+            <v-icon>contact_mail</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>Profile</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+        <v-list-item v-if="$tenantInfo.features.files" to="/files">
           <v-list-item-action>
             <v-icon>topic</v-icon>
           </v-list-item-action>
@@ -127,10 +106,7 @@
 
       <v-divider></v-divider>
       <v-list>
-        <v-list-item
-          :href="usersStoreUrl"
-          target="_blank"
-        >
+        <v-list-item :href="usersStoreUrl" target="_blank">
           <v-list-item-action>
             <v-icon>store</v-icon>
           </v-list-item-action>

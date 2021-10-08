@@ -24,3 +24,35 @@ export const GET_REPORTS = gql`
     }
   }
 `
+
+export const GET_TEAM_SALES = gql`
+  query teamAttribution($input: EngineAttributionSearchInput!){
+    engine {
+      getTeamAttributions(input: $input){
+        page
+        pageSize
+        results {
+          awardedDate
+          awardee {
+            id
+            mrn
+            displayName
+            avatar{
+              assetUrl
+            }
+            contacts {
+              emails {
+                email
+              }
+            }
+          }
+          integrationOid
+          stats
+          taxonomy
+        }
+        totalPages
+        totalResults
+      }
+    }
+  }
+`
