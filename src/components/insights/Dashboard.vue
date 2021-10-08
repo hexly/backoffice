@@ -60,6 +60,11 @@
         </v-card>
       </v-col>
     </v-row>
+    <v-row wrap class="mx-2">
+      <v-col cols="12" md="6">
+        <TeamSalesOverview/>
+      </v-col>
+    </v-row>
   </div>
 </template>
 
@@ -70,6 +75,7 @@ import { COUPONS } from '@/graphql/Marketing.gql'
 import { MARKET_COUNT } from '@/graphql/Member.gql'
 import PeriodSwitcher from '@/components/PeriodSwitcher.vue'
 import InsightsPanel from '@/components/insights/InsightsPanel.vue'
+import TeamSalesOverview from '@/components/insights/TeamSalesOverview.vue'
 import Flag from '@/components/Flag.vue'
 import * as _ from 'lodash'
 
@@ -78,7 +84,8 @@ export default {
   components: {
     PeriodSwitcher,
     InsightsPanel,
-    Flag
+    Flag,
+    TeamSalesOverview
   },
   data () {
     return {
@@ -248,6 +255,9 @@ export default {
 </script>
 
 <style scoped>
+.insights-dashboard{
+  padding-bottom: 65px;
+}
 .insights-card {
   max-height: 400px;
   overflow: auto;
