@@ -263,6 +263,7 @@ export default {
           await Promise.all([
             this.$apollo.mutate({
               mutation: UPDATE_PROFILE,
+              client: 'federated',
               variables: {
                 input: {
                   id: this.editMember.id,

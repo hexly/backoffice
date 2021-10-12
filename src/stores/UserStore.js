@@ -233,7 +233,7 @@ export const UserStore = {
       }
     },
     async [UserActions.SAVE_PROFILE] ({ commit }, { memberId, profileUrl }) {
-      await apolloHexlyClient.mutate({
+      await apolloFederatedClient.mutate({
         mutation: UPDATE_PROFILE,
         variables: {
           input: {
