@@ -106,8 +106,10 @@ export const GET_MEMBERS = gql`
 
 export const UPDATE_PROFILE = gql`
   mutation updateMemberSubset($input: MemberInfoInputSubset!) {
-    updateMemberSubset(input: $input) {
+    membership {
+      updateMemberSubset(input: $input) {
         id
+      }
     }
   }
 `
