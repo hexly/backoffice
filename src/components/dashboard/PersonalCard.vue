@@ -51,20 +51,20 @@ s<template>
     <v-divider></v-divider>
     <div class="text-center pt-2 pb-2">
       <h3 class="mb-2">{{sponsorName || 'Your Sponsor'}}</h3>
-      <v-layout v-if="stats.sponsor" align-center>
+      <v-layout v-if="sponsorName" align-center>
         <v-flex>
           <div  class="mt-3">
             <v-layout row class="text-right">
               <v-flex mx-2>
                 <v-avatar>
-                  <v-img v-if="stats.sponsor.avatar || $tenantInfo.placeholder" :src="(stats && stats.sponsor && stats.sponsor.avatar) ? stats.sponsor.avatar.assetUrl : $tenantInfo.placeholder"></v-img>
+                  <v-img v-if="sponsorAvatarUrl || $tenantInfo.placeholder" :src="sponsorAvatarUrl || $tenantInfo.placeholder"></v-img>
                 </v-avatar>
               </v-flex>
               <v-flex mx-2 class="text-left mb-5">
                 <div>
-                  <b>{{stats.sponsor.displayName}} </b>
+                  <b>{{sponsorName}} </b>
                   <br/>
-                  <small>{{(stats && stats.sponsor && stats.sponsor.contacts) ? stats.sponsor.contacts[0].emails[0].email : ''}}</small>
+                  <small>{{sponsorEmail}}</small>
                 </div>
               </v-flex>
             </v-layout>
@@ -105,6 +105,7 @@ import { getAsset } from '@/utils/AssetService'
 import { mapMutations, mapState, mapGetters, mapActions } from 'vuex'
 import { UserMutations, UserActions } from '@/stores/UserStore'
 import { Mutations } from '@/store'
+import _ from 'lodash'
 
 export default {
   name: 'PersonalCard',
@@ -116,7 +117,6 @@ export default {
   },
   props: {
     memberName: String,
-    sponsorName: String,
     showMrn: {
       type: Boolean,
       default: true
@@ -181,6 +181,18 @@ export default {
     ...mapGetters(['contactId', 'memberId', 'slug', 'isMonthInReview', 'tenantIntegrations']),
     isFounder() {
       return this.$moment(this.user.principal.member.joinedOn).isBefore('2020-03-01')
+    },
+    sponsorAvatarUrl() {
+      const url = _.get(this, 'user.principal.member.sponsor.avatar.assetUrl')
+      return url
+    },
+    sponsorName () {
+      const name = _.get(this, 'user.principal.member.sponsor.name')
+      return name
+    },
+    sponsorEmail () {
+      const email = _.get(this, 'user.principal.member.sponsor.contacts[0].emails[0].email')
+      return email
     }
   }
 }
