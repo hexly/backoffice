@@ -355,7 +355,7 @@ export default {
         this.setLoading(false)
         this.snackbarMsg = 'We were unable to find your orders! Please try again or contact support'
         this.showSnackbar = true
-        console.error({ err })
+        console.error(err)
       },
       debounce: 500,
       update (data) {

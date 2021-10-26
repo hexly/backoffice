@@ -380,6 +380,7 @@ export default {
           const statusId = get(principal, 'member.statusId')
           // Status Id 1 = Active Member
           if (!this.user.isImpersonating && (statusId !== 1 || tags.indexOf('backoffice:locked') >= 0)) {
+            console.warn('StatusId was either invalid or a tag of "backoffice:locked" was detected! Logging user out', { statusId, tags })
             this.logoutUser()
             window.location.reload(true)
           }
@@ -387,7 +388,9 @@ export default {
             return this.integrations.indexOf(i.key) > -1 && i.statusId === 200
           })
         } else {
-          console.warn('No principal data received!')
+          console.warn('No principal data received! Logging user out', { data })
+          this.logoutUser()
+          window.location.reload(true)
         }
       }
     }
