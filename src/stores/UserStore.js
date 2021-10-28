@@ -201,9 +201,28 @@ export const UserStore = {
           state.isImpersonating = true
         }
         const md = auth.metadata
+        const { identityId, auditId, tenantId } = md.claims
 
+        const principal = {
+          identityId, auditId, tenantId
+        }
+
+        if (md.member && md.member.id) {
+          principal.memberId = md.member && md.member.id
+          principal.member = md.member
+          principal.member.displayName = md.member.name
+        }
+
+        if (md.permissions) {
+          principal.permissions = md.permissions
+        }
         commit(UserMutations.SET_JWT, md.legacyJwt || token)
         commit(UserMutations.SET_FED_JWT, token)
+
+        const { member, tenant } = prepPrincipal(auth.principal)
+        principal.member = member
+        principal.tenant = tenant
+        commit(UserMutations.SET_PRINCIPAL, principal)
       } else {
         commit(
           UserMutations.LOGIN_ERROR,
