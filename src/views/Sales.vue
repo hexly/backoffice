@@ -136,7 +136,7 @@
             </td>
             <td>
               <Currency
-                :amount="item.HexlyTotalAmount ? parseFloat(item.HexlyTotalAmount.toFixed(2)) : 0"
+                :amount="item.total / 100"
                 :currency="item.currency"
               />
             </td>
