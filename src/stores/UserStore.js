@@ -216,7 +216,6 @@ export const UserStore = {
         if (md.permissions) {
           principal.permissions = md.permissions
         }
-
         commit(UserMutations.SET_JWT, md.legacyJwt || token)
         commit(UserMutations.SET_FED_JWT, token)
 

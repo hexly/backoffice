@@ -136,7 +136,7 @@
             </td>
             <td>
               <Currency
-                :amount="item.HexlyTotalAmount ? parseFloat(item.HexlyTotalAmount.toFixed(2)) : 0"
+                :amount="item.total / 100"
                 :currency="item.currency"
               />
             </td>
@@ -355,7 +355,7 @@ export default {
         this.setLoading(false)
         this.snackbarMsg = 'We were unable to find your orders! Please try again or contact support'
         this.showSnackbar = true
-        console.error({ err })
+        console.error(err)
       },
       debounce: 500,
       update (data) {
