@@ -22,6 +22,8 @@
                     <v-col cols="12" sm="6" class="py-0">
                       <v-text-field
                         v-model="editMember.firstName"
+                        id="givenName"
+                        autocomplete="give-name"
                         label="First Name*"
                         :rules="requiredRule"
                         required
@@ -30,7 +32,9 @@
                     <v-col cols="12" sm="6"  class="py-0">
                       <v-text-field
                         v-model="editMember.lastName"
-                        label="last Name*"
+                        id="familyName"
+                        autocomplete="family-name"
+                        label="Last Name*"
                         :rules="requiredRule"
                         required
                       ></v-text-field>
@@ -38,6 +42,20 @@
                   </v-row>
                   <v-col cols="12" class="pa-0">
                     <v-text-field
+                      id="displayName"
+                      name="displayName"
+                      label="Display Name*"
+                      autocomplete="nickname"
+                      v-model="editMember.displayName"
+                      :rules="requiredRule"
+                      hint="This is how people will see your name publicly"
+                      persistent-hint
+                    ></v-text-field>
+                  </v-col>
+                  <v-col cols="12" class="pa-0">
+                    <v-text-field
+                      id="email"
+                      autocomplete="email"
                       name="email"
                       label="Email*"
                       v-model="editMember.email"
@@ -58,32 +76,40 @@
                     ></v-text-field>
                   </v-col>
                   <v-text-field
+                    id="street"
+                    autocomplete="address-line1"
                     label="Street*"
-                    name="Street"
-                    v-model="editMember.address.street"
+                    name="street"
+                    v-model="editMember.street"
                     :rules="requiredRule"
                     required
                   ></v-text-field>
                   <v-text-field
+                    id="street2"
+                    autocomplete="address-line2"
                     label="Street 2"
-                    name="Street 2"
-                    v-model="editMember.address.street2"
+                    name="street2"
+                    v-model="editMember.street2"
                   ></v-text-field>
                   <v-row>
                     <v-col cols="12" sm="4">
                       <v-text-field
                         label="City*"
-                        name="City"
-                        v-model="editMember.address.city"
+                        name="city"
+                        id="city"
+                        autocomplete="address-level2"
+                        v-model="editMember.city"
                         :rules="requiredRule"
                         required
                       ></v-text-field>
                       </v-col>
                       <v-col cols="12" sm="4">
                       <v-text-field
+                        id="state"
+                        autocomplete="address-level1"
                         label="State/Province*"
-                        name="State/Province"
-                        v-model="editMember.address.province"
+                        name="state"
+                        v-model="editMember.province"
                         :rules="requiredRule"
                         required
                       ></v-text-field>
@@ -91,8 +117,10 @@
                       <v-col cols="12" sm="4">
                       <v-text-field
                         label="Postal Code*"
-                        name="Postal Code"
-                        v-model="editMember.address.postalCode"
+                        name="postalCode"
+                        id="postalCode"
+                        autocomplete="postal-code"
+                        v-model="editMember.postalCode"
                         :rules="requiredRule"
                         required
                       ></v-text-field>
@@ -100,16 +128,20 @@
                   </v-row>
                   <v-select
                     label="Country*"
-                    name="Country"
-                    v-model="editMember.address.country"
+                    name="country"
+                    v-model="editMember.country"
                     :rules="requiredRule"
+                    id="country"
+                    autocomplete="country"
                     required
                     :items="SELECT_ITEMS"
                   ></v-select>
                   <v-text-field
                     v-model="editMember.phone"
+                    id="phone"
+                    autocomplete="tel"
                     label="Phone*"
-                    name="Phone"
+                    name="phone"
                     :rules="requiredRule"
                   >
                   </v-text-field>
@@ -117,6 +149,8 @@
                     <template v-slot:activator="{ on }">
                       <v-text-field
                         v-on="on"
+                        id="bday"
+                        autocomplete="bday"
                         v-model="editMember.birthday"
                         label="Date of Birth*"
                         prepend-icon="event"
@@ -124,7 +158,7 @@
                         :rules="birthdateRule"
                       ></v-text-field>
                     </template>
-                    <v-date-picker scrollable v-model="datePickerDate" ref="picker">
+                    <v-date-picker scrollable v-model="datePickerDate" :active-picker.sync="picker">
                       <v-spacer></v-spacer>
                       <v-btn text color="primary" @click="datePickerModal = false">Cancel</v-btn>
                       <v-btn text color="primary" @click="dateSave(datePickerDate); $refs.dialog.save()">OK</v-btn>
@@ -138,14 +172,14 @@
                     item-text="name"
                     item-value="id"
                   />
-                  <v-autocomplete
+                  <!-- <v-autocomplete
                     v-model="editMember.languageId"
                     label="Select Preferred Language*"
                     :rules="requiredRule"
                     :items="settings.languages"
                     item-text="name"
                     item-value="id"
-                  />
+                  /> -->
                   <v-autocomplete
                     v-model="editMember.timezoneId"
                     label="Select Timezone*"
@@ -204,17 +238,19 @@ import { UserMutations, UserActions } from '@/stores/UserStore'
 import { Actions } from '@/Members/Store'
 import { LOCALE_QUERY } from '@/graphql/GetLocalSettings'
 import { WELCOME_EMAIL } from '@/graphql/Member.gql'
+import { CREATE } from '@/graphql/AccountCreate.gql'
 import { encrypt } from '@/utils/EncryptionService'
 import AgreementCheckbox from '@/components/Agreement'
 import Rules from '@/views/Rules.js'
 
 export default {
-  name: 'AccountClaim',
+  name: 'AccountCreate',
   components: {
     AgreementCheckbox
   },
   data () {
     return {
+      picker: null,
       SELECT_ITEMS: [
         { text: 'United States of America', value: 'US' },
         { text: 'United Kingdom', value: 'GB' },
@@ -230,8 +266,8 @@ export default {
       requiredRule: Rules.requiredRule,
       passwordRule: Rules.passwordRule,
       birthdateRule: Rules.birthdateRule,
+      emailRule: Rules.emailRule,
       birthdayFormat: Rules.birthdayFormat,
-      emailFormat: Rules.emailFormat,
       affiliate: null,
       policies: null,
       agreement: {
@@ -239,26 +275,23 @@ export default {
         policies: false
       },
       editMember: {
-        contactEmail: null,
+        tenantId: tenantInfo.id,
+        firstName: null,
+        lastName: null,
         displayName: null,
         languageId: null,
         legalLocaleId: null,
         memberId: null,
-        name: null,
         password: null,
         timezoneId: null,
-        username: null,
+        email: null,
         phone: null,
-        address: {
-          id: null,
-          name: null,
-          street: null,
-          city: null,
-          province: null,
-          country: null,
-          postalCode: null,
-          street2: null
-        }
+        street: null,
+        city: null,
+        province: null,
+        country: null,
+        postalCode: null,
+        street2: null
       },
       settings: {},
       logoPath: tenantInfo.logoLoginPath,
@@ -325,7 +358,7 @@ export default {
   },
   watch: {
     datePickerModal (val) {
-      val && setTimeout(() => (this.$refs.picker.activePicker = 'YEAR'))
+      val && setTimeout(() => (this.picker = 'YEAR'))
     }
   },
   methods: {
@@ -344,64 +377,72 @@ export default {
     },
     async onSubmit () {
       if (this.$refs.claim.validate()) {
-        this.loading = true
+        // this.loading = true
         // Encrypt info
         try {
-          const encryptedAffiliate = await encrypt({
-            plainText: 'on-register',
-            metadata: {
-              affiliate: this.affiliate,
-              policies: this.policies
-            }
+          // const encryptedAffiliate = await encrypt({
+          //   plainText: 'on-register',
+          //   metadata: {
+          //     affiliate: this.affiliate,
+          //     policies: this.policies
+          //   }
+          // })
+          // const { token } = this.$route.params
+          // console.log(encryptedAffiliate, this.editMember)
+          console.log(this.editMember)
+          await this.$apollo.mutate({
+            mutation: CREATE,
+            variables: {
+              input: this.editMember
+            },
+            client: 'federated'
           })
-          const { token } = this.$route.params
+          // const { data: { consumeOneTimeToken } } = await this.createAccount({
+          //   emailId: this.editMember.emailId,
+          //   contactId: this.editMember.contactId,
+          //   contactEmail: this.editMember.contactEmail,
+          //   displayName: this.editMember.displayName,
+          //   languageId: this.editMember.languageId,
+          //   legalLocaleId: this.editMember.legalLocaleId,
+          //   memberId: this.editMember.memberId,
+          //   name: this.editMember.name,
+          //   password: this.editMember.password,
+          //   timezoneId: this.editMember.timezoneId,
+          //   username: this.editMember.username,
+          //   birthday: this.$moment(this.editMember.birthday, this.birthdayFormat).format('YYYY-MM-DD'),
+          //   simpleClaim: false,
+          //   token
+          // })
 
-          const { data: { consumeOneTimeToken } } = await this.createAccount({
-            emailId: this.editMember.emailId,
-            contactId: this.editMember.contactId,
-            contactEmail: this.editMember.contactEmail,
-            displayName: this.editMember.displayName,
-            languageId: this.editMember.languageId,
-            legalLocaleId: this.editMember.legalLocaleId,
-            memberId: this.editMember.memberId,
-            name: this.editMember.name,
-            password: this.editMember.password,
-            timezoneId: this.editMember.timezoneId,
-            username: this.editMember.username,
-            birthday: this.$moment(this.editMember.birthday, this.birthdayFormat).format('YYYY-MM-DD'),
-            simpleClaim: false,
-            token
-          })
-
-          if (consumeOneTimeToken && consumeOneTimeToken !== 'done') {
-            await this.login({
-              username: this.editMember.username,
-              password: this.editMember.password,
-              tenantId: ~~process.env.VUE_APP_TENANT_ID
-            })
-            await this.upsertAttribute({
-              private: true,
-              key: 'affiliate-agreement',
-              value: encryptedAffiliate.payload,
-              signature: encryptedAffiliate.signature
-            })
-            // Temporary Welcome Email
-            const emailTemplate = process.env.VUE_APP_WELCOME_EMAIL_TEMPLATE
-            if (emailTemplate) {
-              await this.$apollo.mutate({
-                mutation: WELCOME_EMAIL,
-                variables: {
-                  input: {
-                    memberId: this.editMember.memberId,
-                    tenantId: ~~process.env.VUE_APP_TENANT_ID,
-                    templateId: process.env.VUE_APP_WELCOME_EMAIL_TEMPLATE
-                  }
-                },
-                client: 'federated'
-              })
-            }
-            this.$router.push('/dashboard')
-          }
+          // if (consumeOneTimeToken && consumeOneTimeToken !== 'done') {
+          //   await this.login({
+          //     username: this.editMember.username,
+          //     password: this.editMember.password,
+          //     tenantId: ~~process.env.VUE_APP_TENANT_ID
+          //   })
+          //   await this.upsertAttribute({
+          //     private: true,
+          //     key: 'affiliate-agreement',
+          //     value: encryptedAffiliate.payload,
+          //     signature: encryptedAffiliate.signature
+          //   })
+          //   // Temporary Welcome Email
+          //   const emailTemplate = process.env.VUE_APP_WELCOME_EMAIL_TEMPLATE
+          //   if (emailTemplate) {
+          //     await this.$apollo.mutate({
+          //       mutation: WELCOME_EMAIL,
+          //       variables: {
+          //         input: {
+          //           memberId: this.editMember.memberId,
+          //           tenantId: ~~process.env.VUE_APP_TENANT_ID,
+          //           templateId: process.env.VUE_APP_WELCOME_EMAIL_TEMPLATE
+          //         }
+          //       },
+          //       client: 'federated'
+          //     })
+          //   }
+          //   this.$router.push('/dashboard')
+          // }
         } catch (e) {
           console.warn('Failed saving', { e })
           this.error = e
