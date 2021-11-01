@@ -358,7 +358,11 @@ export default {
       })
       this.troubleShootingCode = uuid
     },
-    ...mapMutations([Mutations.SET_GATE, UserMutations.SET_MEMBER, UserMutations.SET_TENANT]),
+    ...mapMutations([
+      Mutations.SET_GATE,
+      UserMutations.SET_MEMBER,
+      UserMutations.SET_TENANT
+    ]),
     ...mapActions({
       logoutUser: Actions.LOGOUT,
       getAttributes: MemberActions.GET_ATTRIBUTES,
@@ -371,6 +375,16 @@ export default {
         if (!hydratedState.jwtFed) {
           this.logout()
           return
+        }
+
+        const jwt = hydratedState.jwtFed
+        const decoded = jwt.split('.')[1]
+        const payload = JSON.parse(atob(decoded))
+        const exp = payload.exp
+        const now = Math.floor(Date.now() / 1000)
+        if (exp < now) {
+          console.warn('Expired JWT... logging out')
+          this.logout()
         }
       } catch (e) {
         console.warn(e)
