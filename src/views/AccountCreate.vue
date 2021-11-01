@@ -275,6 +275,7 @@ export default {
         policies: false
       },
       editMember: {
+        marketId: null,
         tenantId: tenantInfo.id,
         firstName: null,
         lastName: null,
@@ -314,6 +315,7 @@ export default {
       //   emailId,
       //   contactEmail: email
       // }
+      this.editMember.marketId = 1000
       this.loading = false
     } catch (err) {
       console.error('ERROR getting token', err)
