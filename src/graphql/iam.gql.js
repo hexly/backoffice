@@ -216,18 +216,6 @@ export const PRINCIPAL = gql`
             }
           }
           slug
-          sponsor {
-            id
-            name
-            avatar {
-              assetUrl
-            }
-            contacts {
-              emails {
-                email
-              }
-            }
-          }
           contacts {
             id
             emails {

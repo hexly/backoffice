@@ -130,10 +130,7 @@
       </v-list>
       <v-divider v-if="hasAdminMenu"></v-divider>
       <v-list v-if="hasAdminMenu">
-        <v-list-item
-          target="_blank"
-          href="https://admin.hexly.cloud"
-        >
+        <v-list-item target="_blank" href="https://admin.hexly.cloud">
           <v-list-item-action>
             <v-icon>cloud_circle</v-icon>
           </v-list-item-action>
@@ -141,10 +138,7 @@
             <v-list-item-title>Hexly Admin</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
-        <v-list-item
-          v-if="hasZendeskAdmin"
-          to="/zendesk"
-        >
+        <v-list-item v-if="hasZendeskAdmin" to="/zendesk">
           <v-list-item-action>
             <v-icon>supervised_user_circle</v-icon>
           </v-list-item-action>
@@ -181,12 +175,7 @@
         </div>
       </div>
     </v-navigation-drawer>
-    <v-app-bar
-      :color="$tenantInfo.baseColor"
-      dark
-      fixed
-      app
-    >
+    <v-app-bar :color="$tenantInfo.baseColor" dark fixed app>
       <v-app-bar-nav-icon
         v-if="$vuetify.breakpoint.mdAndDown"
         @click.stop="drawer = !drawer"
@@ -196,10 +185,7 @@
       <v-toolbar-items>
         <v-menu offset-y>
           <template v-slot:activator="{ on }">
-            <v-btn
-              text
-              v-on="on"
-            >
+            <v-btn text v-on="on">
               <span
                 data-cy="Display Name"
                 v-if="$vuetify.breakpoint.mdAndUp"
@@ -211,18 +197,14 @@
             </v-btn>
           </template>
           <v-list>
-            <v-list-item
-              @click="logout"
-              v-if="user.isImpersonating"
-            >
+            <v-list-item @click="logout" v-if="user.isImpersonating">
               <v-list-item-title>End Impersonation</v-list-item-title>
             </v-list-item>
-            <v-list-item
-              data-cy="Logout"
-              @click="logout"
-              v-if="!user.isImpersonating"
-            >
+            <v-list-item data-cy="Logout" @click="logout" v-if="!user.isImpersonating">
               <v-list-item-title>Log Out</v-list-item-title>
+            </v-list-item>
+            <v-list-item v-if="showTroubleshoot" @click="troubleshootingDialog = true">
+              <v-list-item-title>Troubleshooting</v-list-item-title>
             </v-list-item>
           </v-list>
         </v-menu>
@@ -246,12 +228,34 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn
-            color="primary"
-            text
-            @click="$router.push('/profile')"
-          >Go To Profile Page</v-btn>
+          <v-btn color="primary" text @click="$router.push('/profile')">Go To Profile Page</v-btn>
         </v-card-actions>
+      </v-card>
+    </v-dialog>
+    <v-dialog
+      v-model="troubleshootingDialog"
+      fullscreen
+      hide-overlay
+      transition="dialog-bottom-transition"
+    >
+      <v-card>
+        <v-toolbar dark color="primary">
+          <v-btn icon dark @click="dismissDiagnostics">
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
+          <v-toolbar-title>Troubleshooting</v-toolbar-title>
+        </v-toolbar>
+        <v-card-text class="pt-3">
+          <template v-if="!troubleShootingCode">
+            <h3>Having issues with the Influencer Hub?</h3>
+            <p>Please let us know what issues you are seeing and submit site daignostics so we can help you with your current issue.</p>
+            <v-textarea outlined counter="250" v-model="troubleShootingMessage"></v-textarea>
+            <v-btn color="primary" dark @click="submitTroubleshooting">Submit Diagnostics</v-btn>
+          </template>
+          <template v-else-if="troubleShootingCode">
+            <v-alert type="success">Diagnostics have been submitted succesfully! Please send the following code to support <code class="overline">{{troubleShootingCode}}</code></v-alert>
+          </template>
+        </v-card-text>
       </v-card>
     </v-dialog>
   </div>
@@ -259,12 +263,14 @@
 
 <script>
 import moment from 'moment'
+import { v4 as uuidv4 } from 'uuid'
 import { Actions, Mutations } from '@/store'
 import { UserMutations, prepPrincipal } from '@/stores/UserStore'
 import { CompActions } from '@/stores/CompStore'
 import { Actions as MemberActions } from '@/Members/Store'
 import { mapState, mapActions, mapMutations, mapGetters } from 'vuex'
 import { PRINCIPAL } from '@/graphql/iam.gql'
+import { DIAGNOSTICS } from '@/graphql/System.gql'
 import { get, isEmpty } from 'lodash'
 const impersonationPrefix = 'Impersonating '
 export default {
@@ -275,7 +281,10 @@ export default {
       impersonationPrefix,
       drawer: null,
       activeIntegrations: [],
-      payoutIntegrations: []
+      payoutIntegrations: [],
+      troubleshootingDialog: false,
+      troubleShootingCode: null,
+      troubleShootingMessage: null
     }
   },
   props: {
@@ -305,6 +314,9 @@ export default {
     showGateDialog () {
       return this.showGate && this.$route.path.indexOf('profile') === -1
     },
+    showTroubleshoot() {
+      return true
+    },
     getAvatar () {
       let image = this.$tenantInfo.placeholder
       if (!isEmpty(this.user.principal.member.profileUrl) && this.user.principal.member.profileUrl.indexOf('cloudinary') >= 0) {
@@ -322,6 +334,29 @@ export default {
     logout () {
       this.logoutUser()
       window.location.reload(true)
+    },
+    dismissDiagnostics () {
+      this.troubleshootingDialog = false
+      this.troubleShootingCode = null
+      this.troubleShootingMessage = null
+    },
+    async submitTroubleshooting() {
+      const uuid = uuidv4()
+      const local = JSON.parse(localStorage.getItem('store'))
+      const url = window.location.href
+      const version = window.$version
+      const { userAgent } = window.navigator
+      await this.$apollo.mutate({
+        mutation: DIAGNOSTICS,
+        client: 'federated',
+        variables: {
+          input: {
+            data: { message: this.troubleShootingMessage, local, url, version, userAgent },
+            meta: { code: uuid }
+          }
+        }
+      })
+      this.troubleShootingCode = uuid
     },
     ...mapMutations([Mutations.SET_GATE, UserMutations.SET_MEMBER, UserMutations.SET_TENANT]),
     ...mapActions({
@@ -380,6 +415,7 @@ export default {
           const statusId = get(principal, 'member.statusId')
           // Status Id 1 = Active Member
           if (!this.user.isImpersonating && (statusId !== 1 || tags.indexOf('backoffice:locked') >= 0)) {
+            console.warn('StatusId was either invalid or a tag of "backoffice:locked" was detected! Logging user out', { statusId, tags })
             this.logoutUser()
             window.location.reload(true)
           }
@@ -387,7 +423,9 @@ export default {
             return this.integrations.indexOf(i.key) > -1 && i.statusId === 200
           })
         } else {
-          console.warn('No principal data received!')
+          console.warn('No principal data received! Logging user out', { data })
+          this.logoutUser()
+          window.location.reload(true)
         }
       }
     }
