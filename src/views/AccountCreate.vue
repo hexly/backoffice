@@ -15,7 +15,7 @@
               </div>
               <div class="center" v-if="!loading">
                 <p class="headline">Welcome {{editMember.name}}!</p>
-                <p>Please fill out the following information to create your account.</p>
+                <p>Congratulations! We are excited to work with you! Please fill out the following information to create your account.</p>
                 <v-alert type="warning" v-if="error">{{error}}</v-alert>
                 <v-form ref="claim" @submit.prevent="onSubmit" lazy-validation>
                   <v-row>
@@ -281,7 +281,6 @@ export default {
         displayName: null,
         languageId: null,
         legalLocaleId: null,
-        memberId: null,
         password: null,
         timezoneId: null,
         email: null,
@@ -393,7 +392,10 @@ export default {
           await this.$apollo.mutate({
             mutation: CREATE,
             variables: {
-              input: this.editMember
+              input: {
+                ...this.editMember,
+                birthday: this.$moment(this.editMember.birthday, this.birthdayFormat).format('YYYY-MM-DD')
+              }
             },
             client: 'federated'
           })
