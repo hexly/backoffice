@@ -123,7 +123,7 @@ export default {
   name: 'Cruise2022',
   computed: {
     tripPoints() {
-      return _.get(this, 'engineStats.awarded.it2022total', 0) || 0
+      return _.get(this, 'engineStats.awarded.it2022prev', 0) || 0
     },
     engineStats() {
       let s = this.stats
