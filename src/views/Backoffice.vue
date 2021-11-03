@@ -393,21 +393,29 @@ export default {
   },
   async mounted () {
     this.checkJWT()
-    await this.compGetPeriods({
-      input: {
-        memberId: this.user.principal.memberId,
-        dateTo: moment().format('YYYY-MM-DD'),
-        tenantId: this.$tenantId
-      }
-    })
-    if (this.$tenantInfo.features.legal === true) {
-      const res = await this.getAttributes({
-        idIn: [this.user.principal.memberId],
-        tenantIn: [this.$tenantId]
+    try {
+      await this.compGetPeriods({
+        input: {
+          memberId: this.user.principal.memberId,
+          dateTo: moment().format('YYYY-MM-DD'),
+          tenantId: this.$tenantId
+        }
       })
-      const getMemberAttributes = get(res, 'data.membership.search.results.0.attributes', [])
-      if (getMemberAttributes.length < 2) {
-        this.setGate(true)
+    } catch (error) {
+      console.error(error)
+    }
+    if (this.$tenantInfo.features.legal === true) {
+      try {
+        const res = await this.getAttributes({
+          idIn: [this.user.principal.memberId],
+          tenantIn: [this.$tenantId]
+        })
+        const getMemberAttributes = get(res, 'data.membership.search.results.0.attributes', [])
+        if (getMemberAttributes.length < 2) {
+          this.setGate(true)
+        }
+      } catch (error) {
+        console.error(error)
       }
     }
   },
