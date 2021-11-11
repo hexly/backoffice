@@ -1,5 +1,5 @@
 <template>
-  <v-content>
+  <v-content class="account-create">
     <v-container fluid fill-height>
       <v-layout align-center justify-center>
         <v-flex xs12 sm8 md8>
@@ -13,11 +13,16 @@
                 <v-progress-circular indeterminate :size="70" :width="7" color="black"></v-progress-circular>
                 <p>We are reteiving your information, please hold.</p>
               </div>
-              <div class="center" v-if="!loading">
+              <div class="center" v-if="saving">
+                <v-progress-circular indeterminate :size="70" :width="7" color="black"></v-progress-circular>
+                <p>Creating your account... We're excited to have you join Everra!</p>
+              </div>
+              <div class="center" v-if="!loading && !saving">
                 <p class="headline">Welcome {{editMember.name}}!</p>
                 <p>Congratulations! We are excited to work with you! Please fill out the following information to create your account.</p>
                 <v-alert type="warning" v-if="error">{{error}}</v-alert>
                 <v-form ref="claim" @submit.prevent="onSubmit" lazy-validation>
+                  <h3 class="text-left pb-1 pt-4">Account Information</h3>
                   <v-row>
                     <v-col cols="12" sm="6" class="py-0">
                       <v-text-field
@@ -75,6 +80,25 @@
                       :type="visible ? 'text' : 'password'"
                     ></v-text-field>
                   </v-col>
+                  <div class="text-left pt-4">
+                    <h3>Your Influencer Link</h3>
+                    <small>This is the link you will use to share with your customers. Pick a name that matches your brand.</small>
+                    <br/>
+                    <code style="white-space: nowrap;">{{$tenantInfo.storeUrl.replace('{slug}', '')}}{{editMember.slug}}</code>
+                  </div>
+                  <v-text-field
+                    ref="slugField"
+                    :loading="checkingSlug"
+                    placeholder="my-personal-link"
+                    class="slug-field edit-link"
+                    v-model="editMember.slug"
+                    @keyup="slugChanged"
+                    :rules="slugRule"
+                    :error-messages="slugErrors"
+                    outline
+                    label="Influencer Link Name"
+                  ></v-text-field>
+                  <h3 class="text-left pb-2 pt-4">Personal Information</h3>
                   <v-text-field
                     id="street"
                     autocomplete="address-line1"
@@ -188,6 +212,19 @@
                     item-text="name"
                     item-value="id"
                   />
+                  <div class="text-left pt-4">
+                    <h3>Your Preffered Payout Method</h3>
+                    <small>Please select the method in which you'd like to get paid. For more information please click on the following links: </small>
+                    <ul>
+                      <li><a href="https://paypal.com/" target="_blank">PayPal</a></li>
+                      <li><a href="https://www.everra.com/wp-content/uploads/2020/11/Everra-eWallet-FAQ_compressed.pdf" target="_blank">eWallet Information</a></li>
+                    </ul>
+                  </div>
+                  <v-radio-group v-model="preferredPayout" mandatory>
+                    <v-radio label="eWallet" value="45"></v-radio>
+                    <v-radio label="PayPal" value="53"></v-radio>
+                  </v-radio-group>
+                  <h3 class="text-left pb-2 pt-4">Legal Information</h3>
                   <v-flex xs12>
                     <v-checkbox
                       v-model="agreement.affiliate"
@@ -196,7 +233,6 @@
                       @click="accept('affiliate')"
                     >
                       <template slot="label">
-                        <!-- WTF? Why does that need to be there? -->
                         I agree to the&nbsp;<a @click.stop target="_blank" :href="$tenantInfo.agreements[0].url">Independent Contractor Agreement</a>*
                       </template>
                     </v-checkbox>
@@ -231,12 +267,14 @@
 </template>
 
 <script>
-import { mapActions, mapMutations } from 'vuex'
+import { debounce } from 'lodash'
+import { mapActions } from 'vuex'
 import tenantInfo from '@/tenant.js'
 import { ClaimActions } from '@/stores/ClaimStore'
-import { UserMutations, UserActions } from '@/stores/UserStore'
+import { UserActions } from '@/stores/UserStore'
 import { Actions } from '@/Members/Store'
 import { LOCALE_QUERY } from '@/graphql/GetLocalSettings'
+import { CHECK_IF_UNIQUE_SLUG } from '@/graphql/Slug'
 import { WELCOME_EMAIL } from '@/graphql/Member.gql'
 import { CREATE } from '@/graphql/AccountCreate.gql'
 import { encrypt } from '@/utils/EncryptionService'
@@ -261,21 +299,26 @@ export default {
       datePickerModal: false,
       datePickerDate: null,
       loading: true,
+      saving: false,
       visible: false,
       error: null,
       requiredRule: Rules.requiredRule,
       passwordRule: Rules.passwordRule,
       birthdateRule: Rules.birthdateRule,
       emailRule: Rules.emailRule,
+      slugRule: Rules.slugRule,
       birthdayFormat: Rules.birthdayFormat,
+      checkingSlug: false,
+      slugErrors: [],
       affiliate: null,
       policies: null,
       agreement: {
         affiliate: false,
         policies: false
       },
+      preferredPayout: 45,
       editMember: {
-        marketId: null,
+        market: null,
         tenantId: tenantInfo.id,
         firstName: null,
         lastName: null,
@@ -306,16 +349,12 @@ export default {
       // const { data: { oneTimeToken: member } } = await this.getToken({ token })
       // const { id: contactId, emails } = member.contacts[0]
       // const { email, id: emailId } = emails[0]
-      // this.editMember = {
-      //   ...this.editMember,
-      //   ...member,
-      //   memberId: member.id,
-      //   username: email,
-      //   contactId,
-      //   emailId,
-      //   contactEmail: email
-      // }
-      this.editMember.marketId = 1000
+      this.editMember.sponsorOid = '82990'
+      this.editMember.customerOid = null
+      this.editMember.market = 'usa'
+      this.editMember.tenantIntegrationId = 32
+      this.editMember.responseId = ~~applicationId
+      this.editMember.responseCode = hashId
       this.loading = false
     } catch (err) {
       console.error('ERROR getting token', err)
@@ -378,20 +417,17 @@ export default {
     },
     async onSubmit () {
       if (this.$refs.claim.validate()) {
-        // this.loading = true
-        // Encrypt info
+        this.saving = true
         try {
-          // const encryptedAffiliate = await encrypt({
-          //   plainText: 'on-register',
-          //   metadata: {
-          //     affiliate: this.affiliate,
-          //     policies: this.policies
-          //   }
-          // })
-          // const { token } = this.$route.params
-          // console.log(encryptedAffiliate, this.editMember)
-          console.log(this.editMember)
-          await this.$apollo.mutate({
+          const encryptedAffiliate = await encrypt({
+            plainText: 'on-register',
+            metadata: {
+              affiliate: this.affiliate,
+              policies: this.policies
+            }
+          })
+          console.log(encryptedAffiliate, this.editMember)
+          const createMemberResponse = await this.$apollo.mutate({
             mutation: CREATE,
             variables: {
               input: {
@@ -401,66 +437,77 @@ export default {
             },
             client: 'federated'
           })
-          // const { data: { consumeOneTimeToken } } = await this.createAccount({
-          //   emailId: this.editMember.emailId,
-          //   contactId: this.editMember.contactId,
-          //   contactEmail: this.editMember.contactEmail,
-          //   displayName: this.editMember.displayName,
-          //   languageId: this.editMember.languageId,
-          //   legalLocaleId: this.editMember.legalLocaleId,
-          //   memberId: this.editMember.memberId,
-          //   name: this.editMember.name,
-          //   password: this.editMember.password,
-          //   timezoneId: this.editMember.timezoneId,
-          //   username: this.editMember.username,
-          //   birthday: this.$moment(this.editMember.birthday, this.birthdayFormat).format('YYYY-MM-DD'),
-          //   simpleClaim: false,
-          //   token
-          // })
-
-          // if (consumeOneTimeToken && consumeOneTimeToken !== 'done') {
-          //   await this.login({
-          //     username: this.editMember.username,
-          //     password: this.editMember.password,
-          //     tenantId: ~~process.env.VUE_APP_TENANT_ID
-          //   })
-          //   await this.upsertAttribute({
-          //     private: true,
-          //     key: 'affiliate-agreement',
-          //     value: encryptedAffiliate.payload,
-          //     signature: encryptedAffiliate.signature
-          //   })
-          //   // Temporary Welcome Email
-          //   const emailTemplate = process.env.VUE_APP_WELCOME_EMAIL_TEMPLATE
-          //   if (emailTemplate) {
-          //     await this.$apollo.mutate({
-          //       mutation: WELCOME_EMAIL,
-          //       variables: {
-          //         input: {
-          //           memberId: this.editMember.memberId,
-          //           tenantId: ~~process.env.VUE_APP_TENANT_ID,
-          //           templateId: process.env.VUE_APP_WELCOME_EMAIL_TEMPLATE
-          //         }
-          //       },
-          //       client: 'federated'
-          //     })
-          //   }
-          //   this.$router.push('/dashboard')
-          // }
+          const newMember = createMemberResponse.data.membership.create
+          if (newMember && newMember.id) {
+            await this.login({
+              email: this.editMember.email,
+              password: this.editMember.password,
+              tenantId: ~~process.env.VUE_APP_TENANT_ID
+            })
+            await this.upsertAttribute({
+              private: true,
+              key: 'affiliate-agreement',
+              value: encryptedAffiliate.payload,
+              signature: encryptedAffiliate.signature
+            })
+            // Temporary Welcome Email
+            const emailTemplate = process.env.VUE_APP_WELCOME_EMAIL_TEMPLATE
+            if (emailTemplate) {
+              await this.$apollo.mutate({
+                mutation: WELCOME_EMAIL,
+                variables: {
+                  input: {
+                    memberId: this.editMember.memberId,
+                    tenantId: ~~process.env.VUE_APP_TENANT_ID,
+                    templateId: process.env.VUE_APP_WELCOME_EMAIL_TEMPLATE
+                  }
+                },
+                client: 'federated'
+              })
+            }
+            this.$router.push('/dashboard')
+          }
         } catch (e) {
           console.warn('Failed saving', { e })
           this.error = e
-          this.loading = false
+          this.saving = false
         }
       } else {
+        this.saving = false
         console.error('Error in form')
       }
-    }
+    },
+    slugChanged: debounce(async function(searchTerm) {
+      this.slugUnique = false
+      this.slugErrors = []
+      this.checkingSlug = true
+      const { data } = await this.$apollo.query({
+        query: CHECK_IF_UNIQUE_SLUG,
+        variables: {
+          input: {
+            tenantId: this.$tenantId,
+            slug: this.editMember.slug
+          }
+        },
+        fetchPolicy: 'network-only'
+      })
+      const { checkSlug } = data
+      if (!checkSlug && this.generateSlug) {
+        this.slugUnique = true
+      } else if (checkSlug) {
+        this.slugErrors = ['Your link needs to be unique']
+      }
+      this.checkSlug = checkSlug
+      this.checkingSlug = false
+    }, 500)
   }
 }
 </script>
 
 <style scoped>
+.account-create{
+  margin-bottom: 75px;
+}
 .box-card {
   width: 480px;
   margin: auto;
