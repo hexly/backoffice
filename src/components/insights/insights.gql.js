@@ -32,6 +32,10 @@ export const GET_TEAM_SALES = gql`
         page
         pageSize
         results {
+          purchaseOrder {
+            id
+            statusOid
+          }
           awardedDate
           awardee {
             id

@@ -358,7 +358,11 @@ export default {
       })
       this.troubleShootingCode = uuid
     },
-    ...mapMutations([Mutations.SET_GATE, UserMutations.SET_MEMBER, UserMutations.SET_TENANT]),
+    ...mapMutations([
+      Mutations.SET_GATE,
+      UserMutations.SET_MEMBER,
+      UserMutations.SET_TENANT
+    ]),
     ...mapActions({
       logoutUser: Actions.LOGOUT,
       getAttributes: MemberActions.GET_ATTRIBUTES,
@@ -372,6 +376,16 @@ export default {
           this.logout()
           return
         }
+
+        const jwt = hydratedState.jwtFed
+        const decoded = jwt.split('.')[1]
+        const payload = JSON.parse(atob(decoded))
+        const exp = payload.exp
+        const now = Math.floor(Date.now() / 1000)
+        if (exp < now) {
+          console.warn('Expired JWT... logging out')
+          this.logout()
+        }
       } catch (e) {
         console.warn(e)
       }
@@ -379,21 +393,29 @@ export default {
   },
   async mounted () {
     this.checkJWT()
-    await this.compGetPeriods({
-      input: {
-        memberId: this.user.principal.memberId,
-        dateTo: moment().format('YYYY-MM-DD'),
-        tenantId: this.$tenantId
-      }
-    })
-    if (this.$tenantInfo.features.legal === true) {
-      const res = await this.getAttributes({
-        idIn: [this.user.principal.memberId],
-        tenantIn: [this.$tenantId]
+    try {
+      await this.compGetPeriods({
+        input: {
+          memberId: this.user.principal.memberId,
+          dateTo: moment().format('YYYY-MM-DD'),
+          tenantId: this.$tenantId
+        }
       })
-      const getMemberAttributes = get(res, 'data.membership.search.results.0.attributes', [])
-      if (getMemberAttributes.length < 2) {
-        this.setGate(true)
+    } catch (error) {
+      console.error(error)
+    }
+    if (this.$tenantInfo.features.legal === true) {
+      try {
+        const res = await this.getAttributes({
+          idIn: [this.user.principal.memberId],
+          tenantIn: [this.$tenantId]
+        })
+        const getMemberAttributes = get(res, 'data.membership.search.results.0.attributes', [])
+        if (getMemberAttributes.length < 2) {
+          this.setGate(true)
+        }
+      } catch (error) {
+        console.error(error)
       }
     }
   },
