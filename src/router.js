@@ -4,6 +4,7 @@ import tenantInfo from '@/tenant.js'
 import store from './store'
 import Login from './views/Login.vue'
 import AccountClaim from './views/AccountClaim.vue'
+import AccountCreate from './views/AccountCreate.vue'
 import PasswordReset from './views/PasswordReset.vue'
 import Backoffice from './views/Backoffice.vue'
 import Integrations from './views/Integrations.vue'
@@ -44,6 +45,13 @@ export default new Router({
       path: '/account/claim/:token',
       name: 'account-claim',
       component: AccountClaim,
+      beforeEnter: (_, __, next) =>
+        store.state.user.jwt ? next('/dashboard') : next()
+    },
+    {
+      path: '/account/create/:applicationId/:hashId',
+      name: 'account-claim',
+      component: AccountCreate,
       beforeEnter: (_, __, next) =>
         store.state.user.jwt ? next('/dashboard') : next()
     },
