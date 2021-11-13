@@ -362,7 +362,8 @@ export default {
         const stats = _.get(data, 'purchasing.orders.stats', {})
         const orders = _.get(data, 'purchasing.orders.results', [])
         this.setLoading(false)
-        const filteredOrders = orders.filter(sale => this.statuses.indexOf(sale.statusOid) >= 0)
+        const compactOrders = _.compact(orders)
+        const filteredOrders = compactOrders.filter(sale => this.statuses.indexOf(sale.statusOid) >= 0)
         return {
           results: filteredOrders,
           stats

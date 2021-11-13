@@ -10,8 +10,13 @@
             <v-card-text>
               <img class="logo" :src="logoPath">
               <div class="center" v-if="loading">
-                <v-progress-circular indeterminate :size="70" :width="7" color="black"></v-progress-circular>
-                <p>We are reteiving your information, please hold.</p>
+                <v-alert v-if="loadingError" type="warning">
+                  <div>{{loadingError}}</div>
+                </v-alert>
+                <template v-else>
+                  <v-progress-circular indeterminate :size="70" :width="7" color="black"></v-progress-circular>
+                  <p>We are reteiving your information, please hold.</p>
+                </template>
               </div>
               <div class="center" v-if="saving">
                 <v-progress-circular indeterminate :size="70" :width="7" color="black"></v-progress-circular>
@@ -63,8 +68,9 @@
                       autocomplete="email"
                       name="email"
                       label="Email*"
-                      v-model="editMember.email"
+                      v-model="email"
                       :rules="emailRule"
+                      disabled="disabled"
                     ></v-text-field>
                   </v-col>
                   <v-col cols="12" class="pa-0">
@@ -221,9 +227,17 @@
                     </ul>
                   </div>
                   <v-radio-group v-model="preferredPayout" mandatory>
-                    <v-radio label="eWallet" value="45"></v-radio>
-                    <v-radio label="PayPal" value="53"></v-radio>
+                    <v-radio label="eWallet" value="45" @change="showPaypalEmail=!showPaypalEmail"></v-radio>
+                    <v-radio label="PayPal" value="53" @change="showPaypalEmail=!showPaypalEmail"></v-radio>
                   </v-radio-group>
+                  <v-text-field
+                    v-if="showPaypalEmail"
+                    id="paypalEmail"
+                    label="PayPal Email*"
+                    name="paypalEmail"
+                    v-model="paypalEmail"
+                    :rules="emailRule"
+                  ></v-text-field>
                   <h3 class="text-left pb-2 pt-4">Legal Information</h3>
                   <v-flex xs12>
                     <v-checkbox
@@ -275,7 +289,8 @@ import { UserActions } from '@/stores/UserStore'
 import { Actions } from '@/Members/Store'
 import { LOCALE_QUERY } from '@/graphql/GetLocalSettings'
 import { CHECK_IF_UNIQUE_SLUG } from '@/graphql/Slug'
-import { WELCOME_EMAIL } from '@/graphql/Member.gql'
+import { UPSERT_MEMBER_TENANT_INTEGRATION } from '@/graphql/Integrations'
+import { GET_INQUIRY_RESPONSE } from '@/graphql/Inquiry.gql'
 import { CREATE } from '@/graphql/AccountCreate.gql'
 import { encrypt } from '@/utils/EncryptionService'
 import AgreementCheckbox from '@/components/Agreement'
@@ -288,6 +303,7 @@ export default {
   },
   data () {
     return {
+      loadingError: null,
       picker: null,
       SELECT_ITEMS: [
         { text: 'United States of America', value: 'US' },
@@ -316,7 +332,10 @@ export default {
         affiliate: false,
         policies: false
       },
+      showPaypalEmail: false,
       preferredPayout: 45,
+      paypalEmail: null,
+      memberContext: {},
       editMember: {
         market: null,
         tenantId: tenantInfo.id,
@@ -344,18 +363,38 @@ export default {
   async mounted () {
     try {
       const { applicationId, hashId } = this.$route.params
-      console.log(applicationId, hashId)
-      // Go check who this applicationId and hashId belong to and get their existing details
-      // const { data: { oneTimeToken: member } } = await this.getToken({ token })
-      // const { id: contactId, emails } = member.contacts[0]
-      // const { email, id: emailId } = emails[0]
-      this.editMember.sponsorOid = '82990'
-      this.editMember.customerOid = null
-      this.editMember.market = 'usa'
-      this.editMember.tenantIntegrationId = 32
-      this.editMember.responseId = ~~applicationId
-      this.editMember.responseCode = hashId
-      this.loading = false
+      const params = {
+        tenantId: tenantInfo.id,
+        responseId: ~~applicationId,
+        sessionToken: hashId
+      }
+      const response = await this.$apollo.query({
+        query: GET_INQUIRY_RESPONSE,
+        variables: {
+          input: params
+        },
+        client: 'federated'
+      })
+      const { data: { communications: { inquiryResponse } } } = response
+      console.log(inquiryResponse)
+      if (!inquiryResponse || inquiryResponse.status !== 'APPROVED') {
+        this.loadingError = 'We\'re sorry, but this is not a valid Everra account creation request.'
+      } else {
+        const firstName = inquiryResponse.answers.find(answer => answer.question.atomicName === 'first')
+        const lastName = inquiryResponse.answers.find(answer => answer.question.atomicName === 'last')
+        const email = inquiryResponse.answers.find(answer => answer.question.atomicName === 'email')
+        this.editMember.firstName = firstName.value
+        this.editMember.lastName = lastName.value
+        this.editMember.email = email.value
+        this.email = email.value
+        this.editMember.sponsorOid = inquiryResponse.metadata.sponsorId
+        this.editMember.customerOid = inquiryResponse.metadata.customerId !== '0' ? inquiryResponse.metadata.customerId : null
+        this.editMember.market = inquiryResponse.metadata.market
+        this.editMember.tenantIntegrationId = ~~inquiryResponse.metadata.tenantIntegrationId
+        this.memberContext.responseId = ~~applicationId
+        this.memberContext.responseCode = hashId
+        this.loading = false
+      }
     } catch (err) {
       console.error('ERROR getting token', err)
     }
@@ -432,7 +471,8 @@ export default {
             variables: {
               input: {
                 ...this.editMember,
-                birthday: this.$moment(this.editMember.birthday, this.birthdayFormat).format('YYYY-MM-DD')
+                birthday: this.$moment(this.editMember.birthday, this.birthdayFormat).format('YYYY-MM-DD'),
+                context: this.memberContext
               }
             },
             client: 'federated'
@@ -450,21 +490,42 @@ export default {
               value: encryptedAffiliate.payload,
               signature: encryptedAffiliate.signature
             })
-            // Temporary Welcome Email
-            const emailTemplate = process.env.VUE_APP_WELCOME_EMAIL_TEMPLATE
-            if (emailTemplate) {
+            if (this.preferredPayout === 53) {
+              const toSave = [
+                {
+                  tenantIntegrationId: this.preferredPayout,
+                  tenantIntegrationOid: this.paypalEmail,
+                  metadata: {
+                    type: 'email'
+                  },
+                  priority: 0
+                }
+              ]
               await this.$apollo.mutate({
-                mutation: WELCOME_EMAIL,
+                mutation: UPSERT_MEMBER_TENANT_INTEGRATION,
                 variables: {
                   input: {
-                    memberId: this.editMember.memberId,
-                    tenantId: ~~process.env.VUE_APP_TENANT_ID,
-                    templateId: process.env.VUE_APP_WELCOME_EMAIL_TEMPLATE
+                    integrations: toSave
                   }
                 },
                 client: 'federated'
               })
             }
+            // Temporary Welcome Email
+            // const emailTemplate = process.env.VUE_APP_WELCOME_EMAIL_TEMPLATE
+            // if (emailTemplate) {
+            //   await this.$apollo.mutate({
+            //     mutation: WELCOME_EMAIL,
+            //     variables: {
+            //       input: {
+            //         memberId: this.editMember.memberId,
+            //         tenantId: ~~process.env.VUE_APP_TENANT_ID,
+            //         templateId: process.env.VUE_APP_WELCOME_EMAIL_TEMPLATE
+            //       }
+            //     },
+            //     client: 'federated'
+            //   })
+            // }
             this.$router.push('/dashboard')
           }
         } catch (e) {
@@ -481,24 +542,26 @@ export default {
       this.slugUnique = false
       this.slugErrors = []
       this.checkingSlug = true
-      const { data } = await this.$apollo.query({
-        query: CHECK_IF_UNIQUE_SLUG,
-        variables: {
-          input: {
-            tenantId: this.$tenantId,
-            slug: this.editMember.slug
-          }
-        },
-        fetchPolicy: 'network-only'
-      })
-      const { checkSlug } = data
-      if (!checkSlug && this.generateSlug) {
-        this.slugUnique = true
-      } else if (checkSlug) {
-        this.slugErrors = ['Your link needs to be unique']
+      if (this.editMember.slug) {
+        const { data } = await this.$apollo.query({
+          query: CHECK_IF_UNIQUE_SLUG,
+          variables: {
+            input: {
+              tenantId: this.$tenantId,
+              slug: this.editMember.slug
+            }
+          },
+          fetchPolicy: 'network-only'
+        })
+        const { checkSlug } = data
+        if (!checkSlug && this.generateSlug) {
+          this.slugUnique = true
+        } else if (checkSlug) {
+          this.slugErrors = ['Your link needs to be unique']
+        }
+        this.checkSlug = checkSlug
+        this.checkingSlug = false
       }
-      this.checkSlug = checkSlug
-      this.checkingSlug = false
     }, 500)
   }
 }

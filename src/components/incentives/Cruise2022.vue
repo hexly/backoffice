@@ -14,7 +14,7 @@
       </div>
       <a href="/docs/1010/Everra-I-am-ready-trip.pdf" target="_blank">View Details</a>
       <v-divider class="ma-3"></v-divider>
-      <template v-if="engineStats && engineStats.awarded && !engineStatsLoading">
+      <template v-if="!engineStatsLoading">
         <v-progress-linear
           rounded
           background-color="rgba(255,222,232,0.4)"
