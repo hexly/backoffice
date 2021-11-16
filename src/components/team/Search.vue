@@ -158,10 +158,12 @@ export default {
       },
       update({ membership: { teamMemberSearch: memberTeamSearch } }) {
         this.teamIds = []
-        memberTeamSearch.team.forEach(member => {
-          this.teamIds.push(member.id)
-          member.ancestors = member.ancestors.reverse()
-        })
+        if (memberTeamSearch.team) {
+          memberTeamSearch.team.forEach(member => {
+            this.teamIds.push(member.id)
+            member.ancestors = member.ancestors.reverse()
+          })
+        }
         return memberTeamSearch
       },
       skip() {

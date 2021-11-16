@@ -328,7 +328,7 @@ export default {
       const groupedLineItems = groupBy(flattenedLineItems, 'name')
       delete groupedLineItems['Everra Influencer Registration - Influencer']
       const sortedProducts = sortBy(groupedLineItems, el => el.length)
-      return sortedProducts.pop()[0]
+      return sortedProducts[0]
     }
   }
 }
