@@ -23,7 +23,7 @@
                 <p>Creating your account... We're excited to have you join Everra!</p>
               </div>
               <div class="center" v-if="!loading && !saving">
-                <p class="headline">Welcome {{editMember.name}}!</p>
+                <p class="headline">Welcome {{editMember.firstName}}!</p>
                 <p>Congratulations! We are excited to work with you! Please fill out the following information to create your account.</p>
                 <v-alert type="warning" v-if="error">{{error}}</v-alert>
                 <v-form ref="claim" @submit.prevent="onSubmit" lazy-validation>
@@ -511,21 +511,6 @@ export default {
                 client: 'federated'
               })
             }
-            // Temporary Welcome Email
-            // const emailTemplate = process.env.VUE_APP_WELCOME_EMAIL_TEMPLATE
-            // if (emailTemplate) {
-            //   await this.$apollo.mutate({
-            //     mutation: WELCOME_EMAIL,
-            //     variables: {
-            //       input: {
-            //         memberId: this.editMember.memberId,
-            //         tenantId: ~~process.env.VUE_APP_TENANT_ID,
-            //         templateId: process.env.VUE_APP_WELCOME_EMAIL_TEMPLATE
-            //       }
-            //     },
-            //     client: 'federated'
-            //   })
-            // }
             this.$router.push('/dashboard')
           }
         } catch (e) {
