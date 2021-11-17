@@ -88,52 +88,54 @@ export const SALES_STATS = gql`
 
 export const SEARCH_SALES_SELLER_ID = gql`
   query searchSalesBySellerId ($input: PurchaseSearchOrderInput!){
-    purchaseSearchOrders(input: $input) {
-      id
-      checkedOutOn
-      statusOid
-      lines {
+    purchasing {
+      purchaseSearchOrders(input: $input) {
         id
-        orderId
-        tenantIntegrationId
+        checkedOutOn
+        statusOid
+        lines {
+          id
+          orderId
+          tenantIntegrationId
+          integrationOid
+          name
+          itemPrice
+          quantity
+          typeId
+          type
+          metadata
+        }
         integrationOid
-        name
-        itemPrice
-        quantity
-        typeId
-        type
+        billingAddress {
+          id
+          street
+          street2
+          city
+          province
+          country
+          postalCode
+          priority
+          type
+        }
+        shippingAddress {
+          id
+          street
+          street2
+          city
+          province
+          country
+          postalCode
+          priority
+          type
+        }
+        total
+        compStats
+        customerEmail
         metadata
-      }
-      integrationOid
-      billingAddress {
-        id
-        street
-        street2
-        city
-        province
-        country
-        postalCode
-        priority
-        type
-      }
-      shippingAddress {
-        id
-        street
-        street2
-        city
-        province
-        country
-        postalCode
-        priority
-        type
-      }
-      total
-      compStats
-      customerEmail
-      metadata
-      customer {
-        id
-        displayName
+        customer {
+          id
+          displayName
+        }
       }
     }
   }
