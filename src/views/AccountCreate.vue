@@ -342,7 +342,7 @@ export default {
         firstName: null,
         lastName: null,
         displayName: null,
-        languageId: null,
+        languageId: 1, // Default to English for now
         legalLocaleId: null,
         password: null,
         timezoneId: null,
