@@ -33,3 +33,16 @@ export const GET_INQUIRY_RESPONSE = gql`
     }
   }
 `
+
+export const UPDATE_INQUIRY_RESPONSE = gql`
+  mutation commsUpdate($input:CommunicationsInquiryResponseStatusInput!){
+    communications {
+      inquiryResponseStatus(input:$input){
+        id
+        inquiry {
+          id
+        }
+      }
+    }
+  }
+`
