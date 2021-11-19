@@ -290,7 +290,7 @@ import { Actions } from '@/Members/Store'
 import { LOCALE_QUERY } from '@/graphql/GetLocalSettings'
 import { CHECK_IF_UNIQUE_SLUG } from '@/graphql/Slug'
 import { UPSERT_MEMBER_TENANT_INTEGRATION } from '@/graphql/Integrations'
-import { GET_INQUIRY_RESPONSE } from '@/graphql/Inquiry.gql'
+import { GET_INQUIRY_RESPONSE, UPDATE_INQUIRY_RESPONSE } from '@/graphql/Inquiry.gql'
 import { CREATE } from '@/graphql/AccountCreate.gql'
 import { encrypt } from '@/utils/EncryptionService'
 import AgreementCheckbox from '@/components/Agreement'
@@ -376,7 +376,6 @@ export default {
         client: 'federated'
       })
       const { data: { communications: { inquiryResponse } } } = response
-      console.log(inquiryResponse)
       if (!inquiryResponse || inquiryResponse.status !== 'APPROVED') {
         this.loadingError = 'We\'re sorry, but this is not a valid Everra account creation request.'
       } else {
@@ -465,7 +464,6 @@ export default {
               policies: this.policies
             }
           })
-          console.log(encryptedAffiliate, this.editMember)
           const createMemberResponse = await this.$apollo.mutate({
             mutation: CREATE,
             variables: {
@@ -511,6 +509,19 @@ export default {
                 client: 'federated'
               })
             }
+            await this.$apollo.mutate({
+              mutation: UPDATE_INQUIRY_RESPONSE,
+              variables: {
+                input: {
+                  tenantId: tenantInfo.id,
+                  responseId: this.memberContext.responseId,
+                  responseCode: this.memberContext.responseCode,
+                  status: 'COMPLETED',
+                  logMessage: 'Completed by member id: ' + newMember.id
+                }
+              },
+              client: 'federated'
+            })
             this.$router.push('/dashboard')
           }
         } catch (e) {
