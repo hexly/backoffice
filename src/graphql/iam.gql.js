@@ -215,6 +215,7 @@ export const PRINCIPAL = gql`
               metadata
             }
           }
+          joinedOn
           slug
           contacts {
             id

@@ -114,6 +114,14 @@
             <v-list-item-title>Shop</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
+        <v-list-item v-if="isNewInfluencer" :href="`${usersStoreUrl}/product-category/welcome-collections/`" target="_blank">
+          <v-list-item-action>
+            <v-icon>redeem</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title><strong class="red--text text--lighten-1">Collections <sup>New</sup></strong></v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
         <v-list-item
           v-for="link in $tenantInfo.externalLinks"
           :href="link.href"
@@ -302,6 +310,9 @@ export default {
     },
     hasAdminMenu () {
       return this.hasAdmin || this.hasZendeskAdmin
+    },
+    isNewInfluencer() {
+      return moment(this.user.principal.member.joinedOn).isAfter(moment().subtract(30, 'days'))
     },
     hasAdmin () {
       const perms = get(this, 'user.principal.permissions', []) || []
