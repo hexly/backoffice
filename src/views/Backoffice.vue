@@ -437,7 +437,7 @@ export default {
       client: 'federated',
       update (data) {
         const principal = get(data, 'iam.principal')
-        if (principal) {
+        if (principal && principal.member) {
           const { member, tenant } = prepPrincipal(principal)
           const rawTags = get(principal, 'member.tags')
           const tags = rawTags.map(t => t.name)
@@ -460,6 +460,11 @@ export default {
           this.logoutUser()
           window.location.reload(true)
         }
+      },
+      error (error) {
+        console.error(error)
+        this.logoutUser()
+        window.location.reload(true)
       }
     }
   }
