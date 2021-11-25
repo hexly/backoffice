@@ -54,6 +54,9 @@
           </v-tab>
           <v-tab-item>
             <v-card class="item-container-card" flat>
+              <template v-if="showTerminated">
+                <v-alert type="info" text class="pa-1">{{$tenantInfo.distributorLabel}} Terminated</v-alert>
+              </template>
               <v-list two-line>
                 <v-list-item>
                   <v-list-item-icon>
@@ -364,8 +367,17 @@ export default {
   },
   computed: {
     ...mapState({
-      selectedPeriod: state => state.comp.selectedPeriod
+      selectedPeriod: state => state.comp.selectedPeriod,
+      member: state => state.user.principal.member
     }),
+    showTerminated() {
+      const canViewStatus = this.member.tags.find(t => t === 'preview:status')
+      console.log(canViewStatus, this.user.status.key, this.member.tags)
+      if (canViewStatus) {
+        return this.user.status.key === 'member:terminated'
+      }
+      return false
+    },
     showStatsMaintenance() {
       // all env vars come in as strings! yay!
       return process.env.VUE_APP_STATS_MAINTENANCE === 'true'

@@ -1,7 +1,7 @@
 import { get } from 'lodash'
 
 import { assetMeta, assetCreate, seachAllAssets, getAssets, betterSearchAllAssets } from './content.gql'
-import { apolloHexlyClient, apolloFederatedClient } from '@/vue-apollo'
+import { apolloHexlyClient } from '@/vue-apollo'
 
 const doQuery = (query, args = {}) => {
   return apolloHexlyClient.query({
@@ -15,7 +15,7 @@ const doMutate = (mutation, args = {}) =>
   apolloHexlyClient.mutate({ mutation, variables: args })
 
 export const getAssetMeta = async avail => {
-  const result = await apolloFederatedClient.query({
+  const result = await apolloHexlyClient.query({
     query: assetMeta
   })
   const tags = get(result, 'data.assetManagementConfig.tags', [])
@@ -39,7 +39,7 @@ export const searchAssets = async (op, input, jwt) => {
 }
 
 export const searchAssetsByKey = async (op, input, jwt) => {
-  const result = await apolloFederatedClient.query({ query: betterSearchAllAssets(op), variables: { input } })
+  const result = await apolloHexlyClient.query({ query: betterSearchAllAssets(op), variables: { input } })
 
   return get(result, 'data.betterAssetSearch')
 }
