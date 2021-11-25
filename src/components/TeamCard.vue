@@ -372,7 +372,6 @@ export default {
     }),
     showTerminated() {
       const canViewStatus = this.member.tags.find(t => t === 'preview:status')
-      console.log(canViewStatus, this.user.status.key, this.member.tags)
       if (canViewStatus) {
         return this.user.status.key === 'member:terminated'
       }
