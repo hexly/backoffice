@@ -14,6 +14,12 @@ export const TEAM_SEARCH_QUERY = gql`
           joinedOn
           relativeDepth
           birthdate
+          status {
+            key
+          }
+          tags {
+            name
+          }
           address {
             street
             street2
