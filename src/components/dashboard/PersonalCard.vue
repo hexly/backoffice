@@ -1,4 +1,4 @@
-s<template>
+<template>
   <v-card class="personal-card mx-auto" height="100%">
     <v-img
         v-if="!$tenantInfo.profileColor"
@@ -11,7 +11,7 @@ s<template>
       <v-layout>
         <v-flex>
           <v-avatar size="124" class="avatar" color="white" @click="showProfilePicDialog = true">
-            <v-img v-if="user.principal.member.avatar || $tenantInfo.placeholder" :src="user.principal.member.avatar || $tenantInfo.placeholder" class="mb-4" ></v-img>
+            <v-img v-if="user.principal.member.avatar || $tenantInfo.placeholder" :src="user.principal.member.avatar.assetUrl || $tenantInfo.placeholder" class="mb-4" ></v-img>
             <v-gravatar v-else default-img="mp" :email="user.principal.member.contacts[0].emails[0].email" class="mb-4"/>
           </v-avatar>
         </v-flex>
