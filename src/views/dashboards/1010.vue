@@ -27,12 +27,7 @@
         </v-layout>
       </v-col>
       <v-col cols="12" md="6">
-        <Cruise2022 />
-      </v-col>
-    </v-row>
-    <v-row>
-      <v-col cols="12">
-        <EngineRankCard
+         <EngineRankCard
             v-if="selectedPeriod.metadata && selectedPeriod.metadata.version === 3"
             :stats         ="engineStats"
             :statsDisabled ="statsDisabled"
@@ -109,7 +104,6 @@ import LeaderBoard from '@/components/Leaderboard.vue'
 import MarketLeaderBoard from '@/components/MarketLeaderboard.vue'
 import SellerLeaderBoard from '@/components/SellerLeaderboard.vue'
 import TrendCharts from '@/components/TrendCharts.vue'
-import Cruise2022 from '@/components/incentives/Cruise2022.vue'
 
 import {
   FRONTLINE_LEADERBOARD_BY_RANGE,
@@ -141,8 +135,7 @@ export default {
     MarketLeaderBoard,
     SellerLeaderBoard,
     EngineRankCard,
-    TrendCharts,
-    Cruise2022
+    TrendCharts
   },
   data() {
     return {
