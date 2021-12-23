@@ -406,6 +406,7 @@ export default {
     items () {
       const sales = _.get(this, 'sales.results', [])
       return sales.map(sale => {
+        const awardedOn = _.get(sale, 'metadata.HexlyAwardedDate')
         const saleDate = _.get(sale, 'checkedOutOn')
         const lineItems = _.get(sale, 'lines')
         let customerName = _.get(sale, 'customer.displayName')
@@ -414,7 +415,7 @@ export default {
         }
         const HexlyTotalAmount = _.get(sale, 'compStats.HexlyTotalAmount')
         const HexlyCommissionablePoints = _.get(sale, 'compStats.HexlyCommissionablePoints')
-        const date = sale.checkedOutOn ? this.$moment(saleDate, 'YYYY-MM-DD').format('YYYY-MM-DD') : ''
+        const date = awardedOn || this.$moment(saleDate, 'YYYY-MM-DD').format('YYYY-MM-DD')
         return {
           ...sale,
           guestCheckout: !sale.customer,

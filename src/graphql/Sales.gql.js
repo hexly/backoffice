@@ -22,6 +22,7 @@ export const SEARCH_SALES_QUERY = gql`
           pii
           firstTimeCustomer
           guestCheckout
+          metadata
           customer {
             displayName
             email
