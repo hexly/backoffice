@@ -547,9 +547,10 @@ export default {
       client: 'federated',
       variables () {
         const { memberId } = this
-
         return {
           input: {
+            start: this.$moment().subtract(1, 'month').format('YYYY-MM-DD'),
+            end: this.$moment().format('YYYY-MM-DD'),
             memberIn: [memberId]
           }
         }
@@ -560,7 +561,8 @@ export default {
       },
       debounce: 500,
       update (data) {
-        const purchaseSearchOrders = _.get(data, 'purchasing.purchaseSearchOrders')
+        // const purchaseSearchOrders = _.get(data, 'purchasing.purchaseSearchOrders')
+        const purchaseSearchOrders = _.get(data, 'purchasing.orders.results')
         this.loading = false
         return purchaseSearchOrders
       },
