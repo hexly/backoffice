@@ -142,7 +142,9 @@ export function createApolloClient ({
   const apolloClient = new ApolloClient({
     link,
     cache,
-    connectToDevTools: process.env.NODE_ENV !== 'production'
+    connectToDevTools: process.env.NODE_ENV !== 'production',
+    name: tenantInfo.name,
+    version: mf.buildTime
   })
 
   return apolloClient

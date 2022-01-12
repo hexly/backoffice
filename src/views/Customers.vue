@@ -35,13 +35,16 @@ export default {
       variables() {
         return {
           input: {
+            start: this.$moment().subtract(6, 'month').format('YYYY-MM-DD'),
+            end: this.$moment().format('YYYY-MM-DD'),
             memberIn: [this.user.principal.memberId]
           }
         }
       },
       client: 'federated',
       update(data) {
-        const res = get(data, 'purchasing.purchaseSearchOrders')
+        // const res = get(data, 'purchasing.purchaseSearchOrders')
+        const res = get(data, 'purchasing.orders.results')
         const compactRes = compact(res)
         const duplicatesRemoved = uniqBy(compactRes, el => el.id)
         return duplicatesRemoved
