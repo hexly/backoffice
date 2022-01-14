@@ -139,13 +139,21 @@ export function createApolloClient ({
     resultCaching: false
   })
 
-  const apolloClient = new ApolloClient({
+  let params = {
     link,
     cache,
-    connectToDevTools: process.env.NODE_ENV !== 'production',
-    name: tenantInfo.name,
-    version: mf.buildTime
-  })
+    connectToDevTools: process.env.NODE_ENV !== 'production'
+  }
+
+  if (useAuthLink) {
+    params = {
+      ...params,
+      name: tenantInfo.name,
+      version: mf.buildTime
+    }
+  }
+
+  const apolloClient = new ApolloClient(params)
 
   return apolloClient
 }

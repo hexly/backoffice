@@ -180,6 +180,13 @@ export default new Router({
           }
         },
         {
+          path: 'flashsales',
+          name: 'Flash Sales',
+          component: () => {
+            return import('./views/FlashSales.vue')
+          }
+        },
+        {
           path: 'customers',
           name: 'customers',
           component: Customers
