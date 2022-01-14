@@ -352,7 +352,7 @@ export default {
       if (data.children) menu.push(this.contextMenuOptions[`collapseMenu`])
       else if (data._children) {
         menu.push(this.contextMenuOptions[`expandMenu`])
-      } else if (data.data.data.frontLineSize > 0) {
+      } else if (data.data.data.frontLineSize > 0 || data.data.data.teamSize > 0) {
         menu.push(this.contextMenuOptions[`loadChildrenMenu`])
       }
 
@@ -376,7 +376,7 @@ export default {
       this.updateGraph({ source: d, center: true })
     },
     async loadChildrenMenu (d, i) {
-      if (d.data.data.frontLineSize > 0 && !d.children && !d._children) {
+      if ((d.data.data.frontLineSize > 0 || d.data.data.teamSize > 0) && !d.children && !d._children) {
         this.loading = true
         let newChild = await this.fetchData({ member: d.data.data })
         let newNode = d3.hierarchy(newChild, d => d.children)
@@ -561,7 +561,6 @@ export default {
       },
       debounce: 500,
       update (data) {
-        // const purchaseSearchOrders = _.get(data, 'purchasing.purchaseSearchOrders')
         const purchaseSearchOrders = _.get(data, 'purchasing.orders.results')
         this.loading = false
         return purchaseSearchOrders

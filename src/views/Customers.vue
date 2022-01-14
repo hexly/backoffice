@@ -43,7 +43,6 @@ export default {
       },
       client: 'federated',
       update(data) {
-        // const res = get(data, 'purchasing.purchaseSearchOrders')
         const res = get(data, 'purchasing.orders.results')
         const compactRes = compact(res)
         const duplicatesRemoved = uniqBy(compactRes, el => el.id)
