@@ -1,67 +1,42 @@
 <template>
   <div class="flash-sales">
-    <v-data-table :headers="headers" :items="sales" class="elevation-1" hide-default-footer>
-      <template v-slot:top>
-        <v-toolbar flat>
-          <v-toolbar-title>My Flash Sales</v-toolbar-title>
+    <v-dialog v-model="dialog" max-width="500px">
+      <template v-slot:activator="{ on, attrs }">
+        <v-btn color="primary" dark class="mb-2" v-bind="attrs" v-on="on">New Flash Sale</v-btn>
+      </template>
+      <v-card>
+        <v-card-title>
+          <span class="text-h5">New Flash Sale</span>
+        </v-card-title>
+        <v-card-text>
+          <span>Flash Sales allows you to have a host promote your store and give them a reward for reaching the required threshold.</span>
+          <v-container>
+            <v-row>
+              <v-col cols="12">
+                <v-text-field v-model="editedItem.name" label="Flash Sale Name"></v-text-field>
+              </v-col>
+              <v-col cols="12">
+                <span>Please enter the email for your flash sale host</span>
+                <v-text-field type="email" v-model="editedItem.email" label="Host's Email"></v-text-field>
+              </v-col>
+            </v-row>
+          </v-container>
+          <div>
+            <span class="text-h5">Current Rewards</span>
+            <br/>
+            <span>Period: Jan 2022</span>
+            <br/>
+            <span class="text-h6">Goal: 500 PSV</span>
+            <span class="text-h6">Reward: $100 Coupon</span>
+          </div>
+        </v-card-text>
+        <v-card-actions>
           <v-spacer></v-spacer>
-          <v-dialog v-model="dialog" max-width="500px">
-            <template v-slot:activator="{ on, attrs }">
-              <v-btn color="primary" dark class="mb-2" v-bind="attrs" v-on="on">New Flash Sale</v-btn>
-            </template>
-            <v-card>
-              <v-card-title>
-                <span class="text-h5">{{ formTitle }}</span>
-              </v-card-title>
-              <v-card-text>
-                <v-container>
-                  <v-row>
-                    <v-col cols="12">
-                      <v-text-field v-model="editedItem.name" label="Flash Sale Name"></v-text-field>
-                    </v-col>
-                    <v-col cols="12">
-                      <v-text-field v-model="editedItem.email" label="Host's Email"></v-text-field>
-                    </v-col>
-                  </v-row>
-                </v-container>
-              </v-card-text>
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" text @click="close">Cancel</v-btn>
-                <v-btn color="blue darken-1" text @click="save">Save</v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
-          <v-dialog v-model="dialogDelete" max-width="500px">
-            <v-card>
-              <v-card-title class="text-h5">Are you sure you want to delete this item?</v-card-title>
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" text @click="closeDelete">Cancel</v-btn>
-                <v-btn color="blue darken-1" text @click="deleteItemConfirm">OK</v-btn>
-                <v-spacer></v-spacer>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
-        </v-toolbar>
-      </template>
-      <template v-slot:[`item.time`]="{ item }">
-        {{formatDate(item.start)}} - {{formatDate(item.end)}}
-      </template>
-      <template v-slot:[`item.progress`]="{ item }">
-        <v-progress-linear v-model="item.progress" :color="saleProgressColor(item)" height="25" rounded>
-          <strong>{{saleProgressText(item)}}</strong>
-        </v-progress-linear>
-      </template>
-      <template v-slot:[`item.actions`]="{ item }">
-        <v-icon small class="mr-2" @click="editItem(item)">mdi-pencil</v-icon>
-        <v-icon small @click="deleteItem(item)">mdi-delete</v-icon>
-      </template>
-      <template v-slot:no-data>
-        <v-btn color="primary" @click="initialize">Reset</v-btn>
-      </template>
-    </v-data-table>
-
+          <v-btn color="blue darken-1" text @click="close">Cancel</v-btn>
+          <v-btn color="blue darken-1" text @click="save">Save</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
     <!-- Attempt #2 -->
     <h2>My Flash Sales</h2>
     <div class="d-flex justify-left ma-2 flex-wrap">
@@ -88,7 +63,7 @@
           </v-row>
           <v-row align="center">
             <v-col>
-              <v-progress-linear v-model="s.progress" :color="saleProgressColor(s)" height="25" rounded>
+              <v-progress-linear :value="s.progress" :color="saleProgressColor(s)" height="25" rounded>
                 <strong>{{saleProgressText(s)}}</strong>
               </v-progress-linear>
             </v-col>
@@ -123,11 +98,11 @@ export default {
     editedIndex: -1,
     editedItem: {
       name: '',
-      email: 0
+      email: ''
     },
     defaultItem: {
       name: '',
-      email: 0
+      email: ''
     },
     sales: [
       {
@@ -135,8 +110,8 @@ export default {
         name: 'Flash Sale 1',
         email: 'brenda.kradolfer@gmail.com',
         duration: '48 Hours',
-        start: '2022-01-15',
-        end: '2022-01-16',
+        start: '2022-01-20',
+        end: '2022-01-21',
         reward: '$100 Coupon',
         psv: '134',
         progress: 0
@@ -146,8 +121,8 @@ export default {
         name: 'Flash Sale 2',
         email: 'narfdre@gmail.com',
         duration: '48 Hours',
-        start: '2022-01-13',
-        end: '2022-01-14',
+        start: '2022-01-18',
+        end: '2022-01-19',
         reward: '$10 Coupon',
         psv: '134',
         progress: 30
@@ -157,8 +132,8 @@ export default {
         name: 'Flash Sale 3',
         email: 'david@davidwlech.co',
         duration: '48 Hours',
-        start: '2022-01-11',
-        end: '2022-01-12',
+        start: '2022-01-18',
+        end: '2022-01-19',
         reward: 'Free Mascara',
         psv: '0',
         progress: 0
@@ -168,20 +143,14 @@ export default {
         name: 'Flash Sale 4',
         email: 'mckalee@everra.com',
         duration: '48 Hours',
-        start: '2022-01-09',
-        end: '2022-01-10',
+        start: '2022-01-11',
+        end: '2022-01-12',
         reward: 'Free Mascara',
         psv: '500',
         progress: 100
       }
     ]
   }),
-
-  computed: {
-    formTitle() {
-      return this.editedIndex === -1 ? 'New Flash Sale' : 'Edit Flash Sale'
-    }
-  },
 
   methods: {
     formatDate(date) {
