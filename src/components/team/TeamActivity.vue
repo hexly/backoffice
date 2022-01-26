@@ -211,13 +211,14 @@
     <v-navigation-drawer v-model="drawer" absolute right temporary>
       <v-expansion-panels>
         <v-expansion-panel>
-          <v-expansion-panel-header>Show Active: {{showActive}}</v-expansion-panel-header>
+          <v-expansion-panel-header>Show Qualified: {{showActive}}</v-expansion-panel-header>
           <v-expansion-panel-content>
             <v-checkbox
-              label="Show Active"
+              label="Show Qualified"
               :value="!showActive"
               v-model="showActive"
             ></v-checkbox>
+            <small>(Qualified team members have reached 50+ PSV this period)</small>
           </v-expansion-panel-content>
         </v-expansion-panel>
         <v-expansion-panel v-if="selectedPeriod.metadata && selectedPeriod.metadata.version >= 2">
