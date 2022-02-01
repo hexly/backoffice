@@ -1,33 +1,97 @@
 <template>
   <div class="flash-sales">
-    <v-dialog v-model="dialog" max-width="500px">
+    <h2>Flash Sales</h2>
+    <div class="d-flex justify-center ma-2 flex-wrap">
+      <v-dialog v-model="dialog" max-width="500px">
       <template v-slot:activator="{ on, attrs }">
-        <v-btn color="primary" dark class="mb-2" v-bind="attrs" v-on="on">New Flash Sale</v-btn>
+        <div class="add-flash-sale-box d-flex align-center justify-center" v-on="on">
+          <div class="text-center"><v-icon x-large>note_add</v-icon><br/>New Flash Sale</div>
+        </div>
       </template>
       <v-card>
         <v-card-title>
           <span class="text-h5">New Flash Sale</span>
         </v-card-title>
         <v-card-text>
-          <span>Flash Sales allows you to have a host promote your store and give them a reward for reaching the required threshold.</span>
+          <v-divider></v-divider>
           <v-container>
             <v-row>
-              <v-col cols="12">
-                <v-text-field v-model="editedItem.name" label="Flash Sale Name"></v-text-field>
+              <v-col cols="12" class="pa-0">
+                <v-text-field hide-details v-model="editedItem.name" label="Flash Sale Name"></v-text-field>
               </v-col>
-              <v-col cols="12">
-                <span>Please enter the email for your flash sale host</span>
-                <v-text-field type="email" v-model="editedItem.email" label="Host's Email"></v-text-field>
+              <v-col cols="12" class="pa-0">
+                <v-menu
+                  v-model="showDatePicker"
+                  :close-on-content-click="false"
+                  :nudge-right="40"
+                  transition="scale-transition"
+                  offset-y
+                  min-width="auto"
+                >
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-text-field
+                      hide-details
+                      v-model="picker"
+                      label="Flash Sale start date"
+                      prepend-icon="mdi-calendar"
+                      readonly
+                      v-bind="attrs"
+                      v-on="on"
+                    ></v-text-field>
+                  </template>
+                  <v-date-picker
+                    v-model="picker"
+                    @input="showDatePicker = false"
+                  ></v-date-picker>
+                </v-menu>
+              </v-col>
+              <v-col cols="12" class="pa-0">
+              <v-menu
+                ref="menu"
+                v-model="timePicker"
+                :close-on-content-click="false"
+                :nudge-right="40"
+                :return-value.sync="time"
+                transition="scale-transition"
+                offset-y
+                max-width="290px"
+                min-width="290px"
+              >
+                <template v-slot:activator="{ on, attrs }">
+                  <v-text-field
+                    v-model="time"
+                    label="Pick a time"
+                    prepend-icon="mdi-clock-time-four-outline"
+                    readonly
+                    v-bind="attrs"
+                    v-on="on"
+                  ></v-text-field>
+                </template>
+                <v-time-picker
+                  v-if="timePicker"
+                  v-model="time"
+                  full-width
+                  @click:minute="$refs.menu.save(time)"
+                ></v-time-picker>
+              </v-menu>
               </v-col>
             </v-row>
           </v-container>
-          <div>
+          <div class="current-reward">
             <span class="text-h5">Current Rewards</span>
             <br/>
-            <span>Period: Jan 2022</span>
+            <div>Period: February 2022</div>
+            <div>Length: 6 Hours</div>
             <br/>
-            <span class="text-h6">Goal: 500 PSV</span>
-            <span class="text-h6">Reward: $100 Coupon</span>
+            <div class="d-flex justify-space-around">
+              <span class="text-h4">Goal</span>
+              <span class="text-h4">Reward</span>
+            </div>
+            <v-divider></v-divider>
+            <div class="d-flex justify-space-around">
+              <span class="text-h6">500 PSV</span>
+              <span class="text-h6">$100 Coupon</span>
+            </div>
           </div>
         </v-card-text>
         <v-card-actions>
@@ -37,17 +101,13 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-    <!-- Attempt #2 -->
-    <h2>My Flash Sales</h2>
-    <div class="d-flex justify-left ma-2 flex-wrap">
-      <div class="add-flash-sale-box">New Flash Sale</div>
       <v-card v-for="s in sales" :key="s.id" class="ma-2 sale-card">
         <v-list-item two-line>
           <v-list-item-content>
             <v-list-item-title class="text-h5">
               {{s.name}}
             </v-list-item-title>
-            <v-list-item-subtitle><v-icon small color="#c44a42">calendar_today</v-icon>{{formatDate(s.start)}} - {{formatDate(s.end)}}</v-list-item-subtitle>
+            <v-list-item-subtitle><v-icon small color="#c44a42">calendar_today</v-icon>{{formatDate(s.start)}} </v-list-item-subtitle>
           </v-list-item-content>
         </v-list-item>
         <v-card-text class="reward-info">
@@ -55,10 +115,10 @@
             <v-col cols="6">
               {{s.reward}}
               <br/>
-              {{s.psv}} PSV Earned
+              <span class="font-weight-bold">{{s.psv}} PSV</span> Earned
             </v-col>
             <v-col cols="6">
-              <v-btn :disabled="saleProgressText(s) !== 'Complete'">Claim Reward</v-btn>
+              <v-btn :disabled="saleProgressText(s) !== 'Complete' || s.claimed">{{s.claimed ? 'Claimed' : `Claim Reward`}}</v-btn>
             </v-col>
           </v-row>
           <v-row align="center">
@@ -70,7 +130,7 @@
           </v-row>
         </v-card-text>
         <v-card-actions>
-          <v-btn text>Resend Invite</v-btn>
+          <v-btn text :disabled="saleProgressText(s) === 'Complete'">Copy Sale Link</v-btn>
           <v-spacer></v-spacer>
           <v-btn text color="red">Delete</v-btn>
         </v-card-actions>
@@ -78,12 +138,15 @@
     </div>
   </div>
 </template>
-
 <script>
 export default {
   data: () => ({
     dialog: false,
     dialogDelete: false,
+    showDatePicker: false,
+    time: null,
+    timePicker: false,
+    picker: (new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10),
     headers: [
       { text: 'Name', sortable: false, value: 'name' },
       { text: 'Email', value: 'email' },
@@ -110,8 +173,8 @@ export default {
         name: 'Flash Sale 1',
         email: 'brenda.kradolfer@gmail.com',
         duration: '48 Hours',
-        start: '2022-01-20',
-        end: '2022-01-21',
+        start: '2022-01-27',
+        end: '2022-01-29',
         reward: '$100 Coupon',
         psv: '134',
         progress: 0
@@ -119,24 +182,22 @@ export default {
       {
         id: 2,
         name: 'Flash Sale 2',
-        email: 'narfdre@gmail.com',
+        email: 'david@davidwlech.co',
         duration: '48 Hours',
-        start: '2022-01-18',
-        end: '2022-01-19',
-        reward: '$10 Coupon',
-        psv: '134',
-        progress: 30
+        start: '2022-01-26',
+        reward: 'Free Mascara',
+        psv: '0',
+        progress: 0
       },
       {
         id: 3,
         name: 'Flash Sale 3',
-        email: 'david@davidwlech.co',
+        email: 'narfdre@gmail.com',
         duration: '48 Hours',
-        start: '2022-01-18',
-        end: '2022-01-19',
-        reward: 'Free Mascara',
-        psv: '0',
-        progress: 0
+        start: '2022-01-25',
+        reward: '$10 Coupon',
+        psv: '134',
+        progress: 30
       },
       {
         id: 4,
@@ -144,10 +205,31 @@ export default {
         email: 'mckalee@everra.com',
         duration: '48 Hours',
         start: '2022-01-11',
-        end: '2022-01-12',
         reward: 'Free Mascara',
         psv: '500',
         progress: 100
+      },
+      {
+        id: 5,
+        name: 'Flash Sale 5',
+        email: 'rachael@everra.com',
+        duration: '48 Hours',
+        start: '2022-01-09',
+        reward: 'Free Mascara',
+        psv: '500',
+        progress: 100,
+        claimed: true
+      },
+      {
+        id: 6,
+        name: 'Flash Sale 6',
+        email: 'someone@everra.com',
+        duration: '48 Hours',
+        start: '2022-01-06',
+        reward: 'Free Mascara',
+        psv: '230',
+        progress: 36,
+        claimed: true
       }
     ]
   }),
@@ -160,7 +242,6 @@ export default {
       if (s.progress === 100) {
         return 'Complete'
       }
-      console.log(s, this.$moment(), this.$moment(s.end, 'YYYY-MM-DD'), this.$moment().isAfter(this.$moment(s.end, 'YYYY-MM-DD')))
       if (s.progress < 100 && this.$moment().isAfter(this.$moment(s.end, 'YYYY-MM-DD'))) {
         return 'Expired'
       }
@@ -225,10 +306,9 @@ export default {
   .add-flash-sale-box {
     border-radius: 15px;
     border: 5px dashed #ccc;
-    padding: 90px;
-    margin-bottom: 10px;
+    margin: 10px;
     cursor: pointer;
-    width: 350px;
+    min-width: 350px;
   }
 
   .sale-card {
@@ -239,5 +319,12 @@ export default {
 
   .reward-info {
     background: #fff1f0;
+  }
+  
+  .current-reward {
+    background: #ccc;
+    margin: 25px -24px 0 -24px;
+    padding: 10px;
+    box-shadow: #333 inset -1px 0px 3px -1px;
   }
 </style>

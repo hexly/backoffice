@@ -102,14 +102,14 @@
             <v-list-item-title>{{$tenantInfo.strings.files || 'Files'}}</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
-        <!-- <v-list-item to="/flashsales">
+        <v-list-item to="/promotioncenter">
           <v-list-item-action>
             <v-icon>stars</v-icon>
           </v-list-item-action>
           <v-list-item-content>
-            <v-list-item-title>Flash Sales</v-list-item-title>
+            <v-list-item-title>Promotion Center</v-list-item-title>
           </v-list-item-content>
-        </v-list-item> -->
+        </v-list-item>
       </v-list>
 
       <v-divider></v-divider>
