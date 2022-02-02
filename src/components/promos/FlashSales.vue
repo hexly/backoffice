@@ -3,7 +3,7 @@
     <h2>Flash Sales</h2>
     <div class="d-flex justify-center ma-2 flex-wrap">
       <v-dialog v-model="dialog" max-width="500px">
-      <template v-slot:activator="{ on, attrs }">
+      <template v-slot:activator="{ on }">
         <div class="add-flash-sale-box d-flex align-center justify-center" v-on="on">
           <div class="text-center"><v-icon x-large>note_add</v-icon><br/>New Flash Sale</div>
         </div>
@@ -320,7 +320,7 @@ export default {
   .reward-info {
     background: #fff1f0;
   }
-  
+
   .current-reward {
     background: #ccc;
     margin: 25px -24px 0 -24px;

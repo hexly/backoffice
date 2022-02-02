@@ -215,7 +215,7 @@ export default {
   .reward-info {
     background: #fff1f0;
   }
-  
+
   .current-reward {
     background: #ccc;
     margin: 25px -24px 0 -24px;

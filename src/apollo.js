@@ -9,7 +9,7 @@ import store from '@/store'
 import tenantInfo from '@/tenant.js'
 const mf = require('./build.info.json')
 
-function getAuth (scope) {
+function getAuth(scope) {
   // get the authentication token from local storage if it exists
   let token = get(store, 'state.user.jwt')
   if (scope === 'fed') {
@@ -20,7 +20,7 @@ function getAuth (scope) {
 }
 
 // Create the apollo client
-export function createHexlyApolloClient ({
+export function createHexlyApolloClient({
   ssr,
   base,
   endpoints,
@@ -85,7 +85,7 @@ export function createHexlyApolloClient ({
 }
 
 // Create the apollo client
-export function createApolloClient ({
+export function createApolloClient({
   ssr,
   base,
   endpoints,
