@@ -1,6 +1,6 @@
 <template>
   <v-card>
-    <v-toolbar color="primary" dark>
+    <v-toolbar color="secondary" dark>
       <v-toolbar-title>Recent Team Sales</v-toolbar-title>
     </v-toolbar>
     <v-list three-line v-if="sales[0]">
