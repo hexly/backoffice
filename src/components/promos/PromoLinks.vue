@@ -299,10 +299,11 @@ export default {
 	}),
 
 	methods: {
-		// validateForm() {
-		//   if (this.$refs.informationForm.validate()) {
-		//     this.saveData()
-		//   },
+		validateForm() {
+			if (this.$refs.informationForm.validate()) {
+				this.saveData()
+			}
+		},
 		formatDate(date) {
 			return this.$moment(date).format("MMM Do YYYY")
 		},
@@ -386,9 +387,7 @@ export default {
 }
 
 /* START fine tuning spacing aka: vuetify override  */
-/* .available-reward-table.col.col-12 {
-	padding: 0;
-} */
+
 .promo-link-modal .v-card__text {
 	padding: 0 30px;
 }
@@ -416,9 +415,9 @@ export default {
 	text-align: center;
 }
 
-.reward-info {
+/* .reward-info {
 	background: #fff1f0;
-}
+} */
 .rewards-table-body-text {
 	font-size: 18px;
 	font-weight: 600;
@@ -426,9 +425,9 @@ export default {
 .promo-link-save-btn.theme--light.v-btn.v-btn--outlined.v-btn--text {
 	border-color: black;
 }
-
+/* 
 .current-reward {
 	background: #ccc;
 	background-color: white;
-}
+} */
 </style>
