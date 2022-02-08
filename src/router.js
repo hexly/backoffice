@@ -179,6 +179,10 @@ export default new Router({
       name: 'Promotion Center',
       component: () => {
         return import('./views/PromoCenter.vue')
+      },
+      beforeEnter: (_, __, next) => {
+        const tags = store.state.user.principal.member.tags
+        return tags.indexOf('beta:promo') < 0 ? next('/dashboard') : next()
       }
     },
     {
