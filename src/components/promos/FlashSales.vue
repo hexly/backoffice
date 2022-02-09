@@ -1,6 +1,9 @@
 <template>
 	<div class="flash-sales">
-		<h2>Flash Sales</h2>
+		<div class="ma-5">
+			<h1>Flash Sales</h1>
+			<h2 class="font-weight-regular">Manage and create sales events.</h2>
+		</div>
 		<div class="d-flex justify-center ma-2 flex-wrap">
 			<v-dialog v-model="dialog" max-width="500px">
 				<template v-slot:activator="{ on, attrs }">
@@ -18,91 +21,101 @@
 						<span class="text-h5 font-weight-bold">New Flash Sale</span>
 					</v-card-title>
 					<v-card-text>
-						<!-- <v-divider></v-divider> -->
+						<p class="mb-2">
+							Flash Sales allow you to offer a
+							<span class="font-weight-bold">6 hour</span> sale on the products
+							in your store.
+						</p>
 						<v-container>
-							<v-row class="mt-1" v-model="isFormValid">
-								<v-col cols="12" class="pt-0 flash-form-input">
-									<v-text-field
-										hide-details
-										v-model="editedItem.name"
-										label="Flash Sale Name"
-										:rules="requiredRule"
-									></v-text-field>
-								</v-col>
-								<v-col cols="12" class="pt-1">
-									<v-menu
-										v-model="showDatePicker"
-										:close-on-content-click="false"
-										:nudge-right="40"
-										transition="scale-transition"
-										offset-y
-										min-width="auto"
-									>
-										<template v-slot:activator="{ on, attrs }">
-											<v-text-field
-												hide-details
+							<v-form ref="informationForm" v-model="isFormValid">
+								<v-row class="mt-1">
+									<v-col cols="12" class="pt-0 flash-form-input">
+										<v-text-field
+											v-model="editedItem.name"
+											label="Flash Sale Name"
+											:rules="requiredRule"
+										></v-text-field>
+									</v-col>
+									<v-col cols="12" class="pt-1">
+										<v-menu
+											v-model="showDatePicker"
+											:close-on-content-click="false"
+											:nudge-right="40"
+											transition="scale-transition"
+											offset-y
+											min-width="auto"
+										>
+											<template v-slot:activator="{ on, attrs }">
+												<v-text-field
+													v-model="picker"
+													label="Flash Sale Start Date"
+													prepend-icon="mdi-calendar"
+													readonly
+													v-bind="attrs"
+													v-on="on"
+													:rules="requiredRule"
+													class="date-picker-input"
+												></v-text-field>
+											</template>
+											<v-date-picker
 												v-model="picker"
-												label="Flash Sale Start Date"
-												prepend-icon="mdi-calendar"
-												readonly
-												v-bind="attrs"
-												v-on="on"
-												:rules="requiredRule"
-											></v-text-field>
-										</template>
-										<v-date-picker
-											v-model="picker"
-											@input="showDatePicker = false"
-										></v-date-picker>
-									</v-menu>
-								</v-col>
-								<v-col cols="12" class="pt-0">
-									<v-menu
-										ref="menu"
-										v-model="timePicker"
-										:close-on-content-click="false"
-										:nudge-right="40"
-										:return-value.sync="time"
-										transition="scale-transition"
-										offset-y
-										max-width="290px"
-										min-width="290px"
-									>
-										<template v-slot:activator="{ on, attrs }">
-											<v-text-field
+												@input="showDatePicker = false"
+											></v-date-picker>
+										</v-menu>
+									</v-col>
+									<v-col cols="12" class="pt-0">
+										<v-menu
+											ref="menu"
+											v-model="timePicker"
+											:close-on-content-click="false"
+											:nudge-right="40"
+											:return-value.sync="time"
+											transition="scale-transition"
+											offset-y
+											max-width="290px"
+											min-width="290px"
+										>
+											<template v-slot:activator="{ on, attrs }">
+												<v-text-field
+													v-model="time"
+													label="Flash Sale Start Time"
+													prepend-icon="mdi-clock-outline"
+													readonly
+													v-bind="attrs"
+													v-on="on"
+													:rules="requiredRule"
+												></v-text-field>
+											</template>
+											<v-time-picker
+												v-if="timePicker"
 												v-model="time"
-												label="Flash Sale Start Time"
-												prepend-icon="mdi-clock-outline"
-												readonly
-												v-bind="attrs"
-												v-on="on"
-												:rules="requiredRule"
-											></v-text-field>
-										</template>
-										<v-time-picker
-											v-if="timePicker"
-											v-model="time"
-											full-width
-											@click:minute="$refs.menu.save(time)"
-										></v-time-picker>
-									</v-menu>
-								</v-col>
-							</v-row>
+												full-width
+												@click:minute="$refs.menu.save(time)"
+											></v-time-picker>
+										</v-menu>
+									</v-col>
+								</v-row>
+							</v-form>
 						</v-container>
-						<div class="current-reward">
-							<span class="text-h5">Current Rewards</span>
+						<div class="current-reward mt-4">
+							<span class="text-h6 font-weight-bold">Available Rewards</span>
 							<br />
 							<div>Period: February 2022</div>
 							<div>Length: 6 Hours</div>
 							<br />
-							<div class="d-flex justify-space-around">
-								<span class="text-h4">Goal</span>
-								<span class="text-h4">Reward</span>
+							<div class="available-reward-table d-flex justify-start col-12">
+								<span class="text-h6 font-weight-light col-6 pt-0 pb-0"
+									>Goal</span
+								>
+								<span class="text-h6 font-weight-light col-6 pt-0 pb-0"
+									>Reward</span
+								>
 							</div>
 							<v-divider></v-divider>
-							<div class="d-flex justify-space-around">
-								<span class="text-h6">500 PSV</span>
-								<span class="text-h6">$100 Coupon</span>
+
+							<div class="available-reward-table d-flex justify-start col-12">
+								<span class="rewards-table-body-text col-6">500 PSV</span>
+								<span class="rewards-table-body-text col-6">$100 Coupon</span>
 							</div>
 						</div>
 					</v-card-text>
@@ -198,7 +211,6 @@ export default {
 		editedIndex: -1,
 		isFormValid: false,
 		requiredRule: Rules.requiredRule,
-		emailRule: Rules.emailRule,
 		editedItem: {
 			name: "",
 			email: "",
@@ -323,6 +335,7 @@ export default {
 			this.closeDelete()
 		},
 		close() {
+			this.$refs.informationForm.reset()
 			this.dialog = false
 			this.$nextTick(() => {
 				this.editedItem = Object.assign({}, this.defaultItem)
@@ -379,20 +392,18 @@ export default {
 	padding-bottom: 0;
 } */
 
-/* .available-reward-table.col-12,
+.date-picker-input .col,
+.col-12 {
+	padding-bottom: 0 !important;
+}
+.available-reward-table.col-12,
 .available-reward-table.col-12.col-6 {
 	padding: 0 !important;
-} */
+}
 /* END fine tuning spacing */
 
-/* .reward-info {
-	background: #fff1f0;
-} */
-
-/* .current-reward {
-	background: #ccc;
-	margin: 25px -24px 0 -24px;
-	padding: 10px;
-	box-shadow: #333 inset -1px 0px 3px -1px;
-} */
+.rewards-table-body-text {
+	font-size: 18px;
+	font-weight: 600;
+}
 </style>

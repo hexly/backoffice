@@ -1,6 +1,9 @@
 <template>
 	<div class="promo-links">
-		<h2>Promo Links</h2>
+		<div class="ma-5">
+			<h1>Promo Links</h1>
+			<h2 class="font-weight-regular">Manage and create promotional events.</h2>
+		</div>
 		<div class="d-flex justify-center ma-2 flex-wrap">
 			<v-dialog v-model="dialog" max-width="500px">
 				<template v-slot:activator="{ on, attrs }">
@@ -22,7 +25,7 @@
 							Promo Links allow you to have a host promote your store and give
 							them a reward for reaching the required threshold.
 						</p>
-						<!-- <v-divider></v-divider> -->
+
 						<v-container>
 							<v-form ref="informationForm" v-model="isFormValid">
 								<v-row class="mt-1">
@@ -50,15 +53,16 @@
 											offset-y
 											min-width="auto"
 										>
-											<template v-slot:activator="{ on, attrs }">
+											<template v-slot:activator="{ on, attrs }" class="pb-0">
 												<v-text-field
-													hide-details
 													v-model="editedItem.picker"
 													label="Promo Start Date"
 													prepend-icon="mdi-calendar"
 													readonly
 													v-bind="attrs"
 													v-on="on"
+													:rules="requiredRule"
+													class="date-picker-input"
 												></v-text-field>
 											</template>
 											<v-date-picker
@@ -102,14 +106,18 @@
 							</v-form>
 							<!-- <p>{{ editedItem }}</p> -->
 						</v-container>
-						<div class="current-reward pt-2">
+						<div class="current-reward mt-4">
 							<span class="text-h6 font-weight-bold">Available Rewards</span>
 							<br />
 							<p>Period: February 2022</p>
 
 							<div class="available-reward-table d-flex justify-start col-12">
-								<span class="text-h6 font-weight-light col-6 pt-1">Goal</span>
-								<span class="text-h6 font-weight-light col-6 pt-1">Reward</span>
+								<span class="text-h6 font-weight-light col-6 pt-0 pb-0"
+									>Goal</span
+								>
+								<span class="text-h6 font-weight-light col-6 pt-0 pb-0"
+									>Reward</span
+								>
 							</div>
 							<v-divider></v-divider>
 
@@ -352,6 +360,7 @@ export default {
 			this.closeDelete()
 		},
 		close() {
+			this.$refs.informationForm.reset()
 			this.dialog = false
 			this.$nextTick(() => {
 				this.editedItem = Object.assign({}, this.defaultItem)
@@ -385,6 +394,12 @@ export default {
 	cursor: pointer;
 	min-width: 350px;
 }
+.v-card__title,
+.sale-card {
+	border-radius: 15px;
+	width: 350px;
+	text-align: center;
+}
 
 /* START fine tuning spacing aka: vuetify override  */
 
@@ -401,6 +416,10 @@ export default {
 	padding-top: 0;
 	padding-bottom: 0;
 }
+.date-picker-input .col,
+.col-12 {
+	padding-bottom: 0 !important;
+}
 
 .available-reward-table.col-12,
 .available-reward-table.col-12.col-6 {
@@ -408,26 +427,11 @@ export default {
 }
 /* END fine tuning spacing */
 
-.v-card__title,
-.sale-card {
-	border-radius: 15px;
-	width: 350px;
-	text-align: center;
-}
-
-/* .reward-info {
-	background: #fff1f0;
-} */
 .rewards-table-body-text {
 	font-size: 18px;
 	font-weight: 600;
 }
-.promo-link-save-btn.theme--light.v-btn.v-btn--outlined.v-btn--text {
+/* .promo-link-save-btn.theme--light.v-btn.v-btn--outlined.v-btn--text {
 	border-color: black;
-}
-/* 
-.current-reward {
-	background: #ccc;
-	background-color: white;
 } */
 </style>
