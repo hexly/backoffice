@@ -36,6 +36,7 @@ export default new Router({
     path: '/login',
     name: 'login',
     component: Login,
+    props: true,
     beforeEnter: (_, __, next) =>
       store.state.user.jwt ? next('/dashboard') : next()
   },

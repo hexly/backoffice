@@ -227,8 +227,8 @@
                     </ul>
                   </div>
                   <v-radio-group v-model="preferredPayout" mandatory>
-                    <v-radio label="eWallet" value="45" @change="showPaypalEmail=!showPaypalEmail"></v-radio>
-                    <v-radio label="PayPal" value="53" @change="showPaypalEmail=!showPaypalEmail"></v-radio>
+                    <v-radio label="eWallet" :value="45" @change="showPaypalEmail=!showPaypalEmail"></v-radio>
+                    <v-radio label="PayPal" :value="53" @change="showPaypalEmail=!showPaypalEmail"></v-radio>
                   </v-radio-group>
                   <v-text-field
                     v-if="showPaypalEmail"
@@ -289,8 +289,7 @@ import { UserActions } from '@/stores/UserStore'
 import { Actions } from '@/Members/Store'
 import { LOCALE_QUERY } from '@/graphql/GetLocalSettings'
 import { CHECK_IF_UNIQUE_SLUG } from '@/graphql/Slug'
-import { UPSERT_MEMBER_TENANT_INTEGRATION } from '@/graphql/Integrations'
-import { GET_INQUIRY_RESPONSE, UPDATE_INQUIRY_RESPONSE } from '@/graphql/Inquiry.gql'
+import { GET_INQUIRY_RESPONSE } from '@/graphql/Inquiry.gql'
 import { CREATE } from '@/graphql/AccountCreate.gql'
 import { encrypt } from '@/utils/EncryptionService'
 import AgreementCheckbox from '@/components/Agreement'
@@ -357,7 +356,8 @@ export default {
       },
       settings: {},
       logoPath: tenantInfo.logoLoginPath,
-      agreements: tenantInfo.agreements
+      agreements: tenantInfo.agreements,
+      newMember: null
     }
   },
   async mounted () {
@@ -464,64 +464,50 @@ export default {
               policies: this.policies
             }
           })
-          const createMemberResponse = await this.$apollo.mutate({
-            mutation: CREATE,
-            variables: {
-              input: {
-                ...this.editMember,
-                birthday: this.$moment(this.editMember.birthday, this.birthdayFormat).format('YYYY-MM-DD'),
-                context: this.memberContext
-              }
-            },
-            client: 'federated'
-          })
-          const newMember = createMemberResponse.data.membership.create
-          if (newMember && newMember.id) {
-            await this.login({
-              email: this.editMember.email,
-              password: this.editMember.password,
-              tenantId: ~~process.env.VUE_APP_TENANT_ID
-            })
-            await this.upsertAttribute({
-              private: true,
-              key: 'affiliate-agreement',
-              value: encryptedAffiliate.payload,
-              signature: encryptedAffiliate.signature
-            })
-            if (this.preferredPayout === 53) {
-              const toSave = [
-                {
-                  tenantIntegrationId: this.preferredPayout,
-                  tenantIntegrationOid: this.paypalEmail,
-                  metadata: {
-                    type: 'email'
-                  },
-                  priority: 0
-                }
-              ]
-              await this.$apollo.mutate({
-                mutation: UPSERT_MEMBER_TENANT_INTEGRATION,
-                variables: {
-                  input: {
-                    integrations: toSave
-                  }
+          this.memberContext.attributes = [{
+            private: true,
+            key: 'affiliate-agreement',
+            value: encryptedAffiliate.payload,
+            signature: encryptedAffiliate.signature
+          }]
+
+          if (this.preferredPayout === 53) {
+            const toSave = [
+              {
+                tenantIntegrationId: this.preferredPayout,
+                tenantIntegrationOid: this.paypalEmail,
+                metadata: {
+                  type: 'email'
                 },
-                client: 'federated'
-              })
-            }
-            await this.$apollo.mutate({
-              mutation: UPDATE_INQUIRY_RESPONSE,
+                priority: 0
+              }
+            ]
+            this.memberContext.tenantIntegrations = toSave
+          }
+          if (!this.newMember) {
+            const createMemberResponse = await this.$apollo.mutate({
+              mutation: CREATE,
               variables: {
                 input: {
-                  tenantId: tenantInfo.id,
-                  responseId: this.memberContext.responseId,
-                  responseCode: this.memberContext.responseCode,
-                  status: 'COMPLETED',
-                  logMessage: 'Completed by member id: ' + newMember.id
+                  ...this.editMember,
+                  birthday: this.$moment(this.editMember.birthday, this.birthdayFormat).format('YYYY-MM-DD'),
+                  context: this.memberContext
                 }
               },
               client: 'federated'
             })
+            this.newMember = createMemberResponse.data.membership.create
+          }
+          if (this.newMember && this.newMember.id) {
+            try {
+              await this.login({
+                email: this.editMember.email,
+                password: this.editMember.password,
+                tenantId: ~~process.env.VUE_APP_TENANT_ID
+              })
+            } catch (error) {
+              this.$router.push({ name: 'login', params: { errMsg: 'Your account hase been created by there was an issue logging you in. Please contact support.' } })
+            }
             this.$router.push('/dashboard')
           }
         } catch (e) {
