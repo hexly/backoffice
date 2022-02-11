@@ -20,9 +20,6 @@ yarn-error.log*
 # Build Version
 src/build.info.json
 
-# Package Lock
-package-lock.json
-
 # Editor directories and files
 .idea
 .vscode
