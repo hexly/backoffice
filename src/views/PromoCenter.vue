@@ -11,7 +11,7 @@
       </v-tab>
       <v-tab-item value="links" class="py-3">
         <v-lazy>
-          <PromoLinks />
+          <PromoLinks :sales="events" />
         </v-lazy>
       </v-tab-item>
       <v-tab-item value="sales" class="py-3">
@@ -26,6 +26,9 @@
 <script>
 import PromoLinks from '@/components/promos/PromoLinks.vue'
 import FlashSales from '@/components/promos/FlashSales.vue'
+import { GetMemberEvents } from '@/graphql/GetMemberEvents.gql'
+import { mapGetters } from 'vuex'
+import { get } from 'lodash'
 
 export default {
   components: {
@@ -57,6 +60,7 @@ export default {
       name: '',
       email: ''
     },
+    statusFilter: null,
     sales: [
       {
         id: 1,
@@ -128,7 +132,29 @@ export default {
       }
     ]
   }),
-
+  computed: {
+    ...mapGetters(['memberId'])
+  },
+  apollo: {
+    events: {
+      client: 'federated',
+      query: GetMemberEvents,
+      variables() {
+        return {
+          input: {
+            idIn: [this.memberId]
+          },
+          marketingInput: {
+            statusIn: this.statusFilter
+          }
+        }
+      },
+      update(data) {
+        const events = get(data, 'membership.search.results.0.events.marketing.results')
+        return events
+      }
+    }
+  },
   methods: {
     formatDate(date) {
       return this.$moment(date).format('MMM Do YYYY')
