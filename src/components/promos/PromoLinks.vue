@@ -31,7 +31,7 @@
 								<v-row class="mt-1">
 									<v-col cols="12" class="promo-form-input">
 										<v-text-field
-											v-model="editedItem.name"
+											v-model="editedItem.promoName"
 											label="Promo Link Name"
 											:rules="requiredRule"
 										></v-text-field>
@@ -39,7 +39,15 @@
 									<v-col cols="12" class="pt-0 promo-form-input">
 										<v-text-field
 											type="email"
-											v-model="email"
+											v-model="editedItem.hostName"
+											label="Promoter's Name"
+											:rules="requiredRule"
+										></v-text-field>
+									</v-col>
+									<v-col cols="12" class="pt-0 promo-form-input">
+										<v-text-field
+											type="email"
+											v-model="editedItem.hostEmail"
 											label="Promoter's Email"
 											:rules="emailRule"
 										></v-text-field>
@@ -55,7 +63,7 @@
 										>
 											<template v-slot:activator="{ on, attrs }" class="pb-0">
 												<v-text-field
-													v-model="editedItem.picker"
+													v-model="pickerDateModel"
 													label="Promo Start Date"
 													prepend-icon="mdi-calendar"
 													readonly
@@ -66,8 +74,8 @@
 												></v-text-field>
 											</template>
 											<v-date-picker
-												v-model="editedItem.picker"
-												@input="showDatePicker = false"
+												v-model="editedItem.date"
+												@input="handleDatePickerInput"
 											></v-date-picker>
 										</v-menu>
 									</v-col>
@@ -77,7 +85,7 @@
 											v-model="timePicker"
 											:close-on-content-click="false"
 											:nudge-right="40"
-											:return-value.sync="time"
+											:return-value.sync="editedItem.time"
 											transition="scale-transition"
 											offset-y
 											max-width="290px"
@@ -85,7 +93,7 @@
 										>
 											<template v-slot:activator="{ on, attrs }">
 												<v-text-field
-													v-model="editedItem.time"
+													v-model="pickerTimeModel"
 													label="Promo Start Time"
 													prepend-icon="mdi-clock-outline"
 													readonly
@@ -98,10 +106,13 @@
 												v-if="timePicker"
 												v-model="editedItem.time"
 												full-width
-												@click:minute="$refs.menu.save(time)"
+												@click:minute="handleMinutesClicked"
 											></v-time-picker>
 										</v-menu>
 									</v-col>
+                  <v-col cols="12" class="pt-0">
+                    <v-select :items="[{ text: '7 Days', value: 'seven_day' }]" label="Promo Length" :rules="requiredRule"></v-select>
+                  </v-col>
 								</v-row>
 							</v-form>
 							<!-- <p>{{ editedItem }}</p> -->
@@ -196,6 +207,7 @@
 </template>
 <script>
 import Rules from "@/views/Rules.js"
+import CreateMemberEvent from '@/graphql/CreateMemberEvent.gql'
 
 export default {
   props: {
@@ -222,10 +234,13 @@ export default {
 		isFormValid: false,
 		requiredRule: Rules.requiredRule,
 		emailRule: Rules.emailRule,
+    pickerTimeModel: '',
+    pickerDateModel: '',
 		editedItem: {
-			name: "",
-			email: "",
-			picker: new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
+			promoName: "",
+			hostEmail: "",
+      hostName: '',
+			date: new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
 				.toISOString()
 				.substr(0, 10),
 			time: "",
@@ -306,14 +321,40 @@ export default {
 				this.editedIndex = -1
 			})
 		},
-		save() {
+		async save() {
 			if (this.editedIndex > -1) {
 				Object.assign(this.desserts[this.editedIndex], this.editedItem)
 			} else {
 				this.desserts.push(this.editedItem)
 			}
-			this.close()
+
+      try {
+        const parsedDate = this.$moment.utc(this.editedItem.date + 'T' + this.editedItem.time).format()
+        console.log({ parsedDate })
+        // TODO: Finish this mutation
+        // const res = await this.$apollo.mutate({
+        //   mutation: CreateMemberEvent,
+        //   variables() {
+        //     return {
+        //       name: this.editedItem.promoName,
+        //       startTime: 
+        //     }
+        //   }
+        // })
+			  this.close()
+      } catch (error) {
+
+      }
 		},
+    handleMinutesClicked(arg1) {
+      this.pickerTimeModel = this.$moment(this.editedItem.time, 'HH:mm').format('h:mm A')
+      this.timePicker = false
+    },
+    handleDatePickerInput(arg1) {
+      this.pickerDateModel = this.$moment(arg1).format('LL')
+      console.log({ arg1 })
+      this.showDatePicker = false
+    }
 	},
 }
 </script>
