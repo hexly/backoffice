@@ -5,20 +5,20 @@
       <v-tab to="#links">Promo links
         <v-icon>offline_share</v-icon>
       </v-tab>
-      <v-tab to="#sales">
+      <!-- <v-tab to="#sales">
         Flash Sales
         <v-icon>flash_on</v-icon>
-      </v-tab>
+      </v-tab> -->
       <v-tab-item value="links" class="py-3">
         <v-lazy>
-          <PromoLinks :sales="events" />
+          <PromoLinks :promo-links="promoLinks" @refetch-promo-links="$apollo.queries.refetch()"/>
         </v-lazy>
       </v-tab-item>
-      <v-tab-item value="sales" class="py-3">
+      <!-- <v-tab-item value="sales" class="py-3">
         <v-lazy>
           <FlashSales />
         </v-lazy>
-      </v-tab-item>
+      </v-tab-item> -->
     </v-tabs>
   </div>
 </template>
@@ -136,7 +136,7 @@ export default {
     ...mapGetters(['memberId'])
   },
   apollo: {
-    events: {
+    promoLinks: {
       client: 'federated',
       query: GetMemberEvents,
       variables() {
@@ -150,8 +150,8 @@ export default {
         }
       },
       update(data) {
-        const events = get(data, 'membership.search.results.0.events.marketing.results')
-        return events
+        const promoLinks = get(data, 'membership.search.results.0.events.marketing.results')
+        return promoLinks
       }
     }
   },

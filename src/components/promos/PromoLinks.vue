@@ -85,7 +85,6 @@
 											v-model="timePicker"
 											:close-on-content-click="false"
 											:nudge-right="40"
-											:return-value.sync="editedItem.time"
 											transition="scale-transition"
 											offset-y
 											max-width="290px"
@@ -111,7 +110,7 @@
 										</v-menu>
 									</v-col>
                   <v-col cols="12" class="pt-0">
-                    <v-select :items="[{ text: '7 Days', value: 'seven_day' }]" label="Promo Length" :rules="requiredRule"></v-select>
+                    <v-select v-model="promoWindow" :items="[{ text: '7 Days', value: 'seven_day' }]" label="Promo Length" :rules="requiredRule"></v-select>
                   </v-col>
 								</v-row>
 							</v-form>
@@ -152,7 +151,7 @@
 					</v-card-actions>
 				</v-card>
 			</v-dialog>
-			<v-card v-for="s in sales" :key="s.id" class="ma-2 sale-card">
+			<v-card v-for="s in promoLinks" :key="s.id" class="ma-2 sale-card">
 				<v-list-item two-line>
 					<v-list-item-content>
 						<v-list-item-title class="text-h5">
@@ -203,159 +202,193 @@
 				</v-card-actions>
 			</v-card>
 		</div>
+    <v-snackbar v-model="showSnackbar">
+      {{snackbarText}}
+      <v-btn
+        text
+        color="primary"
+        @click.native="showSnackbar = false"
+      >Close</v-btn>
+    </v-snackbar>
 	</div>
 </template>
 <script>
-import Rules from "@/views/Rules.js"
-import CreateMemberEvent from '@/graphql/CreateMemberEvent.gql'
+import Rules from '@/views/Rules.js'
+import { CreateMemberEvent } from '@/graphql/CreateMemberEvent.gql'
+import { mapGetters } from 'vuex'
 
 export default {
   props: {
-    sales: Array
+    promoLinks: Array
   },
-	data: () => ({
-		dialog: false,
-		dialogDelete: false,
-		showDatePicker: false,
-		timePicker: false,
+  data: () => ({
+    dialog: false,
+    dialogDelete: false,
+    showDatePicker: false,
+    timePicker: false,
+    promoWindow: null,
+    showSnackbar: false,
+    snackbarText: '',
 
-		headers: [
-			{ text: "Name", sortable: false, value: "name" },
-			{ text: "Email", value: "email" },
-			{ text: "Duration", value: "duration" },
-			{ text: "Time", value: "time" },
-			{ text: "PSV", value: "psv" },
-			{ text: "Reward", value: "reward" },
-			{ text: "Progress", value: "progress", sortable: false },
-			{ text: "Actions", value: "actions", sortable: false },
-		],
-		desserts: [],
-		editedIndex: -1,
-		isFormValid: false,
-		requiredRule: Rules.requiredRule,
-		emailRule: Rules.emailRule,
+    headers: [
+      { text: 'Name', sortable: false, value: 'name' },
+      { text: 'Email', value: 'email' },
+      { text: 'Duration', value: 'duration' },
+      { text: 'Time', value: 'time' },
+      { text: 'PSV', value: 'psv' },
+      { text: 'Reward', value: 'reward' },
+      { text: 'Progress', value: 'progress', sortable: false },
+      { text: 'Actions', value: 'actions', sortable: false }
+    ],
+    desserts: [],
+    editedIndex: -1,
+    isFormValid: false,
+    requiredRule: Rules.requiredRule,
+    emailRule: Rules.emailRule,
     pickerTimeModel: '',
     pickerDateModel: '',
-		editedItem: {
-			promoName: "",
-			hostEmail: "",
+    editedItem: {
+      promoName: '',
+      hostEmail: '',
       hostName: '',
-			date: new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
-				.toISOString()
-				.substr(0, 10),
-			time: "",
-			// emailRule: Rules.emailRule,
-		},
-		// defaultItem: {
-		// 	name: "",
-		// 	email: "",
-		// 	time: "",
-		// },
-	}),
-
-	methods: {
-		validateForm() {
-			if (this.$refs.informationForm.validate()) {
-				this.saveData()
-			}
-		},
-		formatDate(date) {
-			return this.$moment(date).format("MMM Do YYYY")
-		},
-		saleProgressText(s) {
-			if (s.progress === 100) {
-				return "Complete"
-			}
-			if (
-				s.progress < 100 &&
-				this.$moment().isAfter(this.$moment(s.end, "YYYY-MM-DD"))
-			) {
-				return "Expired"
-			}
-			if (this.$moment().isBefore(this.$moment(s.start, "YYYY-MM-DD"))) {
-				return "Upcoming"
-			}
-			return "In Progress"
-		},
-		saleProgressColor(s) {
-			if (s.progress === 100) {
-				return "green"
-			}
-			if (
-				s.progress < 100 &&
-				this.$moment().isAfter(this.$moment(s.end, "YYYY-MM-DD"))
-			) {
-				return "orange"
-			}
-			if (this.$moment().isBefore(this.$moment(s.start, "YYYY-MM-DD"))) {
-				return "blue"
-			}
-			return "green lighten-3"
-		},
-		editItem(item) {
-			this.editedIndex = this.desserts.indexOf(item)
-			this.editedItem = Object.assign({}, item)
-			this.dialog = true
-		},
-		deleteItem(item) {
-			this.editedIndex = this.desserts.indexOf(item)
-			this.editedItem = Object.assign({}, item)
-			this.dialogDelete = true
-		},
-		deleteItemConfirm() {
-			this.desserts.splice(this.editedIndex, 1)
-			this.closeDelete()
-		},
-		close() {
-			this.$refs.informationForm.reset()
-			this.dialog = false
-			this.$nextTick(() => {
-				this.editedItem = Object.assign({}, this.defaultItem)
-				this.editedIndex = -1
-			})
-		},
-		closeDelete() {
-			this.dialogDelete = false
-			this.$nextTick(() => {
-				this.editedItem = Object.assign({}, this.defaultItem)
-				this.editedIndex = -1
-			})
-		},
-		async save() {
-			if (this.editedIndex > -1) {
-				Object.assign(this.desserts[this.editedIndex], this.editedItem)
-			} else {
-				this.desserts.push(this.editedItem)
-			}
+      date: new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
+        .toISOString()
+        .substr(0, 10),
+      time: ''
+      // emailRule: Rules.emailRule,
+    }
+    // defaultItem: {
+    // 	name: "",
+    // 	email: "",
+    // 	time: "",
+    // },
+  }),
+  computed: {
+    ...mapGetters(['memberId', 'displayName'])
+  },
+  methods: {
+    validateForm() {
+      if (this.$refs.informationForm.validate()) {
+        this.saveData()
+      }
+    },
+    formatDate(date) {
+      return this.$moment(date).format('MMM Do YYYY')
+    },
+    saleProgressText(s) {
+      if (s.progress === 100) {
+        return 'Complete'
+      }
+      if (
+        s.progress < 100 &&
+				this.$moment().isAfter(this.$moment(s.end, 'YYYY-MM-DD'))
+      ) {
+        return 'Expired'
+      }
+      if (this.$moment().isBefore(this.$moment(s.start, 'YYYY-MM-DD'))) {
+        return 'Upcoming'
+      }
+      return 'In Progress'
+    },
+    saleProgressColor(s) {
+      if (s.progress === 100) {
+        return 'green'
+      }
+      if (
+        s.progress < 100 &&
+				this.$moment().isAfter(this.$moment(s.end, 'YYYY-MM-DD'))
+      ) {
+        return 'orange'
+      }
+      if (this.$moment().isBefore(this.$moment(s.start, 'YYYY-MM-DD'))) {
+        return 'blue'
+      }
+      return 'green lighten-3'
+    },
+    editItem(item) {
+      this.editedIndex = this.desserts.indexOf(item)
+      this.editedItem = Object.assign({}, item)
+      this.dialog = true
+    },
+    deleteItem(item) {
+      this.editedIndex = this.desserts.indexOf(item)
+      this.editedItem = Object.assign({}, item)
+      this.dialogDelete = true
+    },
+    deleteItemConfirm() {
+      this.desserts.splice(this.editedIndex, 1)
+      this.closeDelete()
+    },
+    close() {
+      this.$refs.informationForm.reset()
+      this.dialog = false
+      this.$nextTick(() => {
+        this.editedItem = Object.assign({}, this.defaultItem)
+        this.editedIndex = -1
+      })
+    },
+    closeDelete() {
+      this.dialogDelete = false
+      this.$nextTick(() => {
+        this.editedItem = Object.assign({}, this.defaultItem)
+        this.editedIndex = -1
+      })
+    },
+    async save() {
+      if (this.editedIndex > -1) {
+        Object.assign(this.desserts[this.editedIndex], this.editedItem)
+      } else {
+        this.desserts.push(this.editedItem)
+      }
 
       try {
         const parsedDate = this.$moment.utc(this.editedItem.date + 'T' + this.editedItem.time).format()
         console.log({ parsedDate })
         // TODO: Finish this mutation
-        // const res = await this.$apollo.mutate({
-        //   mutation: CreateMemberEvent,
-        //   variables() {
-        //     return {
-        //       name: this.editedItem.promoName,
-        //       startTime: 
-        //     }
-        //   }
-        // })
+        const res = await this.$apollo.mutate({
+          mutation: CreateMemberEvent,
+          client: 'federated',
+          variables: {
+            input: {
+              name: this.editedItem.promoName,
+              startTime: parsedDate,
+              window: this.promoWindow,
+              type: 'HOSTED_SALE',
+              template: 'promo_link',
+              participants: [
+                {
+                  pii: { email: this.editedItem.hostEmail },
+                  label: this.editedItem.hostName,
+                  role: 'HOST'
+                },
+                {
+                  memberId: this.memberId,
+                  label: this.displayName,
+                  role: 'ORGANIZER'
+                }
+              ]
+            }
+          }
+        })
+        this.snackbarText = 'Promo Link Created!'
 			  this.close()
+        this.$emit('refetchPromoLinks')
       } catch (error) {
-
+        this.snackbarText = 'There was an error creating this promo link! Please try again or contact support'
+        console.error(error)
       }
-		},
-    handleMinutesClicked(arg1) {
+      this.showSnackbar = true
+    },
+    handleMinutesClicked(time) {
+      console.log({ time })
       this.pickerTimeModel = this.$moment(this.editedItem.time, 'HH:mm').format('h:mm A')
       this.timePicker = false
     },
-    handleDatePickerInput(arg1) {
-      this.pickerDateModel = this.$moment(arg1).format('LL')
-      console.log({ arg1 })
+    handleDatePickerInput(date) {
+      this.pickerDateModel = this.$moment(date).format('LL')
       this.showDatePicker = false
     }
-	},
+  }
 }
 </script>
 
