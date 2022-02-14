@@ -1,207 +1,215 @@
 <template>
-	<div class="promo-links">
-		<div class="ma-5">
-			<h1>Promo Links</h1>
-			<h2 class="font-weight-regular">Manage and create promotional events.</h2>
-		</div>
-		<div class="d-flex justify-center ma-2 flex-wrap">
-			<v-dialog v-model="dialog" max-width="500px">
-				<template v-slot:activator="{ on, attrs }">
-					<div
-						class="add-flash-sale-box d-flex align-center justify-center"
-						v-on="on"
-					>
-						<div class="text-center">
-							<v-icon x-large>note_add</v-icon><br />New Promo Link
-						</div>
-					</div>
-				</template>
-				<v-card class="promo-link-modal">
-					<v-card-title>
-						<span class="text-h5 font-weight-bold">New Promo Link</span>
-					</v-card-title>
-					<v-card-text>
-						<p class="mb-2">
-							Promo Links allow you to have a host promote your store and give
-							them a reward for reaching the required threshold.
-						</p>
+  <div class="promo-links">
+    <div class="ma-5">
+      <h1>Promo Links</h1>
+      <h2 class="font-weight-regular">Manage and create promotional events.</h2>
+    </div>
+    <div class="d-flex justify-center ma-2 flex-wrap">
+      <v-dialog v-model="dialog" max-width="500px">
+        <template v-slot:activator="{ on }">
+          <div
+            class="add-flash-sale-box d-flex align-center justify-center"
+            v-on="on"
+          >
+            <div class="text-center">
+              <v-icon x-large>note_add</v-icon><br />New Promo Link
+            </div>
+          </div>
+        </template>
+        <v-card class="promo-link-modal">
+          <v-card-title>
+            <span class="text-h5 font-weight-bold">New Promo Link</span>
+          </v-card-title>
+          <v-card-text>
+            <p class="mb-2">
+              Promo Links allow you to have a host promote your store and give
+              them a reward for reaching the required threshold.
+            </p>
 
-						<v-container>
-							<v-form ref="informationForm" v-model="isFormValid">
-								<v-row class="mt-1">
-									<v-col cols="12" class="promo-form-input">
-										<v-text-field
-											v-model="editedItem.promoName"
-											label="Promo Link Name"
-											:rules="requiredRule"
-										></v-text-field>
-									</v-col>
-									<v-col cols="12" class="pt-0 promo-form-input">
-										<v-text-field
-											type="email"
-											v-model="editedItem.hostName"
-											label="Promoter's Name"
-											:rules="requiredRule"
-										></v-text-field>
-									</v-col>
-									<v-col cols="12" class="pt-0 promo-form-input">
-										<v-text-field
-											type="email"
-											v-model="editedItem.hostEmail"
-											label="Promoter's Email"
-											:rules="emailRule"
-										></v-text-field>
-									</v-col>
-									<v-col cols="12" class="pt-1">
-										<v-menu
-											v-model="showDatePicker"
-											:close-on-content-click="false"
-											:nudge-right="40"
-											transition="scale-transition"
-											offset-y
-											min-width="auto"
-										>
-											<template v-slot:activator="{ on, attrs }" class="pb-0">
-												<v-text-field
-													v-model="pickerDateModel"
-													label="Promo Start Date"
-													prepend-icon="mdi-calendar"
-													readonly
-													v-bind="attrs"
-													v-on="on"
-													:rules="requiredRule"
-													class="date-picker-input"
-												></v-text-field>
-											</template>
-											<v-date-picker
-												v-model="editedItem.date"
-												@input="handleDatePickerInput"
-											></v-date-picker>
-										</v-menu>
-									</v-col>
-									<v-col cols="12" class="pt-0">
-										<v-menu
-											ref="menu"
-											v-model="timePicker"
-											:close-on-content-click="false"
-											:nudge-right="40"
-											transition="scale-transition"
-											offset-y
-											max-width="290px"
-											min-width="290px"
-										>
-											<template v-slot:activator="{ on, attrs }">
-												<v-text-field
-													v-model="pickerTimeModel"
-													label="Promo Start Time"
-													prepend-icon="mdi-clock-outline"
-													readonly
-													:rules="requiredRule"
-													v-bind="attrs"
-													v-on="on"
-												></v-text-field>
-											</template>
-											<v-time-picker
-												v-if="timePicker"
-												v-model="editedItem.time"
-												full-width
-												@click:minute="handleMinutesClicked"
-											></v-time-picker>
-										</v-menu>
-									</v-col>
+            <v-container>
+              <v-form ref="informationForm" v-model="isFormValid">
+                <v-row class="mt-1">
+                  <v-col cols="12" class="promo-form-input">
+                    <v-text-field
+                      v-model="editedItem.promoName"
+                      label="Promo Link Name"
+                      :rules="requiredRule"
+                    ></v-text-field>
+                  </v-col>
+                  <v-col cols="12" class="pt-0 promo-form-input">
+                    <v-text-field
+                      type="email"
+                      v-model="editedItem.hostName"
+                      label="Promoter's Name"
+                      :rules="requiredRule"
+                    ></v-text-field>
+                  </v-col>
+                  <v-col cols="12" class="pt-0 promo-form-input">
+                    <v-text-field
+                      type="email"
+                      v-model="editedItem.hostEmail"
+                      label="Promoter's Email"
+                      :rules="emailRule"
+                    ></v-text-field>
+                  </v-col>
+                  <v-col cols="12" class="pt-1">
+                    <v-menu
+                      v-model="showDatePicker"
+                      :close-on-content-click="false"
+                      :nudge-right="40"
+                      transition="scale-transition"
+                      offset-y
+                      min-width="auto"
+                    >
+                      <template v-slot:activator="{ on, attrs }" class="pb-0">
+                        <v-text-field
+                          v-model="pickerDateModel"
+                          label="Promo Start Date"
+                          prepend-icon="mdi-calendar"
+                          readonly
+                          v-bind="attrs"
+                          v-on="on"
+                          :rules="requiredRule"
+                          class="date-picker-input"
+                        ></v-text-field>
+                      </template>
+                      <v-date-picker
+                        v-model="editedItem.date"
+                        @input="handleDatePickerInput"
+                      ></v-date-picker>
+                    </v-menu>
+                  </v-col>
+                  <v-col cols="12" class="pt-0">
+                    <v-menu
+                      ref="menu"
+                      v-model="timePicker"
+                      :close-on-content-click="false"
+                      :nudge-right="40"
+                      transition="scale-transition"
+                      offset-y
+                      max-width="290px"
+                      min-width="290px"
+                    >
+                      <template v-slot:activator="{ on, attrs }">
+                        <v-text-field
+                          v-model="pickerTimeModel"
+                          label="Promo Start Time"
+                          prepend-icon="mdi-clock-outline"
+                          readonly
+                          :rules="requiredRule"
+                          v-bind="attrs"
+                          v-on="on"
+                        ></v-text-field>
+                      </template>
+                      <v-time-picker
+                        v-if="timePicker"
+                        v-model="editedItem.time"
+                        full-width
+                        @click:minute="handleMinutesClicked"
+                      ></v-time-picker>
+                    </v-menu>
+                  </v-col>
                   <v-col cols="12" class="pt-0">
                     <v-select v-model="promoWindow" :items="[{ text: '7 Days', value: 'seven_day' }]" label="Promo Length" :rules="requiredRule"></v-select>
                   </v-col>
-								</v-row>
-							</v-form>
-							<!-- <p>{{ editedItem }}</p> -->
-						</v-container>
-						<div class="current-reward mt-4">
-							<span class="text-h6 font-weight-bold">Available Rewards</span>
-							<br />
-							<p>Period: February 2022</p>
+                </v-row>
+              </v-form>
+              <!-- <p>{{ editedItem }}</p> -->
+            </v-container>
+            <div class="current-reward mt-4">
+              <span class="text-h6 font-weight-bold">Available Rewards</span>
+              <br />
+              <p>Period: February 2022</p>
 
-							<div class="available-reward-table d-flex justify-start col-12">
-								<span class="text-h6 font-weight-light col-6 pt-0 pb-0"
-									>Goal</span
-								>
-								<span class="text-h6 font-weight-light col-6 pt-0 pb-0"
-									>Reward</span
-								>
-							</div>
-							<v-divider></v-divider>
+              <div class="available-reward-table d-flex justify-start col-12">
+                <span class="text-h6 font-weight-light col-6 pt-0 pb-0"
+                  >Goal</span
+                >
+                <span class="text-h6 font-weight-light col-6 pt-0 pb-0"
+                  >Reward</span
+                >
+              </div>
+              <v-divider></v-divider>
 
-							<div class="available-reward-table d-flex justify-start col-12">
-								<span class="rewards-table-body-text col-6">500 PSV</span>
-								<span class="rewards-table-body-text col-6">$100 Coupon</span>
-							</div>
-						</div>
-					</v-card-text>
-					<v-card-actions>
-						<v-spacer></v-spacer>
-						<v-btn color="red darken-1" text @click="close">Cancel</v-btn>
-						<v-btn
-							class="promo-link-save-btn font-weight-bold"
-							outlined
-							text
-							@click="save"
-							:disabled="!isFormValid"
-							>Save</v-btn
-						>
-					</v-card-actions>
-				</v-card>
-			</v-dialog>
-			<v-card v-for="s in promoLinks" :key="s.id" class="ma-2 sale-card">
-				<v-list-item two-line>
-					<v-list-item-content>
-						<v-list-item-title class="text-h5">
-							{{ s.name }}
-						</v-list-item-title>
-						<v-list-item-subtitle
-							><v-icon small color="#c44a42">calendar_today</v-icon
-							>{{ formatDate(s.start) }} -
-							{{ formatDate(s.end) }}</v-list-item-subtitle
-						>
-					</v-list-item-content>
-				</v-list-item>
-				<v-card-text class="reward-info">
-					<v-row align="center">
-						<v-col cols="6">
-							{{ s.reward }}
-							<br />
-							<p class="font-weight-light">{{ s.psv }} PSV</p>
-							Earned
-						</v-col>
-						<v-col cols="6">
-							<v-btn
-								:disabled="saleProgressText(s) !== 'Complete' || s.claimed"
-								>{{ s.claimed ? "Claimed" : `Claim Reward` }}</v-btn
-							>
-						</v-col>
-					</v-row>
-					<p class="font-weight-bold">{{ s.email }}</p>
-					<v-row align="center">
-						<v-col>
-							<v-progress-linear
-								:value="s.progress"
-								:color="saleProgressColor(s)"
-								height="25"
-								rounded
-							>
-								<strong>{{ saleProgressText(s) }}</strong>
-							</v-progress-linear>
-						</v-col>
-					</v-row>
-				</v-card-text>
-				<v-card-actions>
-					<v-btn text :disabled="saleProgressText(s) === 'Complete'"
-						>Resend Link</v-btn
-					>
-					<v-spacer></v-spacer>
-					<v-btn text color="red">Delete</v-btn>
-				</v-card-actions>
-			</v-card>
-		</div>
+              <div class="available-reward-table d-flex justify-start col-12">
+                <span class="rewards-table-body-text col-6">100 PSV</span>
+                <span class="rewards-table-body-text col-6">10% Off Coupon</span>
+              </div>
+              <div class="available-reward-table d-flex justify-start col-12">
+                <span class="rewards-table-body-text col-6">250 PSV</span>
+                <span class="rewards-table-body-text col-6">$50 Coupon</span>
+              </div>
+              <div class="available-reward-table d-flex justify-start col-12">
+                <span class="rewards-table-body-text col-6">500 PSV</span>
+                <span class="rewards-table-body-text col-6">$75 Coupon</span>
+              </div>
+            </div>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="red darken-1" text @click="close">Cancel</v-btn>
+            <v-btn
+              class="promo-link-save-btn font-weight-bold"
+              outlined
+              text
+              @click="save"
+              :disabled="!isFormValid"
+              >Save</v-btn
+            >
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+      <v-card v-for="s in promoLinks" :key="s.id" class="ma-2 sale-card">
+        <v-list-item two-line>
+          <v-list-item-content>
+            <v-list-item-title class="text-h5">
+              {{ s.name }}
+            </v-list-item-title>
+            <v-list-item-subtitle
+              ><v-icon small color="#c44a42">calendar_today</v-icon
+              >{{ formatDate(s.start) }} -
+              {{ formatDate(s.end) }}</v-list-item-subtitle
+            >
+          </v-list-item-content>
+        </v-list-item>
+        <v-card-text class="reward-info">
+          <v-row align="center">
+            <v-col cols="6">
+              {{ s.reward }}
+              <br />
+              <p class="font-weight-light">{{ s.psv }} PSV</p>
+              Earned
+            </v-col>
+            <v-col cols="6">
+              <v-btn
+                :disabled="saleProgressText(s) !== 'Complete' || s.claimed"
+                >{{ s.claimed ? "Claimed" : `Claim Reward` }}</v-btn
+              >
+            </v-col>
+          </v-row>
+          <p class="font-weight-bold">{{ s.email }}</p>
+          <v-row align="center">
+            <v-col>
+              <v-progress-linear
+                :value="s.progress"
+                :color="saleProgressColor(s)"
+                height="25"
+                rounded
+              >
+                <strong>{{ saleProgressText(s) }}</strong>
+              </v-progress-linear>
+            </v-col>
+          </v-row>
+        </v-card-text>
+        <v-card-actions>
+          <v-btn text :disabled="saleProgressText(s) === 'Complete'"
+            >Resend Link</v-btn
+          >
+          <v-spacer></v-spacer>
+          <v-btn text color="red">Delete</v-btn>
+        </v-card-actions>
+      </v-card>
+    </div>
     <v-snackbar v-model="showSnackbar">
       {{snackbarText}}
       <v-btn
@@ -210,7 +218,7 @@
         @click.native="showSnackbar = false"
       >Close</v-btn>
     </v-snackbar>
-	</div>
+  </div>
 </template>
 <script>
 import Rules from '@/views/Rules.js'
@@ -258,9 +266,9 @@ export default {
       // emailRule: Rules.emailRule,
     }
     // defaultItem: {
-    // 	name: "",
-    // 	email: "",
-    // 	time: "",
+    //  name: "",
+    //  email: "",
+    //  time: "",
     // },
   }),
   computed: {
@@ -281,7 +289,7 @@ export default {
       }
       if (
         s.progress < 100 &&
-				this.$moment().isAfter(this.$moment(s.end, 'YYYY-MM-DD'))
+        this.$moment().isAfter(this.$moment(s.end, 'YYYY-MM-DD'))
       ) {
         return 'Expired'
       }
@@ -296,7 +304,7 @@ export default {
       }
       if (
         s.progress < 100 &&
-				this.$moment().isAfter(this.$moment(s.end, 'YYYY-MM-DD'))
+        this.$moment().isAfter(this.$moment(s.end, 'YYYY-MM-DD'))
       ) {
         return 'orange'
       }
@@ -371,7 +379,7 @@ export default {
           }
         })
         this.snackbarText = 'Promo Link Created!'
-			  this.close()
+        this.close()
         this.$emit('refetchPromoLinks')
       } catch (error) {
         this.snackbarText = 'There was an error creating this promo link! Please try again or contact support'
@@ -394,50 +402,50 @@ export default {
 
 <style scoped>
 .add-flash-sale-box {
-	border-radius: 15px;
-	border: 5px dashed #ccc;
-	margin: 10px;
-	cursor: pointer;
-	min-width: 350px;
+  border-radius: 15px;
+  border: 5px dashed #ccc;
+  margin: 10px;
+  cursor: pointer;
+  min-width: 350px;
 }
 .v-card__title,
 .sale-card {
-	border-radius: 15px;
-	width: 350px;
-	text-align: center;
+  border-radius: 15px;
+  width: 350px;
+  text-align: center;
 }
 
 /* START fine tuning spacing aka: vuetify override  */
 
 .promo-link-modal .v-card__text {
-	padding: 0 30px;
+  padding: 0 30px;
 }
 .promo-link-modal .v-card__title {
-	padding: 30px 30px 0;
+  padding: 30px 30px 0;
 }
 .promo-link-modal .v-card__actions {
-	padding: 20px 30px 30px;
+  padding: 20px 30px 30px;
 }
 .promo-form-input.col.col-12 {
-	padding-top: 0;
-	padding-bottom: 0;
+  padding-top: 0;
+  padding-bottom: 0;
 }
 .date-picker-input .col,
 .col-12 {
-	padding-bottom: 0 !important;
+  padding-bottom: 0 !important;
 }
 
 .available-reward-table.col-12,
 .available-reward-table.col-12.col-6 {
-	padding: 0 !important;
+  padding: 0 !important;
 }
 /* END fine tuning spacing */
 
 .rewards-table-body-text {
-	font-size: 18px;
-	font-weight: 600;
+  font-size: 18px;
+  font-weight: 600;
 }
 /* .promo-link-save-btn.theme--light.v-btn.v-btn--outlined.v-btn--text {
-	border-color: black;
+  border-color: black;
 } */
 </style>
