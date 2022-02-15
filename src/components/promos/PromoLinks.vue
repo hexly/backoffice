@@ -151,7 +151,7 @@
       <v-card v-for="pl in promoLinks" :key="pl.id" class="ma-2 sale-card">
         <v-list-item two-line>
           <v-list-item-content>
-            <v-list-item-title class="text-h5">
+            <v-list-item-title class="text-h4">
               {{ pl.name }}
             </v-list-item-title>
             <v-list-item-subtitle>

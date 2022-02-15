@@ -1,7 +1,7 @@
 import gql from 'graphql-tag'
 
 export const GetMemberEvents = gql`
-query Events($input: MembershipMemberSearchInput!, $marketingInput: MarketingMemberEventsInput) {
+query Events($input: MembershipMemberSearchInput!, $marketingInput: MarketingMemberEventSearchInput) {
   membership {
     search(input: $input) {
       results {
