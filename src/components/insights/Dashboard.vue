@@ -1,6 +1,10 @@
 <template>
   <div class="insights-dashboard">
-    <v-progress-linear v-if="loading" :indeterminate="true" style="margin-top: -12px; margin-bottom: 10px;"/>
+    <v-progress-linear
+      v-if="loading"
+      :indeterminate="true"
+      style="margin-top: -12px; margin-bottom: 10px"
+    />
     <v-row wrap class="mx-2">
       <v-col cols="12" md="6">
         <v-card>
@@ -8,14 +12,31 @@
             <v-toolbar-title>Founding Influencer Tracker</v-toolbar-title>
           </v-toolbar>
           <v-card-text class="pa-1">
-            <v-list three-line class="pa-0 insights-list" v-if="marketCounts.length > 0">
-              <v-list-item class="pa-1 insights-row" v-for="market in marketCounts" :key="market.key">
+            <v-list
+              three-line
+              class="pa-0 insights-list"
+              v-if="marketCounts.length > 0"
+            >
+              <v-list-item
+                class="pa-1 insights-row"
+                v-for="market in marketCounts"
+                :key="market.key"
+              >
                 <v-list-item-content>
-                  <v-list-item-title>{{market.name}} <Flag :name="market.key" /></v-list-item-title>
-                  <v-progress-linear :value="(market.count/1000)*100" height="25" color="green">
-                    <strong>{{market.count}} out of 1000</strong>
+                  <v-list-item-title
+                    >{{ market.name }} <Flag :name="market.key"
+                  /></v-list-item-title>
+                  <v-progress-linear
+                    :value="(market.count / 1000) * 100"
+                    height="25"
+                    color="green"
+                  >
+                    <strong>{{ market.count }} out of 1000</strong>
                   </v-progress-linear>
-                  <v-list-item-action-text>First 1000 Influencers in {{market.name}} get a limited time "Founding Influencer" badge</v-list-item-action-text>
+                  <v-list-item-action-text
+                    >First 1000 Influencers in {{ market.name }} get a limited
+                    time "Founding Influencer" badge</v-list-item-action-text
+                  >
                 </v-list-item-content>
               </v-list-item>
             </v-list>
@@ -35,23 +56,44 @@
             icon="mdi-calendar-check"
             text
             dense
-            type="info">
+            type="info"
+          >
             You are currently viewing a past period
           </v-alert>
           <v-card-text class="pa-1">
-            <v-list three-line class="pa-0 insights-list" v-if="betaInsights.length">
-              <v-list-item v-for="insight in betaInsights" :key="insight.key" class="pa-1 insights-row">
+            <v-list
+              three-line
+              class="pa-0 insights-list"
+              v-if="betaInsights.length"
+            >
+              <v-list-item
+                v-for="insight in betaInsights"
+                :key="insight.key"
+                class="pa-1 insights-row"
+              >
                 <v-list-item-avatar>
-                  <v-icon large color="light-blue">{{insightInfo[insight.key].icon}}</v-icon>
+                  <v-icon large color="light-blue">{{
+                    insightInfo[insight.key].icon
+                  }}</v-icon>
                 </v-list-item-avatar>
                 <v-list-item-content>
-                  <v-list-item-title>{{insight.labels.header}}</v-list-item-title>
-                  <v-list-item-subtitle>{{insight.labels.tagline}}</v-list-item-subtitle>
-                  <small v-if="insightInfo[insight.key].desc">{{insightInfo[insight.key].desc}}</small>
+                  <v-list-item-title>{{
+                    insight.labels.header
+                  }}</v-list-item-title>
+                  <v-list-item-subtitle>{{
+                    insight.labels.tagline
+                  }}</v-list-item-subtitle>
+                  <small v-if="insightInfo[insight.key].desc">{{
+                    insightInfo[insight.key].desc
+                  }}</small>
                 </v-list-item-content>
                 <v-list-item-action>
-                  <v-list-item-action-text>{{insight.values.formatted}}</v-list-item-action-text>
-                  <v-list-item-action-text>{{insight.values.tagline}}</v-list-item-action-text>
+                  <v-list-item-action-text>{{
+                    insight.values.formatted
+                  }}</v-list-item-action-text>
+                  <v-list-item-action-text>{{
+                    insight.values.tagline
+                  }}</v-list-item-action-text>
                 </v-list-item-action>
               </v-list-item>
             </v-list>
@@ -62,7 +104,7 @@
     </v-row>
     <v-row wrap class="mx-2">
       <v-col cols="12" md="6">
-        <TeamSalesOverview/>
+        <TeamSalesOverview />
       </v-col>
     </v-row>
   </div>
@@ -87,7 +129,7 @@ export default {
     Flag,
     TeamSalesOverview
   },
-  data () {
+  data() {
     return {
       loading: false,
       rewardsFilter: ['ISSUED'],
@@ -126,19 +168,13 @@ export default {
           desc: 'Team member who contributed the most to your immediate payouts'
         }
       },
-      currencyMap: [
-        'USD',
-        'CAD',
-        'GBP',
-        'AUD',
-        'NZD'
-      ]
+      currencyMap: ['USD', 'CAD', 'GBP', 'AUD', 'NZD']
     }
   },
   computed: {
     ...mapGetters(['member', 'memberId']),
     ...mapState({
-      selectedPeriod: state => state.comp.selectedPeriod
+      selectedPeriod: (state) => state.comp.selectedPeriod
     }),
     filteredCoupons() {
       const { coupons, rewardsFilter } = this
@@ -146,8 +182,12 @@ export default {
         return coupons
       }
 
-      const filteredCoupons = coupons.filter(el => rewardsFilter.indexOf(el.status) > -1)
-      const sortedByDateCoupons = [...filteredCoupons].sort((a, b) => a.awardedDate > b.awardedDate)
+      const filteredCoupons = coupons.filter(
+        (el) => rewardsFilter.indexOf(el.status) > -1
+      )
+      const sortedByDateCoupons = [...filteredCoupons].sort(
+        (a, b) => a.awardedDate > b.awardedDate
+      )
 
       return sortedByDateCoupons
     }
@@ -155,7 +195,12 @@ export default {
   methods: {
     // Just testing something here... should be global if we like it
     isTouchEnabled() {
-      try { document.createEvent('TouchEvent'); return true } catch (e) { return false }
+      try {
+        document.createEvent('TouchEvent')
+        return true
+      } catch (e) {
+        return false
+      }
     },
     async copyToClipboard(code) {
       await this.$copyText(code)
@@ -165,9 +210,17 @@ export default {
       }, 3000)
     },
     getCouponPricingInfo(amounts) {
-      const supportedCurrencyIds = _.get(this, 'member.market.supportedCurrencyIds', [])
-      const supportedMarkets = supportedCurrencyIds.map(el => this.currencyMap[el])
-      const mappedPrices = supportedMarkets.map(el => { return { key: el, amount: _.get(amounts, el, 'N/A') } })
+      const supportedCurrencyIds = _.get(
+        this,
+        'member.market.supportedCurrencyIds',
+        []
+      )
+      const supportedMarkets = supportedCurrencyIds.map(
+        (el) => this.currencyMap[el]
+      )
+      const mappedPrices = supportedMarkets.map((el) => {
+        return { key: el, amount: _.get(amounts, el, 'N/A') }
+      })
 
       return mappedPrices
     }
@@ -205,7 +258,7 @@ export default {
         }
       },
       update({ comp: { insights } }) {
-        return insights.insights.filter(i => !!i.values.formatted)
+        return insights.insights.filter((i) => !!i.values.formatted)
       },
       skip() {
         return !this.selectedPeriod.id
@@ -250,19 +303,19 @@ export default {
       }
     }
   },
-  mounted () {}
+  mounted() {}
 }
 </script>
 
 <style scoped>
-.insights-dashboard{
+.insights-dashboard {
   padding-bottom: 65px;
 }
 .insights-card {
   max-height: 400px;
   overflow: auto;
 }
-.insights-row:nth-child(odd){
+.insights-row:nth-child(odd) {
   background-color: #cecece;
 }
 .inner-alert {
@@ -272,7 +325,7 @@ export default {
   margin: -4px;
 }
 .loading-bar-col {
-  position: absolute;
-  top: -3px;
+position: absolute;
+top: -3px;
 }
 </style>
