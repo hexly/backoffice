@@ -11,10 +11,14 @@ query Events($input: MembershipMemberSearchInput!, $marketingInput: MarketingMem
           memberId
           marketing (input: $marketingInput) {
             results {
+              name
               id 
               key 
               status
               startTime
+              endTime
+              metadata
+              settings
               participants {
                 id
                 label
