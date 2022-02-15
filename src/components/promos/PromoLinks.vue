@@ -234,7 +234,7 @@ export default {
     dialogDelete: false,
     showDatePicker: false,
     timePicker: false,
-    promoWindow: null,
+    promoWindow: { text: '7 Days', value: 'seven_day' },
     showSnackbar: false,
     snackbarText: '',
 
