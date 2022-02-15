@@ -110,7 +110,7 @@
                     </v-menu>
                   </v-col>
                   <v-col cols="12" class="pt-0">
-                    <v-select v-model="promoWindow" :items="[{ text: '7 Days', value: 'seven_day' }]" label="Promo Length" :rules="requiredRule"></v-select>
+                    <v-select v-model="promoWindow" :items="parsedWindows" label="Promo Length" :rules="requiredRule"></v-select>
                   </v-col>
                 </v-row>
               </v-form>
@@ -121,27 +121,28 @@
               <br />
               <p>Period: February 2022</p>
 
-              <div class="available-reward-table d-flex justify-start col-12">
-                <span class="text-h6 font-weight-light col-6 pt-0 pb-0"
-                  >Goal</span
-                >
-                <span class="text-h6 font-weight-light col-6 pt-0 pb-0"
-                  >Reward</span
-                >
-              </div>
-              <v-divider></v-divider>
+              <div v-if="selectedWindow">
+                <div class="available-reward-table d-flex justify-start col-12">
+                  <span class="text-h6 font-weight-light col-6 pt-0 pb-0"
+                    >Goal</span
+                  >
+                  <span class="text-h6 font-weight-light col-6 pt-0 pb-0"
+                    >Reward</span
+                  >
+                </div>
+                <v-divider></v-divider>
 
-              <div class="available-reward-table d-flex justify-start col-12">
-                <span class="rewards-table-body-text col-6">100 PSV</span>
-                <span class="rewards-table-body-text col-6">10% Off Coupon</span>
-              </div>
-              <div class="available-reward-table d-flex justify-start col-12">
-                <span class="rewards-table-body-text col-6">250 PSV</span>
-                <span class="rewards-table-body-text col-6">$50 Coupon</span>
-              </div>
-              <div class="available-reward-table d-flex justify-start col-12">
-                <span class="rewards-table-body-text col-6">500 PSV</span>
-                <span class="rewards-table-body-text col-6">$75 Coupon</span>
+                <div v-for="reward in selectedWindow.rewards" :key="reward.key" class="available-reward-table d-flex justify-start col-12">
+                  <span class="rewards-table-body-text col-6">{{reward.name}}</span>
+                </div>
+                <!-- <div class="available-reward-table d-flex justify-start col-12">
+                  <span class="rewards-table-body-text col-6">250 PSV</span>
+                  <span class="rewards-table-body-text col-6">$50 Coupon</span>
+                </div>
+                <div class="available-reward-table d-flex justify-start col-12">
+                  <span class="rewards-table-body-text col-6">500 PSV</span>
+                  <span class="rewards-table-body-text col-6">$75 Coupon</span>
+                </div> -->
               </div>
             </div>
           </v-card-text>
@@ -247,7 +248,8 @@ import { mapGetters } from 'vuex'
 
 export default {
   props: {
-    promoLinks: Array
+    promoLinks: Array,
+    eventTemplate: Object
   },
   data: () => ({
     dialog: false,
@@ -297,6 +299,31 @@ export default {
     ...mapGetters(['memberId', 'displayName', 'slug']),
     canShare() {
       return navigator.share
+    },
+    parsedWindows() {
+      if (!this.eventTemplate) {
+        return []
+      }
+
+      const { windows } = this.eventTemplate
+      if (!windows || !windows.length) {
+        return []
+      }
+      const mappedWindows = windows.map(el => {
+        return {
+          text: el.name,
+          value: el.key
+        }
+      })
+
+      return mappedWindows
+    },
+    selectedWindow() {
+      if (!this.promoWindow || !this.eventTemplate || !this.eventTemplate.windows.length) {
+        return
+      }
+
+      return this.eventTemplate.windows.find(el => el.key === this.promoWindow)
     }
   },
   methods: {
