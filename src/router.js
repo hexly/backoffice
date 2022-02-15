@@ -183,7 +183,7 @@ export default new Router({
       },
       beforeEnter: (_, __, next) => {
         const tags = store.state.user.principal.member.tags
-        return tags.indexOf('beta:promo') < 0 ? next('/dashboard') : next()
+        return tags.indexOf('beta:promo') < 0 ? next() : next()
       }
     },
     {

@@ -5,18 +5,9 @@
       <v-tab to="#links">Promo links
         <v-icon>offline_share</v-icon>
       </v-tab>
-      <v-tab to="#sales">
-        Flash Sales
-        <v-icon>flash_on</v-icon>
-      </v-tab>
       <v-tab-item value="links" class="py-3">
         <v-lazy>
-          <PromoLinks />
-        </v-lazy>
-      </v-tab-item>
-      <v-tab-item value="sales" class="py-3">
-        <v-lazy>
-          <FlashSales />
+          <PromoLinks :promo-links="promoLinks" @refetchPromoLinks="handlePromoLinksRefetch" :eventTemplate="eventTemplates.find(el => el.key === 'promo_link')"/>
         </v-lazy>
       </v-tab-item>
     </v-tabs>
@@ -26,6 +17,10 @@
 <script>
 import PromoLinks from '@/components/promos/PromoLinks.vue'
 import FlashSales from '@/components/promos/FlashSales.vue'
+import { GetMemberEvents } from '@/graphql/GetMemberEvents.gql'
+import { GetEventTemplates } from '@/graphql/GetEventTemplates.gql'
+import { mapGetters } from 'vuex'
+import { get } from 'lodash'
 
 export default {
   components: {
@@ -57,78 +52,40 @@ export default {
       name: '',
       email: ''
     },
-    sales: [
-      {
-        id: 1,
-        name: 'Popup Shop 1',
-        email: 'brenda.kradolfer@gmail.com',
-        duration: '48 Hours',
-        start: '2022-01-27',
-        end: '2022-01-29',
-        reward: '$100 Coupon',
-        psv: '134',
-        progress: 0
-      },
-      {
-        id: 2,
-        name: 'Popup Shop 2',
-        email: 'david@davidwlech.co',
-        duration: '48 Hours',
-        start: '2022-01-26',
-        end: '2022-01-28',
-        reward: 'Free Mascara',
-        psv: '0',
-        progress: 0
-      },
-      {
-        id: 3,
-        name: 'Popup Shop 3',
-        email: 'narfdre@gmail.com',
-        duration: '48 Hours',
-        start: '2022-01-25',
-        end: '2022-01-27',
-        reward: '$10 Coupon',
-        psv: '134',
-        progress: 30
-      },
-      {
-        id: 4,
-        name: 'Popup Shop 4',
-        email: 'mckalee@everra.com',
-        duration: '48 Hours',
-        start: '2022-01-11',
-        end: '2022-01-12',
-        reward: 'Free Mascara',
-        psv: '500',
-        progress: 100
-      },
-      {
-        id: 5,
-        name: 'Popup Shop 5',
-        email: 'rachael@everra.com',
-        duration: '48 Hours',
-        start: '2022-01-09',
-        end: '2022-01-11',
-        reward: 'Free Mascara',
-        psv: '500',
-        progress: 100,
-        claimed: true
-      },
-      {
-        id: 6,
-        name: 'Popup Shop 6',
-        email: 'someone@everra.com',
-        duration: '48 Hours',
-        start: '2022-01-06',
-        end: '2022-01-08',
-        reward: 'Free Mascara',
-        psv: '230',
-        progress: 36,
-        claimed: true
-      }
-    ]
+    statusFilter: null,
+    eventTemplates: []
   }),
-
+  computed: {
+    ...mapGetters(['memberId'])
+  },
+  apollo: {
+    promoLinks: {
+      client: 'federated',
+      query: GetMemberEvents,
+      variables() {
+        return {
+          input: {
+            idIn: [this.memberId]
+          },
+          marketingInput: {
+            statusIn: this.statusFilter
+          }
+        }
+      },
+      update(data) {
+        const promoLinks = get(data, 'membership.search.results.0.events.marketing.results')
+        return promoLinks
+      }
+    },
+    eventTemplates: {
+      client: 'federated',
+      query: GetEventTemplates,
+      update(data) {
+        console.log({ data })
+        return get(data, 'marketing.searchEventTemplates.results')
+      }
+    }
+  },
   methods: {
     formatDate(date) {
       return this.$moment(date).format('MMM Do YYYY')
@@ -192,6 +149,9 @@ export default {
         this.desserts.push(this.editedItem)
       }
       this.close()
+    },
+    handlePromoLinksRefetch() {
+      this.$apollo.queries.promoLinks.refetch()
     }
   }
 }
