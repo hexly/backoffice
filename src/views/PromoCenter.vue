@@ -11,7 +11,7 @@
       </v-tab> -->
       <v-tab-item value="links" class="py-3">
         <v-lazy>
-          <PromoLinks :promo-links="promoLinks" @refetch-promo-links="$apollo.queries.refetch()"/>
+          <PromoLinks :promo-links="promoLinks" @refetchPromoLinks="handlePromoLinksRefetch" :eventTemplate="eventTemplates.find(el => el.key === 'promo_link')"/>
         </v-lazy>
       </v-tab-item>
       <!-- <v-tab-item value="sales" class="py-3">
@@ -27,6 +27,7 @@
 import PromoLinks from '@/components/promos/PromoLinks.vue'
 import FlashSales from '@/components/promos/FlashSales.vue'
 import { GetMemberEvents } from '@/graphql/GetMemberEvents.gql'
+import { GetEventTemplates } from '@/graphql/GetEventTemplates.gql'
 import { mapGetters } from 'vuex'
 import { get } from 'lodash'
 
@@ -153,6 +154,14 @@ export default {
         const promoLinks = get(data, 'membership.search.results.0.events.marketing.results')
         return promoLinks
       }
+    },
+    eventTemplates: {
+      client: 'federated',
+      query: GetEventTemplates,
+      update(data) {
+        console.log({ data })
+        return get(data, 'marketing.searchEventTemplates.results')
+      }
     }
   },
   methods: {
@@ -218,6 +227,9 @@ export default {
         this.desserts.push(this.editedItem)
       }
       this.close()
+    },
+    handlePromoLinksRefetch() {
+      this.$apollo.queries.promoLinks.refetch()
     }
   }
 }

@@ -110,7 +110,7 @@
                     </v-menu>
                   </v-col>
                   <v-col cols="12" class="pt-0">
-                    <v-select v-model="promoWindow" :items="[{ text: '7 Days', value: 'seven_day' }]" label="Promo Length" :rules="requiredRule"></v-select>
+                    <v-select v-model="promoWindow" :items="parsedWindows" label="Promo Length" :rules="requiredRule"></v-select>
                   </v-col>
                 </v-row>
               </v-form>
@@ -121,27 +121,28 @@
               <br />
               <p>Period: February 2022</p>
 
-              <div class="available-reward-table d-flex justify-start col-12">
-                <span class="text-h6 font-weight-light col-6 pt-0 pb-0"
-                  >Goal</span
-                >
-                <span class="text-h6 font-weight-light col-6 pt-0 pb-0"
-                  >Reward</span
-                >
-              </div>
-              <v-divider></v-divider>
+              <div v-if="selectedWindow">
+                <div class="available-reward-table d-flex justify-start col-12">
+                  <span class="text-h6 font-weight-light col-6 pt-0 pb-0"
+                    >Goal</span
+                  >
+                  <span class="text-h6 font-weight-light col-6 pt-0 pb-0"
+                    >Reward</span
+                  >
+                </div>
+                <v-divider></v-divider>
 
-              <div class="available-reward-table d-flex justify-start col-12">
-                <span class="rewards-table-body-text col-6">100 PSV</span>
-                <span class="rewards-table-body-text col-6">10% Off Coupon</span>
-              </div>
-              <div class="available-reward-table d-flex justify-start col-12">
-                <span class="rewards-table-body-text col-6">250 PSV</span>
-                <span class="rewards-table-body-text col-6">$50 Coupon</span>
-              </div>
-              <div class="available-reward-table d-flex justify-start col-12">
-                <span class="rewards-table-body-text col-6">500 PSV</span>
-                <span class="rewards-table-body-text col-6">$75 Coupon</span>
+                <div v-for="reward in selectedWindow.rewards" :key="reward.key" class="available-reward-table d-flex justify-start col-12">
+                  <span class="rewards-table-body-text col-6">{{reward.name}}</span>
+                </div>
+                <!-- <div class="available-reward-table d-flex justify-start col-12">
+                  <span class="rewards-table-body-text col-6">250 PSV</span>
+                  <span class="rewards-table-body-text col-6">$50 Coupon</span>
+                </div>
+                <div class="available-reward-table d-flex justify-start col-12">
+                  <span class="rewards-table-body-text col-6">500 PSV</span>
+                  <span class="rewards-table-body-text col-6">$75 Coupon</span>
+                </div> -->
               </div>
             </div>
           </v-card-text>
@@ -159,50 +160,70 @@
           </v-card-actions>
         </v-card>
       </v-dialog>
-      <v-card v-for="s in promoLinks" :key="s.id" class="ma-2 sale-card">
+      <v-card v-for="pl in promoLinks" :key="pl.id" class="ma-2 sale-card">
         <v-list-item two-line>
           <v-list-item-content>
             <v-list-item-title class="text-h5">
-              {{ s.name }}
+              {{ pl.name }}
             </v-list-item-title>
             <v-list-item-subtitle
               ><v-icon small color="#c44a42">calendar_today</v-icon
-              >{{ formatDate(s.start) }} -
-              {{ formatDate(s.end) }}</v-list-item-subtitle
+              >{{ formatDate(pl.startTime) }} -
+              {{ formatDate(pl.endTime) }}</v-list-item-subtitle
             >
           </v-list-item-content>
         </v-list-item>
         <v-card-text class="reward-info">
           <v-row align="center">
             <v-col cols="6">
-              {{ s.reward }}
+              {{ pl.reward }}
               <br />
-              <p class="font-weight-light">{{ s.psv }} PSV</p>
+              <p class="font-weight-light">{{ pl.psv }} PSV</p>
               Earned
             </v-col>
             <v-col cols="6">
               <v-btn
-                :disabled="saleProgressText(s) !== 'Complete' || s.claimed"
-                >{{ s.claimed ? "Claimed" : `Claim Reward` }}</v-btn
+                :disabled="saleProgressText(pl) !== 'Complete' || pl.claimed"
+                >{{ pl.claimed ? "Claimed" : `Claim Reward` }}</v-btn
               >
             </v-col>
           </v-row>
-          <p class="font-weight-bold">{{ s.email }}</p>
+          <p class="font-weight-bold">{{ pl.email }}</p>
           <v-row align="center">
             <v-col>
               <v-progress-linear
-                :value="s.progress"
-                :color="saleProgressColor(s)"
+                :value="pl.progress"
+                :color="saleProgressColor(pl)"
                 height="25"
                 rounded
               >
-                <strong>{{ saleProgressText(s) }}</strong>
+                <strong>{{ saleProgressText(pl) }}</strong>
               </v-progress-linear>
+            </v-col>
+          </v-row>
+          <v-row align="center">
+            <v-col>
+              <v-text-field
+                solo
+                color="black"
+                :value="createPromoLink(pl.key)"
+                readonly
+                single-line
+                class="link">
+                <v-tooltip slot="append" bottom>
+                    <template v-slot:activator="{ on }">
+                      <v-icon v-if="canShare" @click="shareLink(createPromoLink(pl.key))" v-on="on" color="black" dark>share</v-icon>
+                      <v-icon v-else @click="copyToClipboard(createPromoLink(pl.key))" v-on="on" color="black" dark>assignment</v-icon>
+                    </template>
+                    <span v-if="canShare">{{shareTooltipText}}</span>
+                    <span v-else>{{copyTooltipText}}</span>
+                </v-tooltip>
+              </v-text-field>
             </v-col>
           </v-row>
         </v-card-text>
         <v-card-actions>
-          <v-btn text :disabled="saleProgressText(s) === 'Complete'"
+          <v-btn text :disabled="saleProgressText(pl) === 'Complete'"
             >Resend Link</v-btn
           >
           <v-spacer></v-spacer>
@@ -227,7 +248,8 @@ import { mapGetters } from 'vuex'
 
 export default {
   props: {
-    promoLinks: Array
+    promoLinks: Array,
+    eventTemplate: Object
   },
   data: () => ({
     dialog: false,
@@ -237,6 +259,8 @@ export default {
     promoWindow: { text: '7 Days', value: 'seven_day' },
     showSnackbar: false,
     snackbarText: '',
+    copyTooltipText: 'Copy',
+    shareTooltipText: 'Share',
 
     headers: [
       { text: 'Name', sortable: false, value: 'name' },
@@ -272,7 +296,35 @@ export default {
     // },
   }),
   computed: {
-    ...mapGetters(['memberId', 'displayName'])
+    ...mapGetters(['memberId', 'displayName', 'slug']),
+    canShare() {
+      return navigator.share
+    },
+    parsedWindows() {
+      if (!this.eventTemplate) {
+        return []
+      }
+
+      const { windows } = this.eventTemplate
+      if (!windows || !windows.length) {
+        return []
+      }
+      const mappedWindows = windows.map(el => {
+        return {
+          text: el.name,
+          value: el.key
+        }
+      })
+
+      return mappedWindows
+    },
+    selectedWindow() {
+      if (!this.promoWindow || !this.eventTemplate || !this.eventTemplate.windows.length) {
+        return
+      }
+
+      return this.eventTemplate.windows.find(el => el.key === this.promoWindow)
+    }
   },
   methods: {
     validateForm() {
@@ -283,32 +335,32 @@ export default {
     formatDate(date) {
       return this.$moment(date).format('MMM Do YYYY')
     },
-    saleProgressText(s) {
-      if (s.progress === 100) {
+    saleProgressText(pl) {
+      if (pl.progress === 100) {
         return 'Complete'
       }
       if (
-        s.progress < 100 &&
-        this.$moment().isAfter(this.$moment(s.end, 'YYYY-MM-DD'))
+        pl.progress < 100 &&
+				this.$moment().isAfter(this.$moment(pl.endTime, 'YYYY-MM-DD'))
       ) {
         return 'Expired'
       }
-      if (this.$moment().isBefore(this.$moment(s.start, 'YYYY-MM-DD'))) {
+      if (this.$moment().isBefore(this.$moment(pl.startTime, 'YYYY-MM-DD'))) {
         return 'Upcoming'
       }
       return 'In Progress'
     },
-    saleProgressColor(s) {
-      if (s.progress === 100) {
+    saleProgressColor(pl) {
+      if (pl.progress === 100) {
         return 'green'
       }
       if (
-        s.progress < 100 &&
-        this.$moment().isAfter(this.$moment(s.end, 'YYYY-MM-DD'))
+        pl.progress < 100 &&
+				this.$moment().isAfter(this.$moment(pl.endTime, 'YYYY-MM-DD'))
       ) {
         return 'orange'
       }
-      if (this.$moment().isBefore(this.$moment(s.start, 'YYYY-MM-DD'))) {
+      if (this.$moment().isBefore(this.$moment(pl.startTime, 'YYYY-MM-DD'))) {
         return 'blue'
       }
       return 'green lighten-3'
@@ -387,14 +439,36 @@ export default {
       }
       this.showSnackbar = true
     },
+    createPromoLink(eventKey) {
+      const base = this.slug ? this.$tenantInfo.storeUrl.replace('{slug}', this.slug) : this.$tenantInfo.corporateUrl
+      const link = base + `/promos/${eventKey}/`
+
+      return link
+    },
     handleMinutesClicked(time) {
-      console.log({ time })
       this.pickerTimeModel = this.$moment(this.editedItem.time, 'HH:mm').format('h:mm A')
       this.timePicker = false
     },
     handleDatePickerInput(date) {
       this.pickerDateModel = this.$moment(date).format('LL')
       this.showDatePicker = false
+    },
+    shareLink(link) {
+      navigator.share({ url: link })
+        .then(() => {
+          this.copyTooltipText = 'Shared'
+          setTimeout(() => {
+            this.copyTooltipText = 'Share'
+          }, 3000)
+        })
+        .catch((error) => console.log('Error sharing', error))
+    },
+    async copyToClipboard(link) {
+      await this.$copyText(link)
+      this.copyTooltipText = 'Copied!'
+      setTimeout(() => {
+        this.copyTooltipText = 'Copy'
+      }, 3000)
     }
   }
 }
