@@ -7,10 +7,8 @@
     <div class="d-flex justify-center ma-2 flex-wrap">
       <v-dialog v-model="dialog" max-width="500px">
         <template v-slot:activator="{ on }">
-          <div
-            class="add-flash-sale-box d-flex align-center justify-center"
-            v-on="on"
-          >
+          <div class="add-flash-sale-box d-flex align-center justify-center"
+            v-on="on">
             <div class="text-center">
               <v-icon x-large>note_add</v-icon><br />New Promo Link
             </div>
@@ -25,7 +23,6 @@
               Promo Links allow you to have a host promote your store and give
               them a reward for reaching the required threshold.
             </p>
-
             <v-container>
               <v-form ref="informationForm" v-model="isFormValid">
                 <v-row class="mt-1">
@@ -117,32 +114,24 @@
               <!-- <p>{{ editedItem }}</p> -->
             </v-container>
             <div class="current-reward mt-4">
-              <span class="text-h6 font-weight-bold">Available Rewards</span>
-              <br />
-              <p>Period: February 2022</p>
-
               <div v-if="selectedWindow">
+                <span class="text-h6 font-weight-bold">Available Rewards</span>
+                <br />
+                <p>Period: February 2022</p>
                 <div class="available-reward-table d-flex justify-start col-12">
-                  <span class="text-h6 font-weight-light col-6 pt-0 pb-0"
-                    >Goal</span
-                  >
-                  <span class="text-h6 font-weight-light col-6 pt-0 pb-0"
-                    >Reward</span
-                  >
+                  <span class="text-h6 font-weight-light col-6 pt-0 pb-0">Goal</span>
+                  <span class="text-h6 font-weight-light col-6 pt-0 pb-0">Reward</span>
                 </div>
                 <v-divider></v-divider>
-
                 <div v-for="reward in selectedWindow.rewards" :key="reward.key" class="available-reward-table d-flex justify-start col-12">
-                  <span class="rewards-table-body-text col-6">{{reward.name}}</span>
+                  <span class="rewards-table-body-text col-6">{{reward.name.split('Reward:')[0]}}</span>
+                  <span class="rewards-table-body-text col-6">{{reward.name.split('Reward:')[1]}}</span>
                 </div>
-                <!-- <div class="available-reward-table d-flex justify-start col-12">
-                  <span class="rewards-table-body-text col-6">250 PSV</span>
-                  <span class="rewards-table-body-text col-6">$50 Coupon</span>
-                </div>
+              </div>
+              <div v-else>
                 <div class="available-reward-table d-flex justify-start col-12">
-                  <span class="rewards-table-body-text col-6">500 PSV</span>
-                  <span class="rewards-table-body-text col-6">$75 Coupon</span>
-                </div> -->
+                  <span class="rewards-table-body-text">Please Select a Promo Length to view rewards</span>
+                </div>
               </div>
             </div>
           </v-card-text>
@@ -155,8 +144,7 @@
               text
               @click="save"
               :disabled="!isFormValid"
-              >Save</v-btn
-            >
+              >Save</v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
@@ -166,11 +154,10 @@
             <v-list-item-title class="text-h5">
               {{ pl.name }}
             </v-list-item-title>
-            <v-list-item-subtitle
-              ><v-icon small color="#c44a42">calendar_today</v-icon
-              >{{ formatDate(pl.startTime) }} -
-              {{ formatDate(pl.endTime) }}</v-list-item-subtitle
-            >
+            <v-list-item-subtitle>
+              <v-icon small color="#c44a42">calendar_today</v-icon>
+                {{ formatDate(pl.startTime) }} - {{ formatDate(pl.endTime) }}
+              </v-list-item-subtitle>
           </v-list-item-content>
         </v-list-item>
         <v-card-text class="reward-info">
@@ -178,8 +165,7 @@
             <v-col cols="6">
               {{ pl.reward }}
               <br />
-              <p class="font-weight-light">{{ pl.psv }} PSV</p>
-              Earned
+              <p class="font-weight-light">{{ pl.psv || 0 }} PSV Earned</p>
             </v-col>
             <v-col cols="6">
               <v-btn
@@ -209,6 +195,7 @@
                 :value="createPromoLink(pl.key)"
                 readonly
                 single-line
+                hide-details
                 class="link">
                 <v-tooltip slot="append" bottom>
                     <template v-slot:activator="{ on }">
@@ -223,11 +210,14 @@
           </v-row>
         </v-card-text>
         <v-card-actions>
-          <v-btn text :disabled="saleProgressText(pl) === 'Complete'"
-            >Resend Link</v-btn
-          >
+          <!-- <v-btn text :disabled="saleProgressText(pl) === 'Complete'">Resend Link</v-btn> -->
+          <v-btn text disabled>Resend Link</v-btn>
+          <a :href="createPromoLink(pl.key)" target="_blank">
+            <v-btn text>Visit Link</v-btn>
+          </a>
           <v-spacer></v-spacer>
-          <v-btn text color="red">Delete</v-btn>
+          <!-- <v-btn text color="red">Delete</v-btn> -->
+          <v-btn text disabled color="red">Delete</v-btn>
         </v-card-actions>
       </v-card>
     </div>
@@ -256,7 +246,7 @@ export default {
     dialogDelete: false,
     showDatePicker: false,
     timePicker: false,
-    promoWindow: { text: '7 Days', value: 'seven_day' },
+    promoWindow: null,
     showSnackbar: false,
     snackbarText: '',
     copyTooltipText: 'Copy',
@@ -341,7 +331,7 @@ export default {
       }
       if (
         pl.progress < 100 &&
-				this.$moment().isAfter(this.$moment(pl.endTime, 'YYYY-MM-DD'))
+        this.$moment().isAfter(this.$moment(pl.endTime, 'YYYY-MM-DD'))
       ) {
         return 'Expired'
       }
@@ -356,7 +346,7 @@ export default {
       }
       if (
         pl.progress < 100 &&
-				this.$moment().isAfter(this.$moment(pl.endTime, 'YYYY-MM-DD'))
+        this.$moment().isAfter(this.$moment(pl.endTime, 'YYYY-MM-DD'))
       ) {
         return 'orange'
       }
@@ -404,8 +394,7 @@ export default {
       try {
         const parsedDate = this.$moment.utc(this.editedItem.date + 'T' + this.editedItem.time).format()
         console.log({ parsedDate })
-        // TODO: Finish this mutation
-        const res = await this.$apollo.mutate({
+        await this.$apollo.mutate({
           mutation: CreateMemberEvent,
           client: 'federated',
           variables: {
@@ -482,6 +471,11 @@ export default {
   cursor: pointer;
   min-width: 350px;
 }
+
+.add-flash-sale-box:hover {
+  background-color: rgba(86, 86, 86, 0.4);
+}
+
 .v-card__title,
 .sale-card {
   border-radius: 15px;
@@ -492,13 +486,13 @@ export default {
 /* START fine tuning spacing aka: vuetify override  */
 
 .promo-link-modal .v-card__text {
-  padding: 0 30px;
+  padding: 0 10px;
 }
 .promo-link-modal .v-card__title {
-  padding: 30px 30px 0;
+  padding: 10px 10px 0;
 }
 .promo-link-modal .v-card__actions {
-  padding: 20px 30px 30px;
+  padding: 5px 10px 10px;
 }
 .promo-form-input.col.col-12 {
   padding-top: 0;

@@ -5,20 +5,11 @@
       <v-tab to="#links">Promo links
         <v-icon>offline_share</v-icon>
       </v-tab>
-      <!-- <v-tab to="#sales">
-        Flash Sales
-        <v-icon>flash_on</v-icon>
-      </v-tab> -->
       <v-tab-item value="links" class="py-3">
         <v-lazy>
           <PromoLinks :promo-links="promoLinks" @refetchPromoLinks="handlePromoLinksRefetch" :eventTemplate="eventTemplates.find(el => el.key === 'promo_link')"/>
         </v-lazy>
       </v-tab-item>
-      <!-- <v-tab-item value="sales" class="py-3">
-        <v-lazy>
-          <FlashSales />
-        </v-lazy>
-      </v-tab-item> -->
     </v-tabs>
   </div>
 </template>
@@ -62,76 +53,7 @@ export default {
       email: ''
     },
     statusFilter: null,
-    sales: [
-      {
-        id: 1,
-        name: 'Popup Shop 1',
-        email: 'brenda.kradolfer@gmail.com',
-        duration: '48 Hours',
-        start: '2022-01-27',
-        end: '2022-01-29',
-        reward: '$100 Coupon',
-        psv: '134',
-        progress: 0
-      },
-      {
-        id: 2,
-        name: 'Popup Shop 2',
-        email: 'david@davidwlech.co',
-        duration: '48 Hours',
-        start: '2022-01-26',
-        end: '2022-01-28',
-        reward: 'Free Mascara',
-        psv: '0',
-        progress: 0
-      },
-      {
-        id: 3,
-        name: 'Popup Shop 3',
-        email: 'narfdre@gmail.com',
-        duration: '48 Hours',
-        start: '2022-01-25',
-        end: '2022-01-27',
-        reward: '$10 Coupon',
-        psv: '134',
-        progress: 30
-      },
-      {
-        id: 4,
-        name: 'Popup Shop 4',
-        email: 'mckalee@everra.com',
-        duration: '48 Hours',
-        start: '2022-01-11',
-        end: '2022-01-12',
-        reward: 'Free Mascara',
-        psv: '500',
-        progress: 100
-      },
-      {
-        id: 5,
-        name: 'Popup Shop 5',
-        email: 'rachael@everra.com',
-        duration: '48 Hours',
-        start: '2022-01-09',
-        end: '2022-01-11',
-        reward: 'Free Mascara',
-        psv: '500',
-        progress: 100,
-        claimed: true
-      },
-      {
-        id: 6,
-        name: 'Popup Shop 6',
-        email: 'someone@everra.com',
-        duration: '48 Hours',
-        start: '2022-01-06',
-        end: '2022-01-08',
-        reward: 'Free Mascara',
-        psv: '230',
-        progress: 36,
-        claimed: true
-      }
-    ]
+    eventTemplates: []
   }),
   computed: {
     ...mapGetters(['memberId'])
