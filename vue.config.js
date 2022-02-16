@@ -8,7 +8,7 @@ const path = './src/build.info.json'
 const buildTime = moment().toISOString()
 
 module.exports = {
-  lintOnSave: true,
+  lintOnSave: process.env.NODE_ENV !== 'production',
   configureWebpack: {
     plugins: [
       new webpack.ProvidePlugin({

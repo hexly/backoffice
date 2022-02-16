@@ -8,6 +8,7 @@
               <img v-if="$tenantInfo.logoLoginPath" class="logo" :src="$tenantInfo.logoLoginPath" />
               <h1 class="logo text-center heading" v-else>{{$tenantInfo.name}}</h1>
               <v-alert type="error" :value="!!error">{{error}}</v-alert>
+              <v-alert type="error" :value="!!errMsg">{{errMsg}}</v-alert>
               <v-alert color="primary" :value="!!success">{{success}}</v-alert>
               <div v-if="type === 'login'">
                 <v-form ref="login" @submit.prevent="onLogin" lazy-validation>
@@ -109,6 +110,9 @@ export default {
       buttonLoading: false,
       version: VERSION
     }
+  },
+  props: {
+    errMsg: String
   },
   methods: {
     ...mapActions({

@@ -127,7 +127,7 @@ export default {
     PeriodSwitcher,
     InsightsPanel,
     Flag,
-    TeamSalesOverview
+    TeamSalesOverview,
   },
   data() {
     return {
@@ -142,11 +142,11 @@ export default {
         ISSUED: 'Available',
         REDEEMED: 'Redeemed',
         PARTIALLY_REDEEMED: 'Partially Redeemed',
-        REVOKED: 'Revoked'
+        REVOKED: 'Revoked',
       },
       couponStatuses: [
         { value: 'ISSUED', text: 'Available' },
-        { value: 'REDEEMED', text: 'Redeemed' }
+        { value: 'REDEEMED', text: 'Redeemed' },
       ],
       collection: {},
       // Temporary approach to coupons
@@ -157,24 +157,24 @@ export default {
       insightInfo: {
         top_seller: {
           icon: 'mdi-package-variant-closed',
-          desc: 'Team member who sold the most orders'
+          desc: 'Team member who sold the most orders',
         },
         top_gsv_contributor: {
           icon: 'mdi-account-multiple-plus-outline',
-          desc: 'Team member who contributed the most to your GSV'
+          desc: 'Team member who contributed the most to your GSV',
         },
         top_immediate: {
           icon: 'mdi-cash-usd-outline',
-          desc: 'Team member who contributed the most to your immediate payouts'
-        }
+          desc: 'Team member who contributed the most to your immediate payouts',
+        },
       },
-      currencyMap: ['USD', 'CAD', 'GBP', 'AUD', 'NZD']
+      currencyMap: ['USD', 'CAD', 'GBP', 'AUD', 'NZD'],
     }
   },
   computed: {
     ...mapGetters(['member', 'memberId']),
     ...mapState({
-      selectedPeriod: (state) => state.comp.selectedPeriod
+      selectedPeriod: (state) => state.comp.selectedPeriod,
     }),
     filteredCoupons() {
       const { coupons, rewardsFilter } = this
@@ -190,7 +190,7 @@ export default {
       )
 
       return sortedByDateCoupons
-    }
+    },
   },
   methods: {
     // Just testing something here... should be global if we like it
@@ -223,7 +223,7 @@ export default {
       })
 
       return mappedPrices
-    }
+    },
   },
   apollo: {
     collection: {
@@ -233,8 +233,8 @@ export default {
           input: {
             memberId: this.member.id,
             date: this.$moment().format('YYYY-MM-DD'),
-            key: 'backoffice_insights'
-          }
+            key: 'backoffice_insights',
+          },
         }
       },
       update({ comp: { insightCollection } }) {
@@ -244,7 +244,7 @@ export default {
       loadingKey: 'loadingInsightsCollection',
       watchLoading(isLoading) {
         this.loading = isLoading
-      }
+      },
     },
     betaInsights: {
       query: INSIGHTS,
@@ -253,8 +253,8 @@ export default {
           input: {
             memberId: this.member.id,
             tenantId: this.$tenantInfo.id,
-            periodId: this.selectedPeriod.id
-          }
+            periodId: this.selectedPeriod.id,
+          },
         }
       },
       update({ comp: { insights } }) {
@@ -267,15 +267,15 @@ export default {
       loadingKey: 'loadingInsights',
       watchLoading(isLoading) {
         this.loading = isLoading
-      }
+      },
     },
     coupons: {
       query: COUPONS,
       variables() {
         return {
           input: {
-            memberId: this.member.id
-          }
+            memberId: this.member.id,
+          },
         }
       },
       update(data) {
@@ -286,13 +286,13 @@ export default {
       loadingKey: 'loadingCoupons',
       watchLoading(isLoading) {
         this.loading = isLoading
-      }
+      },
     },
     marketCounts: {
       query: MARKET_COUNT,
       variables: {
         minThreshold: 0,
-        maxThreshold: 1000
+        maxThreshold: 1000,
       },
       update({ membership: { marketThresholdCount } }) {
         return marketThresholdCount
@@ -300,10 +300,10 @@ export default {
       client: 'federated',
       watchLoading(isLoading) {
         this.loading = isLoading
-      }
-    }
+      },
+    },
   },
-  mounted() {}
+  mounted() {},
 }
 </script>
 
