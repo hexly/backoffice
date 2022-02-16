@@ -16,7 +16,7 @@
             </div>
           </div>
         </template>
-        <v-card class="promo-link-modal">
+        <v-card class="promo-link-modal pa-7">
           <v-card-title>
             <span class="text-h5 font-weight-bold">New Promo Link</span>
           </v-card-title>
@@ -35,7 +35,7 @@
                       :rules="requiredRule"
                     ></v-text-field>
                   </v-col>
-                  <v-col cols="12" class="pt-0 promo-form-input">
+                  <v-col cols="12" class="pt-1 promo-form-input">
                     <v-text-field
                       type="email"
                       v-model="editedItem.hostName"
@@ -151,14 +151,14 @@
               </div>
               <div v-else>
                 <div class="available-reward-table d-flex justify-start col-12">
-                  <span class="rewards-table-body-text"
+                  <span class="rewards-table-body-text pt-1"
                     >Please Select a Promo Length to view rewards</span
                   >
                 </div>
               </div>
             </div>
           </v-card-text>
-          <v-card-actions>
+          <v-card-actions class="pt-6">
             <v-spacer></v-spacer>
             <v-btn color="red darken-1" text @click="close">Cancel</v-btn>
             <v-btn
@@ -175,23 +175,35 @@
       <v-card v-for="pl in promoLinks" :key="pl.id" class="ma-2 sale-card">
         <v-list-item two-line>
           <v-list-item-content>
-            <v-list-item-title class="text-h4">
+            <v-list-item-title class="text-h5">
               {{ pl.name }}
             </v-list-item-title>
             <v-list-item-subtitle>
-              <v-icon small color="#c44a42">calendar_today</v-icon>
+              <v-icon small color="#c44a42" class="pr-1 pb-1"
+                >calendar_today</v-icon
+              >
               {{ formatDate(pl.startTime) }} - {{ formatDate(pl.endTime) }}
             </v-list-item-subtitle>
+            <v-list-item-subtitle>{{ pl.email }} </v-list-item-subtitle>
           </v-list-item-content>
         </v-list-item>
         <v-card-text class="reward-info">
-          <v-row align="center">
-            <v-col cols="6">
-              {{ pl.reward }}
-              <br />
-              <p class="font-weight-light">{{ pl.psv || 0 }} PSV Earned</p>
+          <v-row>
+            <v-col cols="12" align="center">
+              <h2 class="font-weight-bold">{{ pl.psv || 0 }} PSV Earned</h2>
             </v-col>
-            <v-col cols="6">
+            <v-col cols="12" align="left">
+              <p>
+                Next: <span class="font-weight-bold">{{ pl.reward }}</span>
+              </p>
+              <p class="green--text">
+                Earned:
+                <span class="font-weight-bold" :class="{ thisone: isActive }"
+                  >{{ pl.reward }}
+                </span>
+              </p></v-col
+            >
+            <v-col cols="12">
               <v-btn
                 :disabled="saleProgressText(pl) !== 'Complete' || pl.claimed"
                 >{{ pl.claimed ? 'Claimed' : `Claim Reward` }}</v-btn
@@ -200,11 +212,11 @@
           </v-row>
           <p class="font-weight-bold">{{ pl.email }}</p>
           <v-row align="center">
-            <v-col>
+            <v-col class="pb-0">
               <v-progress-linear
                 :value="pl.progress"
                 :color="saleProgressColor(pl)"
-                height="25"
+                height="35"
                 rounded
               >
                 <strong>{{ saleProgressText(pl) }}</strong>
