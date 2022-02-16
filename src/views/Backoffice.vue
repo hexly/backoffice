@@ -102,7 +102,7 @@
             <v-list-item-title>{{$tenantInfo.strings.files || 'Files'}}</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
-        <v-list-item v-if="true || hasPromotionCenter" to="/promotioncenter">
+        <v-list-item v-if="hasPromotionCenter" to="/promotioncenter">
           <v-list-item-action>
             <v-icon>stars</v-icon>
           </v-list-item-action>
