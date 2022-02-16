@@ -70,10 +70,7 @@
                           class="date-picker-input"
                         ></v-text-field>
                       </template>
-                      <v-date-picker
-                        v-model="editedItem.date"
-                        @input="handleDatePickerInput"
-                      ></v-date-picker>
+                      <v-date-picker color="primary" :min="$moment().format('YYYY-MM-DD')" v-model="editedItem.date" @input="handleDatePickerInput"></v-date-picker>
                     </v-menu>
                   </v-col>
                   <v-col cols="12" class="pt-0">
@@ -392,8 +389,7 @@ export default {
       }
 
       try {
-        const parsedDate = this.$moment.utc(this.editedItem.date + 'T' + this.editedItem.time).format()
-        console.log({ parsedDate })
+        const parsedDate = this.$moment(this.editedItem.date + 'T' + this.editedItem.time).toISOString()
         await this.$apollo.mutate({
           mutation: CreateMemberEvent,
           client: 'federated',
