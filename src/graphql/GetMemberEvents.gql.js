@@ -25,6 +25,27 @@ query Events($input: MembershipMemberSearchInput!, $marketingInput: MarketingMem
                 name
                 email
               }
+              rewards {
+                id
+                progression {
+                  awarded
+                  claimed
+                  delta
+                  earned
+                  label
+                  progress
+                  target
+                  visible
+                }
+                reward {
+                  id
+                  key
+                  metadata
+                  name
+                  settings
+                  type
+                }
+              }
               template {
                  id 
                  name 

@@ -188,7 +188,7 @@
           </v-list-item-content>
         </v-list-item>
         <v-card-text class="reward-info">
-          <v-row>
+          <v-row v-if="pl.rewards && pl.rewards.length">
             <v-col cols="12" align="center">
               <h2 class="font-weight-bold">{{ pl.psv || 0 }} PSV Earned</h2>
             </v-col>
@@ -205,21 +205,24 @@
             >
             <v-col cols="12">
               <v-btn
-                :disabled="saleProgressText(pl) !== 'Complete' || pl.claimed"
+                :disabled="saleProgressText(pl, pl.rewards[0]) !== 'Complete' || pl.claimed"
                 >{{ pl.claimed ? 'Claimed' : `Claim Reward` }}</v-btn
               >
             </v-col>
           </v-row>
           <p class="font-weight-bold">{{ pl.email }}</p>
-          <v-row align="center">
-            <v-col class="pb-0">
+          <v-row align="center" v-if="pl.rewards && pl.rewards.length">
+            <v-col cols="12">
+              {{rewardToDisplay(pl.rewards).reward.name.split('Reward:')[1] + ' - ' + rewardToDisplay(pl.rewards).reward.name.split('Reward:')[0]}}
+            </v-col>
+            <v-col class="pb-0" cols="12">
               <v-progress-linear
-                :value="pl.progress"
-                :color="saleProgressColor(pl)"
+                :value="rewardToDisplay(pl.rewards).progression.progress"
+                :color="saleProgressColor(pl, rewardToDisplay(pl.rewards))"
                 height="35"
                 rounded
               >
-                <strong>{{ saleProgressText(pl) }}</strong>
+                <strong>{{ saleProgressText(pl, rewardToDisplay(pl.rewards)) }}</strong>
               </v-progress-linear>
             </v-col>
           </v-row>
@@ -288,7 +291,7 @@ import { mapGetters } from 'vuex'
 export default {
   props: {
     promoLinks: Array,
-    eventTemplate: Object,
+    eventTemplate: Object
   },
   data: () => ({
     dialog: false,
@@ -309,7 +312,7 @@ export default {
       { text: 'PSV', value: 'psv' },
       { text: 'Reward', value: 'reward' },
       { text: 'Progress', value: 'progress', sortable: false },
-      { text: 'Actions', value: 'actions', sortable: false },
+      { text: 'Actions', value: 'actions', sortable: false }
     ],
     desserts: [],
     editedIndex: -1,
@@ -325,9 +328,9 @@ export default {
       date: new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
         .toISOString()
         .substr(0, 10),
-      time: '',
+      time: ''
       // emailRule: Rules.emailRule,
-    },
+    }
     // defaultItem: {
     //  name: "",
     //  email: "",
@@ -351,7 +354,7 @@ export default {
       const mappedWindows = windows.map((el) => {
         return {
           text: el.name,
-          value: el.key,
+          value: el.key
         }
       })
 
@@ -369,7 +372,7 @@ export default {
       return this.eventTemplate.windows.find(
         (el) => el.key === this.promoWindow
       )
-    },
+    }
   },
   methods: {
     validateForm() {
@@ -380,12 +383,15 @@ export default {
     formatDate(date) {
       return this.$moment(date).format('MMM Do YYYY')
     },
-    saleProgressText(pl) {
-      if (pl.progress === 100) {
+    saleProgressText(pl, reward) {
+      if (!pl || !reward) {
+        return
+      }
+      if (reward.progression.progress >= 100) {
         return 'Complete'
       }
       if (
-        pl.progress < 100 &&
+        reward.progression.progress < 100 &&
         this.$moment().isAfter(this.$moment(pl.endTime, 'YYYY-MM-DD'))
       ) {
         return 'Expired'
@@ -395,12 +401,15 @@ export default {
       }
       return 'In Progress'
     },
-    saleProgressColor(pl) {
-      if (pl.progress === 100) {
+    saleProgressColor(pl, reward) {
+      if (!pl || !reward) {
+        return
+      }
+      if (reward.progression.progress >= 100) {
         return 'green'
       }
       if (
-        pl.progress < 100 &&
+        reward.progression.progress < 100 &&
         this.$moment().isAfter(this.$moment(pl.endTime, 'YYYY-MM-DD'))
       ) {
         return 'orange'
@@ -409,6 +418,14 @@ export default {
         return 'blue'
       }
       return 'green lighten-3'
+    },
+    rewardToDisplay(rewards) {
+      if (!rewards || !rewards.length) {
+        return
+      }
+      const rewardToDisplay = rewards.find(el => el.progression.progress < 100) || rewards[rewards.length - 1]
+
+      return rewardToDisplay
     },
     editItem(item) {
       this.editedIndex = this.desserts.indexOf(item)
@@ -464,16 +481,16 @@ export default {
                 {
                   pii: { email: this.editedItem.hostEmail },
                   label: this.editedItem.hostName,
-                  role: 'HOST',
+                  role: 'HOST'
                 },
                 {
                   memberId: this.memberId,
                   label: this.displayName,
-                  role: 'ORGANIZER',
-                },
-              ],
-            },
-          },
+                  role: 'ORGANIZER'
+                }
+              ]
+            }
+          }
         })
         this.snackbarText = 'Promo Link Created!'
         this.close()
@@ -520,8 +537,8 @@ export default {
       setTimeout(() => {
         this.copyTooltipText = 'Copy'
       }, 3000)
-    },
-  },
+    }
+  }
 }
 </script>
 

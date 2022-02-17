@@ -32,7 +32,7 @@ import { get } from 'lodash'
 export default {
   components: {
     PromoLinks,
-    FlashSales,
+    FlashSales
   },
   data: () => ({
     dialog: false,
@@ -49,23 +49,23 @@ export default {
       { text: 'PSV', value: 'psv' },
       { text: 'Reward', value: 'reward' },
       { text: 'Progress', value: 'progress', sortable: false },
-      { text: 'Actions', value: 'actions', sortable: false },
+      { text: 'Actions', value: 'actions', sortable: false }
     ],
     desserts: [],
     editedIndex: -1,
     editedItem: {
       name: '',
-      email: '',
+      email: ''
     },
     defaultItem: {
       name: '',
-      email: '',
+      email: ''
     },
     statusFilter: null,
-    eventTemplates: [],
+    eventTemplates: []
   }),
   computed: {
-    ...mapGetters(['memberId']),
+    ...mapGetters(['memberId'])
   },
   apollo: {
     promoLinks: {
@@ -74,11 +74,12 @@ export default {
       variables() {
         return {
           input: {
-            idIn: [this.memberId],
+            idIn: [this.memberId]
           },
           marketingInput: {
             statusIn: this.statusFilter,
-          },
+            evaluate: true
+          }
         }
       },
       update(data) {
@@ -87,7 +88,7 @@ export default {
           'membership.search.results.0.events.marketing.results'
         )
         return promoLinks
-      },
+      }
     },
     eventTemplates: {
       client: 'federated',
@@ -95,8 +96,8 @@ export default {
       update(data) {
         console.log({ data })
         return get(data, 'marketing.searchEventTemplates.results')
-      },
-    },
+      }
+    }
   },
   methods: {
     formatDate(date) {
@@ -170,8 +171,8 @@ export default {
     },
     handlePromoLinksRefetch() {
       this.$apollo.queries.promoLinks.refetch()
-    },
-  },
+    }
+  }
 }
 </script>
 
