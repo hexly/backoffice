@@ -27,186 +27,190 @@ Vue.use(Router)
 
 export default new Router({
   mode: 'history',
-  routes: [{
-    path: '/impersonate/:token',
-    name: 'impersonate',
-    component: Impersonate
-  },
-  {
-    path: '/login',
-    name: 'login',
-    component: Login,
-    props: true,
-    beforeEnter: (_, __, next) =>
-      store.state.user.jwt ? next('/dashboard') : next()
-  },
-  {
-    path: '/account/claim/:token',
-    name: 'account-claim',
-    component: AccountClaim,
-    beforeEnter: (_, __, next) =>
-      store.state.user.jwt ? next('/dashboard') : next()
-  },
-  {
-    path: '/account/create/:applicationId/:hashId',
-    name: 'account-claim',
-    component: AccountCreate,
-    beforeEnter: (_, __, next) =>
-      store.state.user.jwt ? next('/dashboard') : next()
-  },
-  {
-    path: '/account/reset/:token/:email',
-    name: 'password-rest',
-    component: PasswordReset,
-    beforeEnter: (_, __, next) => {
-      store.commit(`user:reset`)
-      next()
-    }
-  },
-  {
-    path: '/zendesk/',
-    component: Zendesk,
-    beforeEnter: (from, __, next) => {
-      return !store.state.user.jwt
-        ? next('/login?returnTo=' + encodeURI(from.fullPath))
-        : next()
-    },
-    children: [{
-      path: '',
-      name: 'zendesk',
-      component: ZendeskRoot
-    }]
-  },
-  {
-    path: '/comp/',
-    component: CompFrame
-    // beforeEnter: (from, __, next) => {
-    //   return !store.state.user.jwt
-    //     ? next('/login?returnTo=' + encodeURI(from.fullPath))
-    //     : next()
-    // },
-    // children: [
-    //   {
-    //     path: '',
-    //     name: 'zendesk',
-    //     component: ZendeskRoot
-    //   }
-    // ]
-  },
-  {
-    path: '/',
-    name: 'backoffice',
-    component: Backoffice,
-    beforeEnter: (to, from, next) => {
-      if (to.name === 'team' && !tenantInfo.features.team) {
-        next(from.path)
-      }
-      // if (to.name === 'sales' && !tenantInfo.features.sales) {
-      //   next(from.path)
-      // }
-
-      return !store.state.user.jwt
-        ? next('/login?returnTo=' + encodeURI('/'))
-        : next()
-    },
-    children: [{
-      path: 'dashboard',
-      alias: '',
-      name: 'dashboard',
-      component: async function() {
-        const tid = process.env.VUE_APP_TENANT_ID
-        let view
-        if (tenantInfo.features.generalDashboard) {
-          view = await require(`./views/dashboards/GenericDashboard.vue`)
-        } else {
-          try {
-            view = await require(`./views/dashboards/${tid}.vue`)
-          } catch (err) {
-            view = await require(`./views/dashboards/NotFound.vue`)
-          }
-        }
-        return view
-      }
+  routes: [
+    {
+      path: '/impersonate/:token',
+      name: 'impersonate',
+      component: Impersonate
     },
     {
-      path: 'profile',
-      name: 'profile',
-      component: Profile
+      path: '/login',
+      name: 'login',
+      component: Login,
+      props: true,
+      beforeEnter: (_, __, next) =>
+        store.state.user.jwt ? next('/dashboard') : next()
     },
     {
-      path: 'assets',
-      name: 'assets',
-      component: Assets
+      path: '/account/claim/:token',
+      name: 'account-claim',
+      component: AccountClaim,
+      beforeEnter: (_, __, next) =>
+        store.state.user.jwt ? next('/dashboard') : next()
     },
     {
-      path: 'sales',
-      name: 'sales',
-      component: Sales
+      path: '/account/create/:applicationId/:hashId',
+      name: 'account-claim',
+      component: AccountCreate,
+      beforeEnter: (_, __, next) =>
+        store.state.user.jwt ? next('/dashboard') : next()
     },
     {
-      path: 'payouts',
-      name: 'payouts',
-      component: Payouts
-    },
-    {
-      path: 'rewards',
-      name: 'rewards',
-      component: Rewards
-    },
-    {
-      path: 'team',
-      name: 'team',
-      component: Team
-    },
-    {
-      path: 'announcements',
-      name: 'announcements',
-      component: Announcements
-    },
-    {
-      path: 'integrations',
-      name: 'integrations',
-      component: Integrations
-    },
-    {
-      path: 'files',
-      name: 'files',
-      component: () => {
-        return import('./components/Files.vue')
-      }
-    },
-    {
-      path: 'promotioncenter',
-      name: 'Promotion Center',
-      component: () => {
-        return import('./views/PromoCenter.vue')
-      },
+      path: '/account/reset/:token/:email',
+      name: 'password-rest',
+      component: PasswordReset,
       beforeEnter: (_, __, next) => {
-        const tags = store.state.user.principal.member.tags
-        return tags.indexOf('beta:promo') < 0 ? next() : next()
+        store.commit(`user:reset`)
+        next()
       }
     },
     {
-      path: 'customers',
-      name: 'customers',
-      component: Customers
+      path: '/zendesk/',
+      component: Zendesk,
+      beforeEnter: (from, __, next) => {
+        return !store.state.user.jwt
+          ? next('/login?returnTo=' + encodeURI(from.fullPath))
+          : next()
+      },
+      children: [
+        {
+          path: '',
+          name: 'zendesk',
+          component: ZendeskRoot
+        }
+      ]
     },
     {
-      path: 'insights',
-      name: 'insights',
-      component: Insights
+      path: '/comp/',
+      component: CompFrame
+      // beforeEnter: (from, __, next) => {
+      //   return !store.state.user.jwt
+      //     ? next('/login?returnTo=' + encodeURI(from.fullPath))
+      //     : next()
+      // },
+      // children: [
+      //   {
+      //     path: '',
+      //     name: 'zendesk',
+      //     component: ZendeskRoot
+      //   }
+      // ]
+    },
+    {
+      path: '/',
+      name: 'backoffice',
+      component: Backoffice,
+      beforeEnter: (to, from, next) => {
+        if (to.name === 'team' && !tenantInfo.features.team) {
+          next(from.path)
+        }
+        // if (to.name === 'sales' && !tenantInfo.features.sales) {
+        //   next(from.path)
+        // }
+
+        return !store.state.user.jwt
+          ? next('/login?returnTo=' + encodeURI('/'))
+          : next()
+      },
+      children: [
+        {
+          path: 'dashboard',
+          alias: '',
+          name: 'dashboard',
+          component: async function () {
+            const tid = process.env.VUE_APP_TENANT_ID
+            let view
+            if (tenantInfo.features.generalDashboard) {
+              view = await require(`./views/dashboards/GenericDashboard.vue`)
+            } else {
+              try {
+                view = await require(`./views/dashboards/${tid}.vue`)
+              } catch (err) {
+                view = await require(`./views/dashboards/NotFound.vue`)
+              }
+            }
+            return view
+          }
+        },
+        {
+          path: 'profile',
+          name: 'profile',
+          component: Profile
+        },
+        {
+          path: 'assets',
+          name: 'assets',
+          component: Assets
+        },
+        {
+          path: 'sales',
+          name: 'sales',
+          component: Sales
+        },
+        {
+          path: 'payouts',
+          name: 'payouts',
+          component: Payouts
+        },
+        {
+          path: 'rewards',
+          name: 'rewards',
+          component: Rewards
+        },
+        {
+          path: 'team',
+          name: 'team',
+          component: Team
+        },
+        {
+          path: 'announcements',
+          name: 'announcements',
+          component: Announcements
+        },
+        {
+          path: 'integrations',
+          name: 'integrations',
+          component: Integrations
+        },
+        {
+          path: 'files',
+          name: 'files',
+          component: () => {
+            return import('./components/Files.vue')
+          }
+        },
+        {
+          path: 'promotioncenter',
+          name: 'Promotion Center',
+          component: () => {
+            return import('./views/PromoCenter.vue')
+          },
+          beforeEnter: (_, __, next) => {
+            const tags = store.state.user.principal.member.tags
+            return tags.indexOf('beta:promo') < 0 ? next() : next()
+          }
+        },
+        {
+          path: 'customers',
+          name: 'customers',
+          component: Customers
+        },
+        {
+          path: 'insights',
+          name: 'insights',
+          component: Insights
+        }
+      ]
+    },
+    {
+      path: '*',
+      name: 'Backoffice Redirect',
+      component: Redirect,
+      beforeEnter: (_, __, next) => {
+        return !store.state.user.jwt
+          ? next('/login?returnTo=' + encodeURI('/'))
+          : next('/dashboard')
+      }
     }
-    ]
-  },
-  {
-    path: '*',
-    name: 'Backoffice Redirect',
-    component: Redirect,
-    beforeEnter: (_, __, next) => {
-      return !store.state.user.jwt
-        ? next('/login?returnTo=' + encodeURI('/'))
-        : next('/dashboard')
-    }
-  }
   ]
 })

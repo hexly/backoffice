@@ -325,7 +325,7 @@ export default {
   margin: -4px;
 }
 .loading-bar-col {
-position: absolute;
-top: -3px;
+  position: absolute;
+  top: -3px;
 }
 </style>

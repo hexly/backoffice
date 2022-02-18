@@ -2,12 +2,19 @@
   <div class="promo-center">
     <v-tabs centered background-color="secondary" dark icons-and-text>
       <v-tabs-slider color="white"></v-tabs-slider>
-      <v-tab to="#links">Promo links
+      <v-tab to="#links"
+        >Promo links
         <v-icon>offline_share</v-icon>
       </v-tab>
       <v-tab-item value="links" class="py-3">
         <v-lazy>
-          <PromoLinks :promo-links="promoLinks" @refetchPromoLinks="handlePromoLinksRefetch" :eventTemplate="eventTemplates.find(el => el.key === 'promo_link')"/>
+          <PromoLinks
+            :promo-links="promoLinks"
+            @refetchPromoLinks="handlePromoLinksRefetch"
+            :eventTemplate="
+              eventTemplates.find((el) => el.key === 'promo_link')
+            "
+          />
         </v-lazy>
       </v-tab-item>
     </v-tabs>
@@ -31,7 +38,9 @@ export default {
     dialog: false,
     dialogDelete: false,
     showDatePicker: false,
-    picker: (new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10),
+    picker: new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
+      .toISOString()
+      .substr(0, 10),
     headers: [
       { text: 'Name', sortable: false, value: 'name' },
       { text: 'Email', value: 'email' },
@@ -68,12 +77,16 @@ export default {
             idIn: [this.memberId]
           },
           marketingInput: {
-            statusIn: this.statusFilter
+            statusIn: this.statusFilter,
+            evaluate: true
           }
         }
       },
       update(data) {
-        const promoLinks = get(data, 'membership.search.results.0.events.marketing.results')
+        const promoLinks = get(
+          data,
+          'membership.search.results.0.events.marketing.results'
+        )
         return promoLinks
       }
     },
@@ -81,7 +94,6 @@ export default {
       client: 'federated',
       query: GetEventTemplates,
       update(data) {
-        console.log({ data })
         return get(data, 'marketing.searchEventTemplates.results')
       }
     }
@@ -94,7 +106,10 @@ export default {
       if (s.progress === 100) {
         return 'Complete'
       }
-      if (s.progress < 100 && this.$moment().isAfter(this.$moment(s.end, 'YYYY-MM-DD'))) {
+      if (
+        s.progress < 100 &&
+        this.$moment().isAfter(this.$moment(s.end, 'YYYY-MM-DD'))
+      ) {
         return 'Expired'
       }
       if (this.$moment().isBefore(this.$moment(s.start, 'YYYY-MM-DD'))) {
@@ -106,7 +121,10 @@ export default {
       if (s.progress === 100) {
         return 'green'
       }
-      if (s.progress < 100 && this.$moment().isAfter(this.$moment(s.end, 'YYYY-MM-DD'))) {
+      if (
+        s.progress < 100 &&
+        this.$moment().isAfter(this.$moment(s.end, 'YYYY-MM-DD'))
+      ) {
         return 'orange'
       }
       if (this.$moment().isBefore(this.$moment(s.start, 'YYYY-MM-DD'))) {
@@ -158,28 +176,28 @@ export default {
 </script>
 
 <style scoped>
-  .add-flash-sale-box {
-    border-radius: 15px;
-    border: 5px dashed #ccc;
-    margin: 10px;
-    cursor: pointer;
-    min-width: 350px;
-  }
+.add-flash-sale-box {
+  border-radius: 15px;
+  border: 5px dashed #ccc;
+  margin: 10px;
+  cursor: pointer;
+  min-width: 350px;
+}
 
-  .sale-card {
-    border-radius: 15px;
-    width: 350px;
-    text-align: center;
-  }
+.sale-card {
+  border-radius: 15px;
+  width: 350px;
+  text-align: center;
+}
 
-  .reward-info {
-    background: #fff1f0;
-  }
+.reward-info {
+  background: #fff1f0;
+}
 
-  .current-reward {
-    background: #ccc;
-    margin: 25px -24px 0 -24px;
-    padding: 10px;
-    box-shadow: #333 inset -1px 0px 3px -1px;
-  }
+.current-reward {
+  background: #ccc;
+  margin: 25px -24px 0 -24px;
+  padding: 10px;
+  box-shadow: #333 inset -1px 0px 3px -1px;
+}
 </style>
