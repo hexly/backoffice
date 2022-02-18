@@ -210,13 +210,8 @@
           <p class="font-weight-bold">{{ pl.email }}</p>
           <v-row align="center" v-if="pl.rewards && pl.rewards.length">
             <v-col class="pb-0" cols="12">
-              <v-progress-linear
-                :value="rewardToDisplay(pl.rewards).progression.progress"
-                :color="saleProgressColor(pl, rewardToDisplay(pl.rewards))"
-                height="35"
-                rounded
-              >
-                <strong>{{ saleProgressText(pl, rewardToDisplay(pl.rewards)) }}</strong>
+              <v-progress-linear :value="progressToDisplay(pl.rewards).progression.progress" :color="saleProgressColor(pl, progressToDisplay(pl.rewards))" height="35" rounded>
+                <strong>{{ saleProgressText(pl, progressToDisplay(pl.rewards)) }}</strong>
               </v-progress-linear>
             </v-col>
           </v-row>
@@ -419,6 +414,7 @@ export default {
         return
       }
       const rewardToDisplay = rewards.filter(el => el.progression.awarded)
+      console.log(rewardToDisplay)
 
       return rewardToDisplay.pop()
     },
