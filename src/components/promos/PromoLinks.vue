@@ -419,7 +419,6 @@ export default {
         return
       }
       const rewardToDisplay = rewards.filter(el => el.progression.awarded)
-      console.log(rewardToDisplay)
 
       return rewardToDisplay.pop()
     },
