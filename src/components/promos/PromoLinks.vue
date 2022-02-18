@@ -437,10 +437,6 @@ export default {
         return
       }
       const progressToDisplay = rewards.filter(el => el.progression.visible)
-      if (!progressToDisplay.length) {
-        console.log({ progressToDisplay })
-        console.log({ rewards })
-      }
 
       return progressToDisplay.pop()
     },
