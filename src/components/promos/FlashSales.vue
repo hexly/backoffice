@@ -140,31 +140,35 @@
               {{ s.name }}
             </v-list-item-title>
             <v-list-item-subtitle
-              ><v-icon small color="#c44a42">calendar_today</v-icon
+              ><v-icon small color="#c44a42" class="pr-1 pb-1"
+                >calendar_today</v-icon
               >{{ formatDate(s.start) }}
             </v-list-item-subtitle>
           </v-list-item-content>
         </v-list-item>
         <v-card-text class="reward-info">
-          <v-row align="center">
-            <v-col cols="6">
-              {{ s.reward }}
-              <br />
-              <span class="font-weight-bold">{{ s.psv }} PSV</span> Earned
+          <v-row>
+            <v-col cols="12" align="center">
+              <h2 class="font-weight-bold">{{ s.psv }} PSV</h2>
+              <!-- {{ s }} -->
             </v-col>
-            <v-col cols="6">
-              <v-btn
-                :disabled="saleProgressText(s) !== 'Complete' || s.claimed"
-                >{{ s.claimed ? "Claimed" : `Claim Reward` }}</v-btn
-              >
-            </v-col>
+            <v-col cols="12" align="left">
+              <p>
+                Next: <span class="font-weight-bold">{{ s.reward }}</span>
+              </p>
+              <p :class="'green--text ' + checkForCenter(s.progress)">
+                {{ s.progress }}
+                Earned:
+                <span class="font-weight-bold">{{ s.reward }}</span>
+              </p></v-col
+            >
           </v-row>
           <v-row align="center">
-            <v-col>
+            <v-col class="pb-0">
               <v-progress-linear
                 :value="s.progress"
                 :color="saleProgressColor(s)"
-                height="25"
+                height="35"
                 rounded
               >
                 <strong>{{ saleProgressText(s) }}</strong>
@@ -174,7 +178,7 @@
         </v-card-text>
         <v-card-actions>
           <v-btn text :disabled="saleProgressText(s) === 'Complete'"
-            >Copy Sale Link</v-btn
+            >Copy Link</v-btn
           >
           <v-spacer></v-spacer>
           <v-btn text color="red">Delete</v-btn>
@@ -192,7 +196,6 @@ export default {
     dialogDelete: false,
     showDatePicker: false,
     time: null,
-
     timePicker: false,
     picker: new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
       .toISOString()
@@ -227,6 +230,7 @@ export default {
         duration: '48 Hours',
         start: '2022-01-27',
         end: '2022-01-29',
+
         reward: '$100 Coupon',
         psv: '134',
         progress: 0
@@ -356,12 +360,25 @@ export default {
         this.desserts.push(this.editedItem)
       }
       this.close()
+    },
+    checkForCenter(progress) {
+      console.log({ progress })
+      if (progress === 100) {
+        return 'centerMe'
+      }
+      return ' '
     }
   }
 }
 </script>
 
 <style scoped>
+.centerMe {
+  text-align: center;
+}
+p {
+  margin: 0;
+}
 .add-flash-sale-box {
   border-radius: 15px;
   border: 5px dashed #ccc;
@@ -387,10 +404,10 @@ export default {
 .flash-sale-modal .v-card__actions {
   padding: 20px 30px 30px;
 }
-/* .flash-form-input.col.col-12 {
+.flash-form-input.col.col-12 {
   padding-top: 0;
   padding-bottom: 0;
-} */
+}
 
 .date-picker-input .col,
 .col-12 {

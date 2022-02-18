@@ -4,7 +4,7 @@
         v-if="!$tenantInfo.profileColor"
         class="white--text"
         height="125px"
-        :src="$tenantInfo.profileCover || '/img/default-profile-cover.jpg'"
+        :src="`${$tenantInfo.profileCover}?date=${version}` || '/img/default-profile-cover.jpg'"
       />
     <div v-else class="profile-color" :style="`background-color: ${$tenantInfo.profileColor}`"></div>
     <v-card-text class="text-center">
@@ -125,7 +125,8 @@ export default {
   data() {
     return {
       showProfilePicDialog: false,
-      currentTheme: 'Beauty'
+      currentTheme: 'Beauty',
+      version: window.$version
     }
   },
   mounted() {

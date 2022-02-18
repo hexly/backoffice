@@ -7,14 +7,16 @@
     <div class="d-flex justify-center ma-2 flex-wrap">
       <v-dialog v-model="dialog" max-width="500px">
         <template v-slot:activator="{ on }">
-          <div class="add-flash-sale-box d-flex align-center justify-center"
-            v-on="on">
+          <div
+            class="add-flash-sale-box d-flex align-center justify-center"
+            v-on="on"
+          >
             <div class="text-center">
               <v-icon x-large>note_add</v-icon><br />New Promo Link
             </div>
           </div>
         </template>
-        <v-card class="promo-link-modal">
+        <v-card class="promo-link-modal pa-7">
           <v-card-title>
             <span class="text-h5 font-weight-bold">New Promo Link</span>
           </v-card-title>
@@ -33,7 +35,7 @@
                       :rules="requiredRule"
                     ></v-text-field>
                   </v-col>
-                  <v-col cols="12" class="pt-0 promo-form-input">
+                  <v-col cols="12" class="pt-1 promo-form-input">
                     <v-text-field
                       type="email"
                       v-model="editedItem.hostName"
@@ -70,7 +72,12 @@
                           class="date-picker-input"
                         ></v-text-field>
                       </template>
-                      <v-date-picker color="primary" :min="$moment().format('YYYY-MM-DD')" v-model="editedItem.date" @input="handleDatePickerInput"></v-date-picker>
+                      <v-date-picker
+                        color="primary"
+                        :min="$moment().format('YYYY-MM-DD')"
+                        v-model="editedItem.date"
+                        @input="handleDatePickerInput"
+                      ></v-date-picker>
                     </v-menu>
                   </v-col>
                   <v-col cols="12" class="pt-0">
@@ -104,7 +111,12 @@
                     </v-menu>
                   </v-col>
                   <v-col cols="12" class="pt-0">
-                    <v-select v-model="promoWindow" :items="parsedWindows" label="Promo Length" :rules="requiredRule"></v-select>
+                    <v-select
+                      v-model="promoWindow"
+                      :items="parsedWindows"
+                      label="Promo Length"
+                      :rules="requiredRule"
+                    ></v-select>
                   </v-col>
                 </v-row>
               </v-form>
@@ -116,23 +128,37 @@
                 <br />
                 <p>Period: February 2022</p>
                 <div class="available-reward-table d-flex justify-start col-12">
-                  <span class="text-h6 font-weight-light col-6 pt-0 pb-0">Goal</span>
-                  <span class="text-h6 font-weight-light col-6 pt-0 pb-0">Reward</span>
+                  <span class="text-h6 font-weight-light col-6 pt-0 pb-0"
+                    >Goal</span
+                  >
+                  <span class="text-h6 font-weight-light col-6 pt-0 pb-0"
+                    >Reward</span
+                  >
                 </div>
                 <v-divider></v-divider>
-                <div v-for="reward in selectedWindow.rewards" :key="reward.key" class="available-reward-table d-flex justify-start col-12">
-                  <span class="rewards-table-body-text col-6">{{reward.name.split('Reward:')[0]}}</span>
-                  <span class="rewards-table-body-text col-6">{{reward.name.split('Reward:')[1]}}</span>
+                <div
+                  v-for="reward in selectedWindow.rewards"
+                  :key="reward.key"
+                  class="available-reward-table d-flex justify-start col-12"
+                >
+                  <span class="rewards-table-body-text col-6">{{
+                    reward.name.split('Reward:')[0]
+                  }}</span>
+                  <span class="rewards-table-body-text col-6">{{
+                    reward.name.split('Reward:')[1]
+                  }}</span>
                 </div>
               </div>
               <div v-else>
                 <div class="available-reward-table d-flex justify-start col-12">
-                  <span class="rewards-table-body-text">Please Select a Promo Length to view rewards</span>
+                  <span class="rewards-table-body-text pt-1"
+                    >Please Select a Promo Length to view rewards</span
+                  >
                 </div>
               </div>
             </div>
           </v-card-text>
-          <v-card-actions>
+          <v-card-actions class="pt-6">
             <v-spacer></v-spacer>
             <v-btn color="red darken-1" text @click="close">Cancel</v-btn>
             <v-btn
@@ -141,46 +167,56 @@
               text
               @click="save"
               :disabled="!isFormValid"
-              >Save</v-btn>
+              >Save</v-btn
+            >
           </v-card-actions>
         </v-card>
       </v-dialog>
       <v-card v-for="pl in promoLinks" :key="pl.id" class="ma-2 sale-card">
         <v-list-item two-line>
           <v-list-item-content>
-            <v-list-item-title class="text-h4">
+            <v-list-item-title class="text-h5">
               {{ pl.name }}
             </v-list-item-title>
             <v-list-item-subtitle>
-              <v-icon small color="#c44a42">calendar_today</v-icon>
-                {{ formatDate(pl.startTime) }} - {{ formatDate(pl.endTime) }}
-              </v-list-item-subtitle>
+              <v-icon small color="#c44a42" class="pr-1 pb-1"
+                >calendar_today</v-icon
+              >
+              {{ formatDate(pl.startTime) }} - {{ formatDate(pl.endTime) }}
+            </v-list-item-subtitle>
+            <v-list-item-subtitle>{{ pl.email }} </v-list-item-subtitle>
           </v-list-item-content>
         </v-list-item>
         <v-card-text class="reward-info">
-          <v-row align="center">
-            <v-col cols="6">
-              {{ pl.reward }}
-              <br />
-              <p class="font-weight-light">{{ pl.psv || 0 }} PSV Earned</p>
+          <v-row v-if="pl.rewards && pl.rewards.length">
+            <v-col cols="12" align="center">
+              <h2 class="font-weight-bold">{{ progressToDisplay(pl.rewards).progression.earned }} PSV Earned</h2>
             </v-col>
-            <v-col cols="6">
+            <v-col cols="12" align="left">
+              <p class="green--text" v-if="rewardToDisplay(pl.rewards)">
+                Earned: <span class="font-weight-bold">{{ rewardToDisplay(pl.rewards).reward.name.split('Reward:')[1] }}</span>
+              </p>
+              <p v-if="nextReward(pl.rewards)">
+                Next: <span class="font-weight-bold">{{nextReward(pl.rewards).reward.name.split('Reward:')[1] }}</span>
+              </p>
+            </v-col>
+            <v-col cols="12">
               <v-btn
-                :disabled="saleProgressText(pl) !== 'Complete' || pl.claimed"
-                >{{ pl.claimed ? "Claimed" : `Claim Reward` }}</v-btn
+                :disabled="saleProgressText(pl, pl.rewards[0]) !== 'Complete' || pl.claimed"
+                >{{ pl.claimed ? 'Claimed' : `Claim Reward` }}</v-btn
               >
             </v-col>
           </v-row>
           <p class="font-weight-bold">{{ pl.email }}</p>
-          <v-row align="center">
-            <v-col>
+          <v-row align="center" v-if="pl.rewards && pl.rewards.length">
+            <v-col class="pb-0" cols="12">
               <v-progress-linear
-                :value="pl.progress"
-                :color="saleProgressColor(pl)"
-                height="25"
+                :value="rewardToDisplay(pl.rewards).progression.progress"
+                :color="saleProgressColor(pl, rewardToDisplay(pl.rewards))"
+                height="35"
                 rounded
               >
-                <strong>{{ saleProgressText(pl) }}</strong>
+                <strong>{{ saleProgressText(pl, rewardToDisplay(pl.rewards)) }}</strong>
               </v-progress-linear>
             </v-col>
           </v-row>
@@ -193,14 +229,29 @@
                 readonly
                 single-line
                 hide-details
-                class="link">
+                class="link"
+              >
                 <v-tooltip slot="append" bottom>
-                    <template v-slot:activator="{ on }">
-                      <v-icon v-if="canShare" @click="shareLink(createPromoLink(pl.key))" v-on="on" color="black" dark>share</v-icon>
-                      <v-icon v-else @click="copyToClipboard(createPromoLink(pl.key))" v-on="on" color="black" dark>assignment</v-icon>
-                    </template>
-                    <span v-if="canShare">{{shareTooltipText}}</span>
-                    <span v-else>{{copyTooltipText}}</span>
+                  <template v-slot:activator="{ on }">
+                    <v-icon
+                      v-if="canShare"
+                      @click="shareLink(createPromoLink(pl.key))"
+                      v-on="on"
+                      color="black"
+                      dark
+                      >share</v-icon
+                    >
+                    <v-icon
+                      v-else
+                      @click="copyToClipboard(createPromoLink(pl.key))"
+                      v-on="on"
+                      color="black"
+                      dark
+                      >assignment</v-icon
+                    >
+                  </template>
+                  <span v-if="canShare">{{ shareTooltipText }}</span>
+                  <span v-else>{{ copyTooltipText }}</span>
                 </v-tooltip>
               </v-text-field>
             </v-col>
@@ -219,16 +270,15 @@
       </v-card>
     </div>
     <v-snackbar v-model="showSnackbar">
-      {{snackbarText}}
-      <v-btn
-        text
-        color="primary"
-        @click.native="showSnackbar = false"
-      >Close</v-btn>
+      {{ snackbarText }}
+      <v-btn text color="primary" @click.native="showSnackbar = false"
+        >Close</v-btn
+      >
     </v-snackbar>
   </div>
 </template>
 <script>
+import _ from 'lodash'
 import Rules from '@/views/Rules.js'
 import { CreateMemberEvent } from '@/graphql/CreateMemberEvent.gql'
 import { mapGetters } from 'vuex'
@@ -296,7 +346,7 @@ export default {
       if (!windows || !windows.length) {
         return []
       }
-      const mappedWindows = windows.map(el => {
+      const mappedWindows = windows.map((el) => {
         return {
           text: el.name,
           value: el.key
@@ -306,11 +356,17 @@ export default {
       return mappedWindows
     },
     selectedWindow() {
-      if (!this.promoWindow || !this.eventTemplate || !this.eventTemplate.windows.length) {
+      if (
+        !this.promoWindow ||
+        !this.eventTemplate ||
+        !this.eventTemplate.windows.length
+      ) {
         return
       }
 
-      return this.eventTemplate.windows.find(el => el.key === this.promoWindow)
+      return this.eventTemplate.windows.find(
+        (el) => el.key === this.promoWindow
+      )
     }
   },
   methods: {
@@ -322,12 +378,15 @@ export default {
     formatDate(date) {
       return this.$moment(date).format('MMM Do YYYY')
     },
-    saleProgressText(pl) {
-      if (pl.progress === 100) {
+    saleProgressText(pl, reward) {
+      if (!pl || !reward) {
+        return
+      }
+      if (reward.progression.progress >= 100) {
         return 'Complete'
       }
       if (
-        pl.progress < 100 &&
+        reward.progression.progress < 100 &&
         this.$moment().isAfter(this.$moment(pl.endTime, 'YYYY-MM-DD'))
       ) {
         return 'Expired'
@@ -337,12 +396,15 @@ export default {
       }
       return 'In Progress'
     },
-    saleProgressColor(pl) {
-      if (pl.progress === 100) {
+    saleProgressColor(pl, reward) {
+      if (!pl || !reward) {
+        return
+      }
+      if (reward.progression.progress >= 100) {
         return 'green'
       }
       if (
-        pl.progress < 100 &&
+        reward.progression.progress < 100 &&
         this.$moment().isAfter(this.$moment(pl.endTime, 'YYYY-MM-DD'))
       ) {
         return 'orange'
@@ -351,6 +413,31 @@ export default {
         return 'blue'
       }
       return 'green lighten-3'
+    },
+    rewardToDisplay(rewards) {
+      if (!rewards || !rewards.length) {
+        return
+      }
+      const rewardToDisplay = rewards.filter(el => el.progression.awarded)
+
+      return rewardToDisplay.pop()
+    },
+    nextReward(rewards) {
+      if (!rewards || !rewards.length) {
+        return
+      }
+      const awardedIndex = _.findIndex(rewards, el => el.progression.awarded)
+      if (rewards[awardedIndex + 1]) {
+        return rewards[awardedIndex + 1]
+      }
+    },
+    progressToDisplay(rewards) {
+      if (!rewards || !rewards.length) {
+        return
+      }
+      const progressToDisplay = rewards.filter(el => el.progression.visible)
+
+      return progressToDisplay.pop()
     },
     editItem(item) {
       this.editedIndex = this.desserts.indexOf(item)
@@ -389,7 +476,9 @@ export default {
       }
 
       try {
-        const parsedDate = this.$moment(this.editedItem.date + 'T' + this.editedItem.time).toISOString()
+        const parsedDate = this.$moment(
+          this.editedItem.date + 'T' + this.editedItem.time
+        ).toISOString()
         await this.$apollo.mutate({
           mutation: CreateMemberEvent,
           client: 'federated',
@@ -419,19 +508,24 @@ export default {
         this.close()
         this.$emit('refetchPromoLinks')
       } catch (error) {
-        this.snackbarText = 'There was an error creating this promo link! Please try again or contact support'
+        this.snackbarText =
+          'There was an error creating this promo link! Please try again or contact support'
         console.error(error)
       }
       this.showSnackbar = true
     },
     createPromoLink(eventKey) {
-      const base = this.slug ? this.$tenantInfo.storeUrl.replace('{slug}', this.slug) : this.$tenantInfo.corporateUrl
+      const base = this.slug
+        ? this.$tenantInfo.storeUrl.replace('{slug}', this.slug)
+        : this.$tenantInfo.corporateUrl
       const link = base + `/promos/${eventKey}/`
 
       return link
     },
     handleMinutesClicked(time) {
-      this.pickerTimeModel = this.$moment(this.editedItem.time, 'HH:mm').format('h:mm A')
+      this.pickerTimeModel = this.$moment(this.editedItem.time, 'HH:mm').format(
+        'h:mm A'
+      )
       this.timePicker = false
     },
     handleDatePickerInput(date) {
@@ -439,7 +533,8 @@ export default {
       this.showDatePicker = false
     },
     shareLink(link) {
-      navigator.share({ url: link })
+      navigator
+        .share({ url: link })
         .then(() => {
           this.copyTooltipText = 'Shared'
           setTimeout(() => {
@@ -460,6 +555,16 @@ export default {
 </script>
 
 <style scoped>
+p {
+  margin: 0;
+}
+
+/* .thisone {
+  text-align: center;
+} */
+.v-card__text.reward-info {
+  padding: 0 16px;
+}
 .add-flash-sale-box {
   border-radius: 15px;
   border: 5px dashed #ccc;
