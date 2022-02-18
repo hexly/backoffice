@@ -94,7 +94,6 @@ export default {
       client: 'federated',
       query: GetEventTemplates,
       update(data) {
-        console.log({ data })
         return get(data, 'marketing.searchEventTemplates.results')
       }
     }

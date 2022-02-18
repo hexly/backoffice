@@ -190,19 +190,16 @@
         <v-card-text class="reward-info">
           <v-row v-if="pl.rewards && pl.rewards.length">
             <v-col cols="12" align="center">
-              <h2 class="font-weight-bold">{{ pl.psv || 0 }} PSV Earned</h2>
+              <h2 class="font-weight-bold">{{ progressToDisplay(pl.rewards).progression.earned }} PSV Earned</h2>
             </v-col>
             <v-col cols="12" align="left">
-              <p>
-                Next: <span class="font-weight-bold">{{ pl.reward }}</span>
+              <p class="green--text" v-if="rewardToDisplay(pl.rewards)">
+                Earned: <span class="font-weight-bold">{{ rewardToDisplay(pl.rewards).reward.name.split('Reward:')[1] }}</span>
               </p>
-              <p class="green--text">
-                Earned:
-                <span class="font-weight-bold" :class="{ thisone: isActive }"
-                  >{{ pl.reward }}
-                </span>
-              </p></v-col
-            >
+              <p v-if="nextReward(pl.rewards)">
+                Next: <span class="font-weight-bold">{{nextReward(pl.rewards).reward.name.split('Reward:')[1] }}</span>
+              </p>
+            </v-col>
             <v-col cols="12">
               <v-btn
                 :disabled="saleProgressText(pl, pl.rewards[0]) !== 'Complete' || pl.claimed"
@@ -212,9 +209,6 @@
           </v-row>
           <p class="font-weight-bold">{{ pl.email }}</p>
           <v-row align="center" v-if="pl.rewards && pl.rewards.length">
-            <v-col cols="12">
-              {{rewardToDisplay(pl.rewards).reward.name.split('Reward:')[1] + ' - ' + rewardToDisplay(pl.rewards).reward.name.split('Reward:')[0]}}
-            </v-col>
             <v-col class="pb-0" cols="12">
               <v-progress-linear
                 :value="rewardToDisplay(pl.rewards).progression.progress"
@@ -284,6 +278,7 @@
   </div>
 </template>
 <script>
+import _ from 'lodash'
 import Rules from '@/views/Rules.js'
 import { CreateMemberEvent } from '@/graphql/CreateMemberEvent.gql'
 import { mapGetters } from 'vuex'
@@ -423,9 +418,26 @@ export default {
       if (!rewards || !rewards.length) {
         return
       }
-      const rewardToDisplay = rewards.find(el => el.progression.progress < 100) || rewards[rewards.length - 1]
+      const rewardToDisplay = rewards.filter(el => el.progression.awarded)
 
-      return rewardToDisplay
+      return rewardToDisplay.pop()
+    },
+    nextReward(rewards) {
+      if (!rewards || !rewards.length) {
+        return
+      }
+      const awardedIndex = _.findIndex(rewards, el => el.progression.awarded)
+      if (rewards[awardedIndex + 1]) {
+        return rewards[awardedIndex + 1]
+      }
+    },
+    progressToDisplay(rewards) {
+      if (!rewards || !rewards.length) {
+        return
+      }
+      const progressToDisplay = rewards.filter(el => el.progression.visible)
+
+      return progressToDisplay.pop()
     },
     editItem(item) {
       this.editedIndex = this.desserts.indexOf(item)
@@ -548,11 +560,11 @@ p {
 }
 
 /* .thisone {
-	text-align: center;
+  text-align: center;
 } */
-/* .v-card__text.reward-info {
-	margin: 0;
-} */
+.v-card__text.reward-info {
+  padding: 0 16px;
+}
 .add-flash-sale-box {
   border-radius: 15px;
   border: 5px dashed #ccc;

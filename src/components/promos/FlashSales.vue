@@ -162,12 +162,6 @@
                 <span class="font-weight-bold">{{ s.reward }}</span>
               </p></v-col
             >
-            <!-- <v-col cols="12">
-							<v-btn
-								:disabled="saleProgressText(s) !== 'Complete' || s.claimed"
-								>{{ s.claimed ? "Claimed" : `Claim Reward` }}</v-btn
-							>
-						</v-col> -->
           </v-row>
           <v-row align="center">
             <v-col class="pb-0">
@@ -214,7 +208,7 @@ export default {
       { text: 'PSV', value: 'psv' },
       { text: 'Reward', value: 'reward' },
       { text: 'Progress', value: 'progress', sortable: false },
-      { text: 'Actions', value: 'actions', sortable: false },
+      { text: 'Actions', value: 'actions', sortable: false }
     ],
     desserts: [],
     editedIndex: -1,
@@ -222,13 +216,12 @@ export default {
     requiredRule: Rules.requiredRule,
     editedItem: {
       name: '',
-      email: '',
+      email: ''
     },
     defaultItem: {
       name: '',
-      email: '',
+      email: ''
     },
-
     sales: [
       {
         id: 1,
@@ -240,36 +233,8 @@ export default {
 
         reward: '$100 Coupon',
         psv: '134',
-        progress: 0,
+        progress: 0
       },
-      // {
-      // 	id: 909,
-      // 	name: "Flash Sale 909",
-      // 	email: "brenda.kradolfer@gmail.com",
-      // 	duration: "48 Hours",
-      // 	start: "2022-01-27",
-      // 	end: "2022-01-29",
-      // 	psv: "134",
-      // 	rewards: [
-      // 		{
-      // 			tenDollarCoupon: {
-      // 				reward: "$10 Coupon",
-      // 				rewardProgress: psv,
-      // 				psvGoal: 100,
-      // 			},
-      // 			//if reward progress[i] = psv goal, go to rewards[i+1]
-      // 		},
-      // 		{
-      // 			fiftyDollarCoupon: {
-      // 				reward: "$50 Coupon",
-      // 				rewardProgress: psv,
-      // 				psvGoal: 200,
-      // 			},
-      // 		},
-      // 		// "$50 Coupon",
-      // 		// "$100 Coupon",
-      // 	],
-      // },
       {
         id: 2,
         name: 'Flash Sale 2',
@@ -278,7 +243,7 @@ export default {
         start: '2022-01-26',
         reward: 'Free Mascara',
         psv: '0',
-        progress: 0,
+        progress: 0
       },
       {
         id: 3,
@@ -288,7 +253,7 @@ export default {
         start: '2022-01-25',
         reward: '$10 Coupon',
         psv: '134',
-        progress: 30,
+        progress: 30
       },
       {
         id: 4,
@@ -298,7 +263,7 @@ export default {
         start: '2022-01-11',
         reward: 'Free Mascara',
         psv: '500',
-        progress: 100,
+        progress: 100
       },
       {
         id: 5,
@@ -309,7 +274,7 @@ export default {
         reward: 'Free Mascara',
         psv: '500',
         progress: 100,
-        claimed: true,
+        claimed: true
       },
       {
         id: 6,
@@ -320,9 +285,9 @@ export default {
         reward: 'Free Mascara',
         psv: '230',
         progress: 36,
-        claimed: true,
-      },
-    ],
+        claimed: true
+      }
+    ]
   }),
 
   methods: {
@@ -402,8 +367,8 @@ export default {
         return 'centerMe'
       }
       return ' '
-    },
-  },
+    }
+  }
 }
 </script>
 
