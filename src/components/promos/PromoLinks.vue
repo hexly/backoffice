@@ -188,7 +188,7 @@
           </v-list-item-content>
         </v-list-item>
         <v-card-text class="reward-info">
-          <v-row v-if="pl.rewards && pl.rewards.length">
+          <v-row v-if="pl.rewards && pl.rewards.length && progressToDisplay(pl.rewards)">
             <v-col cols="12" align="center">
               <h2 class="font-weight-bold">{{ progressToDisplay(pl.rewards).progression.earned }} PSV Earned</h2>
             </v-col>
@@ -207,8 +207,13 @@
               >
             </v-col>
           </v-row>
+          <v-row v-else class="text--center">
+            <v-col cols="12">
+              Progress Data Unavailable
+            </v-col>
+          </v-row>
           <p class="font-weight-bold">{{ pl.email }}</p>
-          <v-row align="center" v-if="pl.rewards && pl.rewards.length">
+          <v-row align="center" v-if="pl.rewards && pl.rewards.length && progressToDisplay(pl.rewards)">
             <v-col class="pb-0" cols="12">
               <v-progress-linear :value="progressToDisplay(pl.rewards).progression.progress" :color="saleProgressColor(pl, progressToDisplay(pl.rewards))" height="35" rounded>
                 <strong>{{ saleProgressText(pl, progressToDisplay(pl.rewards)) }}</strong>
@@ -432,6 +437,10 @@ export default {
         return
       }
       const progressToDisplay = rewards.filter(el => el.progression.visible)
+      if (!progressToDisplay.length) {
+        console.log({ progressToDisplay })
+        console.log({ rewards })
+      }
 
       return progressToDisplay.pop()
     },
@@ -472,7 +481,7 @@ export default {
       }
 
       try {
-        const parsedDate = this.$moment(
+        const parsedDate = this.$moment.utc(
           this.editedItem.date + 'T' + this.editedItem.time
         ).toISOString()
         await this.$apollo.mutate({
