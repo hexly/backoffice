@@ -173,11 +173,15 @@
         </v-card>
       </v-dialog>
       <v-card v-for="pl in promoLinks" :key="pl.id" class="ma-2 sale-card">
+        <v-btn fab text icon absolute top right class="template-btn" @click="handleTemplateBtnClick(pl.template)">
+          <v-icon>document_scanner</v-icon>
+        </v-btn>
         <v-list-item two-line>
           <v-list-item-content>
             <v-list-item-title class="text-h5">
               {{ pl.name }}
             </v-list-item-title>
+
             <v-list-item-subtitle>
               <v-icon small color="#c44a42" class="pr-1 pb-1"
                 >calendar_today</v-icon
@@ -275,6 +279,34 @@
         >Close</v-btn
       >
     </v-snackbar>
+    <v-dialog
+      v-model="showTemplateDialog"
+      width="500"
+    >
+      <v-card>
+        <v-card-title v-if="selectedTemplate" class="secondary white--text">
+          Promo Template ID: {{selectedTemplate.id}} - {{selectedTemplate.name}}
+        </v-card-title>
+        <v-card-text v-if="selectedTemplate">
+          <v-row>
+            <v-col cols="12">Windows:</v-col>
+          </v-row>
+          <v-row>
+            <v-col cols="12" v-for="window in selectedTemplate.windows" :key="window.key" class="px-5">
+              {{window.name}}
+              <v-row class="px-5">
+                <v-col cols="12">Rewards:</v-col>
+                <v-col cols="12" v-for="reward in window.rewards" :key="reward.id">
+                  <v-row class="px-5">
+                    {{reward.name}}
+                  </v-row>
+                </v-col>
+              </v-row>
+            </v-col>
+          </v-row>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 <script>
@@ -298,6 +330,8 @@ export default {
     snackbarText: '',
     copyTooltipText: 'Copy',
     shareTooltipText: 'Share',
+    showTemplateDialog: false,
+    selectedTemplate: null,
 
     headers: [
       { text: 'Name', sortable: false, value: 'name' },
@@ -549,6 +583,11 @@ export default {
       setTimeout(() => {
         this.copyTooltipText = 'Copy'
       }, 3000)
+    },
+    handleTemplateBtnClick(template) {
+      this.showTemplateDialog = true
+      this.selectedTemplate = template
+      console.log({ template })
     }
   }
 }
@@ -577,7 +616,6 @@ p {
   background-color: rgba(86, 86, 86, 0.4);
 }
 
-.v-card__title,
 .sale-card {
   border-radius: 15px;
   width: 350px;
@@ -617,4 +655,9 @@ p {
 /* .promo-link-save-btn.theme--light.v-btn.v-btn--outlined.v-btn--text {
   border-color: black;
 } */
+
+.template-btn {
+  right: 3px;
+  top: 3px !important;
+}
 </style>
