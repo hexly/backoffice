@@ -188,35 +188,61 @@
           </v-list-item-content>
         </v-list-item>
         <v-card-text class="reward-info">
-          <v-row v-if="pl.rewards && pl.rewards.length && progressToDisplay(pl.rewards)">
+          <v-row
+            v-if="
+              pl.rewards && pl.rewards.length && progressToDisplay(pl.rewards)
+            "
+          >
             <v-col cols="12" align="center">
-              <h2 class="font-weight-bold">{{ progressToDisplay(pl.rewards).progression.earned }} PSV Earned</h2>
+              <h2 class="font-weight-bold">
+                {{ progressToDisplay(pl.rewards).progression.earned }} PSV
+                Earned
+              </h2>
             </v-col>
             <v-col cols="12" align="left">
               <p class="green--text" v-if="rewardToDisplay(pl.rewards)">
-                Earned: <span class="font-weight-bold">{{ rewardToDisplay(pl.rewards).reward.name.split('Reward:')[1] }}</span>
+                Earned:
+                <span class="font-weight-bold">{{
+                  rewardToDisplay(pl.rewards).reward.name.split('Reward:')[1]
+                }}</span>
               </p>
               <p v-if="nextReward(pl.rewards)">
-                Next: <span class="font-weight-bold">{{nextReward(pl.rewards).reward.name.split('Reward:')[1] }}</span>
+                Next:
+                <span class="font-weight-bold">{{
+                  nextReward(pl.rewards).reward.name.split('Reward:')[1]
+                }}</span>
               </p>
             </v-col>
             <v-col cols="12">
               <v-btn
-                :disabled="saleProgressText(pl, pl.rewards[0]) !== 'Complete' || pl.claimed"
+                :disabled="
+                  saleProgressText(pl, pl.rewards[0]) !== 'Complete' ||
+                  pl.claimed
+                "
                 >{{ pl.claimed ? 'Claimed' : `Claim Reward` }}</v-btn
               >
             </v-col>
           </v-row>
           <v-row v-else class="text--center">
-            <v-col cols="12">
-              Progress Data Unavailable
-            </v-col>
+            <v-col cols="12"> Progress Data Unavailable </v-col>
           </v-row>
           <p class="font-weight-bold">{{ pl.email }}</p>
-          <v-row align="center" v-if="pl.rewards && pl.rewards.length && progressToDisplay(pl.rewards)">
+          <v-row
+            align="center"
+            v-if="
+              pl.rewards && pl.rewards.length && progressToDisplay(pl.rewards)
+            "
+          >
             <v-col class="pb-0" cols="12">
-              <v-progress-linear :value="progressToDisplay(pl.rewards).progression.progress" :color="saleProgressColor(pl, progressToDisplay(pl.rewards))" height="35" rounded>
-                <strong>{{ saleProgressText(pl, progressToDisplay(pl.rewards)) }}</strong>
+              <v-progress-linear
+                :value="progressToDisplay(pl.rewards).progression.progress"
+                :color="saleProgressColor(pl, progressToDisplay(pl.rewards))"
+                height="35"
+                rounded
+              >
+                <strong>{{
+                  saleProgressText(pl, progressToDisplay(pl.rewards))
+                }}</strong>
               </v-progress-linear>
             </v-col>
           </v-row>
@@ -291,7 +317,7 @@ let options = {
 export default {
   props: {
     promoLinks: Array,
-    eventTemplate: Object
+    eventTemplate: Object,
   },
   data: () => ({
     dialog: false,
@@ -312,7 +338,7 @@ export default {
       { text: 'PSV', value: 'psv' },
       { text: 'Reward', value: 'reward' },
       { text: 'Progress', value: 'progress', sortable: false },
-      { text: 'Actions', value: 'actions', sortable: false }
+      { text: 'Actions', value: 'actions', sortable: false },
     ],
 
     desserts: [],
@@ -334,14 +360,10 @@ export default {
       date: new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
         .toISOString()
         .substr(0, 10),
-<<<<<<< HEAD
 
       time: '',
-=======
-      time: ''
->>>>>>> 60d909f623116470cb0f9556e77daf79a12adcb0
       // emailRule: Rules.emailRule,
-    }
+    },
     // defaultItem: {
     //  name: "",
     //  email: "",
@@ -365,7 +387,7 @@ export default {
       const mappedWindows = windows.map((el) => {
         return {
           text: el.name,
-          value: el.key
+          value: el.key,
         }
       })
 
@@ -383,7 +405,7 @@ export default {
       return this.eventTemplate.windows.find(
         (el) => el.key === this.promoWindow
       )
-    }
+    },
   },
   methods: {
     validateForm() {
@@ -434,7 +456,7 @@ export default {
       if (!rewards || !rewards.length) {
         return
       }
-      const rewardToDisplay = rewards.filter(el => el.progression.awarded)
+      const rewardToDisplay = rewards.filter((el) => el.progression.awarded)
 
       return rewardToDisplay.pop()
     },
@@ -442,7 +464,7 @@ export default {
       if (!rewards || !rewards.length) {
         return
       }
-      const awardedIndex = _.findIndex(rewards, el => el.progression.awarded)
+      const awardedIndex = _.findIndex(rewards, (el) => el.progression.awarded)
       if (rewards[awardedIndex + 1]) {
         return rewards[awardedIndex + 1]
       }
@@ -451,7 +473,7 @@ export default {
       if (!rewards || !rewards.length) {
         return
       }
-      const progressToDisplay = rewards.filter(el => el.progression.visible)
+      const progressToDisplay = rewards.filter((el) => el.progression.visible)
 
       return progressToDisplay.pop()
     },
@@ -499,9 +521,9 @@ export default {
       }
 
       try {
-        const parsedDate = this.$moment.utc(
-          this.editedItem.date + 'T' + this.editedItem.time
-        ).toISOString()
+        const parsedDate = this.$moment
+          .utc(this.editedItem.date + 'T' + this.editedItem.time)
+          .toISOString()
         await this.$apollo.mutate({
           mutation: CreateMemberEvent,
           client: 'federated',
@@ -516,16 +538,16 @@ export default {
                 {
                   pii: { email: this.editedItem.hostEmail },
                   label: this.editedItem.hostName,
-                  role: 'HOST'
+                  role: 'HOST',
                 },
                 {
                   memberId: this.memberId,
                   label: this.displayName,
-                  role: 'ORGANIZER'
-                }
-              ]
-            }
-          }
+                  role: 'ORGANIZER',
+                },
+              ],
+            },
+          },
         })
         this.snackbarText = 'Promo Link Created!'
         this.close()
@@ -572,8 +594,8 @@ export default {
       setTimeout(() => {
         this.copyTooltipText = 'Copy'
       }, 3000)
-    }
-  }
+    },
+  },
 }
 </script>
 
