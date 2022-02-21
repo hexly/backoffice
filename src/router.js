@@ -31,7 +31,7 @@ export default new Router({
     {
       path: '/impersonate/:token',
       name: 'impersonate',
-      component: Impersonate,
+      component: Impersonate
     },
     {
       path: '/login',
@@ -39,21 +39,21 @@ export default new Router({
       component: Login,
       props: true,
       beforeEnter: (_, __, next) =>
-        store.state.user.jwt ? next('/dashboard') : next(),
+        store.state.user.jwt ? next('/dashboard') : next()
     },
     {
       path: '/account/claim/:token',
       name: 'account-claim',
       component: AccountClaim,
       beforeEnter: (_, __, next) =>
-        store.state.user.jwt ? next('/dashboard') : next(),
+        store.state.user.jwt ? next('/dashboard') : next()
     },
     {
       path: '/account/create/:applicationId/:hashId',
       name: 'account-claim',
       component: AccountCreate,
       beforeEnter: (_, __, next) =>
-        store.state.user.jwt ? next('/dashboard') : next(),
+        store.state.user.jwt ? next('/dashboard') : next()
     },
     {
       path: '/account/reset/:token/:email',
@@ -62,7 +62,7 @@ export default new Router({
       beforeEnter: (_, __, next) => {
         store.commit(`user:reset`)
         next()
-      },
+      }
     },
     {
       path: '/zendesk/',
@@ -76,13 +76,13 @@ export default new Router({
         {
           path: '',
           name: 'zendesk',
-          component: ZendeskRoot,
-        },
-      ],
+          component: ZendeskRoot
+        }
+      ]
     },
     {
       path: '/comp/',
-      component: CompFrame,
+      component: CompFrame
       // beforeEnter: (from, __, next) => {
       //   return !store.state.user.jwt
       //     ? next('/login?returnTo=' + encodeURI(from.fullPath))
@@ -130,54 +130,54 @@ export default new Router({
               }
             }
             return view
-          },
+          }
         },
         {
           path: 'profile',
           name: 'profile',
-          component: Profile,
+          component: Profile
         },
         {
           path: 'assets',
           name: 'assets',
-          component: Assets,
+          component: Assets
         },
         {
           path: 'sales',
           name: 'sales',
-          component: Sales,
+          component: Sales
         },
         {
           path: 'payouts',
           name: 'payouts',
-          component: Payouts,
+          component: Payouts
         },
         {
           path: 'rewards',
           name: 'rewards',
-          component: Rewards,
+          component: Rewards
         },
         {
           path: 'team',
           name: 'team',
-          component: Team,
+          component: Team
         },
         {
           path: 'announcements',
           name: 'announcements',
-          component: Announcements,
+          component: Announcements
         },
         {
           path: 'integrations',
           name: 'integrations',
-          component: Integrations,
+          component: Integrations
         },
         {
           path: 'files',
           name: 'files',
           component: () => {
             return import('./components/Files.vue')
-          },
+          }
         },
         {
           path: 'promotioncenter',
@@ -188,19 +188,19 @@ export default new Router({
           beforeEnter: (_, __, next) => {
             const tags = store.state.user.principal.member.tags
             return tags.indexOf('beta:promo') < 0 ? next() : next()
-          },
+          }
         },
         {
           path: 'customers',
           name: 'customers',
-          component: Customers,
+          component: Customers
         },
         {
           path: 'insights',
           name: 'insights',
-          component: Insights,
-        },
-      ],
+          component: Insights
+        }
+      ]
     },
     {
       path: '*',
@@ -210,7 +210,7 @@ export default new Router({
         return !store.state.user.jwt
           ? next('/login?returnTo=' + encodeURI('/'))
           : next('/dashboard')
-      },
-    },
-  ],
+      }
+    }
+  ]
 })
