@@ -284,6 +284,11 @@
 import Rules from '@/views/Rules.js'
 import { CreateMemberEvent } from '@/graphql/CreateMemberEvent.gql'
 import { mapGetters } from 'vuex'
+let options = {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+}
 
 export default {
   props: {
@@ -311,13 +316,19 @@ export default {
       { text: 'Progress', value: 'progress', sortable: false },
       { text: 'Actions', value: 'actions', sortable: false },
     ],
+
     desserts: [],
     editedIndex: -1,
     isFormValid: false,
     requiredRule: Rules.requiredRule,
     emailRule: Rules.emailRule,
     pickerTimeModel: '',
-    pickerDateModel: '',
+    pickerDateModel: new Date(
+      Date.now() - new Date().getTimezoneOffset() * 60000
+    ).toLocaleDateString('en-US', options),
+    // .toISOString()
+    // .substr(0, 10),
+
     editedItem: {
       promoName: '',
       hostEmail: '',
@@ -325,6 +336,7 @@ export default {
       date: new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
         .toISOString()
         .substr(0, 10),
+
       time: '',
       // emailRule: Rules.emailRule,
     },
@@ -426,9 +438,16 @@ export default {
     },
     close() {
       this.$refs.informationForm.reset()
+      let defaultDate = new Date(
+        Date.now() - new Date().getTimezoneOffset() * 60000
+      )
+        .toISOString()
+        .substr(0, 10)
       this.dialog = false
       this.$nextTick(() => {
-        this.editedItem = Object.assign({}, this.defaultItem)
+        ;(this.pickerDateModel = defaultDate)(
+          (this.editedItem = Object.assign({}, this.defaultItem))
+        )
         this.editedIndex = -1
       })
     },
