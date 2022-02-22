@@ -596,7 +596,6 @@ export default {
     handleTemplateBtnClick(template) {
       this.showTemplateDialog = true
       this.selectedTemplate = template
-      console.log({ template })
     }
   }
 }
