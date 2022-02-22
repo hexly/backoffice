@@ -495,9 +495,8 @@ export default {
       this.$refs.informationForm.reset()
       let defaultDate = new Date(
         Date.now() - new Date().getTimezoneOffset() * 60000
-      )
-        .toISOString()
-        .substr(0, 10)
+      ).toLocaleDateString('en-US', options)
+
       this.dialog = false
       this.$nextTick(() => {
         ;(this.pickerDateModel = defaultDate)(
