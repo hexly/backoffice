@@ -9,6 +9,7 @@
       <v-tab-item value="links" class="py-3">
         <v-lazy>
           <PromoLinks
+            v-if="eventTemplates"
             :promo-links="promoLinks"
             @refetchPromoLinks="handlePromoLinksRefetch"
             :eventTemplate="
@@ -61,8 +62,7 @@ export default {
       name: '',
       email: ''
     },
-    statusFilter: null,
-    eventTemplates: []
+    statusFilter: null
   }),
   computed: {
     ...mapGetters(['memberId'])
