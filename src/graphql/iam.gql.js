@@ -90,7 +90,11 @@ export const GET_PRINCIPAL = gql`
       permissions
       member {
         market {
+          id
+          name
           supportedCurrencyIds
+          tenantId
+          key
         }
         statusId
         firstName
@@ -201,7 +205,11 @@ export const PRINCIPAL = gql`
             assetUrl
           }
           market {
+            id
+            name
             supportedCurrencyIds
+            tenantId
+            key
           }
           tags {
             name

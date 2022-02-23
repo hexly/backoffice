@@ -287,7 +287,7 @@
     </v-snackbar>
     <v-dialog
       v-model="showTemplateDialog"
-      width="350"
+      width="400"
     >
       <v-card id="template-card">
         <v-card-title class="text-h5 font-weight-bold" v-if="selectedTemplate">
@@ -304,10 +304,15 @@
                 {{window.name}}
               </v-row>
               <v-row>
-                <v-col class="rewards-title" cols="12">Rewards</v-col>
+                <v-col class="rewards-title mt-5" cols="12">Rewards</v-col>
                 <v-col cols="12" v-for="reward in window.rewards" :key="reward.id">
-                  <v-row class="px-5">
-                    {{reward.name}}
+                  <v-row justify="space-around" class="px-2" v-if="reward && reward.metadata && reward.metadata.labels && reward.metadata.labels.en && marketKey">
+                    <v-col cols="4">
+                      {{reward.metadata.labels.en[marketKey].goal}}
+                    </v-col>
+                    <v-col cols="8">
+                      {{reward.metadata.labels.en[marketKey].reward}}
+                    </v-col>
                   </v-row>
                 </v-col>
               </v-row>
@@ -376,9 +381,13 @@ export default {
     // },
   }),
   computed: {
-    ...mapGetters(['memberId', 'displayName', 'slug']),
+    ...mapGetters(['memberId', 'displayName', 'slug', 'market']),
     canShare() {
       return navigator.share
+    },
+    marketKey() {
+      const key = _.get(this, 'market.key')
+      return key
     },
     parsedWindows() {
       if (!this.eventTemplate) {

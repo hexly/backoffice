@@ -50,7 +50,11 @@ mutation($input: IamAuthenticateInput!){
             key
           }
           market {
+            id
+            name
             supportedCurrencyIds
+            tenantId
+            key
           }
           contacts {
             id
