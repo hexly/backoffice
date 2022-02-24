@@ -643,20 +643,6 @@ p {
   top: 3px !important;
 }
 
-#template-card {
-  padding: 16px;
-}
-
-.windows-title {
-  font-size: 17px;
-  font-weight: bold;
-}
-
-.rewards-title {
-  font-size: 17px;
-  font-weight: bold;
-}
-
 .dialog-close-btn {
   top: 16px !important;
   right: 16px;
