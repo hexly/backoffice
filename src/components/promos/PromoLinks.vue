@@ -214,7 +214,7 @@
                   </v-col>
                   <v-col cols="12">
                     <v-btn
-                      :disabled="saleProgressText(pl, pl.rewards[0]) !== 'Complete' || pl.claimed"
+                      :disabled="progressText(pl, pl.rewards[0]) !== 'Complete' || pl.claimed"
                       >{{ pl.claimed ? 'Claimed' : `Claim Reward` }}</v-btn
                     >
                   </v-col>
@@ -227,8 +227,8 @@
                 <p class="font-weight-bold">{{ pl.email }}</p>
                 <v-row align="center" v-if="pl.rewards && pl.rewards.length && progressToDisplay(pl.rewards)">
                   <v-col class="pb-0" cols="12">
-                    <v-progress-linear :value="progressToDisplay(pl.rewards).progression.progress" :color="saleProgressColor(pl, progressToDisplay(pl.rewards))" height="35" rounded>
-                      <strong>{{ saleProgressText(pl, progressToDisplay(pl.rewards)) }}</strong>
+                    <v-progress-linear :value="progressToDisplay(pl.rewards).progression.progress" :color="progressColor(pl, progressToDisplay(pl.rewards))" height="35" rounded>
+                      <strong class="text-capitalize">{{ progressText(pl, progressToDisplay(pl.rewards)) }}</strong>
                     </v-progress-linear>
                   </v-col>
                 </v-row>
@@ -436,25 +436,13 @@ export default {
     formatDate(date) {
       return this.$moment(date).format('MMM Do YYYY')
     },
-    saleProgressText(pl, reward) {
+    progressText(pl, reward) {
       if (!pl || !reward) {
         return
       }
-      if (reward.progression.progress >= 100) {
-        return 'Complete'
-      }
-      if (
-        reward.progression.progress < 100 &&
-        this.$moment().isAfter(this.$moment(pl.endTime, 'YYYY-MM-DD'))
-      ) {
-        return 'Expired'
-      }
-      if (this.$moment().isBefore(this.$moment(pl.startTime, 'YYYY-MM-DD'))) {
-        return 'Upcoming'
-      }
-      return 'In Progress'
+      return pl.status.replace('_', ' ').toLowerCase()
     },
-    saleProgressColor(pl, reward) {
+    progressColor(pl, reward) {
       if (!pl || !reward) {
         return
       }
@@ -463,11 +451,11 @@ export default {
       }
       if (
         reward.progression.progress < 100 &&
-        this.$moment().isAfter(this.$moment(pl.endTime, 'YYYY-MM-DD'))
+        pl.status === 'FINISHED'
       ) {
         return 'orange'
       }
-      if (this.$moment().isBefore(this.$moment(pl.startTime, 'YYYY-MM-DD'))) {
+      if (pl.status === 'SCHEDULED') {
         return 'blue'
       }
       return 'green lighten-3'
