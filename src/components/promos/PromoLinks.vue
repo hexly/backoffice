@@ -6,16 +6,6 @@
     </div>
     <div class="d-flex justify-center ma-2 flex-wrap">
       <v-dialog v-model="dialog" max-width="500px">
-        <template v-slot:activator="{ on }">
-          <div
-            class="add-flash-sale-box d-flex align-center justify-center"
-            v-on="on"
-          >
-            <div class="text-center">
-              <v-icon x-large>note_add</v-icon><br />New Promo Link
-            </div>
-          </div>
-        </template>
         <v-card class="promo-link-modal pa-7">
           <v-card-title>
             <span class="text-h5 font-weight-bold">New Promo Link</span>
@@ -173,111 +163,126 @@
           </v-card-actions>
         </v-card>
       </v-dialog>
-      <v-card v-for="pl in promoLinks" :key="pl.id" class="ma-2 sale-card">
-        <v-tooltip bottom open-delay="350">
-          <template #activator="{ on, attrs }">
-            <v-btn v-on="on" v-bind="attrs" fab text icon absolute top right class="template-btn" @click="handleTemplateBtnClick(pl.template)">
-              <v-icon>info</v-icon>
-            </v-btn>
-          </template>
-          <span>Promo Details</span>
-        </v-tooltip>
-        <v-list-item two-line>
-          <v-list-item-content>
-            <v-list-item-title class="text-h5">
-              {{ pl.name }}
-            </v-list-item-title>
+      <v-slide-x-transition group>
+        <v-progress-circular v-if="loading" key="progress" indeterminate />
+        <div v-else key="done-loading">
+          <v-row justify="center">
+            <div
+              class="add-flash-sale-box d-flex align-center justify-center"
+              @click="dialog = true"
+            >
+              <div class="text-center">
+                <v-icon x-large>note_add</v-icon><br />New Promo Link
+              </div>
+            </div>
+            <v-card v-for="pl in promoLinks" :key="pl.id" class="sale-card ma-2" :loading="loading">
+              <v-tooltip bottom open-delay="350">
+                <template #activator="{ on, attrs }">
+                  <v-btn v-on="on" v-bind="attrs" fab text icon absolute top right class="template-btn" @click="handleTemplateBtnClick(pl.template)">
+                    <v-icon>info</v-icon>
+                  </v-btn>
+                </template>
+                <span>Promo Details</span>
+              </v-tooltip>
+              <v-list-item two-line>
+                <v-list-item-content>
+                  <v-list-item-title class="text-h5">
+                    {{ pl.name }}
+                  </v-list-item-title>
 
-            <v-list-item-subtitle>
-              <v-icon small color="#c44a42" class="pr-1 pb-1"
-                >calendar_today</v-icon
-              >
-              {{ formatDate(pl.startTime) }} - {{ formatDate(pl.endTime) }}
-            </v-list-item-subtitle>
-            <v-list-item-subtitle>{{ pl.email }} </v-list-item-subtitle>
-          </v-list-item-content>
-        </v-list-item>
-        <v-card-text class="reward-info">
-          <v-row v-if="pl.rewards && pl.rewards.length && progressToDisplay(pl.rewards)">
-            <v-col cols="12" align="center">
-              <h2 class="font-weight-bold">{{ progressToDisplay(pl.rewards).progression.earned }} PSV Earned</h2>
-            </v-col>
-            <v-col cols="12" align="left">
-              <p class="green--text" v-if="rewardToDisplay(pl.rewards)">
-                Earned: <span class="font-weight-bold">{{ rewardToDisplay(pl.rewards).reward.name.split('Reward:')[1] }}</span>
-              </p>
-              <p v-if="nextReward(pl.rewards)">
-                Next: <span class="font-weight-bold">{{nextReward(pl.rewards).reward.name.split('Reward:')[1] }}</span>
-              </p>
-            </v-col>
-            <v-col cols="12">
-              <v-btn
-                :disabled="saleProgressText(pl, pl.rewards[0]) !== 'Complete' || pl.claimed"
-                >{{ pl.claimed ? 'Claimed' : `Claim Reward` }}</v-btn
-              >
-            </v-col>
-          </v-row>
-          <v-row v-else class="text--center">
-            <v-col cols="12">
-              Progress Data Unavailable
-            </v-col>
-          </v-row>
-          <p class="font-weight-bold">{{ pl.email }}</p>
-          <v-row align="center" v-if="pl.rewards && pl.rewards.length && progressToDisplay(pl.rewards)">
-            <v-col class="pb-0" cols="12">
-              <v-progress-linear :value="progressToDisplay(pl.rewards).progression.progress" :color="saleProgressColor(pl, progressToDisplay(pl.rewards))" height="35" rounded>
-                <strong>{{ saleProgressText(pl, progressToDisplay(pl.rewards)) }}</strong>
-              </v-progress-linear>
-            </v-col>
-          </v-row>
-          <v-row align="center">
-            <v-col>
-              <v-text-field
-                solo
-                color="black"
-                :value="createPromoLink(pl.key)"
-                readonly
-                single-line
-                hide-details
-                class="link"
-              >
-                <v-tooltip slot="append" bottom>
-                  <template v-slot:activator="{ on }">
-                    <v-icon
-                      v-if="canShare"
-                      @click="shareLink(createPromoLink(pl.key))"
-                      v-on="on"
-                      color="black"
-                      dark
-                      >share</v-icon
+                  <v-list-item-subtitle>
+                    <v-icon small color="#c44a42" class="pr-1 pb-1"
+                      >calendar_today</v-icon
                     >
-                    <v-icon
-                      v-else
-                      @click="copyToClipboard(createPromoLink(pl.key))"
-                      v-on="on"
-                      color="black"
-                      dark
-                      >assignment</v-icon
+                    {{ formatDate(pl.startTime) }} - {{ formatDate(pl.endTime) }}
+                  </v-list-item-subtitle>
+                  <v-list-item-subtitle>{{ pl.email }} </v-list-item-subtitle>
+                </v-list-item-content>
+              </v-list-item>
+              <v-card-text class="reward-info">
+                <v-row v-if="pl.rewards && pl.rewards.length && progressToDisplay(pl.rewards)">
+                  <v-col cols="12" align="center">
+                    <h2 class="font-weight-bold">{{ progressToDisplay(pl.rewards).progression.earned }} PSV Earned</h2>
+                  </v-col>
+                  <v-col cols="12" align="left">
+                    <p class="green--text" v-if="rewardToDisplay(pl.rewards)">
+                      Earned: <span class="font-weight-bold">{{ rewardToDisplay(pl.rewards).reward.name.split('Reward:')[1] }}</span>
+                    </p>
+                    <p v-if="nextReward(pl.rewards)">
+                      Next: <span class="font-weight-bold">{{nextReward(pl.rewards).reward.name.split('Reward:')[1] }}</span>
+                    </p>
+                  </v-col>
+                  <v-col cols="12">
+                    <v-btn
+                      :disabled="saleProgressText(pl, pl.rewards[0]) !== 'Complete' || pl.claimed"
+                      >{{ pl.claimed ? 'Claimed' : `Claim Reward` }}</v-btn
                     >
-                  </template>
-                  <span v-if="canShare">{{ shareTooltipText }}</span>
-                  <span v-else>{{ copyTooltipText }}</span>
-                </v-tooltip>
-              </v-text-field>
-            </v-col>
+                  </v-col>
+                </v-row>
+                <v-row v-else class="text--center">
+                  <v-col cols="12">
+                    Progress Data Unavailable
+                  </v-col>
+                </v-row>
+                <p class="font-weight-bold">{{ pl.email }}</p>
+                <v-row align="center" v-if="pl.rewards && pl.rewards.length && progressToDisplay(pl.rewards)">
+                  <v-col class="pb-0" cols="12">
+                    <v-progress-linear :value="progressToDisplay(pl.rewards).progression.progress" :color="saleProgressColor(pl, progressToDisplay(pl.rewards))" height="35" rounded>
+                      <strong>{{ saleProgressText(pl, progressToDisplay(pl.rewards)) }}</strong>
+                    </v-progress-linear>
+                  </v-col>
+                </v-row>
+                <v-row align="center">
+                  <v-col>
+                    <v-text-field
+                      solo
+                      color="black"
+                      :value="createPromoLink(pl.key)"
+                      readonly
+                      single-line
+                      hide-details
+                      class="link"
+                    >
+                      <v-tooltip slot="append" bottom>
+                        <template v-slot:activator="{ on }">
+                          <v-icon
+                            v-if="canShare"
+                            @click="shareLink(createPromoLink(pl.key))"
+                            v-on="on"
+                            color="black"
+                            dark
+                            >share</v-icon
+                          >
+                          <v-icon
+                            v-else
+                            @click="copyToClipboard(createPromoLink(pl.key))"
+                            v-on="on"
+                            color="black"
+                            dark
+                            >assignment</v-icon
+                          >
+                        </template>
+                        <span v-if="canShare">{{ shareTooltipText }}</span>
+                        <span v-else>{{ copyTooltipText }}</span>
+                      </v-tooltip>
+                    </v-text-field>
+                  </v-col>
+                </v-row>
+              </v-card-text>
+              <v-card-actions>
+                <!-- <v-btn text :disabled="saleProgressText(pl) === 'Complete'">Resend Link</v-btn> -->
+                <v-btn text disabled>Resend Link</v-btn>
+                <a :href="createPromoLink(pl.key)" target="_blank">
+                  <v-btn text>Visit Link</v-btn>
+                </a>
+                <v-spacer></v-spacer>
+                <!-- <v-btn text color="red">Delete</v-btn> -->
+                <v-btn text disabled color="red">Delete</v-btn>
+              </v-card-actions>
+            </v-card>
           </v-row>
-        </v-card-text>
-        <v-card-actions>
-          <!-- <v-btn text :disabled="saleProgressText(pl) === 'Complete'">Resend Link</v-btn> -->
-          <v-btn text disabled>Resend Link</v-btn>
-          <a :href="createPromoLink(pl.key)" target="_blank">
-            <v-btn text>Visit Link</v-btn>
-          </a>
-          <v-spacer></v-spacer>
-          <!-- <v-btn text color="red">Delete</v-btn> -->
-          <v-btn text disabled color="red">Delete</v-btn>
-        </v-card-actions>
-      </v-card>
+        </div>
+      </v-slide-x-transition>
     </div>
     <v-snackbar v-model="showSnackbar">
       {{ snackbarText }}
@@ -332,7 +337,8 @@ import { mapGetters } from 'vuex'
 export default {
   props: {
     promoLinks: Array,
-    eventTemplate: Object
+    eventTemplate: Object,
+    loading: Boolean
   },
   data: () => ({
     dialog: false,
