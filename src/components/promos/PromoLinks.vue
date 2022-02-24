@@ -9,7 +9,17 @@
         <v-card class="promo-link-modal pa-7">
           <v-card-title>
             <span class="text-h5 font-weight-bold">New Promo Link</span>
-            <v-btn fab icon text absolute right top class="dialog-close-btn" @click="dialog = false"><v-icon>close</v-icon></v-btn>
+            <v-btn
+              fab
+              icon
+              text
+              absolute
+              right
+              top
+              class="dialog-close-btn"
+              @click="dialog = false"
+              ><v-icon>close</v-icon></v-btn
+            >
           </v-card-title>
           <v-card-text>
             <p class="mb-2">
@@ -119,21 +129,32 @@
                 <br />
                 <p>Period: February 2022</p>
                 <div class="available-reward-table d-flex justify-start col-12">
-                  <span class="text-h6 font-weight-light col-6 pt-0 pb-0">Goal</span>
-                  <span class="text-h6 font-weight-light col-6 pt-0 pb-0">Reward</span>
+                  <span class="text-h6 font-weight-light col-6 pt-0 pb-0"
+                    >Goal</span
+                  >
+                  <span class="text-h6 font-weight-light col-6 pt-0 pb-0"
+                    >Reward</span
+                  >
                 </div>
                 <v-divider></v-divider>
                 <div
                   v-for="reward in selectedWindow.rewards"
                   :key="reward.key"
-                  class="available-reward-table d-flex justify-start col-12">
-                  <span class="rewards-table-body-text col-6">{{reward.name.split('Reward:')[0]}}</span>
-                  <span class="rewards-table-body-text col-6">{{reward.name.split('Reward:')[1]}}</span>
+                  class="available-reward-table d-flex justify-start col-12"
+                >
+                  <span class="rewards-table-body-text col-6">{{
+                    reward.name.split('Reward:')[0]
+                  }}</span>
+                  <span class="rewards-table-body-text col-6">{{
+                    reward.name.split('Reward:')[1]
+                  }}</span>
                 </div>
               </div>
               <div v-else>
                 <div class="available-reward-table d-flex justify-start col-12">
-                  <span class="rewards-table-body-text pt-1">Please Select a Promo Length to view rewards</span>
+                  <span class="rewards-table-body-text pt-1"
+                    >Please Select a Promo Length to view rewards</span
+                  >
                 </div>
               </div>
             </div>
@@ -164,10 +185,26 @@
                 <v-icon x-large>note_add</v-icon><br />New Promo Link
               </div>
             </div>
-            <v-card v-for="pl in promoLinks" :key="pl.id" class="sale-card ma-2" :loading="loading">
+            <v-card
+              v-for="pl in promoLinks"
+              :key="pl.id"
+              class="sale-card ma-2"
+              :loading="loading"
+            >
               <v-tooltip bottom open-delay="350">
                 <template #activator="{ on, attrs }">
-                  <v-btn v-on="on" v-bind="attrs" fab text icon absolute top right class="template-btn" @click="handleTemplateBtnClick(pl.template)">
+                  <v-btn
+                    v-on="on"
+                    v-bind="attrs"
+                    fab
+                    text
+                    icon
+                    absolute
+                    top
+                    right
+                    class="template-btn"
+                    @click="handleTemplateBtnClick(pl.template)"
+                  >
                     <v-icon>info</v-icon>
                   </v-btn>
                 </template>
@@ -175,7 +212,7 @@
               </v-tooltip>
               <v-list-item two-line>
                 <v-list-item-content>
-                  <v-list-item-title class="text-h5">
+                  <v-list-item-title class="text-h5 px-7 pt-2">
                     {{ pl.name }}
                   </v-list-item-title>
 
@@ -183,22 +220,47 @@
                     <v-icon small color="#c44a42" class="pr-1 pb-1"
                       >calendar_today</v-icon
                     >
-                    {{ formatDate(pl.startTime) }} - {{ formatDate(pl.endTime) }}
+                    {{ formatDate(pl.startTime) }} -
+                    {{ formatDate(pl.endTime) }}
                   </v-list-item-subtitle>
                   <v-list-item-subtitle>{{ pl.email }} </v-list-item-subtitle>
                 </v-list-item-content>
               </v-list-item>
               <v-card-text class="reward-info">
-                <v-row v-if="pl.rewards && pl.rewards.length && progressToDisplay(pl.rewards)">
+                <v-row
+                  v-if="
+                    pl.rewards &&
+                    pl.rewards.length &&
+                    progressToDisplay(pl.rewards)
+                  "
+                >
                   <v-col cols="12" align="center">
-                    <h2 class="font-weight-bold">{{ progressToDisplay(pl.rewards).progression.earned }} PSV Earned</h2>
+                    <h2 class="font-weight-bold">
+                      {{ progressToDisplay(pl.rewards).progression.earned }} PSV
+                      Earned
+                    </h2>
                   </v-col>
                   <v-col cols="12" align="left">
-                    <p class="green--text" :class="{ 'hidden': !rewardToDisplay(pl.rewards) }">
-                        Earned: <span class="font-weight-bold" v-if="rewardToDisplay(pl.rewards)">{{ rewardToDisplay(pl.rewards).reward.name.split('Reward:')[1] }}</span>
+                    <p
+                      class="green--text"
+                      :class="{ hidden: !rewardToDisplay(pl.rewards) }"
+                    >
+                      Earned:
+                      <span
+                        class="font-weight-bold"
+                        v-if="rewardToDisplay(pl.rewards)"
+                        >{{
+                          rewardToDisplay(pl.rewards).reward.name.split(
+                            'Reward:'
+                          )[1]
+                        }}</span
+                      >
                     </p>
                     <p v-if="nextReward(pl.rewards)">
-                      Next: <span class="font-weight-bold">{{nextReward(pl.rewards).reward.name.split('Reward:')[1] }}</span>
+                      Next:
+                      <span class="font-weight-bold">{{
+                        nextReward(pl.rewards).reward.name.split('Reward:')[1]
+                      }}</span>
                     </p>
                   </v-col>
                   <!-- <v-col cols="12">
@@ -209,37 +271,48 @@
                   </v-col> -->
                 </v-row>
                 <v-row v-else class="text--center">
-                  <v-col cols="12">
-                    Progress Data Unavailable
-                  </v-col>
+                  <v-col cols="12"> Progress Data Unavailable </v-col>
                 </v-row>
                 <p class="font-weight-bold">{{ pl.email }}</p>
-                <v-row align="center" v-if="pl.rewards && pl.rewards.length && progressToDisplay(pl.rewards)">
+                <v-row
+                  align="center"
+                  v-if="
+                    pl.rewards &&
+                    pl.rewards.length &&
+                    progressToDisplay(pl.rewards)
+                  "
+                >
                   <v-col class="pb-0" cols="12">
                     <!-- <v-progress-linear :value="progressToDisplay(pl.rewards).progression.progress" :color="progressColor(pl, progressToDisplay(pl.rewards))" height="35" rounded>
                       <strong class="text-capitalize">{{ progressText(pl, progressToDisplay(pl.rewards)) }}</strong>
                     </v-progress-linear> -->
+                    <v-btn
+                      v-if="pl.isEligibleToClaim && pl.claimableRewards"
+                      class="claim-reward-btn"
+                      outlined
+                      block
+                    >
+                      Claim Rewards
+                    </v-btn>
                     <v-progress-linear
-                      :value="progressToDisplay(pl.rewards).progression.progress * 100"
+                      v-else
+                      :value="
+                        progressToDisplay(pl.rewards).progression.progress * 100
+                      "
                       :color="progressColor(pl, progressToDisplay(pl.rewards))"
                       height="35"
                       rounded
-                      class="card-progress-bar">
-                      <p
-                        v-if="pl.isEligibleToClaim && pl.claimableRewards"
-                        class="claim-reward-btn">
-                        Claim Rewards
-                      </p>
-                      <p v-else>
+                      class="card-progress-bar"
+                    >
+                      <p>
                         {{ progressText(pl, progressToDisplay(pl.rewards)) }}
                       </p>
                     </v-progress-linear>
                   </v-col>
                 </v-row>
                 <v-row align="center">
-                  <v-col>
+                  <v-col class="pt-0">
                     <v-text-field
-                      solo
                       color="black"
                       :value="createPromoLink(pl.key)"
                       readonly
@@ -294,28 +367,58 @@
         >Close</v-btn
       >
     </v-snackbar>
-    <v-dialog
-      v-model="showTemplateDialog"
-      width="400"
-    >
+    <!-- //* info modal -->
+    <v-dialog v-model="showTemplateDialog" width="400">
       <v-card id="template-card">
         <v-card-title class="text-h5 font-weight-bold" v-if="selectedTemplate">
-          {{selectedTemplate.name}}
-          <v-btn fab icon text absolute right top class="dialog-close-btn" @click="showTemplateDialog = false"><v-icon>close</v-icon></v-btn>
+          {{ selectedTemplate.name }}
+          <v-btn
+            fab
+            icon
+            text
+            absolute
+            right
+            top
+            class="dialog-close-btn"
+            @click="showTemplateDialog = false"
+            ><v-icon>close</v-icon></v-btn
+          >
         </v-card-title>
         <v-card-text v-if="selectedTemplate">
           <v-row>
             <v-col class="windows-title" cols="12">Length</v-col>
           </v-row>
           <v-row>
-            <v-col cols="12" v-for="window in selectedTemplate.windows" :key="window.key">
-              <v-row class="px-5">{{window.name}}</v-row>
+            <v-col
+              cols="12"
+              v-for="window in selectedTemplate.windows"
+              :key="window.key"
+            >
+              <v-row class="px-5">{{ window.name }}</v-row>
               <v-row>
                 <v-col class="rewards-title mt-5" cols="12">Rewards</v-col>
-                <v-col cols="12" v-for="reward in window.rewards" :key="reward.id">
-                  <v-row justify="space-around" class="px-2" v-if="reward && reward.metadata && reward.metadata.labels && reward.metadata.labels.en && marketKey">
-                    <v-col cols="4">{{reward.metadata.labels.en[marketKey].goal}}</v-col>
-                    <v-col cols="8">{{reward.metadata.labels.en[marketKey].reward}}</v-col>
+                <v-col
+                  cols="12"
+                  v-for="reward in window.rewards"
+                  :key="reward.id"
+                >
+                  <v-row
+                    justify="space-around"
+                    class="px-2"
+                    v-if="
+                      reward &&
+                      reward.metadata &&
+                      reward.metadata.labels &&
+                      reward.metadata.labels.en &&
+                      marketKey
+                    "
+                  >
+                    <v-col cols="4">{{
+                      reward.metadata.labels.en[marketKey].goal
+                    }}</v-col>
+                    <v-col cols="8">{{
+                      reward.metadata.labels.en[marketKey].reward
+                    }}</v-col>
                   </v-row>
                 </v-col>
               </v-row>
@@ -324,6 +427,7 @@
         </v-card-text>
       </v-card>
     </v-dialog>
+    <!-- //* end info modal -->
   </div>
 </template>
 <script>
@@ -337,7 +441,7 @@ export default {
   props: {
     promoLinks: Array,
     eventTemplate: Object,
-    loading: Boolean
+    loading: Boolean,
   },
   data: () => ({
     dialog: false,
@@ -359,7 +463,7 @@ export default {
       { text: 'PSV', value: 'psv' },
       { text: 'Reward', value: 'reward' },
       { text: 'Progress', value: 'progress', sortable: false },
-      { text: 'Actions', value: 'actions', sortable: false }
+      { text: 'Actions', value: 'actions', sortable: false },
     ],
     desserts: [],
     editedIndex: -1,
@@ -373,8 +477,8 @@ export default {
       hostEmail: '',
       hostName: '',
       date: moment().format('MMMM DD, YYYY'),
-      time: moment().format('HH:mm a')
-    }
+      time: moment().format('HH:mm a'),
+    },
   }),
   computed: {
     ...mapGetters(['memberId', 'displayName', 'slug', 'market']),
@@ -397,7 +501,7 @@ export default {
       const mappedWindows = windows.map((el) => {
         return {
           text: el.name,
-          value: el.key
+          value: el.key,
         }
       })
 
@@ -415,7 +519,7 @@ export default {
       return this.eventTemplate.windows.find(
         (el) => el.key === this.promoWindow
       )
-    }
+    },
   },
   methods: {
     validateForm() {
@@ -439,10 +543,7 @@ export default {
       if (reward.progression.progress >= 100) {
         return 'green'
       }
-      if (
-        reward.progression.progress < 100 &&
-        pl.status === 'FINISHED'
-      ) {
+      if (reward.progression.progress < 100 && pl.status === 'FINISHED') {
         return 'orange'
       }
       if (pl.status === 'SCHEDULED') {
@@ -454,7 +555,7 @@ export default {
       if (!rewards || !rewards.length) {
         return
       }
-      const rewardToDisplay = rewards.filter(el => el.progression.awarded)
+      const rewardToDisplay = rewards.filter((el) => el.progression.awarded)
 
       return rewardToDisplay.pop()
     },
@@ -462,7 +563,7 @@ export default {
       if (!rewards || !rewards.length) {
         return
       }
-      const awardedIndex = _.findIndex(rewards, el => el.progression.awarded)
+      const awardedIndex = _.findIndex(rewards, (el) => el.progression.awarded)
       if (rewards[awardedIndex + 1]) {
         return rewards[awardedIndex + 1]
       }
@@ -471,7 +572,7 @@ export default {
       if (!rewards || !rewards.length) {
         return
       }
-      const progressToDisplay = rewards.filter(el => el.progression.visible)
+      const progressToDisplay = rewards.filter((el) => el.progression.visible)
 
       return progressToDisplay.pop()
     },
@@ -512,9 +613,9 @@ export default {
       }
 
       try {
-        const parsedDate = this.$moment.utc(
-          this.editedItem.date + 'T' + this.editedItem.time
-        ).toISOString()
+        const parsedDate = this.$moment
+          .utc(this.editedItem.date + 'T' + this.editedItem.time)
+          .toISOString()
         await this.$apollo.mutate({
           mutation: CreateMemberEvent,
           client: 'federated',
@@ -529,16 +630,16 @@ export default {
                 {
                   pii: { email: this.editedItem.hostEmail },
                   label: this.editedItem.hostName,
-                  role: 'HOST'
+                  role: 'HOST',
                 },
                 {
                   memberId: this.memberId,
                   label: this.displayName,
-                  role: 'ORGANIZER'
-                }
-              ]
-            }
-          }
+                  role: 'ORGANIZER',
+                },
+              ],
+            },
+          },
         })
         this.snackbarText = 'Promo Link Created!'
         this.close()
@@ -589,8 +690,8 @@ export default {
     handleTemplateBtnClick(template) {
       this.showTemplateDialog = true
       this.selectedTemplate = template
-    }
-  }
+    },
+  },
 }
 </script>
 
@@ -624,19 +725,9 @@ p {
 }
 
 /* START fine tuning spacing aka: vuetify override  */
-
-.promo-link-modal .v-card__text {
-  padding: 0 10px;
-}
-.promo-link-modal .v-card__title {
-  padding: 10px 10px 0;
-}
-.promo-link-modal .v-card__actions {
-  padding: 5px 10px 10px;
-}
 .promo-form-input.col.col-12 {
   padding-top: 0;
-  padding-bottom: 0;
+  padding-bottom: 0px;
 }
 .date-picker-input .col,
 .col-12 {
@@ -688,24 +779,7 @@ p {
   font-weight: 600;
 }
 
-.claim-reward-btn {
-  /* padding: 5px 110px; */
-  padding: 6px 0;
-  height: 35px;
-  width: 318px;
-  cursor: pointer;
-  /* border: solid 1px rgba(255, 255, 255, 0); */
-  background-color: rgba(255, 255, 255, 0.5);
-  border: rgba(0, 0, 0, 0.8) 1px solid;
-  border-radius: 4px;
-}
-.claim-reward-btn:hover {
-  /* background-color: rgba(255, 153, 0, 0.7); */
-  background-color: rgba(255, 255, 255, 0.8);
-  border: rgba(0, 0, 0, 0.8) 1px solid;
-  border-radius: 4px;
-}
-.hidden{
+.hidden {
   visibility: hidden;
 }
 </style>
