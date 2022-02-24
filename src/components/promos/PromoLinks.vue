@@ -125,9 +125,7 @@
             </v-container>
             <div class="current-reward mt-4">
               <div v-if="selectedWindow">
-                <span class="text-h6 font-weight-bold">Available Rewards</span>
-                <br />
-                <p>Period: February 2022</p>
+                <div class="mb-3 font-weight-bold">Available Rewards</div>
                 <div class="available-reward-table d-flex justify-start col-12">
                   <span class="text-h6 font-weight-light col-6 pt-0 pb-0"
                     >Goal</span
@@ -231,7 +229,8 @@
                   v-if="
                     pl.rewards &&
                     pl.rewards.length &&
-                    progressToDisplay(pl.rewards)
+                    progressToDisplay(pl.rewards) &&
+                    marketKey
                   "
                 >
                   <v-col cols="12" align="center">
@@ -250,16 +249,18 @@
                         class="font-weight-bold"
                         v-if="rewardToDisplay(pl.rewards)"
                         >{{
-                          rewardToDisplay(pl.rewards).reward.name.split(
-                            'Reward:'
-                          )[1]
+                          rewardToDisplay(pl.rewards).reward.metadata.labels.en[
+                            marketKey
+                          ].reward
                         }}</span
                       >
                     </p>
                     <p v-if="nextReward(pl.rewards)">
                       Next:
                       <span class="font-weight-bold">{{
-                        nextReward(pl.rewards).reward.name.split('Reward:')[1]
+                        nextReward(pl.rewards).reward.metadata.labels.en[
+                          marketKey
+                        ].reward
                       }}</span>
                     </p>
                   </v-col>
@@ -367,67 +368,12 @@
         >Close</v-btn
       >
     </v-snackbar>
-    <!-- //* info modal -->
-    <v-dialog v-model="showTemplateDialog" width="400">
-      <v-card id="template-card">
-        <v-card-title class="text-h5 font-weight-bold" v-if="selectedTemplate">
-          {{ selectedTemplate.name }}
-          <v-btn
-            fab
-            icon
-            text
-            absolute
-            right
-            top
-            class="dialog-close-btn"
-            @click="showTemplateDialog = false"
-            ><v-icon>close</v-icon></v-btn
-          >
-        </v-card-title>
-        <v-card-text v-if="selectedTemplate">
-          <v-row>
-            <v-col class="windows-title" cols="12">Length</v-col>
-          </v-row>
-          <v-row>
-            <v-col
-              cols="12"
-              v-for="window in selectedTemplate.windows"
-              :key="window.key"
-            >
-              <v-row class="px-5">{{ window.name }}</v-row>
-              <v-row>
-                <v-col class="rewards-title mt-5" cols="12">Rewards</v-col>
-                <v-col
-                  cols="12"
-                  v-for="reward in window.rewards"
-                  :key="reward.id"
-                >
-                  <v-row
-                    justify="space-around"
-                    class="px-2"
-                    v-if="
-                      reward &&
-                      reward.metadata &&
-                      reward.metadata.labels &&
-                      reward.metadata.labels.en &&
-                      marketKey
-                    "
-                  >
-                    <v-col cols="4">{{
-                      reward.metadata.labels.en[marketKey].goal
-                    }}</v-col>
-                    <v-col cols="8">{{
-                      reward.metadata.labels.en[marketKey].reward
-                    }}</v-col>
-                  </v-row>
-                </v-col>
-              </v-row>
-            </v-col>
-          </v-row>
-        </v-card-text>
-      </v-card>
-    </v-dialog>
-    <!-- //* end info modal -->
+    <PromoLinkDialog
+      :showTemplateDialog="showTemplateDialog"
+      :selectedTemplate="selectedTemplate"
+      :marketKey="marketKey"
+      @close="showTemplateDialog = false"
+    />
   </div>
 </template>
 <script>
@@ -437,7 +383,12 @@ import { CreateMemberEvent } from '@/graphql/CreateMemberEvent.gql'
 import { mapGetters } from 'vuex'
 import moment from 'moment'
 
+import PromoLinkDialog from './PromoLinkDialog.vue'
+
 export default {
+  components: {
+    PromoLinkDialog,
+  },
   props: {
     promoLinks: Array,
     eventTemplate: Object,
@@ -751,20 +702,6 @@ p {
 .template-btn {
   right: 3px;
   top: 3px !important;
-}
-
-#template-card {
-  padding: 16px;
-}
-
-.windows-title {
-  font-size: 17px;
-  font-weight: bold;
-}
-
-.rewards-title {
-  font-size: 17px;
-  font-weight: bold;
 }
 
 .dialog-close-btn {
