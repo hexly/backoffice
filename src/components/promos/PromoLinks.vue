@@ -119,32 +119,21 @@
                 <br />
                 <p>Period: February 2022</p>
                 <div class="available-reward-table d-flex justify-start col-12">
-                  <span class="text-h6 font-weight-light col-6 pt-0 pb-0"
-                    >Goal</span
-                  >
-                  <span class="text-h6 font-weight-light col-6 pt-0 pb-0"
-                    >Reward</span
-                  >
+                  <span class="text-h6 font-weight-light col-6 pt-0 pb-0">Goal</span>
+                  <span class="text-h6 font-weight-light col-6 pt-0 pb-0">Reward</span>
                 </div>
                 <v-divider></v-divider>
                 <div
                   v-for="reward in selectedWindow.rewards"
                   :key="reward.key"
-                  class="available-reward-table d-flex justify-start col-12"
-                >
-                  <span class="rewards-table-body-text col-6">{{
-                    reward.name.split('Reward:')[0]
-                  }}</span>
-                  <span class="rewards-table-body-text col-6">{{
-                    reward.name.split('Reward:')[1]
-                  }}</span>
+                  class="available-reward-table d-flex justify-start col-12">
+                  <span class="rewards-table-body-text col-6">{{reward.name.split('Reward:')[0]}}</span>
+                  <span class="rewards-table-body-text col-6">{{reward.name.split('Reward:')[1]}}</span>
                 </div>
               </div>
               <div v-else>
                 <div class="available-reward-table d-flex justify-start col-12">
-                  <span class="rewards-table-body-text pt-1"
-                    >Please Select a Promo Length to view rewards</span
-                  >
+                  <span class="rewards-table-body-text pt-1">Please Select a Promo Length to view rewards</span>
                 </div>
               </div>
             </div>
@@ -205,19 +194,19 @@
                     <h2 class="font-weight-bold">{{ progressToDisplay(pl.rewards).progression.earned }} PSV Earned</h2>
                   </v-col>
                   <v-col cols="12" align="left">
-                    <p class="green--text" v-if="rewardToDisplay(pl.rewards)">
-                      Earned: <span class="font-weight-bold">{{ rewardToDisplay(pl.rewards).reward.name.split('Reward:')[1] }}</span>
+                    <p class="green--text" :class="{ 'hidden': !rewardToDisplay(pl.rewards) }">
+                        Earned: <span class="font-weight-bold" v-if="rewardToDisplay(pl.rewards)">{{ rewardToDisplay(pl.rewards).reward.name.split('Reward:')[1] }}</span>
                     </p>
                     <p v-if="nextReward(pl.rewards)">
                       Next: <span class="font-weight-bold">{{nextReward(pl.rewards).reward.name.split('Reward:')[1] }}</span>
                     </p>
                   </v-col>
-                  <v-col cols="12">
+                  <!-- <v-col cols="12">
                     <v-btn
                       :disabled="progressText(pl, pl.rewards[0]) !== 'Complete' || pl.claimed"
                       >{{ pl.claimed ? 'Claimed' : `Claim Reward` }}</v-btn
                     >
-                  </v-col>
+                  </v-col> -->
                 </v-row>
                 <v-row v-else class="text--center">
                   <v-col cols="12">
@@ -227,8 +216,23 @@
                 <p class="font-weight-bold">{{ pl.email }}</p>
                 <v-row align="center" v-if="pl.rewards && pl.rewards.length && progressToDisplay(pl.rewards)">
                   <v-col class="pb-0" cols="12">
-                    <v-progress-linear :value="progressToDisplay(pl.rewards).progression.progress" :color="progressColor(pl, progressToDisplay(pl.rewards))" height="35" rounded>
+                    <!-- <v-progress-linear :value="progressToDisplay(pl.rewards).progression.progress" :color="progressColor(pl, progressToDisplay(pl.rewards))" height="35" rounded>
                       <strong class="text-capitalize">{{ progressText(pl, progressToDisplay(pl.rewards)) }}</strong>
+                    </v-progress-linear> -->
+                    <v-progress-linear
+                      :value="progressToDisplay(pl.rewards).progression.progress * 100"
+                      :color="progressColor(pl, progressToDisplay(pl.rewards))"
+                      height="35"
+                      rounded
+                      class="card-progress-bar">
+                      <p
+                        v-if="pl.isEligibleToClaim && pl.claimableRewards"
+                        class="claim-reward-btn">
+                        Claim Rewards
+                      </p>
+                      <p v-else>
+                        {{ progressText(pl, progressToDisplay(pl.rewards)) }}
+                      </p>
                     </v-progress-linear>
                   </v-col>
                 </v-row>
@@ -305,19 +309,13 @@
           </v-row>
           <v-row>
             <v-col cols="12" v-for="window in selectedTemplate.windows" :key="window.key">
-              <v-row class="px-5">
-                {{window.name}}
-              </v-row>
+              <v-row class="px-5">{{window.name}}</v-row>
               <v-row>
                 <v-col class="rewards-title mt-5" cols="12">Rewards</v-col>
                 <v-col cols="12" v-for="reward in window.rewards" :key="reward.id">
                   <v-row justify="space-around" class="px-2" v-if="reward && reward.metadata && reward.metadata.labels && reward.metadata.labels.en && marketKey">
-                    <v-col cols="4">
-                      {{reward.metadata.labels.en[marketKey].goal}}
-                    </v-col>
-                    <v-col cols="8">
-                      {{reward.metadata.labels.en[marketKey].reward}}
-                    </v-col>
+                    <v-col cols="4">{{reward.metadata.labels.en[marketKey].goal}}</v-col>
+                    <v-col cols="8">{{reward.metadata.labels.en[marketKey].reward}}</v-col>
                   </v-row>
                 </v-col>
               </v-row>
@@ -333,6 +331,7 @@ import _ from 'lodash'
 import Rules from '@/views/Rules.js'
 import { CreateMemberEvent } from '@/graphql/CreateMemberEvent.gql'
 import { mapGetters } from 'vuex'
+import moment from 'moment'
 
 export default {
   props: {
@@ -352,7 +351,6 @@ export default {
     shareTooltipText: 'Share',
     showTemplateDialog: false,
     selectedTemplate: null,
-
     headers: [
       { text: 'Name', sortable: false, value: 'name' },
       { text: 'Email', value: 'email' },
@@ -368,23 +366,15 @@ export default {
     isFormValid: false,
     requiredRule: Rules.requiredRule,
     emailRule: Rules.emailRule,
-    pickerTimeModel: '',
-    pickerDateModel: '',
+    pickerTimeModel: moment().format('HH:mm a'),
+    pickerDateModel: moment().format('MMMM DD, YYYY'),
     editedItem: {
       promoName: '',
       hostEmail: '',
       hostName: '',
-      date: new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
-        .toISOString()
-        .substr(0, 10),
-      time: ''
-      // emailRule: Rules.emailRule,
+      date: moment().format('MMMM DD, YYYY'),
+      time: moment().format('HH:mm a')
     }
-    // defaultItem: {
-    //  name: "",
-    //  email: "",
-    //  time: "",
-    // },
   }),
   computed: {
     ...mapGetters(['memberId', 'displayName', 'slug', 'market']),
@@ -689,5 +679,33 @@ p {
 .dialog-close-btn {
   top: 16px !important;
   right: 16px;
+}
+
+.earned-spacer {
+  margin-top: 22px;
+}
+.card-progress-bar {
+  font-weight: 600;
+}
+
+.claim-reward-btn {
+  /* padding: 5px 110px; */
+  padding: 6px 0;
+  height: 35px;
+  width: 318px;
+  cursor: pointer;
+  /* border: solid 1px rgba(255, 255, 255, 0); */
+  background-color: rgba(255, 255, 255, 0.5);
+  border: rgba(0, 0, 0, 0.8) 1px solid;
+  border-radius: 4px;
+}
+.claim-reward-btn:hover {
+  /* background-color: rgba(255, 153, 0, 0.7); */
+  background-color: rgba(255, 255, 255, 0.8);
+  border: rgba(0, 0, 0, 0.8) 1px solid;
+  border-radius: 4px;
+}
+.hidden{
+  visibility: hidden;
 }
 </style>

@@ -91,7 +91,20 @@ export default {
           data,
           'membership.search.results.0.events.marketing.results'
         )
-        return promoLinks
+        return promoLinks.map((pl) => {
+          // they're only eligible to claim if they're done (for now)
+          pl.isEligibleToClaim = pl.status === 'FINISHED'
+
+          // what rewards are waiting to be claimed
+          pl.claimableRewards = (pl.rewards || []).filter(
+            (r) =>
+              r.progression && // make sure we get some json object
+              r.progression.awarded && // make sure they earned the reward
+              r.progression.claimed !== true
+          ) // make sure they haven't claimed it
+
+          return pl
+        })
       }
     },
     eventTemplates: {
