@@ -115,9 +115,7 @@
             </v-container>
             <div class="current-reward mt-4">
               <div v-if="selectedWindow">
-                <span class="text-h6 font-weight-bold">Available Rewards</span>
-                <br />
-                <p>Period: February 2022</p>
+                <div class="mb-3 font-weight-bold">Available Rewards</div>
                 <div class="available-reward-table d-flex justify-start col-12">
                   <span class="text-h6 font-weight-light col-6 pt-0 pb-0">Goal</span>
                   <span class="text-h6 font-weight-light col-6 pt-0 pb-0">Reward</span>
