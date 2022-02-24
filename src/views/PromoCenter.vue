@@ -15,6 +15,7 @@
             :eventTemplate="
               eventTemplates.find((el) => el.key === 'promo_link')
             "
+            :loading="loading"
           />
         </v-lazy>
       </v-tab-item>
@@ -65,7 +66,10 @@ export default {
     statusFilter: null
   }),
   computed: {
-    ...mapGetters(['memberId'])
+    ...mapGetters(['memberId']),
+    loading() {
+      return this.$apollo.loading
+    }
   },
   apollo: {
     promoLinks: {
