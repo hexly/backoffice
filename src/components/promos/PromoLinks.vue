@@ -163,7 +163,7 @@
           </v-card-actions>
         </v-card>
       </v-dialog>
-      <v-slide-x-transition group>
+      <v-slide-x-transition group hide-on-leave>
         <v-progress-circular v-if="loading" key="progress" indeterminate />
         <div v-else key="done-loading">
           <v-row justify="center">
