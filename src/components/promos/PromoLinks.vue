@@ -125,8 +125,8 @@
                   v-for="reward in selectedWindow.rewards"
                   :key="reward.key"
                   class="available-reward-table d-flex justify-start col-12">
-                  <span class="rewards-table-body-text col-6">{{reward.name.split('Reward:')[0]}}</span>
-                  <span class="rewards-table-body-text col-6">{{reward.name.split('Reward:')[1]}}</span>
+                  <span class="rewards-table-body-text col-6">{{reward.metadata.labels.en[marketKey].goal}}</span>
+                  <span class="rewards-table-body-text col-6">{{reward.metadata.labels.en[marketKey].reward}}</span>
                 </div>
               </div>
               <div v-else>
@@ -196,7 +196,7 @@
                         Earned: <span class="font-weight-bold" v-if="rewardToDisplay(pl.rewards)">{{ rewardToDisplay(pl.rewards).reward.metadata.labels.en[marketKey].reward }}</span>
                     </p>
                     <p v-if="nextReward(pl.rewards)">
-                      Next: <span class="font-weight-bold">{{nextReward(pl.rewards).reward.metadata.labels.en[marketKey].reward }}</span>
+                      Next: <span class="font-weight-bold">{{`${nextReward(pl.rewards).reward.metadata.labels.en[marketKey].reward} (${nextReward(pl.rewards).reward.metadata.labels.en[marketKey].goal})` }}</span>
                     </p>
                   </v-col>
                   <!-- <v-col cols="12">
