@@ -173,7 +173,7 @@
               </v-tooltip>
               <v-list-item two-line>
                 <v-list-item-content>
-                  <v-list-item-title class="text-h5">
+                  <v-list-item-title class="promo-link-title mb-3">
                     {{ pl.name }}
                   </v-list-item-title>
 
@@ -672,5 +672,10 @@ p {
 }
 .hidden{
   visibility: hidden;
+}
+
+.promo-link-title {
+  font-size: 20px;
+  font-weight: bold;
 }
 </style>
