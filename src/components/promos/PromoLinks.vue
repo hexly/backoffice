@@ -165,7 +165,7 @@
             <v-card v-for="pl in promoLinks" :key="pl.id" class="sale-card ma-2" :loading="loading">
               <v-tooltip bottom open-delay="350">
                 <template #activator="{ on, attrs }">
-                  <v-btn v-on="on" v-bind="attrs" fab text icon absolute top right class="template-btn" @click="handleTemplateBtnClick(pl.template)">
+                  <v-btn v-on="on" v-bind="attrs" fab icon small absolute top right class="template-btn" @click="handleTemplateBtnClick(pl.template)">
                     <v-icon>info</v-icon>
                   </v-btn>
                 </template>
@@ -345,14 +345,14 @@ export default {
     isFormValid: false,
     requiredRule: Rules.requiredRule,
     emailRule: Rules.emailRule,
-    pickerTimeModel: moment().format('HH:mm a'),
-    pickerDateModel: moment().format('MMMM DD, YYYY'),
+    pickerTimeModel: moment().format('LT'),
+    pickerDateModel: moment().format('LL'),
     editedItem: {
       promoName: '',
       hostEmail: '',
       hostName: '',
-      date: moment().format('MMMM DD, YYYY'),
-      time: moment().format('HH:mm a')
+      date: moment().format('YYYY-MM-DD'),
+      time: moment().format('HH:mm')
     }
   }),
   computed: {
@@ -538,7 +538,7 @@ export default {
       return link
     },
     handleMinutesClicked(time) {
-      this.pickerTimeModel = this.$moment(this.editedItem.time, 'HH:mm').format(
+      this.pickerTimeModel = this.$moment(this.editedItem.time, 'LT').format(
         'h:mm A'
       )
       this.timePicker = false
