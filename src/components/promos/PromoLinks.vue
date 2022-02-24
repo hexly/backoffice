@@ -189,16 +189,16 @@
                 </v-list-item-content>
               </v-list-item>
               <v-card-text class="reward-info">
-                <v-row v-if="pl.rewards && pl.rewards.length && progressToDisplay(pl.rewards)">
+                <v-row v-if="pl.rewards && pl.rewards.length && progressToDisplay(pl.rewards) && marketKey">
                   <v-col cols="12" align="center">
                     <h2 class="font-weight-bold">{{ progressToDisplay(pl.rewards).progression.earned }} PSV Earned</h2>
                   </v-col>
                   <v-col cols="12" align="left">
                     <p class="green--text" :class="{ 'hidden': !rewardToDisplay(pl.rewards) }">
-                        Earned: <span class="font-weight-bold" v-if="rewardToDisplay(pl.rewards)">{{ rewardToDisplay(pl.rewards).reward.name.split('Reward:')[1] }}</span>
+                        Earned: <span class="font-weight-bold" v-if="rewardToDisplay(pl.rewards)">{{ rewardToDisplay(pl.rewards).reward.metadata.labels.en[marketKey].reward }}</span>
                     </p>
                     <p v-if="nextReward(pl.rewards)">
-                      Next: <span class="font-weight-bold">{{nextReward(pl.rewards).reward.name.split('Reward:')[1] }}</span>
+                      Next: <span class="font-weight-bold">{{nextReward(pl.rewards).reward.metadata.labels.en[marketKey].reward }}</span>
                     </p>
                   </v-col>
                   <!-- <v-col cols="12">
@@ -294,36 +294,12 @@
         >Close</v-btn
       >
     </v-snackbar>
-    <v-dialog
-      v-model="showTemplateDialog"
-      width="400"
-    >
-      <v-card id="template-card">
-        <v-card-title class="text-h5 font-weight-bold" v-if="selectedTemplate">
-          {{selectedTemplate.name}}
-          <v-btn fab icon text absolute right top class="dialog-close-btn" @click="showTemplateDialog = false"><v-icon>close</v-icon></v-btn>
-        </v-card-title>
-        <v-card-text v-if="selectedTemplate">
-          <v-row>
-            <v-col class="windows-title" cols="12">Length</v-col>
-          </v-row>
-          <v-row>
-            <v-col cols="12" v-for="window in selectedTemplate.windows" :key="window.key">
-              <v-row class="px-5">{{window.name}}</v-row>
-              <v-row>
-                <v-col class="rewards-title mt-5" cols="12">Rewards</v-col>
-                <v-col cols="12" v-for="reward in window.rewards" :key="reward.id">
-                  <v-row justify="space-around" class="px-2" v-if="reward && reward.metadata && reward.metadata.labels && reward.metadata.labels.en && marketKey">
-                    <v-col cols="4">{{reward.metadata.labels.en[marketKey].goal}}</v-col>
-                    <v-col cols="8">{{reward.metadata.labels.en[marketKey].reward}}</v-col>
-                  </v-row>
-                </v-col>
-              </v-row>
-            </v-col>
-          </v-row>
-        </v-card-text>
-      </v-card>
-    </v-dialog>
+    <PromoLinkDialog
+      :showTemplateDialog="showTemplateDialog"
+      :selectedTemplate="selectedTemplate"
+      :marketKey="marketKey"
+      @close="showTemplateDialog = false"
+    />
   </div>
 </template>
 <script>
@@ -333,7 +309,12 @@ import { CreateMemberEvent } from '@/graphql/CreateMemberEvent.gql'
 import { mapGetters } from 'vuex'
 import moment from 'moment'
 
+import PromoLinkDialog from './PromoLinkDialog.vue'
+
 export default {
+  components: {
+    PromoLinkDialog
+  },
   props: {
     promoLinks: Array,
     eventTemplate: Object,
@@ -660,20 +641,6 @@ p {
 .template-btn {
   right: 3px;
   top: 3px !important;
-}
-
-#template-card {
-  padding: 16px;
-}
-
-.windows-title {
-  font-size: 17px;
-  font-weight: bold;
-}
-
-.rewards-title {
-  font-size: 17px;
-  font-weight: bold;
 }
 
 .dialog-close-btn {
