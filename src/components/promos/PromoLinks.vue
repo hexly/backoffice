@@ -195,7 +195,7 @@
                   </v-col>
                   <v-col cols="12" align="left">
                     <p class="green--text" :class="{ 'hidden': !rewardToDisplay(pl.rewards) }">
-                        Earned: <span class="font-weight-bold" v-if="rewardToDisplay(pl.rewards)">{{ rewardToDisplay(pl.rewards).reward.metadata.labels.en[marketKey].reward }}</span>
+                      Earned: <span class="font-weight-bold" v-if="rewardToDisplay(pl.rewards)">{{ rewardToDisplay(pl.rewards).reward.metadata.labels.en[marketKey].reward }}</span>
                     </p>
                     <p v-if="nextReward(pl.rewards)">
                       Next: <span class="font-weight-bold">{{nextReward(pl.rewards).reward.metadata.labels.en[marketKey].reward }}</span>
@@ -226,8 +226,9 @@
                       rounded
                       class="card-progress-bar">
                       <p
-                        v-if="pl.isEligibleToClaim && pl.claimableRewards"
-                        class="claim-reward-btn">
+                        v-if="pl.isEligibleToClaim && pl.claimableRewards.length > 0"
+                        class="claim-reward-btn"
+                        @click="claimReward(pl)">
                         Claim Rewards
                       </p>
                       <p v-else>
@@ -305,7 +306,7 @@
 <script>
 import _ from 'lodash'
 import Rules from '@/views/Rules.js'
-import { CreateMemberEvent } from '@/graphql/CreateMemberEvent.gql'
+import { CreateMemberEvent, ClaimEventReward } from '@/graphql/MarketingEvent.gql'
 import { mapGetters } from 'vuex'
 import moment from 'moment'
 
@@ -570,6 +571,22 @@ export default {
     handleTemplateBtnClick(template) {
       this.showTemplateDialog = true
       this.selectedTemplate = template
+    },
+    async claimReward(pl) {
+      const rewardIds = pl.claimableRewards.map(r => {
+        return r.reward.id
+      })
+      const response = await this.$apollo.mutate({
+        mutation: ClaimEventReward,
+        client: 'federated',
+        variables: {
+          input: {
+            rewardIds,
+            eventId: pl.id
+          }
+        }
+      })
+      console.log(response)
     }
   }
 }
