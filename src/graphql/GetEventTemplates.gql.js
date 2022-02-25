@@ -19,6 +19,7 @@ query GetEventTemplates {
             name
             settings
             type
+            metadata
             requirements {
               key
               metadata
