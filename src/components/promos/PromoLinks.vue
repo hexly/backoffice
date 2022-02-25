@@ -141,10 +141,10 @@
                   class="available-reward-table d-flex justify-start col-12"
                 >
                   <span class="rewards-table-body-text col-6">{{
-                    reward.name.split('Reward:')[0]
+                    reward.metadata.labels.en[marketKey].goal
                   }}</span>
                   <span class="rewards-table-body-text col-6">{{
-                    reward.name.split('Reward:')[1]
+                    reward.metadata.labels.en[marketKey].reward
                   }}</span>
                 </div>
               </div>
@@ -195,8 +195,8 @@
                     v-on="on"
                     v-bind="attrs"
                     fab
-                    text
                     icon
+                    small
                     absolute
                     top
                     right
@@ -258,9 +258,15 @@
                     <p v-if="nextReward(pl.rewards)">
                       Next:
                       <span class="font-weight-bold">{{
-                        nextReward(pl.rewards).reward.metadata.labels.en[
-                          marketKey
-                        ].reward
+                        `${
+                          nextReward(pl.rewards).reward.metadata.labels.en[
+                            marketKey
+                          ].reward
+                        } (${
+                          nextReward(pl.rewards).reward.metadata.labels.en[
+                            marketKey
+                          ].goal
+                        })`
                       }}</span>
                     </p>
                   </v-col>
@@ -425,8 +431,8 @@ export default {
     isFormValid: false,
     requiredRule: Rules.requiredRule,
     emailRule: Rules.emailRule,
-    pickerTimeModel: moment().format('HH:mm a'),
-    pickerDateModel: moment().format('MMMM DD, YYYY'),
+    pickerTimeModel: moment().format('LT'),
+    pickerDateModel: moment().format('LL'),
     editedItem: {
       promoName: '',
       hostEmail: '',
@@ -615,7 +621,7 @@ export default {
       return link
     },
     handleMinutesClicked(time) {
-      this.pickerTimeModel = this.$moment(this.editedItem.time, 'HH:mm').format(
+      this.pickerTimeModel = this.$moment(this.editedItem.time, 'LT').format(
         'h:mm A'
       )
       this.timePicker = false
@@ -725,5 +731,10 @@ p {
 
 .hidden {
   visibility: hidden;
+}
+
+.promo-link-title {
+  font-size: 20px;
+  font-weight: bold;
 }
 </style>
