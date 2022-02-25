@@ -24,6 +24,7 @@ query Events($input: MembershipMemberSearchInput!, $marketingInput: MarketingMem
                 label
                 name
                 email
+                role
               }
               rewards {
                 id
@@ -53,6 +54,23 @@ query Events($input: MembershipMemberSearchInput!, $marketingInput: MarketingMem
                    id
                    name
                  }
+                windows {
+                  duration
+                  id
+                  key
+                  name
+                  rewards {
+                    name
+                    id
+                    requirements {
+                      expressions
+                      key
+                      metadata
+                      type
+                    }
+                    metadata
+                  }
+                }
               }
             }
           }

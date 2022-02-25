@@ -346,6 +346,9 @@ export const UserStore = {
     integrations: state =>
       (state.principal &&
                 state.principal.tenant &&
-                state.principal.tenant.integrations) || []
+                state.principal.tenant.integrations) || [],
+    market: state => {
+      return state.principal.member.market || {}
+    }
   }
 }

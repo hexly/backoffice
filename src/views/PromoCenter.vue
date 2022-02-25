@@ -9,11 +9,12 @@
       <v-tab-item value="links" class="py-3">
         <v-lazy>
           <PromoLinks
+            v-if="eventTemplates"
             :promo-links="promoLinks"
-            @refetchPromoLinks="handlePromoLinksRefetch"
             :eventTemplate="
               eventTemplates.find((el) => el.key === 'promo_link')
             "
+            :loading="loading"
           />
         </v-lazy>
       </v-tab-item>
@@ -61,11 +62,13 @@ export default {
       name: '',
       email: ''
     },
-    statusFilter: null,
-    eventTemplates: []
+    statusFilter: null
   }),
   computed: {
-    ...mapGetters(['memberId'])
+    ...mapGetters(['memberId']),
+    loading() {
+      return this.$apollo.loading
+    }
   },
   apollo: {
     promoLinks: {
@@ -87,7 +90,30 @@ export default {
           data,
           'membership.search.results.0.events.marketing.results'
         )
-        return promoLinks
+        return promoLinks.map((pl) => {
+          // they're only eligible to claim if they're done (for now)
+          pl.isEligibleToClaim = pl.status === 'FINISHED'
+          pl.participants.map((p) => {
+            pl[p.role.toLowerCase()] = p
+          })
+
+          // what rewards are waiting to be claimed
+          pl.claimableRewards = (pl.rewards || []).filter(
+            (r) =>
+              r.progression && // make sure we get some json object
+              r.progression.awarded && // make sure they earned the reward
+              r.progression.claimed !== true
+          ) // make sure they haven't claimed it
+
+          pl.claimedRewards = (pl.rewards || []).filter(
+            (r) =>
+              r.progression &&
+              r.progression.awarded &&
+              r.progression.claimed === true
+          )
+
+          return pl
+        })
       }
     },
     eventTemplates: {
@@ -131,45 +157,6 @@ export default {
         return 'blue'
       }
       return 'green lighten-3'
-    },
-    editItem(item) {
-      this.editedIndex = this.desserts.indexOf(item)
-      this.editedItem = Object.assign({}, item)
-      this.dialog = true
-    },
-    deleteItem(item) {
-      this.editedIndex = this.desserts.indexOf(item)
-      this.editedItem = Object.assign({}, item)
-      this.dialogDelete = true
-    },
-    deleteItemConfirm() {
-      this.desserts.splice(this.editedIndex, 1)
-      this.closeDelete()
-    },
-    close() {
-      this.dialog = false
-      this.$nextTick(() => {
-        this.editedItem = Object.assign({}, this.defaultItem)
-        this.editedIndex = -1
-      })
-    },
-    closeDelete() {
-      this.dialogDelete = false
-      this.$nextTick(() => {
-        this.editedItem = Object.assign({}, this.defaultItem)
-        this.editedIndex = -1
-      })
-    },
-    save() {
-      if (this.editedIndex > -1) {
-        Object.assign(this.desserts[this.editedIndex], this.editedItem)
-      } else {
-        this.desserts.push(this.editedItem)
-      }
-      this.close()
-    },
-    handlePromoLinksRefetch() {
-      this.$apollo.queries.promoLinks.refetch()
     }
   }
 }
