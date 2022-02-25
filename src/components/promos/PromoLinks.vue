@@ -350,7 +350,11 @@
               <v-card-actions>
                 <!-- <v-btn text :disabled="saleProgressText(pl) === 'Complete'">Resend Link</v-btn> -->
                 <v-btn text disabled>Resend Link</v-btn>
-                <a :href="createPromoLink(pl.key)" target="_blank">
+                <a
+                  :href="createPromoLink(pl.key)"
+                  id="visit-link-btn"
+                  target="_blank"
+                >
                   <v-btn text>Visit Link</v-btn>
                 </a>
                 <v-spacer></v-spacer>
@@ -649,6 +653,9 @@ export default {
 <style scoped>
 p {
   margin: 0;
+}
+#visit-link-btn {
+  text-decoration: none;
 }
 
 /* .thisone {
