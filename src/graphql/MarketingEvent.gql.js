@@ -9,6 +9,7 @@ export const CreateMemberEvent = gql`
           name
           id
           memberId
+          role
         }
         template {
           id

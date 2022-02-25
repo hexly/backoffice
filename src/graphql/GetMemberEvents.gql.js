@@ -24,6 +24,7 @@ query Events($input: MembershipMemberSearchInput!, $marketingInput: MarketingMem
                 label
                 name
                 email
+                role
               }
               rewards {
                 id
