@@ -260,13 +260,13 @@
                 <v-row align="center" v-if="pl.rewards && pl.rewards.length && progressToDisplay(pl)">
                   <v-col class="pb-0" cols="12">
                     <v-btn
-                      v-if="pl.isEligibleToClaim && pl.claimableRewards"
+                      v-if="pl.isEligibleToClaim && pl.claimableRewards.length"
                       class="claim-reward-btn"
                       outlined
                       block
                       @click="showPLDialog('claimDialog', pl)"
                     >
-                      Claim Rewards
+                      Claim Reward
                     </v-btn>
                     <v-progress-linear
                       v-else
@@ -318,13 +318,13 @@
               </v-card-text>
               <v-card-actions>
                 <!-- <v-btn text :disabled="saleProgressText(pl) === 'Complete'">Resend Link</v-btn> -->
-                <v-btn text disabled>Resend Link</v-btn>
-                <a :href="createPromoLink(pl.key)" target="_blank">
+                <v-btn v-if="!pl.isEligibleToClaim" text disabled>Resend Link</v-btn>
+                <a v-if="!pl.isEligibleToClaim" :href="createPromoLink(pl.key)" target="_blank">
                   <v-btn text>Visit Link</v-btn>
                 </a>
                 <v-spacer></v-spacer>
                 <!-- <v-btn text color="red">Delete</v-btn> -->
-                <v-btn text disabled color="red" @click="showPLDialog('deleteDialog', pl)">Delete</v-btn>
+                <v-btn v-if="!pl.isEligibleToClaim" text disabled color="red" @click="showPLDialog('deleteDialog', pl)">Delete</v-btn>
               </v-card-actions>
             </v-card>
           </v-row>
@@ -485,7 +485,7 @@ export default {
       }
       const rewardToDisplay = rewards.filter(el => el.progression.awarded)
 
-      return rewardToDisplay.pop()
+      return rewardToDisplay[rewardToDisplay.length - 1]
     },
     nextReward(pl) {
       if (!pl.rewards || !pl.rewards.length || pl.claimedRewards.length > 0) {
@@ -502,8 +502,8 @@ export default {
       }
 
       const displayClaimed = [...pl.claimableRewards]
-      const progressToDisplay = pl.rewards.filter(el => el.progression.visible)
-      return displayClaimed.length ? displayClaimed[0] : progressToDisplay.pop()
+      const progressToDisplay = pl.rewards.filter(el => el.progression.visible || el.progression.claimed)
+      return displayClaimed.length ? displayClaimed[0] : progressToDisplay[progressToDisplay.length - 1]
     },
     deletePromoLink(pl) {
       this.deleteDialog = false
