@@ -350,7 +350,7 @@
           </p>
         </v-card-text>
         <v-card-actions class="pt-6">
-          <v-btn text @click="closeDialog('claimDialog')">Cancel</v-btn>
+          <v-btn text @click="closeDialog('emailDialog')">Cancel</v-btn>
           <v-spacer></v-spacer>
           <v-btn
             color="green darken-1"
