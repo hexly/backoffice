@@ -15,6 +15,7 @@
               eventTemplates.find((el) => el.key === 'promo_link')
             "
             :loading="loading"
+            @refetchPromoLinks="handlePromoLinksRefetch"
           />
         </v-lazy>
       </v-tab-item>
@@ -108,7 +109,6 @@ export default {
           pl.claimedRewards = (pl.rewards || []).filter(
             (r) =>
               r.progression &&
-              r.progression.awarded &&
               r.progression.claimed === true
           )
 
@@ -157,6 +157,9 @@ export default {
         return 'blue'
       }
       return 'green lighten-3'
+    },
+    handlePromoLinksRefetch() {
+      this.$apollo.queries.promoLinks.refetch()
     }
   }
 }
