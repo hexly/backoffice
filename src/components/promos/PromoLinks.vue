@@ -171,6 +171,66 @@
           </v-card-actions>
         </v-card>
       </v-dialog>
+      <v-dialog v-model="deleteDialog" v-if="activePL" max-width="500px">
+        <v-card>
+          <v-card-title class="headline">
+            <span class="subheading">Delete {{ activePL.name }}</span>
+          </v-card-title>
+          <v-card-text>
+            <p class="mb-2">Are you sure you want to delete this promo link?</p>
+          </v-card-text>
+          <v-card-actions class="pt-6">
+            <v-spacer></v-spacer>
+            <v-btn text @click="closeDialog('claimDialog')">Cancel</v-btn>
+            <v-btn
+              color="red darken-1"
+              class="promo-link-delete-btn font-weight-bold"
+              outlined
+              text
+              @click="deletePromoLink(activePl)"
+              >Delete</v-btn
+            >
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+      <v-dialog v-model="claimDialog" v-if="activePL" max-width="500px">
+        <v-card>
+          <v-card-title class="headline">
+            <span class="subheading">Claim Reward</span>
+          </v-card-title>
+          <v-card-text>
+            <p class="mb-2 text-center font-weight-bold">
+              Congratulations on reaching
+              {{ activePL.claimableRewards[0].progression.earned }} PSV!
+            </p>
+            <p class="mb-2">
+              You are about to claim the
+              <code>{{
+                activePL.claimableRewards[0].reward.metadata.labels.en[
+                  marketKey
+                ].reward
+              }}</code>
+              for {{ activePL.host.label }}. They will receive an email with a
+              coupon code that they can redeem at the Everra Store to get their
+              reward.
+            </p>
+          </v-card-text>
+          <v-card-actions class="pt-6">
+            <v-btn text @click="closeDialog('claimDialog')">Cancel</v-btn>
+            <v-spacer></v-spacer>
+            <v-btn
+              color="green"
+              class="promo-link-delete-btn font-weight-bold"
+              outlined
+              text
+              :disabled="claiming"
+              :loading="claiming"
+              @click="claimReward(activePL)"
+              >Claim Reward</v-btn
+            >
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
       <v-slide-x-transition group hide-on-leave>
         <v-progress-circular v-if="loading" key="progress" indeterminate />
         <div v-else key="done-loading">
@@ -210,10 +270,12 @@
               </v-tooltip>
               <v-list-item two-line>
                 <v-list-item-content>
-                  <v-list-item-title class="text-h5 px-7 pt-2">
+                  <v-list-item-title
+                    class="text-h5 px-7 pt-2"
+                    @click="test(pl)"
+                  >
                     {{ pl.name }}
                   </v-list-item-title>
-
                   <v-list-item-subtitle>
                     <v-icon small color="#c44a42" class="pr-1 pb-1"
                       >calendar_today</v-icon
@@ -225,18 +287,10 @@
                 </v-list-item-content>
               </v-list-item>
               <v-card-text class="reward-info">
-                <v-row
-                  v-if="
-                    pl.rewards &&
-                    pl.rewards.length &&
-                    progressToDisplay(pl.rewards) &&
-                    marketKey
-                  "
-                >
+                <v-row v-if="progressToDisplay(pl) && marketKey">
                   <v-col cols="12" align="center">
                     <h2 class="font-weight-bold">
-                      {{ progressToDisplay(pl.rewards).progression.earned }} PSV
-                      Earned
+                      {{ progressToDisplay(pl).progression.earned }} PSV Earned
                     </h2>
                   </v-col>
                   <v-col cols="12" align="left">
@@ -255,27 +309,19 @@
                         }}</span
                       >
                     </p>
-                    <p v-if="nextReward(pl.rewards)">
+                    <p :class="{ hidden: !nextReward(pl) }">
                       Next:
-                      <span class="font-weight-bold">{{
+                      <span class="font-weight-bold" v-if="nextReward(pl)">{{
                         `${
-                          nextReward(pl.rewards).reward.metadata.labels.en[
-                            marketKey
-                          ].reward
+                          nextReward(pl).reward.metadata.labels.en[marketKey]
+                            .reward
                         } (${
-                          nextReward(pl.rewards).reward.metadata.labels.en[
-                            marketKey
-                          ].goal
+                          nextReward(pl).reward.metadata.labels.en[marketKey]
+                            .goal
                         })`
                       }}</span>
                     </p>
                   </v-col>
-                  <!-- <v-col cols="12">
-                    <v-btn
-                      :disabled="progressText(pl, pl.rewards[0]) !== 'Complete' || pl.claimed"
-                      >{{ pl.claimed ? 'Claimed' : `Claim Reward` }}</v-btn
-                    >
-                  </v-col> -->
                 </v-row>
                 <v-row v-else class="text--center">
                   <v-col cols="12"> Progress Data Unavailable </v-col>
@@ -284,36 +330,28 @@
                 <v-row
                   align="center"
                   v-if="
-                    pl.rewards &&
-                    pl.rewards.length &&
-                    progressToDisplay(pl.rewards)
+                    pl.rewards && pl.rewards.length && progressToDisplay(pl)
                   "
                 >
                   <v-col class="pb-0" cols="12">
-                    <!-- <v-progress-linear :value="progressToDisplay(pl.rewards).progression.progress" :color="progressColor(pl, progressToDisplay(pl.rewards))" height="35" rounded>
-                      <strong class="text-capitalize">{{ progressText(pl, progressToDisplay(pl.rewards)) }}</strong>
-                    </v-progress-linear> -->
                     <v-btn
-                      v-if="pl.isEligibleToClaim && pl.claimableRewards"
+                      v-if="pl.isEligibleToClaim && pl.claimableRewards.length"
                       class="claim-reward-btn"
                       outlined
                       block
+                      @click="showPLDialog('claimDialog', pl)"
                     >
-                      Claim Rewards
+                      Claim Reward
                     </v-btn>
                     <v-progress-linear
                       v-else
-                      :value="
-                        progressToDisplay(pl.rewards).progression.progress * 100
-                      "
-                      :color="progressColor(pl, progressToDisplay(pl.rewards))"
+                      :value="progressToDisplay(pl).progression.progress * 100"
+                      :color="progressColor(pl, progressToDisplay(pl))"
                       height="35"
                       rounded
                       class="card-progress-bar"
                     >
-                      <p>
-                        {{ progressText(pl, progressToDisplay(pl.rewards)) }}
-                      </p>
+                      {{ progressText(pl, progressToDisplay(pl)) }}
                     </v-progress-linear>
                   </v-col>
                 </v-row>
@@ -355,17 +393,26 @@
               </v-card-text>
               <v-card-actions>
                 <!-- <v-btn text :disabled="saleProgressText(pl) === 'Complete'">Resend Link</v-btn> -->
-                <v-btn text disabled>Resend Link</v-btn>
+                <v-btn v-if="!pl.isEligibleToClaim" text disabled
+                  >Resend Link</v-btn
+                >
                 <a
+                  v-if="!pl.isEligibleToClaim"
                   :href="createPromoLink(pl.key)"
-                  id="visit-link-btn"
                   target="_blank"
                 >
                   <v-btn text>Visit Link</v-btn>
                 </a>
                 <v-spacer></v-spacer>
                 <!-- <v-btn text color="red">Delete</v-btn> -->
-                <v-btn text disabled color="red">Delete</v-btn>
+                <v-btn
+                  v-if="!pl.isEligibleToClaim"
+                  text
+                  disabled
+                  color="red"
+                  @click="showPLDialog('deleteDialog', pl)"
+                  >Delete</v-btn
+                >
               </v-card-actions>
             </v-card>
           </v-row>
@@ -389,7 +436,10 @@
 <script>
 import _ from 'lodash'
 import Rules from '@/views/Rules.js'
-import { CreateMemberEvent } from '@/graphql/CreateMemberEvent.gql'
+import {
+  CreateMemberEvent,
+  ClaimEventReward,
+} from '@/graphql/MarketingEvent.gql'
 import { mapGetters } from 'vuex'
 import moment from 'moment'
 
@@ -406,7 +456,9 @@ export default {
   },
   data: () => ({
     dialog: false,
-    dialogDelete: false,
+    deleteDialog: false,
+    claimDialog: false,
+    claiming: false,
     showDatePicker: false,
     timePicker: false,
     promoWindow: null,
@@ -416,6 +468,7 @@ export default {
     shareTooltipText: 'Share',
     showTemplateDialog: false,
     selectedTemplate: null,
+    activePL: null,
     headers: [
       { text: 'Name', sortable: false, value: 'name' },
       { text: 'Email', value: 'email' },
@@ -495,7 +548,9 @@ export default {
       if (!pl || !reward) {
         return
       }
-      return pl.status.replace('_', ' ').toLowerCase()
+
+      const claimed = pl.claimedRewards && pl.claimedRewards.length > 0
+      return claimed ? 'Claimed' : pl.status.replace('_', ' ').toLowerCase()
     },
     progressColor(pl, reward) {
       if (!pl || !reward) {
@@ -518,49 +573,49 @@ export default {
       }
       const rewardToDisplay = rewards.filter((el) => el.progression.awarded)
 
-      return rewardToDisplay.pop()
+      return rewardToDisplay[rewardToDisplay.length - 1]
     },
-    nextReward(rewards) {
-      if (!rewards || !rewards.length) {
+    nextReward(pl) {
+      if (!pl.rewards || !pl.rewards.length || pl.claimedRewards.length > 0) {
         return
       }
-      const awardedIndex = _.findIndex(rewards, (el) => el.progression.awarded)
-      if (rewards[awardedIndex + 1]) {
-        return rewards[awardedIndex + 1]
+      const awardedIndex = _.findIndex(
+        pl.rewards,
+        (el) => el.progression.awarded
+      )
+      if (pl.rewards[awardedIndex + 1]) {
+        return pl.rewards[awardedIndex + 1]
       }
     },
-    progressToDisplay(rewards) {
-      if (!rewards || !rewards.length) {
+    progressToDisplay(pl) {
+      if (!pl.rewards || !pl.rewards.length) {
         return
       }
-      const progressToDisplay = rewards.filter((el) => el.progression.visible)
 
-      return progressToDisplay.pop()
+      const displayClaimed = [...pl.claimableRewards]
+      const progressToDisplay = pl.rewards.filter(
+        (el) => el.progression.visible || el.progression.claimed
+      )
+      return displayClaimed.length
+        ? displayClaimed[0]
+        : progressToDisplay[progressToDisplay.length - 1]
     },
-    editItem(item) {
-      this.editedIndex = this.desserts.indexOf(item)
-      this.editedItem = Object.assign({}, item)
-      this.dialog = true
+    deletePromoLink(pl) {
+      this.deleteDialog = false
+      this.activePL = null
+      console.log('delete pl', pl)
     },
-    deleteItem(item) {
-      this.editedIndex = this.desserts.indexOf(item)
-      this.editedItem = Object.assign({}, item)
-      this.dialogDelete = true
+    showPLDialog(dialog, pl) {
+      this.activePL = pl
+      this[dialog] = true
     },
-    deleteItemConfirm() {
-      this.desserts.splice(this.editedIndex, 1)
-      this.closeDelete()
+    closeDialog(dialog) {
+      this[dialog] = false
+      this.activePL = null
     },
     close() {
       this.$refs.informationForm.reset()
       this.dialog = false
-      this.$nextTick(() => {
-        this.editedItem = Object.assign({}, this.defaultItem)
-        this.editedIndex = -1
-      })
-    },
-    closeDelete() {
-      this.dialogDelete = false
       this.$nextTick(() => {
         this.editedItem = Object.assign({}, this.defaultItem)
         this.editedIndex = -1
@@ -651,6 +706,31 @@ export default {
     handleTemplateBtnClick(template) {
       this.showTemplateDialog = true
       this.selectedTemplate = template
+    },
+    async claimReward(pl) {
+      this.claiming = true
+      const rewardIds = pl.claimableRewards.map((r) => {
+        return r.reward.id
+      })
+      await this.$apollo.mutate({
+        mutation: ClaimEventReward,
+        client: 'federated',
+        variables: {
+          input: {
+            rewardIds,
+            eventId: pl.id,
+          },
+        },
+      })
+      pl.rewards.forEach((r) => {
+        if (rewardIds.includes(r.reward.id)) {
+          r.progression.claimed = true
+        }
+      })
+      pl.claimedRewards = pl.claimableRewards
+      pl.isEligibleToClaim = false
+      this.claimDialog = false
+      this.claiming = false
     },
   },
 }

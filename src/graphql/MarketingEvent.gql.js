@@ -20,3 +20,13 @@ export const CreateMemberEvent = gql`
     }
   }
 `
+
+export const ClaimEventReward = gql`
+  mutation ClaimRewards($input: MarketingMemberEventRewardClaimInput!) {
+    marketing {
+      claimEventReward(input: $input) {
+        message
+      }
+    }
+  }
+`
