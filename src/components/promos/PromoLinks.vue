@@ -328,7 +328,7 @@
                 </a>
                 <v-spacer></v-spacer>
                 <!-- <v-btn text color="red">Delete</v-btn> -->
-                <v-btn v-if="!pl.isEligibleToClaim" text disabled color="red" @click="showPLDialog('deleteDialog', pl)">Delete</v-btn>
+                <v-btn v-if="!pl.isEligibleToClaim" text color="red" @click="showPLDialog('deleteDialog', pl)">Delete</v-btn>
               </v-card-actions>
             </v-card>
           </v-row>
@@ -339,7 +339,7 @@
       {{ snackbarText }}
       <v-btn text color="primary" @click.native="showSnackbar = false">Close</v-btn>
     </v-snackbar>
-    <v-dialog v-model="emailDialog" v-if="emailDialog" max-width="500px">
+    <v-dialog v-model="emailDialog" v-if="dialogContext" max-width="500px">
       <v-card>
         <v-card-title class="headline">
           <span class="subheading">Resend {{dialogContext.reason}}</span>
