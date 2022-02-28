@@ -108,7 +108,6 @@ export default {
           pl.claimedRewards = (pl.rewards || []).filter(
             (r) =>
               r.progression &&
-              r.progression.awarded &&
               r.progression.claimed === true
           )
 

@@ -30,3 +30,16 @@ export const ClaimEventReward = gql`
     }
   }
 `
+
+export const ResendPromoEmails = gql`
+  mutation ResendCreatedNotification($input: MarketingMemberEventOpsInput!, $input1: MarketingMemberEventResendNotificationInput!) {
+    marketing {
+      event(input: $input){
+        resendNotification(input: $input1){
+          message
+          metadata
+        }
+      }
+    }
+  }
+`

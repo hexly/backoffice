@@ -226,15 +226,18 @@
                 <span>Promo Details</span>
               </v-tooltip>
               <v-list-item two-line>
-                <v-list-item-content>
-                  <v-list-item-title class="text-h5 px-7 pt-2" @click="test(pl)">
+                <v-list-item-content class="pa-0">
+                  <v-list-item-title class="text-h5 px-7 pt-2">
                     {{ pl.name }}
                   </v-list-item-title>
                   <v-list-item-subtitle>
                     <v-icon small color="#c44a42" class="pr-1 pb-1">calendar_today</v-icon>
                     {{ formatDate(pl.startTime) }} - {{ formatDate(pl.endTime) }}
                   </v-list-item-subtitle>
-                  <v-list-item-subtitle>{{ pl.email }} </v-list-item-subtitle>
+                  <v-list-item-subtitle>
+                    <v-icon small color="#c44a42" class="pr-1 pb-1">face</v-icon>
+                    {{ pl.host.label }} ({{pl.host.email}})
+                  </v-list-item-subtitle>
                 </v-list-item-content>
               </v-list-item>
               <v-card-text class="reward-info">
@@ -318,7 +321,8 @@
               </v-card-text>
               <v-card-actions>
                 <!-- <v-btn text :disabled="saleProgressText(pl) === 'Complete'">Resend Link</v-btn> -->
-                <v-btn v-if="!pl.isEligibleToClaim" text disabled>Resend Link</v-btn>
+                <v-btn v-if="!pl.isEligibleToClaim" text @click="resendEmailDialog('created', pl)">Resend Link</v-btn>
+                <v-btn v-if="pl.claimedRewards.length" text @click="resendEmailDialog('reward', pl)">Resend Reward</v-btn>
                 <a v-if="!pl.isEligibleToClaim" :href="createPromoLink(pl.key)" target="_blank">
                   <v-btn text>Visit Link</v-btn>
                 </a>
@@ -333,10 +337,32 @@
     </div>
     <v-snackbar v-model="showSnackbar">
       {{ snackbarText }}
-      <v-btn text color="primary" @click.native="showSnackbar = false"
-        >Close</v-btn
-      >
+      <v-btn text color="primary" @click.native="showSnackbar = false">Close</v-btn>
     </v-snackbar>
+    <v-dialog v-model="emailDialog" v-if="emailDialog" max-width="500px">
+      <v-card>
+        <v-card-title class="headline">
+          <span class="subheading">Resend {{dialogContext.reason}}</span>
+        </v-card-title>
+        <v-card-text>
+          <p>
+            Please confirm that you'd like to send {{dialogContext.email}} a new {{dialogContext.reason}}.
+          </p>
+        </v-card-text>
+        <v-card-actions class="pt-6">
+          <v-btn text @click="closeDialog('claimDialog')">Cancel</v-btn>
+          <v-spacer></v-spacer>
+          <v-btn
+            color="green darken-1"
+            class="promo-link-delete-btn font-weight-bold"
+            outlined
+            text
+            @click="sendEmail"
+            >Send Email</v-btn
+          >
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
     <PromoLinkDialog
       :showTemplateDialog="showTemplateDialog"
       :selectedTemplate="selectedTemplate"
@@ -348,7 +374,7 @@
 <script>
 import _ from 'lodash'
 import Rules from '@/views/Rules.js'
-import { CreateMemberEvent, ClaimEventReward } from '@/graphql/MarketingEvent.gql'
+import { CreateMemberEvent, ClaimEventReward, ResendPromoEmails } from '@/graphql/MarketingEvent.gql'
 import { mapGetters } from 'vuex'
 import moment from 'moment'
 
@@ -367,6 +393,8 @@ export default {
     dialog: false,
     deleteDialog: false,
     claimDialog: false,
+    emailDialog: false,
+    dialogContext: null,
     claiming: false,
     showDatePicker: false,
     timePicker: false,
@@ -504,6 +532,51 @@ export default {
       const displayClaimed = [...pl.claimableRewards]
       const progressToDisplay = pl.rewards.filter(el => el.progression.visible || el.progression.claimed)
       return displayClaimed.length ? displayClaimed[0] : progressToDisplay[progressToDisplay.length - 1]
+    },
+    resendEmailDialog(context, pl) {
+      switch (context) {
+      case 'created':
+        this.dialogContext = {
+          action: 'created',
+          reason: 'Promo Link email',
+          email: pl.host.email,
+          eventId: pl.id
+        }
+        break
+      case 'reward':
+        this.dialogContext = {
+          rewardId: pl.claimedRewards[0].reward.id,
+          reason: 'Reward email',
+          email: pl.host.email,
+          eventId: pl.id
+        }
+        break
+      default:
+        break
+      }
+      this.emailDialog = true
+    },
+    async sendEmail() {
+      const input1 = {
+        role: 'HOST'
+      }
+      if (this.dialogContext.action === 'created') {
+        input1.lifecycleEvent = 'created'
+      } else {
+        input1.eventRewardId = this.dialogContext.rewardId
+      }
+      await this.$apollo.mutate({
+        mutation: ResendPromoEmails,
+        client: 'federated',
+        variables: {
+          input: {
+            id: this.dialogContext.eventId
+          },
+          input1
+        }
+      })
+      this.emailDialog = false
+      this.dialogContext = null
     },
     deletePromoLink(pl) {
       this.deleteDialog = false
