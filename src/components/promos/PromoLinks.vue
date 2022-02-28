@@ -9,7 +9,17 @@
         <v-card class="promo-link-modal pa-7">
           <v-card-title>
             <span class="text-h5 font-weight-bold">New Promo Link</span>
-            <v-btn fab icon text absolute right top class="dialog-close-btn" @click="dialog = false"><v-icon>close</v-icon></v-btn>
+            <v-btn
+              fab
+              icon
+              text
+              absolute
+              right
+              top
+              class="dialog-close-btn"
+              @click="dialog = false"
+              ><v-icon>close</v-icon></v-btn
+            >
           </v-card-title>
           <v-card-text>
             <p class="mb-2">
@@ -117,21 +127,32 @@
               <div v-if="selectedWindow">
                 <div class="mb-3 font-weight-bold">Available Rewards</div>
                 <div class="available-reward-table d-flex justify-start col-12">
-                  <span class="text-h6 font-weight-light col-6 pt-0 pb-0">Goal</span>
-                  <span class="text-h6 font-weight-light col-6 pt-0 pb-0">Reward</span>
+                  <span class="text-h6 font-weight-light col-6 pt-0 pb-0"
+                    >Goal</span
+                  >
+                  <span class="text-h6 font-weight-light col-6 pt-0 pb-0"
+                    >Reward</span
+                  >
                 </div>
                 <v-divider></v-divider>
                 <div
                   v-for="reward in selectedWindow.rewards"
                   :key="reward.key"
-                  class="available-reward-table d-flex justify-start col-12">
-                  <span class="rewards-table-body-text col-6">{{reward.metadata.labels.en[marketKey].goal}}</span>
-                  <span class="rewards-table-body-text col-6">{{reward.metadata.labels.en[marketKey].reward}}</span>
+                  class="available-reward-table d-flex justify-start col-12"
+                >
+                  <span class="rewards-table-body-text col-6">{{
+                    reward.metadata.labels.en[marketKey].goal
+                  }}</span>
+                  <span class="rewards-table-body-text col-6">{{
+                    reward.metadata.labels.en[marketKey].reward
+                  }}</span>
                 </div>
               </div>
               <div v-else>
                 <div class="available-reward-table d-flex justify-start col-12">
-                  <span class="rewards-table-body-text pt-1">Please Select a Promo Length to view rewards</span>
+                  <span class="rewards-table-body-text pt-1"
+                    >Please Select a Promo Length to view rewards</span
+                  >
                 </div>
               </div>
             </div>
@@ -153,12 +174,10 @@
       <v-dialog v-model="deleteDialog" v-if="activePL" max-width="500px">
         <v-card>
           <v-card-title class="headline">
-            <span class="subheading">Delete {{activePL.name}}</span>
+            <span class="subheading">Delete {{ activePL.name }}</span>
           </v-card-title>
           <v-card-text>
-            <p class="mb-2">
-              Are you sure you want to delete this promo link?
-            </p>
+            <p class="mb-2">Are you sure you want to delete this promo link?</p>
           </v-card-text>
           <v-card-actions class="pt-6">
             <v-spacer></v-spacer>
@@ -181,11 +200,19 @@
           </v-card-title>
           <v-card-text>
             <p class="mb-2 text-center font-weight-bold">
-              Congratulations on reaching {{ activePL.claimableRewards[0].progression.earned }} PSV!
+              Congratulations on reaching
+              {{ activePL.claimableRewards[0].progression.earned }} PSV!
             </p>
             <p class="mb-2">
-              You are about to claim the <code>{{ activePL.claimableRewards[0].reward.metadata.labels.en[marketKey].reward }}</code> for {{ activePL.host.label }}.
-              They will receive an email with a coupon code that they can redeem at the Everra Store to get their reward.
+              You are about to claim the
+              <code>{{
+                activePL.claimableRewards[0].reward.metadata.labels.en[
+                  marketKey
+                ].reward
+              }}</code>
+              for {{ activePL.host.label }}. They will receive an email with a
+              coupon code that they can redeem at the Everra Store to get their
+              reward.
             </p>
           </v-card-text>
           <v-card-actions class="pt-6">
@@ -216,10 +243,26 @@
                 <v-icon x-large>note_add</v-icon><br />New Promo Link
               </div>
             </div>
-            <v-card v-for="pl in promoLinks" :key="pl.id" class="sale-card ma-2" :loading="loading">
+            <v-card
+              v-for="pl in promoLinks"
+              :key="pl.id"
+              class="sale-card ma-2"
+              :loading="loading"
+            >
               <v-tooltip bottom open-delay="350">
                 <template #activator="{ on, attrs }">
-                  <v-btn v-on="on" v-bind="attrs" fab icon small absolute top right class="template-btn" @click="handleTemplateBtnClick(pl.template)">
+                  <v-btn
+                    v-on="on"
+                    v-bind="attrs"
+                    fab
+                    icon
+                    small
+                    absolute
+                    top
+                    right
+                    class="template-btn"
+                    @click="handleTemplateBtnClick(pl.template)"
+                  >
                     <v-icon>info</v-icon>
                   </v-btn>
                 </template>
@@ -231,36 +274,67 @@
                     {{ pl.name }}
                   </v-list-item-title>
                   <v-list-item-subtitle>
-                    <v-icon small color="#c44a42" class="pr-1 pb-1">calendar_today</v-icon>
-                    {{ formatDate(pl.startTime) }} - {{ formatDate(pl.endTime) }}
+                    <v-icon small color="#c44a42" class="pr-1 pb-1"
+                      >calendar_today</v-icon
+                    >
+                    {{ formatDate(pl.startTime) }} -
+                    {{ formatDate(pl.endTime) }}
                   </v-list-item-subtitle>
                   <v-list-item-subtitle>
-                    <v-icon small color="#c44a42" class="pr-1 pb-1">face</v-icon>
-                    {{ pl.host.label }} ({{pl.host.email}})
+                    <v-icon small color="#c44a42" class="pr-1 pb-1"
+                      >face</v-icon
+                    >
+                    {{ pl.host.label }} ({{ pl.host.email }})
                   </v-list-item-subtitle>
                 </v-list-item-content>
               </v-list-item>
               <v-card-text class="reward-info">
                 <v-row v-if="progressToDisplay(pl) && marketKey">
                   <v-col cols="12" align="center">
-                    <h2 class="font-weight-bold">{{ progressToDisplay(pl).progression.earned }} PSV Earned</h2>
+                    <h2 class="font-weight-bold">
+                      {{ progressToDisplay(pl).progression.earned }} PSV Earned
+                    </h2>
                   </v-col>
                   <v-col cols="12" align="left">
-                    <p class="green--text" :class="{ 'hidden': !rewardToDisplay(pl.rewards) }">
-                      Earned: <span class="font-weight-bold" v-if="rewardToDisplay(pl.rewards)">{{ rewardToDisplay(pl.rewards).reward.metadata.labels.en[marketKey].reward }}</span>
+                    <p
+                      class="green--text"
+                      :class="{ hidden: !rewardToDisplay(pl.rewards) }"
+                    >
+                      Earned:
+                      <span
+                        class="font-weight-bold"
+                        v-if="rewardToDisplay(pl.rewards)"
+                        >{{
+                          rewardToDisplay(pl.rewards).reward.metadata.labels.en[
+                            marketKey
+                          ].reward
+                        }}</span
+                      >
                     </p>
-                    <p :class="{ 'hidden': !nextReward(pl) }">
-                      Next: <span class="font-weight-bold" v-if="nextReward(pl)">{{`${nextReward(pl).reward.metadata.labels.en[marketKey].reward} (${nextReward(pl).reward.metadata.labels.en[marketKey].goal})` }}</span>
+                    <p :class="{ hidden: !nextReward(pl) }">
+                      Next:
+                      <span class="font-weight-bold" v-if="nextReward(pl)">{{
+                        `${
+                          nextReward(pl).reward.metadata.labels.en[marketKey]
+                            .reward
+                        } (${
+                          nextReward(pl).reward.metadata.labels.en[marketKey]
+                            .goal
+                        })`
+                      }}</span>
                     </p>
                   </v-col>
                 </v-row>
                 <v-row v-else class="text--center">
-                  <v-col cols="12">
-                    Progress Data Unavailable
-                  </v-col>
+                  <v-col cols="12"> Progress Data Unavailable </v-col>
                 </v-row>
                 <p class="font-weight-bold">{{ pl.email }}</p>
-                <v-row align="center" v-if="pl.rewards && pl.rewards.length && progressToDisplay(pl)">
+                <v-row
+                  align="center"
+                  v-if="
+                    pl.rewards && pl.rewards.length && progressToDisplay(pl)
+                  "
+                >
                   <v-col class="pb-0" cols="12">
                     <v-btn
                       v-if="pl.isEligibleToClaim && pl.claimableRewards.length"
@@ -277,15 +351,15 @@
                       :color="progressColor(pl, progressToDisplay(pl))"
                       height="35"
                       rounded
-                      class="card-progress-bar">
-                        {{ progressText(pl, progressToDisplay(pl)) }}
+                      class="card-progress-bar"
+                    >
+                      {{ progressText(pl, progressToDisplay(pl)) }}
                     </v-progress-linear>
                   </v-col>
                 </v-row>
                 <v-row align="center">
-                  <v-col>
+                  <v-col class="pt-0">
                     <v-text-field
-                      solo
                       color="black"
                       :value="createPromoLink(pl.key)"
                       readonly
@@ -321,14 +395,34 @@
               </v-card-text>
               <v-card-actions>
                 <!-- <v-btn text :disabled="saleProgressText(pl) === 'Complete'">Resend Link</v-btn> -->
-                <v-btn v-if="!pl.isEligibleToClaim" text @click="resendEmailDialog('created', pl)">Resend Link</v-btn>
-                <v-btn v-if="pl.claimedRewards.length" text @click="resendEmailDialog('reward', pl)">Resend Reward</v-btn>
-                <a v-if="!pl.isEligibleToClaim" :href="createPromoLink(pl.key)" target="_blank">
+                <v-btn
+                  v-if="!pl.isEligibleToClaim"
+                  text
+                  @click="resendEmailDialog('created', pl)"
+                  >Resend Link</v-btn
+                >
+                <v-btn
+                  v-if="pl.claimedRewards.length"
+                  text
+                  @click="resendEmailDialog('reward', pl)"
+                  >Resend Reward</v-btn
+                >
+                <a
+                  v-if="!pl.isEligibleToClaim"
+                  :href="createPromoLink(pl.key)"
+                  target="_blank"
+                >
                   <v-btn text>Visit Link</v-btn>
                 </a>
                 <v-spacer></v-spacer>
                 <!-- <v-btn text color="red">Delete</v-btn> -->
-                <v-btn v-if="!pl.isEligibleToClaim" text color="red" @click="showPLDialog('deleteDialog', pl)">Delete</v-btn>
+                <v-btn
+                  v-if="!pl.isEligibleToClaim"
+                  text
+                  color="red"
+                  @click="showPLDialog('deleteDialog', pl)"
+                  >Delete</v-btn
+                >
               </v-card-actions>
             </v-card>
           </v-row>
@@ -337,16 +431,19 @@
     </div>
     <v-snackbar v-model="showSnackbar">
       {{ snackbarText }}
-      <v-btn text color="primary" @click.native="showSnackbar = false">Close</v-btn>
+      <v-btn text color="primary" @click.native="showSnackbar = false"
+        >Close</v-btn
+      >
     </v-snackbar>
     <v-dialog v-model="emailDialog" v-if="dialogContext" max-width="500px">
       <v-card>
         <v-card-title class="headline">
-          <span class="subheading">Resend {{dialogContext.reason}}</span>
+          <span class="subheading">Resend {{ dialogContext.reason }}</span>
         </v-card-title>
         <v-card-text>
           <p>
-            Please confirm that you'd like to send {{dialogContext.email}} a new {{dialogContext.reason}}.
+            Please confirm that you'd like to send {{ dialogContext.email }} a
+            new {{ dialogContext.reason }}.
           </p>
         </v-card-text>
         <v-card-actions class="pt-6">
@@ -374,7 +471,11 @@
 <script>
 import _ from 'lodash'
 import Rules from '@/views/Rules.js'
-import { CreateMemberEvent, ClaimEventReward, ResendPromoEmails } from '@/graphql/MarketingEvent.gql'
+import {
+  CreateMemberEvent,
+  ClaimEventReward,
+  ResendPromoEmails,
+} from '@/graphql/MarketingEvent.gql'
 import { mapGetters } from 'vuex'
 import moment from 'moment'
 
@@ -382,12 +483,12 @@ import PromoLinkDialog from './PromoLinkDialog.vue'
 
 export default {
   components: {
-    PromoLinkDialog
+    PromoLinkDialog,
   },
   props: {
     promoLinks: Array,
     eventTemplate: Object,
-    loading: Boolean
+    loading: Boolean,
   },
   data: () => ({
     dialog: false,
@@ -414,7 +515,7 @@ export default {
       { text: 'PSV', value: 'psv' },
       { text: 'Reward', value: 'reward' },
       { text: 'Progress', value: 'progress', sortable: false },
-      { text: 'Actions', value: 'actions', sortable: false }
+      { text: 'Actions', value: 'actions', sortable: false },
     ],
     desserts: [],
     editedIndex: -1,
@@ -427,9 +528,9 @@ export default {
       promoName: '',
       hostEmail: '',
       hostName: '',
-      date: moment().format('YYYY-MM-DD'),
-      time: moment().format('HH:mm')
-    }
+      date: moment().format('MMMM DD, YYYY'),
+      time: moment().format('HH:mm a'),
+    },
   }),
   computed: {
     ...mapGetters(['memberId', 'displayName', 'slug', 'market']),
@@ -452,7 +553,7 @@ export default {
       const mappedWindows = windows.map((el) => {
         return {
           text: el.name,
-          value: el.key
+          value: el.key,
         }
       })
 
@@ -470,7 +571,7 @@ export default {
       return this.eventTemplate.windows.find(
         (el) => el.key === this.promoWindow
       )
-    }
+    },
   },
   methods: {
     validateForm() {
@@ -496,10 +597,7 @@ export default {
       if (reward.progression.progress >= 100) {
         return 'green'
       }
-      if (
-        reward.progression.progress < 100 &&
-        pl.status === 'FINISHED'
-      ) {
+      if (reward.progression.progress < 100 && pl.status === 'FINISHED') {
         return 'orange'
       }
       if (pl.status === 'SCHEDULED') {
@@ -511,7 +609,7 @@ export default {
       if (!rewards || !rewards.length) {
         return
       }
-      const rewardToDisplay = rewards.filter(el => el.progression.awarded)
+      const rewardToDisplay = rewards.filter((el) => el.progression.awarded)
 
       return rewardToDisplay[rewardToDisplay.length - 1]
     },
@@ -519,7 +617,10 @@ export default {
       if (!pl.rewards || !pl.rewards.length || pl.claimedRewards.length > 0) {
         return
       }
-      const awardedIndex = _.findIndex(pl.rewards, el => el.progression.awarded)
+      const awardedIndex = _.findIndex(
+        pl.rewards,
+        (el) => el.progression.awarded
+      )
       if (pl.rewards[awardedIndex + 1]) {
         return pl.rewards[awardedIndex + 1]
       }
@@ -530,35 +631,39 @@ export default {
       }
 
       const displayClaimed = [...pl.claimableRewards]
-      const progressToDisplay = pl.rewards.filter(el => el.progression.visible || el.progression.claimed)
-      return displayClaimed.length ? displayClaimed[0] : progressToDisplay[progressToDisplay.length - 1]
+      const progressToDisplay = pl.rewards.filter(
+        (el) => el.progression.visible || el.progression.claimed
+      )
+      return displayClaimed.length
+        ? displayClaimed[0]
+        : progressToDisplay[progressToDisplay.length - 1]
     },
     resendEmailDialog(context, pl) {
       switch (context) {
-      case 'created':
-        this.dialogContext = {
-          action: 'created',
-          reason: 'Promo Link email',
-          email: pl.host.email,
-          eventId: pl.id
-        }
-        break
-      case 'reward':
-        this.dialogContext = {
-          rewardId: pl.claimedRewards[0].reward.id,
-          reason: 'Reward email',
-          email: pl.host.email,
-          eventId: pl.id
-        }
-        break
-      default:
-        break
+        case 'created':
+          this.dialogContext = {
+            action: 'created',
+            reason: 'Promo Link email',
+            email: pl.host.email,
+            eventId: pl.id,
+          }
+          break
+        case 'reward':
+          this.dialogContext = {
+            rewardId: pl.claimedRewards[0].reward.id,
+            reason: 'Reward email',
+            email: pl.host.email,
+            eventId: pl.id,
+          }
+          break
+        default:
+          break
       }
       this.emailDialog = true
     },
     async sendEmail() {
       const input1 = {
-        role: 'HOST'
+        role: 'HOST',
       }
       if (this.dialogContext.action === 'created') {
         input1.lifecycleEvent = 'created'
@@ -570,10 +675,10 @@ export default {
         client: 'federated',
         variables: {
           input: {
-            id: this.dialogContext.eventId
+            id: this.dialogContext.eventId,
           },
-          input1
-        }
+          input1,
+        },
       })
       this.emailDialog = false
       this.dialogContext = null
@@ -607,9 +712,9 @@ export default {
       }
 
       try {
-        const parsedDate = this.$moment.utc(
-          this.editedItem.date + 'T' + this.editedItem.time
-        ).toISOString()
+        const parsedDate = this.$moment
+          .utc(this.editedItem.date + 'T' + this.editedItem.time)
+          .toISOString()
         await this.$apollo.mutate({
           mutation: CreateMemberEvent,
           client: 'federated',
@@ -624,16 +729,16 @@ export default {
                 {
                   pii: { email: this.editedItem.hostEmail },
                   label: this.editedItem.hostName,
-                  role: 'HOST'
+                  role: 'HOST',
                 },
                 {
                   memberId: this.memberId,
                   label: this.displayName,
-                  role: 'ORGANIZER'
-                }
-              ]
-            }
-          }
+                  role: 'ORGANIZER',
+                },
+              ],
+            },
+          },
         })
         this.snackbarText = 'Promo Link Created!'
         this.close()
@@ -687,7 +792,7 @@ export default {
     },
     async claimReward(pl) {
       this.claiming = true
-      const rewardIds = pl.claimableRewards.map(r => {
+      const rewardIds = pl.claimableRewards.map((r) => {
         return r.reward.id
       })
       await this.$apollo.mutate({
@@ -696,11 +801,11 @@ export default {
         variables: {
           input: {
             rewardIds,
-            eventId: pl.id
-          }
-        }
+            eventId: pl.id,
+          },
+        },
       })
-      pl.rewards.forEach(r => {
+      pl.rewards.forEach((r) => {
         if (rewardIds.includes(r.reward.id)) {
           r.progression.claimed = true
         }
@@ -709,14 +814,17 @@ export default {
       pl.isEligibleToClaim = false
       this.claimDialog = false
       this.claiming = false
-    }
-  }
+    },
+  },
 }
 </script>
 
 <style scoped>
 p {
   margin: 0;
+}
+#visit-link-btn {
+  text-decoration: none;
 }
 
 /* .thisone {
@@ -744,19 +852,9 @@ p {
 }
 
 /* START fine tuning spacing aka: vuetify override  */
-
-.promo-link-modal .v-card__text {
-  padding: 0 10px;
-}
-.promo-link-modal .v-card__title {
-  padding: 10px 10px 0;
-}
-.promo-link-modal .v-card__actions {
-  padding: 5px 10px 10px;
-}
 .promo-form-input.col.col-12 {
   padding-top: 0;
-  padding-bottom: 0;
+  padding-bottom: 0px;
 }
 .date-picker-input .col,
 .col-12 {
@@ -794,24 +892,7 @@ p {
   font-weight: 600;
 }
 
-.claim-reward-btn {
-  /* padding: 5px 110px; */
-  padding: 6px 0;
-  height: 35px;
-  width: 318px;
-  cursor: pointer;
-  /* border: solid 1px rgba(255, 255, 255, 0); */
-  background-color: rgba(255, 255, 255, 0.5);
-  border: rgba(0, 0, 0, 0.8) 1px solid;
-  border-radius: 4px;
-}
-.claim-reward-btn:hover {
-  /* background-color: rgba(255, 153, 0, 0.7); */
-  background-color: rgba(255, 255, 255, 0.8);
-  border: rgba(0, 0, 0, 0.8) 1px solid;
-  border-radius: 4px;
-}
-.hidden{
+.hidden {
   visibility: hidden;
 }
 
