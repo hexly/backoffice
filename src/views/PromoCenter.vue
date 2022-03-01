@@ -224,6 +224,7 @@ export default {
           }
         })
         this.$apollo.queries.promoLinks.refetch()
+        this.currentPage = 1
         this.snackbarText = 'Event archived!'
       } catch (error) {
         console.error(error)
