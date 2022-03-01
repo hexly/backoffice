@@ -111,7 +111,8 @@ export default {
       update(data) {
         const promoLinks = get(
           data,
-          'membership.search.results.0.events.marketing.results'
+          'membership.search.results.0.events.marketing.results',
+          []
         )
         this.totalPages = get(data, 'membership.search.results.0.events.marketing.totalPages')
         this.totalResults = get(data, 'membership.search.results.0.events.marketing.totalResults')
