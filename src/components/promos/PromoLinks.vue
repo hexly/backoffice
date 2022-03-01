@@ -1,9 +1,5 @@
 <template>
   <div class="promo-links">
-    <div class="ma-5">
-      <h1>Promo Links</h1>
-      <h2 class="font-weight-regular">Manage and create promotional events.</h2>
-    </div>
     <div class="d-flex justify-center ma-2 flex-wrap">
       <v-dialog v-model="dialog" max-width="500px">
         <v-card class="promo-link-modal pa-7">
@@ -150,26 +146,26 @@
           </v-card-actions>
         </v-card>
       </v-dialog>
-      <v-dialog v-model="deleteDialog" v-if="activePL" max-width="500px">
+      <v-dialog v-model="closeEventDialog" v-if="activePL" max-width="500px">
         <v-card>
           <v-card-title class="headline">
-            <span class="subheading">Delete {{activePL.name}}</span>
+            <span class="subheading">End {{activePL.name}} Now?</span>
           </v-card-title>
           <v-card-text>
             <p class="mb-2">
-              Are you sure you want to delete this promo link?
+              Are you sure you want to end this promo link now?
             </p>
           </v-card-text>
           <v-card-actions class="pt-6">
             <v-spacer></v-spacer>
-            <v-btn text @click="closeDialog('claimDialog')">Cancel</v-btn>
+            <v-btn text @click="closeDialog('closeEventDialog')">Cancel</v-btn>
             <v-btn
               color="red darken-1"
               class="promo-link-delete-btn font-weight-bold"
               outlined
               text
-              @click="deletePromoLink(activePl)"
-              >Delete</v-btn
+              @click="closePromoLink(activePL)"
+              >End Now</v-btn
             >
           </v-card-actions>
         </v-card>
@@ -181,10 +177,10 @@
           </v-card-title>
           <v-card-text>
             <p class="mb-2 text-center font-weight-bold">
-              Congratulations on reaching {{ activePL.claimableRewards[0].progression.earned }} PSV!
+              Congratulations on reaching {{ ( activePL && activePL.claimableRewards[0] ) ? activePL.claimableRewards[0].progression.earned : null }} PSV!
             </p>
             <p class="mb-2">
-              You are about to claim the <code>{{ activePL.claimableRewards[0].reward.metadata.labels.en[marketKey].reward }}</code> for {{ activePL.host.label }}.
+              You are about to claim the <code>{{ ( activePL && activePL.claimableRewards[0] ) ? activePL.claimableRewards[0].reward.metadata.labels.en[marketKey].reward : null }}</code> for {{ activePL.host.label }}.
               They will receive an email with a coupon code that they can redeem at the Everra Store to get their reward.
             </p>
           </v-card-text>
@@ -323,22 +319,30 @@
                 <!-- <v-btn text :disabled="saleProgressText(pl) === 'Complete'">Resend Link</v-btn> -->
                 <v-btn v-if="!pl.isEligibleToClaim" text @click="resendEmailDialog('created', pl)">Resend Link</v-btn>
                 <v-btn v-if="pl.claimedRewards.length" text @click="resendEmailDialog('reward', pl)">Resend Reward</v-btn>
-                <a v-if="!pl.isEligibleToClaim" :href="createPromoLink(pl.key)" target="_blank">
-                  <v-btn text>Visit Link</v-btn>
-                </a>
+                <v-btn v-if="!pl.isEligibleToClaim" text :href="createPromoLink(pl.key)" target="_blank">
+                  Visit Link
+                </v-btn>
+                  <!-- <a v-if="!pl.isEligibleToClaim" :href="createPromoLink(pl.key)" target="_blank">
+                  </a> -->
                 <v-spacer></v-spacer>
                 <!-- <v-btn text color="red">Delete</v-btn> -->
-                <v-btn v-if="!pl.isEligibleToClaim" text color="red" @click="showPLDialog('deleteDialog', pl)">Delete</v-btn>
+                <v-btn v-if="pl.isEligibleToClaim" text color="green" @click="showPLDialog('claimDialog', pl)">Claim</v-btn>
+                <v-btn v-else-if="['FINISHED_MANUALLY', 'FINISHED', 'ARCHIVED'].indexOf(pl.status) < 0" text color="orange" @click="showPLDialog('closeEventDialog', pl)">End Now</v-btn>
+                <v-btn v-else-if="pl.status !== 'ARCHIVED'" text color="blue" @click="showPLDialog('archiveDialog', pl)">Archive</v-btn>
               </v-card-actions>
             </v-card>
           </v-row>
         </div>
       </v-slide-x-transition>
     </div>
-    <v-snackbar v-model="showSnackbar">
-      {{ snackbarText }}
-      <v-btn text color="primary" @click.native="showSnackbar = false">Close</v-btn>
-    </v-snackbar>
+    <v-row justify="center">
+      <v-col cols="12">
+        <v-pagination :value="currentPage" :length="totalPages" @input="newVal => $emit('paginationInput', newVal)"/>
+      </v-col>
+      <v-col cols="12" sm="2" class="px-5">
+        <v-select :value="pageSize" :items="[5, 10, 25, 50]" label="Items Per Page" @input="newVal => $emit('pageSizeUpdate', newVal)" filled />
+      </v-col>
+    </v-row>
     <v-dialog v-model="emailDialog" v-if="dialogContext" max-width="500px">
       <v-card>
         <v-card-title class="headline">
@@ -359,6 +363,30 @@
             text
             @click="sendEmail"
             >Send Email</v-btn
+          >
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+    <v-dialog v-model="archiveDialog" v-if="activePL" max-width="500px">
+      <v-card>
+        <v-card-title class="headline">
+          <span class="subheading">Archive {{activePL.name}}</span>
+        </v-card-title>
+        <v-card-text>
+          <p>
+            Please confirm that you'd like to archive {{activePL.name}}.
+          </p>
+        </v-card-text>
+        <v-card-actions class="pt-6">
+          <v-btn text @click="closeDialog('archiveDialog')">Cancel</v-btn>
+          <v-spacer></v-spacer>
+          <v-btn
+            color="green darken-1"
+            class="promo-link-delete-btn font-weight-bold"
+            outlined
+            text
+            @click="handleArchiveClick"
+            >Archive</v-btn
           >
         </v-card-actions>
       </v-card>
@@ -387,11 +415,16 @@ export default {
   props: {
     promoLinks: Array,
     eventTemplate: Object,
+    currentPage: Number,
+    pageSize: Number,
+    totalPages: Number,
+    totalResults: Number,
     loading: Boolean
   },
   data: () => ({
     dialog: false,
-    deleteDialog: false,
+    closeEventDialog: false,
+    archiveDialog: false,
     claimDialog: false,
     emailDialog: false,
     dialogContext: null,
@@ -399,7 +432,6 @@ export default {
     showDatePicker: false,
     timePicker: false,
     promoWindow: null,
-    showSnackbar: false,
     snackbarText: '',
     copyTooltipText: 'Copy',
     shareTooltipText: 'Share',
@@ -578,10 +610,9 @@ export default {
       this.emailDialog = false
       this.dialogContext = null
     },
-    deletePromoLink(pl) {
-      this.deleteDialog = false
-      this.activePL = null
-      console.log('delete pl', pl)
+    closePromoLink(pl) {
+      this.closeEventDialog = false
+      this.$emit('closeEvent', pl)
     },
     showPLDialog(dialog, pl) {
       this.activePL = pl
@@ -589,7 +620,6 @@ export default {
     },
     closeDialog(dialog) {
       this[dialog] = false
-      this.activePL = null
     },
     close() {
       this.$refs.informationForm.reset()
@@ -643,7 +673,7 @@ export default {
           'There was an error creating this promo link! Please try again or contact support'
         console.error(error)
       }
-      this.showSnackbar = true
+      this.$emit('showSnackbar', this.snackbarText)
     },
     createPromoLink(eventKey) {
       const base = this.slug
@@ -709,6 +739,10 @@ export default {
       pl.isEligibleToClaim = false
       this.claimDialog = false
       this.claiming = false
+    },
+    handleArchiveClick() {
+      this.$emit('archiveEvent', this.activePL)
+      this.archiveDialog = false
     }
   }
 }

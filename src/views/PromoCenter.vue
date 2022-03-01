@@ -14,12 +14,25 @@
             :eventTemplate="
               eventTemplates.find((el) => el.key === 'promo_link')
             "
+            :currentPage="currentPage"
+            :pageSize="pageSize"
+            :totalPages="totalPages"
+            :totalResults="totalResults"
             :loading="loading"
             @refetchPromoLinks="handlePromoLinksRefetch"
+            @closeEvent="handleCloseEvent"
+            @archiveEvent="handleArchiveEvent"
+            @paginationInput="handlePaginationInput"
+            @pageSizeUpdate="handlePageSizeUpdate"
+            @showSnackbar="handleShowSnackbar"
           />
         </v-lazy>
       </v-tab-item>
     </v-tabs>
+    <v-snackbar v-model="showSnackbar">
+      {{ snackbarText }}
+      <v-btn text color="primary" @click.native="showSnackbar = false">Close</v-btn>
+    </v-snackbar>
   </div>
 </template>
 
@@ -28,6 +41,7 @@ import PromoLinks from '@/components/promos/PromoLinks.vue'
 import FlashSales from '@/components/promos/FlashSales.vue'
 import { GetMemberEvents } from '@/graphql/GetMemberEvents.gql'
 import { GetEventTemplates } from '@/graphql/GetEventTemplates.gql'
+import { CloseEvent } from '@/graphql/CloseEvent.gql'
 import { mapGetters } from 'vuex'
 import { get } from 'lodash'
 
@@ -63,7 +77,13 @@ export default {
       name: '',
       email: ''
     },
-    statusFilter: null
+    statusFilter: [ 'SCHEDULED', 'IN_PROGRESS', 'FINISHED', 'FINISHED_MANUALLY' ],
+    currentPage: 1,
+    pageSize: 10,
+    totalPages: 0,
+    totalResults: 0,
+    showSnackbar: false,
+    snackbarText: ''
   }),
   computed: {
     ...mapGetters(['memberId']),
@@ -82,7 +102,9 @@ export default {
           },
           marketingInput: {
             statusIn: this.statusFilter,
-            evaluate: true
+            evaluate: true,
+            page: this.currentPage,
+            pageSize: this.pageSize
           }
         }
       },
@@ -91,6 +113,8 @@ export default {
           data,
           'membership.search.results.0.events.marketing.results'
         )
+        this.totalPages = get(data, 'membership.search.results.0.events.marketing.totalPages')
+        this.totalResults = get(data, 'membership.search.results.0.events.marketing.totalResults')
         return promoLinks.map((pl) => {
           // they're only eligible to claim if they're done (for now)
           pl.isEligibleToClaim = pl.status === 'FINISHED'
@@ -160,6 +184,63 @@ export default {
     },
     handlePromoLinksRefetch() {
       this.$apollo.queries.promoLinks.refetch()
+    },
+    async handleCloseEvent(pl) {
+      const id = pl.id
+      try {
+        await this.$apollo.mutate({
+          mutation: CloseEvent,
+          client: 'federated',
+          variables: {
+            input: {
+              id
+            },
+            setStatusInput: {
+              status: 'FINISHED_MANUALLY'
+            }
+          }
+        })
+        this.$apollo.queries.promoLinks.refetch()
+        this.snackbarText = 'Event closed!'
+      } catch (error) {
+        console.error(error)
+        this.snackbarText = 'There was a problem closing that event. Please try again or contact support'
+      }
+      this.showSnackbar = true
+    },
+    async handleArchiveEvent(pl) {
+      const id = pl.id
+      try {
+        await this.$apollo.mutate({
+          mutation: CloseEvent,
+          client: 'federated',
+          variables: {
+            input: {
+              id
+            },
+            setStatusInput: {
+              status: 'ARCHIVED'
+            }
+          }
+        })
+        this.$apollo.queries.promoLinks.refetch()
+        this.snackbarText = 'Event archived!'
+      } catch (error) {
+        console.error(error)
+        this.snackbarText = 'There was a problem archiving that event. Please try again or contact support'
+      }
+      this.showSnackbar = true
+    },
+    handlePaginationInput(newVal) {
+      this.currentPage = newVal
+    },
+    handlePageSizeUpdate(newVal) {
+      this.currentPage = 1
+      this.pageSize = newVal
+    },
+    handleShowSnackbar(snackbarText) {
+      this.snackbarText = snackbarText
+      this.showSnackbar = true
     }
   }
 }

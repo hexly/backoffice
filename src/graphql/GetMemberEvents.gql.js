@@ -10,6 +10,10 @@ query Events($input: MembershipMemberSearchInput!, $marketingInput: MarketingMem
         events {
           memberId
           marketing (input: $marketingInput) {
+            page
+            pageSize
+            totalPages
+            totalResults
             results {
               name
               id 
