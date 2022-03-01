@@ -102,7 +102,7 @@
             <v-list-item-title>{{$tenantInfo.strings.files || 'Files'}}</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
-        <v-list-item v-if="hasPromotionCenter" to="/promotioncenter">
+        <v-list-item to="/promotioncenter">
           <v-list-item-action>
             <v-icon>stars</v-icon>
           </v-list-item-action>
@@ -329,10 +329,6 @@ export default {
     hasZendeskAdmin () {
       const tags = get(this, 'user.principal.member.tags', [])
       return tags.indexOf('zendesk:agent') >= 0
-    },
-    hasPromotionCenter () {
-      const tags = get(this, 'user.principal.member.tags', [])
-      return tags.indexOf('beta:promo') >= 0
     },
     showGateDialog () {
       return this.showGate && this.$route.path.indexOf('profile') === -1
