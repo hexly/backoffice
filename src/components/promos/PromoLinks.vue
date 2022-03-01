@@ -316,17 +316,11 @@
                 </v-row>
               </v-card-text>
               <v-card-actions>
-                <!-- <v-btn text :disabled="saleProgressText(pl) === 'Complete'">Resend Link</v-btn> -->
                 <v-btn v-if="!pl.isEligibleToClaim" text @click="resendEmailDialog('created', pl)">Resend Link</v-btn>
+                <v-btn v-if="!pl.isEligibleToClaim" text :href="createPromoLink(pl.key)" target="_blank">Visit Link</v-btn>
                 <v-btn v-if="pl.claimedRewards.length" text @click="resendEmailDialog('reward', pl)">Resend Reward</v-btn>
-                <v-btn v-if="!pl.isEligibleToClaim" text :href="createPromoLink(pl.key)" target="_blank">
-                  Visit Link
-                </v-btn>
-                  <!-- <a v-if="!pl.isEligibleToClaim" :href="createPromoLink(pl.key)" target="_blank">
-                  </a> -->
                 <v-spacer></v-spacer>
-                <!-- <v-btn text color="red">Delete</v-btn> -->
-                <v-btn v-if="pl.isEligibleToClaim" text color="green" @click="showPLDialog('claimDialog', pl)">Claim</v-btn>
+                <v-btn v-if="pl.isEligibleToClaim && pl.claimableRewards.length" text color="green" @click="showPLDialog('claimDialog', pl)">Claim</v-btn>
                 <v-btn v-else-if="['FINISHED_MANUALLY', 'FINISHED', 'ARCHIVED'].indexOf(pl.status) < 0" text color="orange" @click="showPLDialog('closeEventDialog', pl)">End Now</v-btn>
                 <v-btn v-else-if="pl.status !== 'ARCHIVED'" text color="blue" @click="showPLDialog('archiveDialog', pl)">Archive</v-btn>
               </v-card-actions>
