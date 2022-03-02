@@ -117,8 +117,7 @@ export default {
         this.totalPages = get(data, 'membership.search.results.0.events.marketing.totalPages')
         this.totalResults = get(data, 'membership.search.results.0.events.marketing.totalResults')
         return promoLinks.map((pl) => {
-          // they're only eligible to claim if they're done (for now)
-          pl.isEligibleToClaim = pl.status === 'FINISHED'
+          pl.isEligibleToClaim = pl.status === 'FINISHED' || pl.status === 'FINISHED_MANUALLY'
           pl.participants.map((p) => {
             pl[p.role.toLowerCase()] = p
           })
