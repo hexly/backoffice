@@ -631,9 +631,7 @@ export default {
       }
 
       try {
-        const parsedDate = this.$moment.utc(
-          this.editedItem.date + 'T' + this.editedItem.time
-        ).toISOString()
+        const parsedDate = this.$moment(this.editedItem.date + 'T' + this.editedItem.time).toISOString()
         await this.$apollo.mutate({
           mutation: CreateMemberEvent,
           client: 'federated',
