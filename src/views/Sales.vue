@@ -289,7 +289,7 @@ export default {
         'processing': 'Processing',
         'hxro-paid-await': 'Subscription Paid - Awaiting Shipping',
         'await-fulfillment': 'Awaiting Fulfillment',
-        'processing-intl': 'Processing International'
+        'processing-intl': 'International Processing'
       },
       saleMetrics: [
         { label: 'Customer Purchases', prop: 'registeredPurchases', icon: 'mdi-cart' },
@@ -298,7 +298,7 @@ export default {
         { label: 'Returning Customers', prop: 'returningCustomers', icon: 'mdi-account-convert' },
         { label: 'Total Customers', prop: 'totalCustomers', icon: 'mdi-account-group' }
       ],
-      statuses: ['completed', 'processing', 'refunded', 'awaiting-shipment', 'export_for_shipping', 'POSTED', 'Awaiting Approval', 'SHIPPED', 'AWAITING FUNDS', 'ENTERED', 'hxro-paid-await'],
+      statuses: ['completed', 'processing', 'refunded', 'awaiting-shipment', 'export_for_shipping', 'POSTED', 'Awaiting Approval', 'SHIPPED', 'AWAITING FUNDS', 'ENTERED', 'hxro-paid-await', 'await-fulfillment', 'processing-intl'],
       datePickerStartDate: null,
       datePickerEndDate: null,
       modalStart: false,
