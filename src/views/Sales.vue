@@ -287,7 +287,9 @@ export default {
       statusMap: {
         'completed': 'Completed',
         'processing': 'Processing',
-        'hxro-paid-await': 'Subscription Paid - Awaiting Shipping'
+        'hxro-paid-await': 'Subscription Paid - Awaiting Shipping',
+        'await-fulfillment': 'Awaiting Fulfillment',
+        'processing-intl': 'Processing International'
       },
       saleMetrics: [
         { label: 'Customer Purchases', prop: 'registeredPurchases', icon: 'mdi-cart' },
