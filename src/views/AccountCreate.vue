@@ -291,7 +291,6 @@ import { LOCALE_QUERY } from '@/graphql/GetLocalSettings'
 import { CHECK_IF_UNIQUE_SLUG } from '@/graphql/Slug'
 import { GET_INQUIRY_RESPONSE } from '@/graphql/Inquiry.gql'
 import { CREATE } from '@/graphql/AccountCreate.gql'
-import { encrypt } from '@/utils/EncryptionService'
 import AgreementCheckbox from '@/components/Agreement'
 import Rules from '@/views/Rules.js'
 
@@ -457,18 +456,15 @@ export default {
       if (this.$refs.claim.validate()) {
         this.saving = true
         try {
-          const encryptedAffiliate = await encrypt({
-            plainText: 'on-register',
-            metadata: {
-              affiliate: this.affiliate,
-              policies: this.policies
-            }
-          })
+          const encryptedAffiliate = {
+            affiliate: this.affiliate,
+            policies: this.policies
+          }
           this.memberContext.attributes = [{
             private: true,
             key: 'affiliate-agreement',
-            value: encryptedAffiliate.payload,
-            signature: encryptedAffiliate.signature
+            value: JSON.stringify(encryptedAffiliate),
+            signature: 'on-register'
           }]
 
           if (this.preferredPayout === 53) {
