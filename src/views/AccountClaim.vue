@@ -139,7 +139,6 @@ import { UserMutations, UserActions } from '@/stores/UserStore'
 import { Actions } from '@/Members/Store'
 import { LOCALE_QUERY } from '@/graphql/GetLocalSettings'
 import { WELCOME_EMAIL } from '@/graphql/Member.gql'
-import { encrypt } from '@/utils/EncryptionService'
 import AgreementCheckbox from '@/components/Agreement'
 import Rules from '@/views/Rules.js'
 
@@ -265,13 +264,13 @@ export default {
         this.loading = true
         // Encrypt info
         try {
-          const encryptedAffiliate = await encrypt({
+          const encryptedAffiliate = {
             plainText: 'on-register',
             metadata: {
               affiliate: this.affiliate,
               policies: this.policies
             }
-          })
+          }
           const { token } = this.$route.params
 
           const { data: { consumeOneTimeToken } } = await this.createAccount({
@@ -301,8 +300,7 @@ export default {
             await this.upsertAttribute({
               private: true,
               key: 'affiliate-agreement',
-              value: encryptedAffiliate.payload,
-              signature: encryptedAffiliate.signature
+              value: encryptedAffiliate
             })
             // Temporary Welcome Email
             const emailTemplate = process.env.VUE_APP_WELCOME_EMAIL_TEMPLATE
