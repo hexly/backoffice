@@ -7,6 +7,7 @@
           :integrations="payoutIntegrations"
           :selected="selectedIntegration"
         />
+
         <StripeBalanceInfo v-if="selectedIntegration === 'stripe_connect'" />
         <PaypalBalanceInfo v-else-if="selectedIntegration === 'paypal_payouts'" />
         <!-- <iPayoutsBalanceInfo :hasDefaultPayout="hasSetDefaultPayout" :payoutMemberIntegrations="payoutMemberIntegrations" v-else-if="selectedIntegration === 'i_payouts'" /> -->
