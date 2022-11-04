@@ -60,17 +60,17 @@
     <template v-if="openPeriod">
       <lazy-component wrapper-tag="v-row" wrap @intersected="loadLeaderboards(openPeriod)">
         <v-col cols="12" sm="6">
-          <LeaderBoard :leaders="companyLeaderboard" title="Top Team Builders (Company)" message="New influencers this period: "/>
+          <LeaderBoard :leaders="companyLeaderboard" title="Top Team Builders (Company)" message="New influencers this period: " :showTotal="false"/>
         </v-col>
         <v-col cols="12" sm="6">
-          <LeaderBoard :leaders="teamLeaderboard" title="Top Team Builders (Your Team)" message="New influencers this period: "/>
+          <LeaderBoard :leaders="teamLeaderboard" title="Top Team Builders (Your Team)" message="New influencers this period: " :showTotal="false"/>
         </v-col>
       </lazy-component>
     </template>
     <template v-if="openPeriod">
       <lazy-component wrapper-tag="v-row" wrap @intersected="loadSalesLeaderboards(openPeriod)">
         <v-col cols="12" sm="6">
-          <MarketLeaderBoard :leaders="companySellersLeaderboard" title="Top Sellers (Company)" message="PSV: "/>
+          <MarketLeaderBoard :leaders="companySellersLeaderboard" title="Top Sellers (Company)" message="PSV: " />
         </v-col>
         <v-col cols="12" sm="6">
           <SellerLeaderBoard :leaders="teamSellersLeaderboard" title="Top Sellers (Your Team)" message="PSV: "/>

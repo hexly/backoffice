@@ -113,7 +113,7 @@ export default {
         }
       },
       labelMapping: {
-        i_payouts: 'iPayouts',
+        // i_payouts: 'iPayouts',
         paypal_payouts: 'PayPal Payouts',
         hexly_payouts: 'Everra Pay',
         stripe_connect: 'Stripe Connect'
