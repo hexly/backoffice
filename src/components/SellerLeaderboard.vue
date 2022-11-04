@@ -19,7 +19,7 @@
           </v-list-item-content>
           <v-list-item-action>
             <v-list-item-title>
-              <span v-if="message">{{message}}</span><strong>{{ item.points }}</strong>
+              <!-- <span v-if="message">{{message}}</span><strong>{{ item.points }}</strong> -->
             </v-list-item-title>
           </v-list-item-action>
         </v-list-item>
