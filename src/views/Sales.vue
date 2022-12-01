@@ -306,9 +306,10 @@ export default {
       expanded: [],
       modalEnd: false,
       startDate: this.$moment()
-        .subtract(4 * 30, 'days')
+        .subtract(30, 'days')
         .format('MM/DD/YYYY'),
       endDate: this.$moment()
+        .add(1, 'days')
         .format('MM/DD/YYYY'),
       headers: [
         { text: 'Date', value: 'date' },
