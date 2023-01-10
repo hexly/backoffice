@@ -389,7 +389,8 @@ export default {
         return trackingInfo.customTrackingLink
       }
       const provider = trackingInfo.trackingProvider || trackingInfo.customTrackingProvider
-      return trackingProviders[provider] + trackingInfo.trackingNumber
+      const providerUrl = trackingProviders[provider] || 'https://track.landmarkglobal.com/?search='
+      return providerUrl + trackingInfo.trackingNumber
     },
     dateSave (datePickerDate, startOrEnd) {
       const varName = `${startOrEnd}Date`
